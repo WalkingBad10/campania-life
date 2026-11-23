@@ -48,8 +48,14 @@ export default function App() {
     });
     CL.ui.openMenu = (tab, data) => { CL.audio.sfx('phone'); setDlg(null); setMenu({ tab, data: data || {} }); };
     CL.ui.openShop = id => setMenu({ tab: 'negozio', data: { shop: id } });
+    CL.ui.closeMenu = () => setMenu(null);
+    CL.ui.closeAll = () => { setDlg(null); setMenu(null); setConfirm(null); };
     CL.ui.confirm = (title, text, onOk) => setConfirm({ title, text, onOk });
-    CL.ui.isModal = () => modalRef.current;
+    CL.ui.isModal = () => {
+      const g = gameRef.current;
+      if (g && g.enterCooldown > 0) return false;
+      return modalRef.current;
+    };
 
     CL.input.init();
     CL.loadSettings();
@@ -130,9 +136,26 @@ export default function App() {
     catch (e) { console.error(e); pushToast('Azione non riuscita, la partita continua.', 'bad'); }
   };
 
+  const handleCanvasTap = e => {
+    const g = gameRef.current; if (!g || !g.debug) return;
+    const canvas = canvasRef.current; if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = 480 / rect.width, scaleY = 270 / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    // SBLOCCA button: x 4..90, y 64..78
+    if (x >= 4 && x <= 90 && y >= 64 && y <= 78) {
+      try { CL.ui.closeAll && CL.ui.closeAll(); } catch(err) {}
+      g.unstuckPlayer(false);
+      g.dbg.blocked = 'manual-unstuck';
+      setDlg(null); setMenu(null); setConfirm(null);
+      pushToast('Diagnostica: sblocco forzato eseguito.', 'info');
+    }
+  };
+
   return (
     <div id="stage">
-      <canvas id="game" ref={canvasRef} width="480" height="270" aria-label="Mondo di Campania Life" />
+      <canvas id="game" ref={canvasRef} width="480" height="270" aria-label="Mondo di Campania Life" onPointerDown={handleCanvasTap} />
       <div id="fade" className={snap && screen === 'game' ? '' : 'on'} />
 
       {screen === 'game' && <Hud snap={snap} onMenu={tab => setMenu({ tab, data: {} })} />}

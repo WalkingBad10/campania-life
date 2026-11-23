@@ -62,6 +62,7 @@ export default function Hud({ snap, onMenu }) {
 
       <div className="hud-help">
         <span>Frecce/WASD muovi · E interagisci · Q cattura · Tab telefono</span>
+        {snap.debug ? <span className="hud-debug">DBG {snap.location} | in:{snap.debug.keys||'-'} | ax:{(snap.debug.axis?.x||0).toFixed(1)},{(snap.debug.axis?.y||0).toFixed(1)} | blk:{snap.debug.blocked||'ok'} | modal:{snap.debug.modal?'1':'0'}</span> : null}
         <button onClick={() => onMenu('phone')}>☰ MENU</button>
       </div>
     </div>

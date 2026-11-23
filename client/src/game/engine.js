@@ -12,6 +12,8 @@
     refresh() {},
     showDialogue() {},
     closeDialogue() {},
+    closeMenu() {},
+    closeAll() { try { this.closeDialogue(); } catch(e){} try { this.closeMenu(); } catch(e){} },
     openMenu() {},
     isModal() { return false; },
     fade(on) { const el = document.getElementById('fade'); if (el) el.classList.toggle('on', !!on); },
@@ -41,6 +43,9 @@
       this.map = null; this.player = null; this.prompt = null; this.promptTarget = null;
       this.refreshT = 0; this.fadeT = 0; this.rainT = 0; this.weatherT = 0;
       this.state = null;
+      this.debug = true;
+      this.enterCooldown = 0;
+      this.dbg = { blocked:'', axis:{x:0,y:0}, modal:false, keys:'', lastMap:'' };
       this.hooks();
     }
 
@@ -136,8 +141,13 @@
       CL.audio.tick();
       CL.camera.update(dt);
       this.particles.update(dt);
+      if (this.enterCooldown > 0) this.enterCooldown = Math.max(0, this.enterCooldown - dt);
       if (!this.state || !this.player) return;
-      if (!CL.ui.isModal()) {
+      const modal = !!CL.ui.isModal() && this.enterCooldown <= 0;
+      this.dbg.modal = modal;
+      this.dbg.axis = CL.input.axis();
+      this.dbg.keys = ['up','down','left','right','run','interact'].filter(k => CL.input.down[k]).join('+');
+      if (!modal) {
         S.time.advance(dt);
         try { CL.input.consume('interact') && this.player.interact(); } catch (e) { console.error(e); CL.ui.toast('Interazione non riuscita.', 'bad'); }
         try { CL.input.consume('ability') && this.useAbility(); } catch (e) { console.error(e); }
@@ -153,21 +163,21 @@
             if (foods[i]) S.inventory.use(foods[i]);
           }
         });
-        for (let i = this.entities.length - 1; i >= 0; i--) {
-          const e = this.entities[i];
-          if (!e || !e.alive) continue;
-          try { e.update(dt); }
-          catch (err) { console.error('[CL] entity update', e && e.id, err); }
-        }
+      }
+      for (let i = this.entities.length - 1; i >= 0; i--) {
+        const e = this.entities[i];
+        if (!e || !e.alive) continue;
+        try { e.update(dt, { modal }); }
+        catch (err) { console.error('[CL] entity update', e && e.id, err); }
+      }
+      if (!modal) {
         const focus = this.player.vehicle || this.player;
         CL.camera.follow(focus, dt, 1);
         this.updatePrompt();
-      } else {
-        CL.audio.setTrack(null);
-      }
-      if (!CL.ui.isModal()) {
         const zone = MAPS.get(this.map.id).zone;
         CL.audio.setTrack(S.time.isNight() ? 'night' : (D.zones[zone] || { track: zone === 'interno' ? 'interior' : 'town' }).track);
+      } else {
+        CL.audio.setTrack(null);
       }
       this.refreshT += dt;
       if (this.refreshT > .12) { this.refreshT = 0; CL.ui.refresh(); S.achievements.check(); }
@@ -236,6 +246,7 @@
         if (!silent && isInterior && (!this.map || MAPS.get(this.map.id).zone !== 'interno')) {
           this.state.pos.prev = { map: this.map ? this.map.id : 'napoli', x: prev.x, y: prev.y };
         }
+        try { CL.ui.closeAll && CL.ui.closeAll(); } catch (e) {}
         this.particles.clear();
         this.map = targetMap;
         CL.camera.setBounds(this.map.width, this.map.height);
@@ -260,10 +271,15 @@
         if (!isInterior) this.spawnCreatures();
         this.state.pos.map = target.map;
         this.state.pos.x = tx; this.state.pos.y = ty;
+        this.fadeT = 0;
+        this.enterCooldown = .25;
         CL.camera.snap(this.player);
+        // Ensure spawn not blocked (e.g. NPC/object overlap or bad map data)
+        this.unstuckPlayer(true);
         try { S.actions.visit(target.map); } catch (e) { console.error(e); }
+        this.dbg.lastMap = target.map;
+        this.dbg.blocked = '';
         if (!silent) {
-          this.fadeT = .35;
           CL.audio.sfx('door');
           CL.ui.toast('📍 ' + this.map.name, 'info');
           this.save();
@@ -281,6 +297,17 @@
       }
     }
 
+    unstuckPlayer(silent) {
+      const p = this.player; if (!p || !this.map) return false;
+      if (this.canMove(p.x, p.y, p.w, p.h)) return false;
+      const dirs = [[0,0],[0,-8],[0,8],[-8,0],[8,0],[-16,0],[16,0],[0,-16],[0,16],[-8,-8],[8,-8],[-8,8],[8,8]];
+      for (let r=1;r<=6;r++) for (const [dx,dy] of dirs) {
+        const nx=p.x+dx*r, ny=p.y+dy*r;
+        if (this.canMove(nx, ny, p.w, p.h)) { p.x=nx; p.y=ny; if(!silent) CL.ui.toast('Posizione corretta automaticamente.', 'info'); this.dbg.blocked='unstuck'; return true; }
+      }
+      const s = this.map.spawn; p.x=s.x; p.y=s.y; this.dbg.blocked='spawn-reset'; return true;
+    }
+
     spawnCreatures() { /* disabilitato: simulatore vita reale */ }
     removeEntity(e) { const i = this.entities.indexOf(e); if (i >= 0) this.entities.splice(i, 1); e.alive = false; }
 
@@ -288,7 +315,7 @@
       try {
         if (!this.map || !this.state) return;
         if (ent !== this.player && !(ent instanceof CL.Vehicle && ent.mounted)) return;
-        if (this.fadeT > 0) return;
+        if (this.fadeT > 0.2) return;
         const p = MAPS.portalAt(this.map, ent.x, ent.y);
         if (!p) return;
         let to = p.to, x = p.spawn.x, y = p.spawn.y;
@@ -305,6 +332,19 @@
       const l = x - wid / 2, r = x + wid / 2, t = y - hei / 2, b = y + hei / 2;
       return !MAPS.solidAt(this.map, l, t) && !MAPS.solidAt(this.map, r, t) &&
         !MAPS.solidAt(this.map, l, b) && !MAPS.solidAt(this.map, r, b);
+    }
+    blockedInfo(x, y, wid, hei) {
+      if (!this.map) return { blocked: true, reason: 'no-map' };
+      const pts = [
+        ['tl', x - wid/2, y - hei/2], ['tr', x + wid/2, y - hei/2],
+        ['bl', x - wid/2, y + hei/2], ['br', x + wid/2, y + hei/2]
+      ];
+      const hits = pts.map(([name, px, py]) => {
+        const tx = Math.floor(px / T), ty = Math.floor(py / T);
+        const ch = MAPS.tile(this.map, tx, ty);
+        return { name, tx, ty, ch, solid: !!MAPS.solidChar(ch) };
+      }).filter(h => h.solid);
+      return { blocked: hits.length > 0, hits };
     }
 
     /* --------------------------------------------------------- interazioni */
@@ -495,7 +535,6 @@
       c.fillStyle = gr; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
       this.particles.draw(c);
       // nome luogo (breve)
-      if (this.fadeT > 0) this.fadeT -= .016;
       G.panel(c, 6, 6, Math.min(180, 20 + this.map.name.length * 5), 16, { fill: 'rgba(12,20,28,.72)', border: '#e9b84a' });
       G.text(c, this.map.name, 12, 9, { size: 8, color: '#f6e8c8' });
       // prompt
@@ -504,11 +543,9 @@
         G.panel(c, 240 - wd / 2, 232, wd, 20, { fill: 'rgba(12,20,28,.88)' });
         G.text(c, this.prompt, 240, 238, { size: 8, align: 'center', color: '#e9b84a' });
       }
-      // guida contestuale all'inizio
-      if (this.fadeT > 0 && !CL.ui.isModal()) {
-        c.fillStyle = 'rgba(4,8,14,' + U.clamp(this.fadeT * .8, 0, .7) + ')';
-        c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
-      }
+      // guida contestuale all'inizio (non deve bloccare input; fadeT solo visivo)
+      if (this.fadeT > 0) this.fadeT = Math.max(0, this.fadeT - 0.03);
+      if (this.debug) this.drawDebug(c);
       this.drawMinimap(c);
     }
 
@@ -565,6 +602,26 @@
       c.restore();
     }
 
+    drawDebug(c) {
+      try {
+        const p = this.player; if (!p) return;
+        const ax = this.dbg.axis || {x:0,y:0};
+        const info = this.blockedInfo(p.x, p.y, p.w, p.h);
+        const lines = [
+          `map:${this.map ? this.map.id : '-'} x:${p.x.toFixed(1)} y:${p.y.toFixed(1)}`,
+          `in:${this.dbg.keys||'none'} ax:${ax.x.toFixed(2)},${ax.y.toFixed(2)} m:${this.dbg.modal?'1':'0'}`,
+          `blk:${this.dbg.blocked || (info.blocked ? 'spawn' : 'no')}`
+        ];
+        if (info.hits && info.hits.length) lines.push('hit:' + info.hits.map(h=>`${h.name}${h.tx},${h.ty}:${h.ch}`).join(' '));
+        G.px(c, 4, 24, 236, 38, 'rgba(6,10,16,.75)');
+        G.rect(c, 4, 24, 236, 38, '#6bb8ff', 1);
+        lines.forEach((l,i)=>G.text(c, l, 7, 28 + i*9, { size: 7, color:'#dff3ff', shadow:false }));
+        G.px(c, 4, 64, 86, 14, 'rgba(180,60,50,.85)');
+        G.rect(c, 4, 64, 86, 14, '#fff', 1);
+        G.text(c, 'SBLOCCA', 24, 68, { size: 7, color:'#fff', shadow:false });
+      } catch(e) {}
+    }
+
     drawMinimap(c) {
       const m = this.map, mw = 92, mh = 62, ox = CL.VIEW_W - mw - 8, oy = 8;
       c.globalAlpha = .88;
@@ -598,7 +655,8 @@
         needs: Object.assign({}, st.needs), quests: q,
         riding: this.player && this.player.vehicle ? this.player.vehicle.label() : null,
         caught: S.creatures.total(), inventory: Object.assign({}, st.inventory),
-        netCount: S.inventory.count('rete'), dayProgress: (st.time.min / 1440)
+        netCount: S.inventory.count('rete'), dayProgress: (st.time.min / 1440),
+        debug: this.debug ? Object.assign({}, this.dbg) : null
       };
     }
   }

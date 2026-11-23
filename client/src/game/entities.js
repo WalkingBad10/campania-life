@@ -35,10 +35,11 @@
       if (CL.state.outfit === 'divisa') this.look.shirt = '#e9b84a';
       if (CL.state.outfit === 'cappello') this.look.hair = '#c8a96a';
     }
-    update(dt) {
+    update(dt, opts) {
       this.refreshLook();
       const game = this.game;
       if (this.vehicle) { this.anim += dt * 6; return; }
+      if (opts && opts.modal) { this.moving = false; if (game.dbg) game.dbg.blocked = 'modal'; return; }
       const ax = CL.input.axis();
       this.moving = !!(ax.x || ax.y);
       let sp = this.speed * CL.systems.needs.speedFactor();
@@ -47,15 +48,17 @@
         if (Math.abs(ax.x) > Math.abs(ax.y)) this.dir = ax.x < 0 ? 'left' : 'right';
         else this.dir = ax.y < 0 ? 'up' : 'down';
         const nx = this.x + ax.x * sp * dt, ny = this.y + ax.y * sp * dt;
-        if (game.canMove(nx, this.y, this.w, this.h)) this.x = nx;
-        if (game.canMove(this.x, ny, this.w, this.h)) this.y = ny;
+        let moved = false, blocked = [];
+        if (game.canMove(nx, this.y, this.w, this.h)) { this.x = nx; moved = true; } else if (ax.x) blocked.push('x');
+        if (game.canMove(this.x, ny, this.w, this.h)) { this.y = ny; moved = true; } else if (ax.y) blocked.push('y');
+        if (game.dbg) game.dbg.blocked = moved ? '' : ('collision:' + blocked.join(','));
         this.anim += dt * (sp / 22);
         this.frame = Math.floor(this.anim) % 4;
         this.stepT -= dt;
         if (this.stepT <= 0) { CL.audio.sfx('step'); this.stepT = .34; }
         CL.state.stats.steps += dt * sp / 16;
         game.checkPortals(this);
-      } else { this.frame = 0; this.anim = 0; }
+      } else { this.frame = 0; this.anim = 0; if (game.dbg && game.dbg.blocked !== 'modal') game.dbg.blocked = ''; }
     }
     draw(ctx) {
       if (this.vehicle) return;
