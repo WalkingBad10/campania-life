@@ -456,6 +456,23 @@
       if (CL.game) CL.game.enterMap(to, spawn.x, spawn.y);
       return true;
     },
+    metroTravel(to) {
+      const st = CL.state;
+      const dest = to || 'metro2';
+      const here = st.pos.map;
+      if (here !== 'metro' && here !== 'metro2') { toast('Devi essere in una stazione metro.', 'bad'); return false; }
+      if (!S.inventory.has('biglietto_metro')) { toast('Serve un biglietto metro (2 € in biglietteria).', 'bad'); return false; }
+      S.inventory.remove('biglietto_metro', 1);
+      S.time.skip(.2);
+      const target = here === 'metro' ? 'metro2' : 'metro';
+      const spawn = target === 'metro' ? { x: 12 * CL.TILE, y: 13 * CL.TILE } : { x: 12 * CL.TILE, y: 13 * CL.TILE };
+      toast('Il treno parte... prossima fermata!', 'info');
+      sfx('confirm');
+      if (CL.game) CL.game.enterMap(target, spawn.x, spawn.y);
+      S.quests.progress('visit', target);
+      autosave();
+      return true;
+    },
     cook() {
       if (!S.inventory.has('pane')) { toast('Serve del pane.', 'bad'); return false; }
       if (!S.inventory.has('pesce') && !S.inventory.has('arancino')) { toast('Servono ingredienti: pesce o arancino.', 'bad'); return false; }

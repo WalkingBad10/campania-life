@@ -8,6 +8,7 @@
 
   /* ------------------------------------------------------------- oggetti */
   D.items = {
+    biglietto_metro: { name: 'Biglietto metro', type: 'key', price: 2, icon: 'ticket', desc: 'Valido per un viaggio in metro.' },
     pane:        { name: 'Pane fresco',        desc: 'Crosta croccante, mollica morbida.',   type: 'food', price: 3,   effect: { hunger: 22 }, icon: 'bread' },
     caffe:       { name: 'Caffè napoletano',   desc: 'Nero, dolce, serve a svegliarsi.',     type: 'food', price: 2,   effect: { hunger: 8, energy: 16 }, icon: 'cup' },
     arancino:    { name: 'Arancino',           desc: 'Riso, ragù e mozzarella. Delizioso.',  type: 'food', price: 6,   effect: { hunger: 38, mood: 10 }, icon: 'arancino' },
@@ -107,7 +108,9 @@
     fioraia:  {name:'Rosa la fioraia', look:{hair:'#7b3b3b',skin:'#e0b08a',shirt:'#d96b8b',pants:'#5a4b52'}, home:'napoli', x:27, y:35, role:'ambient'},
     vigile:   {name:'Agente Esposito', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'napoli', x:52, y:32, role:'ambient'},
     cliente_bar1:{name:'Gennaro', look:{hair:'#5b4a3d',skin:'#d5a276',shirt:'#7a5b44',pants:'#4a4f58'}, home:'bar', x:4, y:9, role:'ambient'},
-    cliente_bar2:{name:'Mirella', look:{hair:'#6b3a2a',skin:'#e3b289',shirt:'#c05858',pants:'#5a4a60'}, home:'bar', x:13, y:8, role:'ambient'}
+    cliente_bar2:{name:'Mirella', look:{hair:'#6b3a2a',skin:'#e3b289',shirt:'#c05858',pants:'#5a4a60'}, home:'bar', x:13, y:8, role:'ambient'},
+    pizzaiolo:{name:'Gino il pizzaiolo', look:{hair:'#2b2320',skin:'#d8a178',shirt:'#efe8d8',pants:'#4a3d36'}, home:'pizzeria', x:4, y:5, role:'shop'},
+    cameriere:{name:'Luca il cameriere', look:{hair:'#3a2f2a',skin:'#dcae84',shirt:'#1f1f1f',pants:'#4b5563'}, home:'pizzeria', x:12, y:9, role:'ambient'}
   };
 
   /* --------------------------------------------------------------- quest */
@@ -166,6 +169,7 @@
     negozio: { name: 'Bottega di Sora Maria', stock: ['pane', 'acqua', 'arancino', 'pizza', 'rete', 'fiore', 'ombrello', 'cappello', 'mappa'] },
     bar: { name: 'Caffè Vittoria', stock: ['caffe', 'pane', 'arancino', 'pizza', 'acqua', 'cioccolato'] },
     pizzeria: { name: 'Pizzeria Da Michele', stock: ['pizza', 'acqua', 'caffe'] },
+    metro: { name: 'Biglietteria Metro', stock: ['biglietto_metro'] },
     banca: { name: 'Banca di Napoli', stock: ['mappa'] },
     costiera: { name: 'Chiosco del mare', stock: ['acqua', 'pizza', 'pesce', 'rete', 'canna', 'fiore', 'vino', 'ombrello'] },
     pompei: { name: 'Souvenir degli scavi', stock: ['acqua', 'pane', 'vino', 'cioccolato', 'fiore', 'mappa'] },
@@ -193,6 +197,13 @@
         choice('Voglio lavorare qui', 'job', { job: 'barista' }),
         choice('Parlami del quartiere', 'talk_neighborhood'),
         choice('Esco', 'close')
+      ]);
+    },
+    pizzaiolo(g) {
+      return line('Benvenuto da Michele! La margherita esce dal forno a legna in un minuto. Che ti preparo?', [
+        choice('Ordina pizza (8 €)', 'order_pizza'),
+        choice('Menu pizzeria', 'shop', { shop: 'pizzeria' }),
+        choice('Solo un saluto', 'close')
       ]);
     },
     banchiere(g) {

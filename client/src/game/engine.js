@@ -434,9 +434,12 @@
         case 'talk_vesuvio': CL.ui.dialogueText('Turista', 'Il Vesuvio! Wow! Speriamo non faccia casino... eh, scusa, non sono molto bravo in italiano.'); break;
         case 'talk_cave': CL.ui.dialogueText('Guardiano', 'Dentro c’è una luce che non viene da nessuna lampada. Porta una rete, se vuoi vedere chi la fa.'); break;
         case 'talk_social': CL.ui.dialogueText('Giulia', 'Mi piace come parli. Sembri uno che ha sempre qualcosa da raccontare.'); break;
-        case 'eat_bar': CL.ui.confirm('Siediti al tavolo', 'Ordina qualcosa dal bancone.', () => CL.ui.openShop('bar')); break;
+        case 'eat_bar': CL.ui.confirm('Siediti al tavolo', 'Ordina qualcosa dal bancone.', () => CL.ui.openShop(data.shop || 'bar')); break;
         case 'eat_home': S.actions.cook(); break;
         case 'rest_pew': S.needs.apply({ mood: 8, energy: 4 }); CL.ui.toast('Ti siedi un momento in silenzio. Ti senti più calmo.', 'good'); CL.ui.refresh(); break;
+        case 'order_pizza': CL.ui.confirm('Ordina pizza', 'Pizza margherita 8 €. Vuoi ordinarla?', () => { if (S.economy.spend(8, 'Pizza in pizzeria')) { S.needs.apply({ hunger: 48, mood: 10, thirst: -4 }); CL.ui.toast('Pizza servita! Buon appetito.', 'good'); CL.audio.sfx('confirm'); } }); break;
+        case 'metro_ticket': CL.ui.openShop('metro'); break;
+        case 'metro_travel': S.actions.metroTravel(data.to || 'metro2'); break;
         case 'flavor': case 'scenery': CL.ui.toast(src ? src.label : 'Un dettaglio del paesaggio.', 'info'); break;
         default: CL.ui.toast('Azione non disponibile: ' + a, 'info');
       }

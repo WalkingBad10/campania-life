@@ -386,55 +386,95 @@
   }
 
   function pizzeriaInterior() {
-    const w = 22, h = 14;
+    const w = 22, h = 15;
     const m = makeMap('pizzeria', 'interno', w, h, blank(w, h, 'h'));
     m.name = 'Pizzeria Da Michele';
     const g = m.g;
     for (let x=0;x<w;x++){ g[0][x]='#'; g[h-1][x]='#'; }
     for (let y=0;y<h;y++){ g[y][0]='#'; g[y][w-1]='#'; }
     for (let x=1;x<w-1;x++){ g[1][x]='j'; g[2][x]='j'; }
-    for (let y=7;y<=12;y++) for (let x=2;x<=19;x++) g[y][x]='Z';
-    // oven/counter zone
+    // sala clienti
+    for (let y=8;y<=13;y++) for (let x=2;x<=20;x++) g[y][x]='Z';
+    // cucina separata
+    for (let y=3;y<=6;y++) for (let x=2;x<=9;x++) g[y][x]='h';
+    for (let y=3;y<=6;y++) g[y][10]='#'; // parete divisoria
+    g[6][10]='M'; // passaggio cucina
+    // forno / bancone cucina
     for (let x=2;x<=8;x++) g[4][x]='u';
     g[3][3]='0'; g[3][5]='y'; g[3][7]='0';
-    // tables
-    [[4,9],[9,9],[14,9],[16,6],[5,11],[11,11],[16,11]].forEach(([tx,ty])=>{ g[ty][tx]='v'; if(g[ty-1]) g[ty-1][tx]='w'; if(g[ty+1]) g[ty+1][tx]='w'; if(g[ty][tx-1]) g[ty][tx-1]='w'; if(g[ty][tx+1]) g[ty][tx+1]='w'; });
+    // tavoli sala
+    [[4,10],[8,10],[13,10],[17,10],[6,12],[12,12],[17,12]].forEach(([tx,ty])=>{ g[ty][tx]='v'; if(g[ty-1]) g[ty-1][tx]='w'; if(g[ty+1]) g[ty+1][tx]='w'; if(g[ty][tx-1]) g[ty][tx-1]='w'; if(g[ty][tx+1]) g[ty][tx+1]='w'; });
     g[1][16]='7'; g[1][18]='7'; g[2][20]='9';
     const dx=11, dy=h-1; g[dy][dx]='D';
-    portal(m, dx, dy, 1, 1, 'prev', { x: 50 * T, y: 46 * T }, 'Esci');
+    portal(m, dx, dy, 1, 1, 'prev', { x: 38 * T, y: 50 * T }, 'Esci');
     poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
-    poi(m, 5, 5, 'pizza_counter', 'service', 'Bancone pizzeria — ordina', 'shop', { shop: 'pizzeria' });
-    poi(m, 4, 10, 'seat_p', 'furniture', 'Siediti', 'eat_bar');
-    decor(m, 2, 4, 'pizzeria_oven', { w: 96, h: 110, oy: -94 });
-    decor(m, 9, 5, 'pizzeria_counter', { w: 120, h: 56, oy: -40 });
-    decor(m, 14, 9, 'pizzeria_table', { w: 60, h: 34, oy: -18 });
-    decor(m, 4, 3, 'warm_light', { r: 30, color:'rgba(255,180,110,.16)' });
-    decor(m, 15, 8, 'warm_light', { r: 26, color:'rgba(255,180,110,.12)' });
+    poi(m, 5, 5, 'pizza_counter', 'service', 'Bancone pizzeria — ordina', 'order_pizza');
+    poi(m, 7, 5, 'pizza_shop', 'service', 'Menu pizzeria', 'shop', { shop: 'pizzeria' });
+    poi(m, 4, 11, 'seat_p', 'furniture', 'Siediti e mangia', 'eat_bar');
+    poi(m, 13, 11, 'seat_p2', 'furniture', 'Siediti e mangia', 'eat_bar');
+    decor(m, 2, 5, 'pizzeria_oven', { w: 96, h: 110, oy: -94 });
+    decor(m, 11, 6, 'pizzeria_counter', { w: 110, h: 52, oy: -36 });
+    decor(m, 13, 10, 'pizzeria_table', { w: 60, h: 34, oy: -18 }); decor(m, 17, 10, 'pizzeria_table', { w: 60, h: 34, oy: -18 });
+    decor(m, 4, 3, 'warm_light', { r: 32, color:'rgba(255,180,110,.16)' });
+    decor(m, 15, 9, 'warm_light', { r: 28, color:'rgba(255,180,110,.12)' });
     m.spawn = { x: dx*T, y:(h-3)*T }; m.spawnDir='up';
     return m;
   }
 
   function metroInterior() {
     const w=24, h=16;
-    const m=makeMap('metro','interno',w,h,blank(w,h,'h'));
+    const m=makeMap('metro','interno',w,h,blank(w,h,'M'));
     m.name='Metro Toledo - Atrio';
     const g=m.g;
     for(let x=0;x<w;x++){g[0][x]='#'; g[h-1][x]='#';}
     for(let y=0;y<h;y++){g[y][0]='#'; g[y][w-1]='#';}
     for(let x=1;x<w-1;x++){g[1][x]='j'; g[2][x]='j';}
     for(let y=3;y<=13;y++) for(let x=1;x<=22;x++) g[y][x]='M';
-    // gates/corridor
-    for(let x=5;x<=18;x++) g[6][x]=(x%3===0)?'M':'u';
-    for(let y=7;y<=11;y++){ g[y][11]='M'; g[y][12]='M'; }
+    // biglietteria / tornelli / corridoio / banchina
+    for(let x=3;x<=7;x++) g[4][x]='u';
+    g[5][4]='w'; g[5][6]='w';
+    for(let x=6;x<=17;x++) g[7][x]=(x===9||x===12||x===15)?'M':'u'; // tornelli
+    for(let y=8;y<=11;y++){ g[y][11]='M'; g[y][12]='M'; }
+    for(let x=2;x<=21;x++) g[13][x]='h'; // banchina
+    for(let x=2;x<=21;x++) g[12][x]='M';
     g[1][6]='7'; g[1][17]='7';
     const dx=12, dy=h-1; g[dy][dx]='D';
-    portal(m,dx,dy,1,1,'prev',{x:55*T,y:18*T},'Esci');
+    portal(m,dx,dy,1,1,'prev',{x:56*T,y:22*T},'Esci');
     poi(m,dx,dy,'exit','door','Esci dalla metro','exit');
-    poi(m,12,7,'metro_info','service','Tornelli / info metro','flavor');
-    decor(m,2,4,'metro_hall',{w:180,h:110,oy:-94});
-    decor(m,5,7,'metro_gate',{w:140,h:48,oy:-32});
-    decor(m,3,12,'metro_platform',{w:220,h:44,oy:-28});
+    poi(m,5,5,'metro_ticket','service','Biglietteria — compra biglietto','metro_ticket');
+    poi(m,12,8,'metro_gate','service','Tornelli — viaggia','metro_travel',{to:'metro2'});
+    poi(m,12,13,'metro_platform','service','Banchina linea 1','flavor');
+    decor(m,2,4,'metro_hall',{w:180,h:90,oy:-74});
+    decor(m,5,8,'metro_gate',{w:150,h:48,oy:-32});
+    decor(m,2,13,'metro_platform',{w:320,h:44,oy:-28});
     decor(m,12,4,'window_light',{w:14,h:10,color:'rgba(180,220,255,.12)'});
+    m.spawn={x:dx*T,y:(h-3)*T}; m.spawnDir='up';
+    return m;
+  }
+
+  function metro2Interior() {
+    const w=24, h=16;
+    const m=makeMap('metro2','interno',w,h,blank(w,h,'M'));
+    m.name='Metro Dante - Banchina';
+    const g=m.g;
+    for(let x=0;x<w;x++){g[0][x]='#'; g[h-1][x]='#';}
+    for(let y=0;y<h;y++){g[y][0]='#'; g[y][w-1]='#';}
+    for(let x=1;x<w-1;x++){g[1][x]='j'; g[2][x]='j';}
+    for(let y=3;y<=13;y++) for(let x=1;x<=22;x++) g[y][x]='M';
+    for(let x=3;x<=7;x++) g[4][x]='u';
+    for(let x=6;x<=17;x++) g[7][x]=(x===9||x===12||x===15)?'M':'u';
+    for(let y=8;y<=11;y++){ g[y][11]='M'; g[y][12]='M'; }
+    for(let x=2;x<=21;x++) g[13][x]='h';
+    for(let x=2;x<=21;x++) g[12][x]='M';
+    const dx=12, dy=h-1; g[dy][dx]='D';
+    portal(m,dx,dy,1,1,'napoli',{x:40*T,y:30*T},'Esci in superficie');
+    poi(m,dx,dy,'exit','door','Esci dalla metro','exit');
+    poi(m,5,5,'metro_ticket2','service','Biglietteria','metro_ticket');
+    poi(m,12,8,'metro_gate2','service','Tornelli — torna a Toledo','metro_travel',{to:'metro'});
+    poi(m,12,13,'metro_platform2','service','Banchina linea 1','flavor');
+    decor(m,2,4,'metro_hall',{w:180,h:90,oy:-74});
+    decor(m,5,8,'metro_gate',{w:150,h:48,oy:-32});
+    decor(m,2,13,'metro_platform',{w:320,h:44,oy:-28});
     m.spawn={x:dx*T,y:(h-3)*T}; m.spawnDir='up';
     return m;
   }
@@ -532,6 +572,7 @@
         case 'bar': m = barInterior(); break;
         case 'pizzeria': m = pizzeriaInterior(); break;
         case 'metro': m = metroInterior(); break;
+        case 'metro2': m = metro2Interior(); break;
         case 'negozio': m = interior(id, 'shop', 18, 12); break;
         case 'banca': m = interior(id, 'bank', 16, 12); break;
         case 'clinica': m = interior(id, 'clinic', 18, 12); break;
