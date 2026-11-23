@@ -59,6 +59,8 @@
     }
     draw(ctx) {
       if (this.vehicle) return;
+      ctx.fillStyle = 'rgba(0,0,0,.22)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
       const img = ART.character(this.look, this.dir, this.frame);
       ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
       if (CL.systems.time.isNight()) {
@@ -102,6 +104,8 @@
       } else this.frame = 0;
     }
     draw(ctx) {
+      ctx.fillStyle = 'rgba(0,0,0,.18)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
       const img = ART.character(this.look, this.dir, this.frame);
       ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
     }
