@@ -466,26 +466,29 @@
     }
 
     drawGuglia(c, x, y) {
-      // Base già nel tile O (collisione). Disegniamo il fusto sopra per profondità.
+      // Base nel tile O (collisione). Fusto alto disegnato come overlay per depth.
       c.save();
       c.fillStyle = 'rgba(0,0,0,.18)';
-      c.fillRect(x + 4, y + 20, 24, 4);
-      const cx = x + 16;
-      // piedistallo
-      c.fillStyle = '#d8d0c0'; c.fillRect(cx - 14, y + 10, 28, 12);
-      c.fillStyle = '#bdb39f'; c.fillRect(cx - 14, y + 20, 28, 2);
-      c.fillStyle = '#ece4d2'; c.fillRect(cx - 11, y + 12, 22, 7);
+      c.fillRect(x + 8, y + 30, 48, 6);
+      const cx = x + 32;
+      // basamento
+      c.fillStyle = '#d9d1c1'; c.fillRect(cx - 20, y + 14, 40, 18);
+      c.fillStyle = '#bdb39f'; c.fillRect(cx - 20, y + 30, 40, 2);
+      c.fillStyle = '#efe7d6'; c.fillRect(cx - 16, y + 16, 32, 12);
+      c.fillStyle = '#a89d88'; c.fillRect(cx - 22, y + 12, 44, 3);
       // obelisco
-      c.fillStyle = '#cfc5b1'; c.fillRect(cx - 5, y - 28, 10, 40);
-      c.fillStyle = '#efe8d8'; c.fillRect(cx - 3, y - 26, 6, 36);
-      // dettagli
-      c.fillStyle = '#9e9483'; c.fillRect(cx - 7, y + 6, 14, 4);
-      c.fillStyle = '#c9a44a'; c.fillRect(cx - 2, y - 36, 4, 8);
-      c.fillStyle = '#f3d77a'; c.fillRect(cx - 1, y - 42, 2, 6);
-      // statue stilizzate
+      c.fillStyle = '#cfc5b1'; c.fillRect(cx - 6, y - 38, 12, 52);
+      c.fillStyle = '#efe8d8'; c.fillRect(cx - 4, y - 36, 8, 48);
+      c.fillStyle = '#b8ac96'; c.fillRect(cx - 8, y + 8, 16, 6);
+      // corona/croce
+      c.fillStyle = '#c9a44a'; c.fillRect(cx - 3, y - 46, 6, 10);
+      c.fillStyle = '#f3d77a'; c.fillRect(cx - 1, y - 54, 2, 8);
+      c.fillRect(cx - 4, y - 50, 8, 2);
+      // decorazioni/statue stilizzate
       c.fillStyle = '#d7ccb8';
-      c.fillRect(cx - 16, y + 2, 3, 8); c.fillRect(cx + 13, y + 2, 3, 8);
-      c.fillRect(cx - 4, y + 2, 3, 8); c.fillRect(cx + 1, y + 2, 3, 8);
+      [[-18,4],[-10,4],[7,4],[15,4]].forEach(([dx,dy]) => { c.fillRect(cx+dx, y+dy, 3, 10); c.fillRect(cx+dx-1, y+dy-2, 5, 2); });
+      c.fillStyle = '#8f8472';
+      c.fillRect(cx - 14, y + 18, 28, 1);
       c.restore();
     }
 
