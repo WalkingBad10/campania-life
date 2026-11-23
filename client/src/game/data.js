@@ -93,18 +93,20 @@
 
   /* --------------------------------------------------------------- PNG */
   D.npcs = {
-    nonna:    { name: 'Nonna Assunta', look: { hair: '#d8d4cc', skin: '#e8b48a', shirt: '#7a4b6b', pants: '#4b4152' }, home: 'napoli', x: 10, y: 24, role: 'family' },
-    barista:  { name: 'Ciro il barista', look: { hair: '#2d2622', skin: '#d79c74', shirt: '#f0ede2', pants: '#3a4650' }, home: 'napoli', x: 43, y: 35, role: 'shop' },
-    banchiere:{ name: 'Dott.ssa Rina', look: { hair: '#4a2c20', skin: '#e6b892', shirt: '#37556b', pants: '#283743' }, home: 'napoli', x: 23, y: 35, role: 'bank' },
-    medico:   { name: 'Dott. Esposito', look: { hair: '#39332e', skin: '#dba67e', shirt: '#eef2ee', pants: '#58707c' }, home: 'napoli', x: 15, y: 35, role: 'clinic' },
-    negoziante:{name: 'Sora Maria', look: { hair: '#6b3f2a', skin: '#d29a72', shirt: '#c5584a', pants: '#4e3b36' }, home: 'napoli', x: 36, y: 35, role: 'shop' },
-    capo:     { name: 'Il capo cantiere', look: { hair: '#2b2624', skin: '#c98d64', shirt: '#e6a23c', pants: '#3d4146' }, home: 'napoli', x: 49, y: 39, role: 'job' },
+    nonna:    { name: 'Nonna Assunta', look: { hair: '#d8d4cc', skin: '#e8b48a', shirt: '#7a4b6b', pants: '#4b4152' }, home: 'napoli', x: 20, y: 20, role: 'family' },
+    barista:  { name: 'Ciro il barista', look: { hair: '#2d2622', skin: '#d79c74', shirt: '#f0ede2', pants: '#3a4650' }, home: 'napoli', x: 44, y: 37, role: 'shop' },
+    banchiere:{ name: 'Dott.ssa Rina', look: { hair: '#4a2c20', skin: '#e6b892', shirt: '#37556b', pants: '#283743' }, home: 'napoli', x: 32, y: 37, role: 'bank' },
+    medico:   { name: 'Dott. Esposito', look: { hair: '#39332e', skin: '#dba67e', shirt: '#eef2ee', pants: '#58707c' }, home: 'napoli', x: 18, y: 37, role: 'clinic' },
+    negoziante:{name: 'Sora Maria', look: { hair: '#6b3f2a', skin: '#d29a72', shirt: '#c5584a', pants: '#4e3b36' }, home: 'napoli', x: 39, y: 33, role: 'shop' },
+    capo:     { name: 'Il capo cantiere', look: { hair: '#2b2624', skin: '#c98d64', shirt: '#e6a23c', pants: '#3d4146' }, home: 'napoli', x: 62, y: 42, role: 'job' },
     pescatore:{ name: 'Vecchio Pescatore', look: { hair: '#c9c4b6', skin: '#c58b63', shirt: '#4d8ea3', pants: '#394f59' }, home: 'costiera', x: 21, y: 27, role: 'job' },
     turista:  { name: 'Turista tedesco', look: { hair: '#d6b45c', skin: '#eec3a0', shirt: '#d8664c', pants: '#5b6d7a' }, home: 'costiera', x: 37, y: 19, role: 'quest' },
     barcaiolo:{ name: 'Gennaro il barcaiolo', look: { hair: '#241f1e', skin: '#b9794f', shirt: '#f2e2bd', pants: '#356079' }, home: 'costiera', x: 63, y: 32, role: 'transport' },
     guardiano:{ name: 'Guardiano del vulcano', look: { hair: '#8a8378', skin: '#b57755', shirt: '#6b7a4a', pants: '#3e4238' }, home: 'vesuvio', x: 17, y: 37, role: 'quest' },
     archeologo:{name: 'Prof. Rovelli', look: { hair: '#aaa39a', skin: '#dfa97f', shirt: '#8a6a4b', pants: '#3a3a35' }, home: 'pompei', x: 29, y: 23, role: 'job' },
-    fidanzata:{name: 'Giulia', look: { hair: '#3a211a', skin: '#e8b389', shirt: '#d96f8b', pants: '#4c4358' }, home: 'napoli', x: 27, y: 30, role: 'social' }
+    fidanzata:{name: 'Giulia', look: { hair: '#3a211a', skin: '#e8b389', shirt: '#d96f8b', pants: '#4c4358' }, home: 'napoli', x: 28, y: 31, role: 'social' },
+    passante1:{name: 'Studente', look: { hair: '#2a2018', skin: '#dba67e', shirt: '#4a87b8', pants: '#3f4550' }, home: 'napoli', x: 25, y: 28, role: 'ambient' },
+    passante2:{name: 'Signora Lucia', look: { hair: '#8b5a3c', skin: '#e0b088', shirt: '#7a9a5a', pants: '#5a4a58' }, home: 'napoli', x: 42, y: 29, role: 'ambient' }
   };
 
   /* --------------------------------------------------------------- quest */

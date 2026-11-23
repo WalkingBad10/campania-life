@@ -19,11 +19,12 @@
   };
 
   const TILE_COLOR = {
-    '.': '#6e9d4e', ',': '#9d855d', r: '#555b60', p: '#b8b1a0', S: '#e3cd99',
+    '.': '#6e9d4e', ',': '#9d855d', r: '#555b60', p: '#b8b1a2', S: '#e3cd99',
     W: '#2c7a9c', '~': '#54a5b4', '#': '#bf7350', '=': '#ab4a39', f: '#d8c7a6',
     c: '#8b6244', o: '#65432e', X: '#6fa9b8', B: '#d9e0d4', '^': '#8b8a80',
-    g: '#b9ae91', k: '#3b3640', P: '#4f8a4c', C: '#5b8fa6', V: '#24343f', G: '#2c2933', D: '#e9b84a',
-    O: '#d7cfbf', H: '#b7aa95', "'": '#c9a44a'
+    g: '#b9ae91', k: '#3b3640', P: '#4f8a4c', C: '#5b8fa6', V: '#24343f', G: '#2c2933', D: '#8f8a80',
+    O: '#d7cfbf', H: '#656a6f', "'": '#c9a44a', L: '#7b623f', F: '#7b623f', K: '#2e6b4f',
+    Q: '#5e402d', Y: '#7a5637', I: '#59616a', U: '#f3dd8a', E: '#7a5637', N: '#3f6f95', J: '#b94a3a'
   };
 
   class Game {
@@ -466,29 +467,44 @@
     }
 
     drawGuglia(c, x, y) {
-      // Base nel tile O (collisione). Fusto alto disegnato come overlay per depth.
+      // Base 4x3 tile O = collisione. Overlay alto disegnato sopra, ordinato per profondità.
+      // x,y = top-left del cluster O (32px*3px in tile coords -> 64x48px base area)
       c.save();
-      c.fillStyle = 'rgba(0,0,0,.18)';
-      c.fillRect(x + 8, y + 30, 48, 6);
       const cx = x + 32;
-      // basamento
-      c.fillStyle = '#d9d1c1'; c.fillRect(cx - 20, y + 14, 40, 18);
-      c.fillStyle = '#bdb39f'; c.fillRect(cx - 20, y + 30, 40, 2);
-      c.fillStyle = '#efe7d6'; c.fillRect(cx - 16, y + 16, 32, 12);
-      c.fillStyle = '#a89d88'; c.fillRect(cx - 22, y + 12, 44, 3);
-      // obelisco
-      c.fillStyle = '#cfc5b1'; c.fillRect(cx - 6, y - 38, 12, 52);
-      c.fillStyle = '#efe8d8'; c.fillRect(cx - 4, y - 36, 8, 48);
-      c.fillStyle = '#b8ac96'; c.fillRect(cx - 8, y + 8, 16, 6);
-      // corona/croce
-      c.fillStyle = '#c9a44a'; c.fillRect(cx - 3, y - 46, 6, 10);
-      c.fillStyle = '#f3d77a'; c.fillRect(cx - 1, y - 54, 2, 8);
-      c.fillRect(cx - 4, y - 50, 8, 2);
-      // decorazioni/statue stilizzate
-      c.fillStyle = '#d7ccb8';
-      [[-18,4],[-10,4],[7,4],[15,4]].forEach(([dx,dy]) => { c.fillRect(cx+dx, y+dy, 3, 10); c.fillRect(cx+dx-1, y+dy-2, 5, 2); });
-      c.fillStyle = '#8f8472';
-      c.fillRect(cx - 14, y + 18, 28, 1);
+      const by = y + 48; // bottom of 3-tile base
+      // ombra a terra
+      c.fillStyle = 'rgba(0,0,0,.20)';
+      c.beginPath(); c.ellipse(cx, by - 2, 34, 8, 0, 0, Math.PI * 2); c.fill();
+      // basamento scalonato
+      c.fillStyle = '#cfc5b3'; c.fillRect(cx - 26, by - 22, 52, 20);
+      c.fillStyle = '#ddd4c3'; c.fillRect(cx - 23, by - 20, 46, 16);
+      c.fillStyle = '#b6aa96'; c.fillRect(cx - 26, by - 4, 52, 2);
+      c.fillStyle = '#a99d88'; c.fillRect(cx - 28, by - 24, 56, 3);
+      // pannelli/decorazioni base
+      c.fillStyle = '#c7bcaa'; c.fillRect(cx - 18, by - 18, 36, 12);
+      c.fillStyle = '#9f9381'; c.fillRect(cx - 18, by - 7, 36, 1);
+      // statue ai quattro lati (stilizzate, pixel art)
+      const statue = (sx, sy) => { c.fillStyle = '#d8cfbe'; c.fillRect(sx - 2, sy - 8, 4, 8); c.fillRect(sx - 3, sy - 10, 6, 3); c.fillStyle = '#bfb5a2'; c.fillRect(sx - 1, sy - 7, 2, 5); };
+      statue(cx - 20, by - 22); statue(cx + 20, by - 22); statue(cx - 8, by - 22); statue(cx + 8, by - 22);
+      // plinto mediano
+      c.fillStyle = '#d4cab8'; c.fillRect(cx - 14, by - 34, 28, 12);
+      c.fillStyle = '#ebe3d2'; c.fillRect(cx - 11, by - 32, 22, 9);
+      c.fillStyle = '#b0a48f'; c.fillRect(cx - 15, by - 35, 30, 2);
+      // obelisco principale
+      c.fillStyle = '#c8bea9'; c.fillRect(cx - 7, by - 92, 14, 60);
+      c.fillStyle = '#e8e0cf'; c.fillRect(cx - 5, by - 90, 10, 56);
+      c.fillStyle = '#b7ab96'; c.fillRect(cx - 7, by - 34, 14, 2);
+      // ghirlande/anelli
+      c.fillStyle = '#a79c88'; c.fillRect(cx - 9, by - 60, 18, 2); c.fillRect(cx - 8, by - 74, 16, 2);
+      // punta/rame dorato
+      c.fillStyle = '#c9a44a'; c.fillRect(cx - 4, by - 102, 8, 12);
+      c.fillStyle = '#f0d06a'; c.fillRect(cx - 2, by - 100, 4, 8);
+      // croce/stellina
+      c.fillStyle = '#d4b04f'; c.fillRect(cx - 1, by - 112, 2, 10);
+      c.fillRect(cx - 5, by - 108, 10, 2);
+      c.fillStyle = '#fff2a0'; c.fillRect(cx - 1, by - 111, 2, 2);
+      // bordi luce
+      c.fillStyle = 'rgba(255,255,255,.12)'; c.fillRect(cx - 5, by - 90, 1, 56);
       c.restore();
     }
 

@@ -46,7 +46,7 @@
 
     /* --------------------------------------------------------- tiles 16x16 */
     buildTiles() {
-      for (const ch of ".TD,rpSW~#=fcoXBo^gkPCVXOH'") this.tiles[ch] = this.tile(ch);
+      for (const ch of ".TD,rpSW~#=fcoXBo^gkPCVZOH'LFKQYIUENJ") this.tiles[ch] = this.tile(ch);
     },
     tile(ch) {
       const c = cv(16, 16), x = ctx(c), R = U.rng(U.hash('tile' + ch));
@@ -54,15 +54,23 @@
       switch (ch) {
         case '.': px(x, 0, 0, 16, 16, P.grass); dot(P.grassD, 14); dot(P.grassL, 8); break;
         case 'T': px(x, 0, 0, 16, 16, P.grass); dot(P.grassD, 6); break;
-        case 'D': px(x, 0, 0, 16, 16, P.pave); dot(P.paveD, 10); break;
+        case 'D': // basolato piazza
+          px(x, 0, 0, 16, 16, '#8f8a80');
+          for (let yy = 0; yy < 16; yy += 4) for (let xx = (yy % 8 === 0 ? 0 : 2); xx < 16; xx += 4) {
+            px(x, xx, yy, 3, 3, (xx + yy) % 8 === 0 ? '#7f7a71' : '#969187');
+            px(x, xx, yy, 3, 1, 'rgba(255,255,255,.06)');
+          }
+          dot('#6f6a62', 4); break;
         case ',': px(x, 0, 0, 16, 16, '#a58b62'); dot('#8f764f', 16); dot('#bba272', 8); break;
         case 'r':
           px(x, 0, 0, 16, 16, P.road); px(x, 0, 0, 16, 1, P.roadL);
           for (let i = 0; i < 4; i++) px(x, i * 4, 7, 2, 2, P.line);
           dot('#4a4f53', 5); break;
-        case 'p':
-          px(x, 0, 0, 16, 16, P.pave); px(x, 0, 0, 16, 1, P.paveD); px(x, 0, 0, 1, 16, P.paveD);
-          dot(P.paveL, 6); break;
+        case 'p': // marciapiede
+          px(x, 0, 0, 16, 16, '#b8b1a2');
+          for (let xx = 0; xx < 16; xx += 4) px(x, xx, 0, 1, 16, '#a9a293');
+          for (let yy = 0; yy < 16; yy += 8) px(x, 0, yy, 16, 1, '#a9a293');
+          dot('#ccc5b5', 5); dot('#989184', 4); break;
         case 'S': px(x, 0, 0, 16, 16, P.sand); dot(P.sandD, 16); dot('#f1dfb5', 6); break;
         case 'W':
           px(x, 0, 0, 16, 16, P.water);
@@ -116,14 +124,63 @@
         case 'G':
           px(x, 0, 0, 16, 16, P.pave); px(x, 2, 3, 3, 13, P.stone); px(x, 11, 3, 3, 13, P.stone);
           px(x, 2, 2, 12, 3, P.stoneL); px(x, 6, 5, 4, 11, '#2c2933'); break;
-        case 'O': // base guglia / monumento (solida)
-          px(x, 0, 0, 16, 16, P.pave);
-          ell(x, 8, 9, 7, 5, '#d7cfbf'); ell(x, 8, 9, 5, 3, '#ece6d7');
-          px(x, 3, 12, 10, 2, '#b8ad97'); px(x, 7, 6, 2, 2, '#9f9480'); break;
-        case 'H': // facciata storica
-          px(x, 0, 0, 16, 16, '#b7aa95'); px(x, 0, 0, 16, 2, '#d2c7b2'); px(x, 0, 14, 16, 2, '#8a7f6f');
-          for (let y = 3; y < 14; y += 4) for (let xx = 2; xx < 14; xx += 4) { px(x, xx, y, 2, 2, '#9d907d'); px(x, xx + 1, y + 1, 1, 1, '#cbbfa8'); }
+        case 'O': // base guglia / monumento (solida) - si integra col basolato
+          px(x, 0, 0, 16, 16, '#8f8a80');
+          for (let yy = 0; yy < 16; yy += 4) for (let xx = (yy % 8 === 0 ? 0 : 2); xx < 16; xx += 4) {
+            px(x, xx, yy, 3, 3, (xx + yy) % 8 === 0 ? '#7f7a71' : '#969187');
+          }
+          px(x, 1, 1, 14, 14, '#d5ccbc'); px(x, 2, 2, 12, 12, '#e2dacc');
+          px(x, 1, 13, 14, 2, '#b0a593'); px(x, 1, 1, 14, 1, '#ece5d6');
           break;
+        case 'H': // bugnato Gesù Nuovo (grigio scuro)
+          px(x, 0, 0, 16, 16, '#656a6f');
+          for (let yy = 0; yy < 16; yy += 4) for (let xx = 0; xx < 16; xx += 4) {
+            const dark = (xx/4 + yy/4) % 2 === 0;
+            px(x, xx, yy, 4, 4, dark ? '#4f5459' : '#72787d');
+            px(x, xx + 1, yy + 1, 2, 2, dark ? '#5a6066' : '#848b91');
+            px(x, xx, yy, 1, 1, 'rgba(255,255,255,.08)');
+          }
+          break;
+        case 'L': // finestra palazzo
+          px(x, 0, 0, 16, 16, '#d8cdb7');
+          px(x, 2, 2, 12, 12, '#7b623f'); px(x, 3, 3, 10, 10, '#5a8ca8');
+          px(x, 7, 3, 2, 10, '#d7ccb8'); px(x, 3, 7, 10, 2, '#d7ccb8');
+          px(x, 3, 3, 10, 2, 'rgba(255,255,255,.18)'); break;
+        case 'F': // balcone
+          px(x, 0, 0, 16, 16, '#d8cdb7');
+          px(x, 1, 6, 14, 2, '#7b623f'); px(x, 2, 8, 12, 6, '#4f6f47');
+          for (let xx=3; xx<13; xx+=2) px(x, xx, 8, 1, 4, '#6f8a58');
+          px(x, 2, 4, 12, 2, '#2f3f4f'); break;
+        case 'K': // edicola
+          px(x, 0, 0, 16, 16, '#b8b1a2');
+          px(x, 1, 2, 14, 12, '#2e6b4f'); px(x, 2, 4, 12, 8, '#f2ead8');
+          px(x, 3, 5, 4, 3, '#c9564a'); px(x, 8, 5, 5, 3, '#4a87b8');
+          px(x, 2, 12, 12, 2, '#7b623f'); break;
+        case 'Q': // bar/insegna
+          px(x, 0, 0, 16, 16, '#d8cdb7');
+          px(x, 2, 3, 12, 10, '#5e402d'); px(x, 3, 4, 10, 8, '#f0e4cf');
+          px(x, 4, 5, 8, 2, '#b44a3a'); px(x, 5, 8, 6, 2, '#7b623f'); break;
+        case 'Y': // porta legno
+          px(x, 0, 0, 16, 16, '#b8b1a2');
+          px(x, 3, 1, 10, 15, '#5a3e2a'); px(x, 4, 2, 8, 13, '#7a5637');
+          px(x, 7, 2, 2, 13, '#65452c'); px(x, 10, 9, 1, 1, '#e9b84a'); break;
+        case 'I': // ringhiera/ferro
+          px(x, 0, 0, 16, 16, '#d8cdb7');
+          for (let xx=2; xx<14; xx+=2) px(x, xx, 4, 1, 10, '#454b52');
+          px(x, 1, 4, 14, 1, '#59616a'); px(x, 1, 13, 14, 1, '#59616a'); break;
+        case 'U': // lampione base
+          px(x, 0, 0, 16, 16, P.pave); px(x, 7, 4, 2, 10, '#3d444b'); px(x, 6, 3, 4, 2, '#2f353b');
+          px(x, 6, 2, 4, 2, '#f3dd8a'); break;
+        case 'E': // panchina
+          px(x, 0, 0, 16, 16, P.pave); px(x, 2, 8, 12, 2, '#7a5637'); px(x, 3, 6, 10, 2, '#8b6542');
+          px(x, 3, 10, 2, 4, '#4a382b'); px(x, 11, 10, 2, 4, '#4a382b'); break;
+        case 'N': // insegna/bar tabacchi generica
+          px(x, 0, 0, 16, 16, '#b8b1a2'); px(x, 1, 3, 14, 10, '#3f6f95'); px(x, 2, 4, 12, 8, '#ecf2f6');
+          px(x, 3, 6, 10, 2, '#2f5575'); break;
+        case 'J': // tenda bar
+          px(x, 0, 0, 16, 16, '#d8cdb7');
+          for (let xx=0; xx<16; xx+=4) { px(x, xx, 2, 2, 6, '#b94a3a'); px(x, xx+2, 2, 2, 6, '#efe2c6'); }
+          px(x, 0, 8, 16, 1, '#7b623f'); break;
         case "'": // dettaglio/accento
           px(x, 0, 0, 16, 16, P.pave); px(x, 7, 4, 2, 8, '#c9a44a'); break;
         default: px(x, 0, 0, 16, 16, '#d44d9a');
