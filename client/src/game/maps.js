@@ -321,6 +321,15 @@
     poi(m, 7, 8, 'pew', 'scenery', 'Panca — siediti un momento', 'rest_pew');
     poi(m, 2, 6, 'chapel_l', 'scenery', 'Cappella laterale', 'flavor');
     poi(m, 25, 6, 'chapel_r', 'scenery', 'Cappella laterale', 'flavor');
+    // decor estratti da reference sheet (M1) — dimensionati e posizionati, non sfondo fisso
+    decor(m, 11, 2, 'church_altar', { w: 96, h: 118 });
+    decor(m, 5, 10, 'church_pew', { w: 54, h: 24 }); decor(m, 9, 10, 'church_pew', { w: 54, h: 24 });
+    decor(m, 16, 10, 'church_pew', { w: 54, h: 24 }); decor(m, 20, 10, 'church_pew', { w: 54, h: 24 });
+    decor(m, 5, 13, 'church_pew', { w: 54, h: 24 }); decor(m, 9, 13, 'church_pew', { w: 54, h: 24 });
+    decor(m, 16, 13, 'church_pew', { w: 54, h: 24 }); decor(m, 20, 13, 'church_pew', { w: 54, h: 24 });
+    decor(m, 1, 5, 'church_statue', { w: 28, h: 78 }); decor(m, 25, 5, 'church_statue', { w: 28, h: 78 });
+    decor(m, 3, 3, 'church_painting1', { w: 56, h: 40 }); decor(m, 22, 3, 'church_painting1', { w: 56, h: 40 });
+    decor(m, 7, 4, 'church_candle', { w: 12, h: 26 }); decor(m, 20, 4, 'church_candle', { w: 12, h: 26 });
     // luci calde
     decor(m, 7, 4, 'candle_glow', { h: 8 }); decor(m, 20, 4, 'candle_glow', { h: 8 });
     decor(m, 4, 9, 'candle_glow', { h: 8 }); decor(m, 23, 9, 'candle_glow', { h: 8 });
@@ -361,6 +370,11 @@
     poi(m, 6, 5, 'bar_counter', 'service', 'Bancone — ordina', 'shop', { shop: 'bar' });
     poi(m, 4, 9, 'seat', 'furniture', 'Siediti e mangia', 'eat_bar');
     poi(m, 13, 9, 'seat2', 'furniture', 'Siediti e mangia', 'eat_bar');
+    // M1 extracted bar decor
+    decor(m, 2, 2, 'bar_shelf', { w: 132, h: 34 });
+    decor(m, 2, 4, 'bar_counter', { w: 150, h: 38 });
+    decor(m, 4, 8, 'bar_table', { w: 48, h: 20 }); decor(m, 13, 8, 'bar_table', { w: 48, h: 20 });
+    decor(m, 14, 4, 'bar_detail', { w: 48, h: 62 });
     decor(m, 3, 3, 'warm_light', { r: 28, color: 'rgba(255,190,120,.16)' });
     decor(m, 15, 6, 'warm_light', { r: 24, color: 'rgba(255,190,120,.14)' });
     decor(m, 10, 10, 'warm_light', { r: 24, color: 'rgba(255,190,120,.12)' });

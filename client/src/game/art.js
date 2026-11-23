@@ -53,7 +53,17 @@
         palazzo_ne: 'palazzo-ne.png', palazzo_sw: 'palazzo-sw.png', palazzo_banca: 'palazzo-banca.png',
         palazzo_bar: 'palazzo-bar.png', palazzo_se: 'palazzo-se.png', palazzo_e: 'palazzo-e.png',
         lamp: 'prop-lamp.png', bench: 'prop-bench.png', edicola: 'prop-edicola.png', plant: 'prop-plant.png',
-        cart: 'prop-cart.png', sign: 'prop-sign.png', table_out: 'prop-table.png', chair_out: 'prop-chair.png'
+        cart: 'prop-cart.png', sign: 'prop-sign.png', table_out: 'prop-table.png', chair_out: 'prop-chair.png',
+        // M1 extracted assets (from user-provided reference sheets)
+        m1_gesu_ref: 'm1-gesu_facade_ref.png',
+        m1_piazza_a: 'm1-piazza_palazzo_a.png', m1_piazza_b: 'm1-piazza_palazzo_b.png', m1_piazza_c: 'm1-piazza_palazzo_c.png',
+        m1_piazza_d: 'm1-piazza_building_d.png', m1_piazza_e: 'm1-piazza_building_e.png', m1_piazza_f: 'm1-piazza_building_f.png',
+        m1_piazza_strip: 'm1-piazza_strip.png',
+        m1_church_altar: 'm1-church_altar.png', m1_church_altar2: 'm1-church_altar2.png',
+        m1_church_painting1: 'm1-church_painting1.png', m1_church_column: 'm1-church_column.png',
+        m1_church_arch: 'm1-church_arch.png', m1_church_pew: 'm1-church_pew.png',
+        m1_church_candle: 'm1-church_candle.png', m1_church_statue: 'm1-church_statue.png',
+        m1_bar_counter: 'm1-bar_counter.png', m1_bar_shelf: 'm1-bar_shelf.png', m1_bar_table: 'm1-bar_table.png', m1_bar_detail: 'm1-bar_detail.png',
       };
       for (const [k, f] of Object.entries(files)) {
         const img = new Image(); img.decoding = 'async'; img.src = this.assetUrl(f);
@@ -509,7 +519,22 @@
       px(x,-2,0,W+4,10,S.roof); px(x,-1,8,W+2,3,shade(S.roof,18)); px(x,0,10,W,2,shade(S.roof,-20));
       // base trim
       px(x,0,H-8,W,8,shade(S.trim,-10)); px(x,0,H-8,W,1,shade(S.trim,20));
-      if (kind === 'gesu') {
+      // M1 extracted facade reference: use as visual overlay when available, keep procedural fallback
+      const m1Facade = {
+        gesu:'m1_gesu_ref',
+        palazzo_ne:'m1_piazza_a', palazzo_sw:'m1_piazza_b', palazzo_e:'m1_piazza_c',
+        palazzo_se:'m1_piazza_d', palazzo_bar:'m1_piazza_e', palazzo_banca:'m1_piazza_f'
+      };
+      const m1Key = m1Facade[kind];
+      if (m1Key && this.images[m1Key]) {
+        const img = this.images[m1Key];
+        x.clearRect(0,0,W,H);
+        // Fit preserving aspect ratio, anchored to bottom
+        const scale = Math.min(W/img.width, H/img.height);
+        const dw = Math.round(img.width*scale), dh = Math.round(img.height*scale);
+        const dx = Math.floor((W-dw)/2), dy = H-dh;
+        x.drawImage(img, dx, dy, dw, dh);
+      } else if (kind === 'gesu') {
         this._drawGesuFacade(x,W,H);
       } else {
         this._drawPalazzoFacade(x,W,H,S,kind,R);
@@ -644,6 +669,15 @@
     },
     propSprite(kind) {
       if (this.images[kind]) return this.images[kind];
+      // M1 extracted image props mapped to generic kinds
+      const m1 = {
+        church_pew:'m1_church_pew', church_column:'m1_church_column', church_arch:'m1_church_arch',
+        church_altar:'m1_church_altar', church_altar2:'m1_church_altar2', church_painting1:'m1_church_painting1',
+        church_candle:'m1_church_candle', church_statue:'m1_church_statue',
+        bar_counter:'m1_bar_counter', bar_shelf:'m1_bar_shelf', bar_table:'m1_bar_table', bar_detail:'m1_bar_detail',
+        piazza_strip:'m1_piazza_strip'
+      };
+      if (m1[kind] && this.images[m1[kind]]) return this.images[m1[kind]];
       const key='prop:'+kind; if(this.cache[key]) return this.cache[key];
       let c,x;
       if(kind==='lamp'){ c=cv(24,52); x=ctx(c); px(x,10,20,4,30,'#3b4248'); px(x,8,18,8,4,'#2f353b'); px(x,7,8,10,11,'#f6e7a2'); px(x,6,6,12,3,'#4a5158'); px(x,9,2,6,5,'#3d444b'); x.fillStyle='rgba(255,240,170,.14)'; x.beginPath(); x.arc(12,13,14,0,Math.PI*2); x.fill(); px(x,8,48,8,3,'#4a5158'); }

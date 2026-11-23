@@ -630,6 +630,17 @@
         case 'sign': { const img = ART.propSprite('sign'); if (img) c.drawImage(img, x - 6, y - 22); break; }
         case 'table_out': { const img = ART.propSprite('table_out'); if (img) c.drawImage(img, x - 6, y - 10); break; }
         case 'chair_out': { const img = ART.propSprite('chair_out'); if (img) c.drawImage(img, x - 3, y - 10); break; }
+        case 'church_pew': case 'church_column': case 'church_arch': case 'church_altar': case 'church_altar2':
+        case 'church_painting1': case 'church_candle': case 'church_statue':
+        case 'bar_counter': case 'bar_shelf': case 'bar_table': case 'bar_detail': case 'piazza_strip': {
+          const img = ART.propSprite(d.type);
+          if (img) {
+            const dw = d.data.w || img.width;
+            const dh = d.data.h || img.height;
+            c.drawImage(img, x, y, dw, dh);
+          }
+          break;
+        }
         case 'portal_arch': {
           c.fillStyle = '#7e858c'; c.fillRect(x - 2, y, 36, 4); c.fillRect(x, y + 4, 4, 20); c.fillRect(x + 28, y + 4, 4, 20);
           break;
