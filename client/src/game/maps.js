@@ -6,7 +6,7 @@
   'use strict';
   const CL = w.CL, U = CL.util, T = CL.TILE;
 
-  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1 };
+  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, A: 1, M: 1, R: 1, Z: 1, h: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
 
   function blank(x, y, ch) { return Array.from({ length: y }, () => new Array(x).fill(ch)); }
   function rect(g, x, y, ww, hh, ch) {
@@ -115,10 +115,12 @@
     // Edicola/negozio piccolo sul bordo piazza
     rect(g, 38, 34, 3, 3, 'K'); g[36][39] = 'p';
 
-    // Arredi urbani: lampioni, panchine, segni - piazza viva ma non affollata
-    [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'U'; });
-    [[22, 23], [46, 23], [22, 33], [46, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'E'; });
-    scatter(g, ',', 20, c => c === 'D', R);
+    // Arredi urbani: piazza viva e proporzionata
+    [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24], [24, 28], [40, 28]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'U'; });
+    [[22, 23], [46, 23], [22, 33], [46, 33], [30, 23], [38, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'E'; });
+    scatter(g, ',', 30, c => c === 'D', R);
+    // Fioriere/confini più leggibili
+    [[13,16],[17,16],[29,16],[41,16],[47,16],[51,16],[13,37],[51,37]].forEach(([x,y])=>{ if(g[y]&&g[y][x]==='D') g[y][x]='P'; });
 
     // Overlay architettonici (sprite code-drawn, cacheati)
     decor(m, 9, 3, 'gesu_facade', { h: 12 * T });
@@ -132,9 +134,12 @@
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
     decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });
     decor(m, 20, 10, 'portal_arch', { h: 24 });
-    [[15,18],[27,18],[45,18],[15,35],[49,35],[53,23]].forEach(([x,y]) => decor(m, x, y, 'lamp', { h: 16 }));
-    [[22,22],[46,22],[22,32],[46,32]].forEach(([x,y]) => decor(m, x, y, 'bench', { h: 10 }));
-    [[18,16],[26,16],[42,16],[48,16],[18,37],[50,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
+    [[15,18],[27,18],[45,18],[15,35],[49,35],[53,23],[24,28],[40,28],[20,29],[44,29]].forEach(([x,y]) => decor(m, x, y, 'lamp', { h: 16 }));
+    [[22,22],[46,22],[22,32],[46,32],[30,22],[38,32],[29,35],[43,35]].forEach(([x,y]) => decor(m, x, y, 'bench', { h: 10 }));
+    [[18,16],[26,16],[42,16],[48,16],[18,37],[50,37],[13,16],[51,16],[13,37],[51,37],[21,37],[47,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
+    decor(m, 25, 35, 'cart', { h: 20 });
+    decor(m, 47, 36, 'table_out', { h: 12 }); decor(m, 45, 36, 'chair_out', { h: 10 }); decor(m, 49, 36, 'chair_out', { h: 10 });
+    decor(m, 33, 37, 'sign', { h: 20 });
 
     // Portali interni / servizi (ID preservati)
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 8 * T, y: 10 * T }, 'Ingresso Gesù Nuovo');
@@ -261,10 +266,96 @@
   }
 
   /* ---------------------------------------------------------- INTERNI */
-  function interior(id, kind, w, h, decorate) {
-    const m = makeMap(id, 'interno', w, h, blank(w, h, 'f'));
+  function place(g, x, y, ch) { if (g[y] && g[y][x] !== undefined) g[y][x] = ch; }
+  function fillRect(g, x, y, ww, hh, ch) { rect(g, x, y, ww, hh, ch); }
+
+  function churchGesu() {
+    const w = 28, h = 22;
+    const m = makeMap('casa_nonna', 'interno', w, h, blank(w, h, 'A'));
+    m.name = 'Chiesa del Gesù Nuovo';
     const g = m.g;
-    border(g, 0, 0, w, h, '#');
+    // muri perimetrali
+    for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
+    for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
+    // parete interna/abside
+    for (let x = 1; x < w - 1; x++) g[1][x] = 'j';
+    for (let x = 2; x < w - 2; x++) g[2][x] = 'j';
+    // colonne navata
+    for (const yy of [6, 10, 14]) { g[yy][5] = 'l'; g[yy][9] = 'l'; g[yy][18] = 'l'; g[yy][22] = 'l'; }
+    // cappelle laterali (muri)
+    for (let y = 4; y < 18; y++) { g[y][3] = (y % 4 === 0) ? 'A' : 'j'; g[y][w - 4] = (y % 4 === 0) ? 'A' : 'j'; }
+    for (const yy of [5, 9, 13]) { g[yy][1] = '6'; g[yy][2] = '5'; g[yy][w - 2] = '6'; g[yy][w - 3] = '5'; }
+    // navata centrale tappeto
+    for (let y = 4; y < 19; y++) { g[y][13] = 'R'; g[y][14] = 'R'; }
+    // panche
+    for (const yy of [7, 9, 11, 13, 15]) { for (let x = 6; x <= 8; x++) g[yy][x] = 'n'; for (let x = 19; x <= 21; x++) g[yy][x] = 'n'; }
+    for (const yy of [7, 9, 11, 13, 15]) { g[yy][11] = 'n'; g[yy][12] = 'n'; g[yy][15] = 'n'; g[yy][16] = 'n'; }
+    // altare maggiore
+    for (let x = 11; x <= 16; x++) g[3][x] = 'q';
+    g[4][12] = '5'; g[4][15] = '5'; g[3][13] = '6'; g[3][14] = '6';
+    // pavimento decorato presbiterio
+    for (let y = 3; y <= 5; y++) for (let x = 10; x <= 17; x++) if (g[y][x] === 'A') g[y][x] = 'M';
+    // ingressi laterali visivi / confessionali
+    g[17][1] = '8'; g[17][w - 2] = '8';
+    // candele e piante
+    g[18][4] = '5'; g[18][23] = '5'; g[16][6] = '9'; g[16][21] = '9';
+    // porta uscita
+    const dx = 14, dy = h - 1;
+    g[dy][dx] = 'D'; g[dy][13] = '#'; g[dy][15] = '#';
+    portal(m, dx, dy, 1, 1, 'prev', { x: 20 * T, y: 15 * T }, 'Esci in piazza');
+    poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
+    poi(m, 13, 4, 'altar', 'scenery', 'Altare maggiore', 'flavor');
+    poi(m, 7, 8, 'pew', 'scenery', 'Panca — siediti un momento', 'rest_pew');
+    poi(m, 2, 6, 'chapel_l', 'scenery', 'Cappella laterale', 'flavor');
+    poi(m, 25, 6, 'chapel_r', 'scenery', 'Cappella laterale', 'flavor');
+    // luci calde
+    decor(m, 7, 4, 'candle_glow', { h: 8 }); decor(m, 20, 4, 'candle_glow', { h: 8 });
+    decor(m, 4, 9, 'candle_glow', { h: 8 }); decor(m, 23, 9, 'candle_glow', { h: 8 });
+    decor(m, 14, 2, 'window_light', { w: 16, h: 10, color: 'rgba(255,210,140,.22)' });
+    m.spawn = { x: dx * T, y: (h - 3) * T };
+    return m;
+  }
+
+  function barInterior() {
+    const w = 20, h = 14;
+    const m = makeMap('bar', 'interno', w, h, blank(w, h, 'h'));
+    m.name = 'Caffè Vittoria';
+    const g = m.g;
+    for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
+    for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
+    for (let x = 1; x < w - 1; x++) { g[1][x] = 'j'; g[2][x] = 'j'; }
+    // bancone
+    for (let x = 2; x <= 10; x++) g[4][x] = 'u';
+    g[3][3] = '0'; g[3][5] = '3'; g[3][7] = 'y'; g[3][9] = '0';
+    // scaffali dietro
+    g[2][2] = 's'; g[2][4] = 's'; g[2][6] = 's'; g[2][8] = 's'; g[2][10] = 's';
+    // tavoli e sedie
+    const tables = [[4,8],[8,8],[13,8],[15,5],[4,11],[9,11],[14,11]];
+    tables.forEach(([tx,ty]) => { g[ty][tx] = 'v'; if (g[ty-1]) g[ty-1][tx] = 'w'; if (g[ty+1]) g[ty+1][tx] = 'w'; if (g[ty][tx-1]) g[ty][tx-1] = 'w'; if (g[ty][tx+1]) g[ty][tx+1] = 'w'; });
+    // finestre/decor
+    g[1][14] = '7'; g[1][16] = '7';
+    g[2][17] = '9'; g[11][17] = '9';
+    const dx = 10, dy = h - 1;
+    g[dy][dx] = 'D';
+    portal(m, dx, dy, 1, 1, 'prev', { x: 44 * T, y: 46 * T }, 'Esci');
+    poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
+    poi(m, 6, 5, 'bar_counter', 'service', 'Bancone — ordina', 'shop', { shop: 'bar' });
+    poi(m, 4, 9, 'seat', 'furniture', 'Siediti e mangia', 'eat_bar');
+    decor(m, 3, 3, 'warm_light', { r: 28, color: 'rgba(255,190,120,.16)' });
+    decor(m, 15, 6, 'warm_light', { r: 24, color: 'rgba(255,190,120,.14)' });
+    decor(m, 10, 10, 'warm_light', { r: 24, color: 'rgba(255,190,120,.12)' });
+    m.spawn = { x: dx * T, y: (h - 3) * T };
+    return m;
+  }
+
+  function interior(id, kind, w, h, decorate) {
+    if (id === 'casa_nonna') return churchGesu();
+    if (id === 'bar') return barInterior();
+    const m = makeMap(id, 'interno', w, h, blank(w, h, kind === 'cave' ? 'k' : 'h'));
+    const g = m.g;
+    for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
+    for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
+    for (let x = 1; x < w - 1; x++) { g[1][x] = 'j'; g[2][x] = kind === 'cave' ? 'k' : 'j'; }
     const dx = w >> 1, dy = h - 1;
     g[dy][dx] = 'D';
     portal(m, dx, dy, 1, 1, 'prev', { x: dx * T, y: (h - 2) * T }, 'Esci');
@@ -272,40 +363,58 @@
     if (decorate) decorate(m, g);
     switch (kind) {
       case 'home':
-        rect(g, 2, 2, 5, 2, 'B'); rect(g, w - 7, 2, 4, 2, 'o'); rect(g, 2, h - 5, 4, 1, 'o');
-        poi(m, 3, 3, 'bed', 'furniture', 'Letto — dormi', 'sleep');
-        poi(m, w - 6, 3, 'stove', 'furniture', 'Cucina — cucina qualcosa', 'cook');
-        poi(m, 3, h - 6, 'pc', 'furniture', 'Computer — cerca lavoro', 'jobs');
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
+        rect(g, 2, 3, 4, 2, 'x'); rect(g, 2, 6, 2, 2, '4');
+        rect(g, w - 5, 3, 3, 2, 'y'); rect(g, w - 4, 6, 2, 1, 'z');
+        rect(g, 3, h - 5, 3, 2, 'v'); g[h - 6][4] = 'w'; g[h - 3][4] = 'w';
+        rect(g, w - 6, h - 5, 3, 1, '1'); g[h - 6][w - 5] = '2'; g[h - 4][w - 5] = 'w';
+        g[1][3] = '7'; g[1][w - 4] = '7'; g[3][w - 2] = '9';
+        poi(m, 3, 4, 'bed', 'furniture', 'Letto — dormi', 'sleep');
+        poi(m, w - 4, 4, 'stove', 'furniture', 'Cucina — prepara qualcosa', 'cook');
+        poi(m, w - 5, h - 5, 'pc', 'furniture', 'Computer — cerca lavoro', 'jobs');
+        poi(m, 4, h - 5, 'table', 'furniture', 'Tavolo — mangia', 'eat_home');
+        decor(m, 4, 4, 'warm_light', { r: 26, color: 'rgba(255,200,140,.12)' });
+        decor(m, w - 4, 4, 'warm_light', { r: 22, color: 'rgba(255,210,150,.12)' });
         break;
       case 'shop':
-        rect(g, 2, 2, w - 4, 1, 'o'); rect(g, 2, 5, w - 4, 1, 'o');
-        rect(g, 2, h - 5, w - 4, 1, 'c');
-        poi(m, dx, h - 6, 'counter', 'service', 'Bancone — acquista', 'shop', { shop: id === 'souvenir' ? 'pompei' : id });
-        break;
-      case 'bar':
-        rect(g, 2, h - 6, w - 4, 2, 'c');
-        for (let x = 3; x < w - 3; x += 3) g[h - 8][x] = 'o';
-        poi(m, dx, h - 8, 'bar_counter', 'service', 'Bancone — acquista', 'shop', { shop: 'bar' });
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
+        for (let x = 2; x < w - 2; x += 3) { g[3][x] = 's'; g[6][x] = 's'; }
+        rect(g, 2, h - 5, w - 4, 1, 'u'); g[h - 6][dx] = '3';
+        g[1][3] = '7'; g[1][w - 4] = '7';
+        poi(m, dx, h - 5, 'counter', 'service', 'Bancone — acquista', 'shop', { shop: id === 'souvenir' ? 'pompei' : id });
+        decor(m, dx, 5, 'warm_light', { r: 30, color: 'rgba(255,210,150,.12)' });
         break;
       case 'office':
-        rect(g, 3, 3, 4, 1, 'c'); rect(g, w - 7, 3, 4, 1, 'c'); rect(g, 3, 7, 4, 1, 'c');
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
+        rect(g, 3, 4, 4, 1, '1'); g[3][4] = '2'; g[5][4] = 'w';
+        rect(g, w - 8, 4, 4, 1, '1'); g[3][w - 7] = '2'; g[5][w - 7] = 'w';
+        rect(g, 3, 8, 4, 1, '1'); g[7][4] = '2'; g[9][4] = 'w';
+        g[3][w - 3] = '4'; g[7][w - 3] = '4'; g[1][4] = '7'; g[1][w - 5] = '7';
         poi(m, 5, 5, 'desk', 'service', 'Sportello — lavori', 'jobs');
+        decor(m, 8, 5, 'warm_light', { r: 34, color: 'rgba(255,220,170,.10)' });
         break;
       case 'bank':
-        rect(g, 2, h - 6, w - 4, 2, 'c');
-        poi(m, dx, h - 8, 'bank_counter', 'service', 'Sportello bancario', 'bank', { mode: 'menu' });
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'M';
+        rect(g, 2, h - 5, w - 4, 1, 'u'); g[h - 6][dx] = '3';
+        g[4][3] = '1'; g[3][3] = '2'; g[4][w - 4] = '1'; g[3][w - 4] = '2';
+        g[1][4] = '7'; g[1][w - 5] = '7';
+        poi(m, dx, h - 5, 'bank_counter', 'service', 'Sportello bancario', 'bank', { mode: 'menu' });
+        decor(m, dx, 5, 'warm_light', { r: 30, color: 'rgba(255,225,180,.10)' });
         break;
       case 'clinic':
-        rect(g, 2, 3, 4, 2, 'B'); rect(g, w - 6, 3, 4, 2, 'B'); rect(g, 2, h - 5, w - 4, 1, 'c');
-        poi(m, 4, 6, 'clinic_bed', 'service', 'Visita medica', 'heal');
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
+        rect(g, 2, 3, 4, 2, 'x'); rect(g, w - 6, 3, 4, 2, 'x'); rect(g, 2, h - 5, w - 4, 1, 'u');
+        g[6][3] = '4'; g[6][w - 4] = '4'; g[1][5] = '7'; g[1][w - 6] = '7';
+        poi(m, 4, 5, 'clinic_bed', 'service', 'Visita medica', 'heal');
+        decor(m, 8, 5, 'warm_light', { r: 34, color: 'rgba(235,245,255,.10)' });
         break;
       case 'cave':
-        g.forEach(row => row.forEach((c, i) => { if (c === 'f') row[i] = 'k'; }));
+        g.forEach(row => row.forEach((c, i) => { if (c === 'h' || c === 'j') row[i] = 'k'; }));
         rect(g, 2, 2, 4, 2, '^'); rect(g, w - 6, 3, 4, 3, '^');
         poi(m, 4, 6, 'lava', 'scenery', 'Roccia incandescente', 'flavor');
         break;
     }
-    m.spawn = { x: dx * T, y: (h - 2) * T };
+    m.spawn = { x: dx * T, y: (h - 3) * T };
     return m;
   }
 
@@ -340,7 +449,7 @@
           return m;
       }
       m.width = m.w * T; m.height = m.h * T;
-      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Casa di nonna', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
+      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
       m.name = m.name || defaultNames[id] || id;
       this.cache[id] = m;
       return m;

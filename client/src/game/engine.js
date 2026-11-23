@@ -24,7 +24,11 @@
     c: '#8b6244', o: '#65432e', X: '#6fa9b8', B: '#d9e0d4', '^': '#8b8a80',
     g: '#b9ae91', k: '#3b3640', P: '#4f8a4c', C: '#5b8fa6', V: '#24343f', G: '#2c2933', D: '#8f8a80',
     O: '#d7cfbf', H: '#656a6f', "'": '#c9a44a', L: '#7b623f', F: '#7b623f', K: '#2e6b4f',
-    Q: '#5e402d', Y: '#7a5637', I: '#59616a', U: '#f3dd8a', E: '#7a5637', N: '#3f6f95', J: '#b94a3a'
+    Q: '#5e402d', Y: '#7a5637', I: '#59616a', U: '#f3dd8a', E: '#7a5637', N: '#3f6f95', J: '#b94a3a',
+    A: '#d9d2c3', M: '#d4ccbc', R: '#a53a3a', Z: '#7a5637', h: '#cdbd9d', j: '#ddd3c0',
+    l: '#d8cebc', n: '#855f3d', q: '#ece3d1', s: '#7a5637', u: '#9b7349', v: '#8b6244',
+    w: '#7a5637', x: '#8fb0c8', y: '#8a8f95', z: '#b8d0d8', '1': '#7a5637', '2': '#6fb0c8',
+    '3': '#4a5560', '4': '#845e3d', '5': '#f3c44f', '6': '#5f7e96', '7': '#9fc3d8', '8': '#855f3d', '9': '#5f9a4e', '0': '#dceef3'
   };
 
   class Game {
@@ -347,6 +351,9 @@
         case 'talk_vesuvio': CL.ui.dialogueText('Turista', 'Il Vesuvio! Wow! Speriamo non faccia casino... eh, scusa, non sono molto bravo in italiano.'); break;
         case 'talk_cave': CL.ui.dialogueText('Guardiano', 'Dentro c’è una luce che non viene da nessuna lampada. Porta una rete, se vuoi vedere chi la fa.'); break;
         case 'talk_social': CL.ui.dialogueText('Giulia', 'Mi piace come parli. Sembri uno che ha sempre qualcosa da raccontare.'); break;
+        case 'eat_bar': CL.ui.confirm('Siediti al tavolo', 'Ordina qualcosa dal bancone.', () => CL.ui.openShop('bar')); break;
+        case 'eat_home': S.actions.cook(); break;
+        case 'rest_pew': S.needs.apply({ mood: 8, energy: 4 }); CL.ui.toast('Ti siedi un momento in silenzio. Ti senti più calmo.', 'good'); CL.ui.refresh(); break;
         case 'flavor': case 'scenery': CL.ui.toast(src ? src.label : 'Un dettaglio del paesaggio.', 'info'); break;
         default: CL.ui.toast('Azione non disponibile: ' + a, 'info');
       }
@@ -410,25 +417,81 @@
         } else c.drawImage(ART.rock((it.tx + it.ty) % 3), it.tx * T - 2, it.ty * T - 8);
       }
       c.restore();
+      this.drawLights(c);
       this.drawOverlay(c);
+    }
+
+    drawLights(c) {
+      if (!this.map) return;
+      const m = this.map, cam = CL.camera;
+      const h = S.time.hour();
+      const night = h >= 19 || h < 6;
+      const dusk = h >= 17 && h < 20;
+      const indoors = m.zone === 'interno';
+      c.save();
+      c.globalCompositeOperation = 'lighter';
+      // decor lights
+      for (const d of (m.decors || [])) {
+        const sx = d.x - cam.x, sy = d.y - cam.y;
+        if (sx < -60 || sy < -60 || sx > CL.VIEW_W + 60 || sy > CL.VIEW_H + 60) continue;
+        if (d.type === 'lamp' && (night || dusk)) {
+          const r = 34; const g = c.createRadialGradient(sx + 8, sy - 20, 2, sx + 8, sy - 20, r);
+          g.addColorStop(0, 'rgba(255,236,170,.28)'); g.addColorStop(1, 'rgba(255,220,120,0)');
+          c.fillStyle = g; c.fillRect(sx - r, sy - 20 - r, r * 2, r * 2);
+        }
+        if ((d.type === 'candle_glow') && (indoors || night || dusk)) {
+          const r = 22; const g = c.createRadialGradient(sx + 8, sy, 1, sx + 8, sy, r);
+          g.addColorStop(0, 'rgba(255,170,70,.22)'); g.addColorStop(1, 'rgba(255,140,40,0)');
+          c.fillStyle = g; c.fillRect(sx - r, sy - r, r * 2, r * 2);
+        }
+        if (d.type === 'warm_light') {
+          const r = d.data.r || 24; const col = d.data.color || 'rgba(255,190,120,.14)';
+          const g = c.createRadialGradient(sx, sy, 2, sx, sy, r);
+          g.addColorStop(0, col); g.addColorStop(1, col.replace(/,[^,]+\)$/, ',0)'));
+          c.fillStyle = g; c.fillRect(sx - r, sy - r, r * 2, r * 2);
+        }
+        if (d.type === 'window_light' && (night || indoors || dusk)) {
+          c.fillStyle = d.data.color || 'rgba(255,220,150,.18)';
+          c.fillRect(sx, sy, d.data.w || 16, d.data.h || 10);
+        }
+      }
+      // lit windows at night outdoors
+      if (!indoors && (night || dusk)) {
+        const x0 = Math.max(0, Math.floor(cam.x / T) - 1), y0 = Math.max(0, Math.floor(cam.y / T) - 1);
+        const x1 = Math.min(m.w - 1, Math.ceil((cam.x + CL.VIEW_W) / T) + 1);
+        const y1 = Math.min(m.h - 1, Math.ceil((cam.y + CL.VIEW_H) / T) + 1);
+        for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
+          const ch = m.g[ty][tx];
+          if (ch === 'L' || ch === '7') {
+            const sx = tx * T - cam.x, sy = ty * T - cam.y;
+            c.fillStyle = 'rgba(255,220,140,.16)'; c.fillRect(sx + 3, sy + 3, 10, 8);
+          }
+        }
+      }
+      c.restore();
     }
 
     drawOverlay(c) {
       const st = this.state;
-      // illuminazione
       const h = S.time.hour();
-      let dark = 0, warm = 0;
-      if (h < 5) dark = .68;
-      else if (h < 8) dark = .58 - (h - 5) * .19;
-      else if (h < 17) dark = 0;
-      else if (h < 20) { dark = (h - 17) * .15; warm = .10; }
-      else dark = .52;
-      const wi = S.weather.info(); dark += wi.dark;
-      if (dark > 0) { c.fillStyle = 'rgba(10,16,38,' + U.clamp(dark, 0, .75) + ')'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H); }
-      if (warm > 0) { c.fillStyle = 'rgba(240,150,80,' + warm + ')'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H); }
-      // vignetta
-      const gr = c.createRadialGradient(240, 135, 90, 240, 135, 290);
-      gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(4,8,14,.38)');
+      const indoors = this.map && this.map.zone === 'interno';
+      let dark = 0, warm = 0, cool = 0;
+      if (indoors) {
+        dark = (h >= 19 || h < 6) ? .18 : .08;
+        warm = .06;
+      } else {
+        if (h < 5) { dark = .58; cool = .08; }
+        else if (h < 7) { dark = .42 - (h - 5) * .18; warm = .08; }
+        else if (h < 17) { dark = 0; }
+        else if (h < 19) { dark = (h - 17) * .12; warm = .10 - (h - 17) * .02; }
+        else if (h < 21) { dark = .24 + (h - 19) * .10; cool = .04; }
+        else { dark = .46; cool = .06; }
+        const wi = S.weather.info(); dark += wi.dark;
+      }
+      if (dark > 0) { c.fillStyle = (cool > 0 ? 'rgba(10,18,42,' : 'rgba(10,16,38,') + U.clamp(dark, 0, .72) + ')'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H); }
+      if (warm > 0) { c.fillStyle = 'rgba(255,170,90,' + warm + ')'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H); }
+      const gr = c.createRadialGradient(240, 135, 80, 240, 135, 290);
+      gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(4,8,14,' + (indoors ? '.22' : '.34') + ')');
       c.fillStyle = gr; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
       this.particles.draw(c);
       // nome luogo (breve)
@@ -483,13 +546,21 @@
           c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(x, y + 10, W, 2);
           break;
         }
-        case 'lamp': { const img = ART.propSprite('lamp'); if (img) c.drawImage(img, x - 4, y - 32); break; }
-        case 'bench': { const img = ART.propSprite('bench'); if (img) c.drawImage(img, x - 4, y - 8); break; }
-        case 'plant': { const img = ART.propSprite('plant'); if (img) c.drawImage(img, x, y - 8); break; }
+        case 'lamp': { const img = ART.propSprite('lamp'); if (img) c.drawImage(img, x - 4, y - 36); break; }
+        case 'bench': { const img = ART.propSprite('bench'); if (img) c.drawImage(img, x - 6, y - 10); break; }
+        case 'plant': { const img = ART.propSprite('plant'); if (img) c.drawImage(img, x - 1, y - 10); break; }
+        case 'cart': { const img = ART.propSprite('cart'); if (img) c.drawImage(img, x - 4, y - 16); break; }
+        case 'sign': { const img = ART.propSprite('sign'); if (img) c.drawImage(img, x - 6, y - 22); break; }
+        case 'table_out': { const img = ART.propSprite('table_out'); if (img) c.drawImage(img, x - 6, y - 10); break; }
+        case 'chair_out': { const img = ART.propSprite('chair_out'); if (img) c.drawImage(img, x - 3, y - 10); break; }
         case 'portal_arch': {
           c.fillStyle = '#7e858c'; c.fillRect(x - 2, y, 36, 4); c.fillRect(x, y + 4, 4, 20); c.fillRect(x + 28, y + 4, 4, 20);
           break;
         }
+        case 'candle_glow':
+        case 'warm_light':
+        case 'window_light':
+          break; // drawn in light pass
       }
       c.restore();
     }

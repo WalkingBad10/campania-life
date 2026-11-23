@@ -46,7 +46,7 @@
 
     /* --------------------------------------------------------- tiles 16x16 */
     buildTiles() {
-      for (const ch of ".TD,rpSW~#=fcoXBo^gkPCVZOH'LFKQYIUENJ") this.tiles[ch] = this.tile(ch);
+      for (const ch of ".TD,rpSW~#=fcoXBo^gkPCVZOH'LFKQYIUENJAMRZhjlnqstuvwxyz1234567890") this.tiles[ch] = this.tile(ch);
     },
     tile(ch) {
       const c = cv(16, 16), x = ctx(c), R = U.rng(U.hash('tile' + ch));
@@ -183,6 +183,60 @@
           px(x, 0, 8, 16, 1, '#7b623f'); break;
         case "'": // dettaglio/accento
           px(x, 0, 0, 16, 16, P.pave); px(x, 7, 4, 2, 8, '#c9a44a'); break;
+        /* ----------------------------- interni ricchi ----------------------------- */
+        case 'A':
+          px(x,0,0,16,16,'#d9d2c3'); px(x,0,0,16,1,'#cfc7b7'); px(x,0,0,1,16,'#cfc7b7');
+          px(x,8,0,1,16,'#c9c0af'); px(x,0,8,16,1,'#c9c0af'); dot('#ece5d7',5); dot('#c4bba9',4); break;
+        case 'M':
+          px(x,0,0,16,16,'#d4ccbc'); for(let yy=0;yy<16;yy+=8)for(let xx=0;xx<16;xx+=8){ px(x,xx,yy,8,8,(xx+yy)%16===0?'#c8beac':'#ddd5c5'); px(x,xx+3,yy+3,2,2,'#b2a692'); } dot('#eee6d6',4); break;
+        case 'R':
+          px(x,0,0,16,16,'#8f2f2f'); px(x,1,0,14,16,'#a53a3a'); px(x,2,0,2,16,'#c9a44a'); px(x,12,0,2,16,'#c9a44a'); dot('#7a2525',6); break;
+        case 'Z':
+          px(x,0,0,16,16,'#7a5637'); for(let yy=0;yy<16;yy+=4) px(x,0,yy,16,1,'#68472d'); dot('#8b6542',6); dot('#5e4028',4); break;
+        case 'h':
+          px(x,0,0,16,16,'#cdbd9d'); for(let yy=0;yy<16;yy+=4)for(let xx=0;xx<16;xx+=4){ px(x,xx,yy,4,4,(xx+yy)%8===0?'#d8cab0':'#c4b492'); px(x,xx,yy,4,1,'rgba(255,255,255,.08)'); } break;
+        case 'j':
+          px(x,0,0,16,16,'#ddd3c0'); px(x,0,14,16,2,'#b9ad98'); dot('#e8dfcf',8); dot('#cfc4b0',4); break;
+        case 'l':
+          px(x,0,0,16,16,'#cfc5b3'); px(x,2,0,12,16,'#ddd3c2'); px(x,4,0,2,16,'#efe6d6'); px(x,10,0,2,16,'#bdb3a1'); px(x,0,0,16,2,'#b8ae9c'); px(x,0,14,16,2,'#b8ae9c'); break;
+        case 'n':
+          px(x,0,0,16,16,'#d9d2c3'); px(x,2,4,12,4,'#6f4f34'); px(x,2,8,12,2,'#855f3d'); px(x,3,10,2,4,'#5a4028'); px(x,11,10,2,4,'#5a4028'); break;
+        case 'q':
+          px(x,0,0,16,16,'#d4ccbc'); px(x,1,3,14,10,'#ece3d1'); px(x,1,3,14,2,'#c9a44a'); px(x,3,6,10,5,'#d9cfbe'); px(x,7,7,2,3,'#b08a45'); break;
+        case 's':
+          px(x,0,0,16,16,'#ddd3c0'); px(x,1,1,14,14,'#7a5637'); px(x,2,2,12,3,'#f0e4cf'); px(x,2,6,12,3,'#d9c7a5'); px(x,2,10,12,3,'#c7d8c0'); px(x,3,3,2,1,'#c9564a'); px(x,6,3,2,1,'#4a87b8'); px(x,9,7,2,1,'#e9b84a'); break;
+        case 'u':
+          px(x,0,0,16,16,'#7a5637'); px(x,0,0,16,4,'#9b7349'); px(x,0,4,16,1,'#5e4028'); px(x,1,6,14,8,'#68472d'); px(x,2,7,3,2,'#c9a44a'); break;
+        case 'v':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,2,4,12,7,'#8b6244'); px(x,3,5,10,5,'#a07050'); px(x,3,11,2,3,'#65432e'); px(x,11,11,2,3,'#65432e'); break;
+        case 'w':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,4,3,8,4,'#7a5637'); px(x,4,7,8,3,'#986d48'); px(x,4,10,2,4,'#65432e'); px(x,10,10,2,4,'#65432e'); break;
+        case 'x':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,1,2,14,12,'#6b4b33'); px(x,2,3,12,10,'#e8e1d4'); px(x,2,3,12,4,'#f3efe6'); px(x,2,9,12,4,'#8fb0c8'); break;
+        case 'y':
+          px(x,0,0,16,16,'#d6cbb6'); px(x,1,2,14,12,'#8a8f95'); px(x,2,3,12,4,'#5d6670'); px(x,3,9,4,3,'#3f4750'); px(x,9,9,4,3,'#3f4750'); px(x,6,5,4,1,'#c9a44a'); break;
+        case 'z':
+          px(x,0,0,16,16,'#d7ccb8'); px(x,2,5,12,7,'#dfe6eb'); px(x,3,6,10,5,'#b8d0d8'); px(x,7,2,2,3,'#9aa3ad'); px(x,7,11,2,3,'#8b6244'); break;
+        case '1':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,1,5,14,4,'#7a5637'); px(x,2,6,12,2,'#986d48'); px(x,2,9,2,5,'#65432e'); px(x,12,9,2,5,'#65432e'); break;
+        case '2':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,3,3,10,7,'#2f3c46'); px(x,4,4,8,5,'#6fb0c8'); px(x,7,10,2,2,'#59636d'); px(x,5,12,6,1,'#59636d'); break;
+        case '3':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,3,5,10,7,'#4a5560'); px(x,4,6,8,3,'#9fc3d8'); px(x,5,10,6,1,'#c9a44a'); break;
+        case '4':
+          px(x,0,0,16,16,'#ddd3c0'); px(x,1,1,14,14,'#6b4b33'); px(x,2,2,12,12,'#845e3d'); px(x,3,3,4,4,'#c9564a'); px(x,9,3,4,4,'#4a87b8'); px(x,3,9,4,4,'#7a9a5a'); px(x,9,9,4,4,'#e9b84a'); break;
+        case '5':
+          px(x,0,0,16,16,'#d4ccbc'); px(x,7,8,2,5,'#efe2c6'); px(x,7,6,2,2,'#f3c44f'); px(x,6,10,4,1,'#c9a44a'); break;
+        case '6':
+          px(x,0,0,16,16,'#ddd3c0'); px(x,2,2,12,12,'#7a5637'); px(x,3,3,10,10,'#5f7e96'); px(x,4,8,8,4,'#7a9a5a'); px(x,6,5,3,3,'#e9b84a'); break;
+        case '7':
+          px(x,0,0,16,16,'#d8cdb7'); px(x,2,2,12,12,'#6b5540'); px(x,3,3,10,10,'#9fc3d8'); px(x,7,3,2,10,'#6b5540'); px(x,3,7,10,2,'#6b5540'); px(x,3,3,10,3,'rgba(255,255,255,.25)'); break;
+        case '8':
+          px(x,0,0,16,16,'#ddd3c0'); px(x,3,1,10,15,'#6b4b33'); px(x,4,2,8,13,'#855f3d'); px(x,10,9,1,1,'#c9a44a'); break;
+        case '9':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,6,10,4,4,'#8b6244'); ell(x,8,7,4,4,'#5f9a4e'); ell(x,6,6,2,2,'#7ab868'); break;
+        case '0':
+          px(x,0,0,16,16,'#d8ccb4'); px(x,1,3,14,10,'#8b6244'); px(x,2,4,12,5,'#dceef3'); px(x,3,6,3,2,'#e0ab69'); px(x,7,6,3,2,'#d9543f'); px(x,11,6,2,2,'#f2d24f'); px(x,2,9,12,3,'#6b4b33'); break;
         default: px(x, 0, 0, 16, 16, '#d44d9a');
       }
       return c;
@@ -563,10 +617,14 @@
     propSprite(kind) {
       const key='prop:'+kind; if(this.cache[key]) return this.cache[key];
       let c,x;
-      if(kind==='lamp'){ c=cv(24,48); x=ctx(c); px(x,10,18,4,30,'#3b4248'); px(x,8,16,8,4,'#2f353b'); px(x,7,8,10,10,'#f6e7a2'); px(x,6,6,12,3,'#4a5158'); x.fillStyle='rgba(255,240,170,.14)'; x.beginPath(); x.arc(12,13,12,0,Math.PI*2); x.fill(); px(x,8,44,8,3,'#4a5158'); }
-      else if(kind==='bench'){ c=cv(32,20); x=ctx(c); px(x,2,8,28,4,'#6d4a2f'); px(x,3,4,26,5,'#855d3b'); px(x,3,5,26,1,'#9a7048'); px(x,4,12,3,7,'#4a382b'); px(x,25,12,3,7,'#4a382b'); }
-      else if(kind==='edicola'){ c=cv(48,48); x=ctx(c); px(x,2,10,44,34,'#2f6a4d'); px(x,4,14,40,24,'#f3ecd8'); px(x,6,16,12,7,'#c9564a'); px(x,20,16,10,7,'#4a87b8'); px(x,32,16,8,7,'#7a9a5a'); px(x,4,38,40,4,'#6b5632'); px(x,0,6,48,6,'#8a7046'); px(x,2,42,44,4,'#5a4528'); }
-      else if(kind==='plant'){ c=cv(16,20); x=ctx(c); px(x,5,12,6,7,'#8b6244'); px(x,4,11,8,2,'#a07050'); x.fillStyle='#5f9a4e'; x.beginPath(); x.arc(8,8,6,0,Math.PI*2); x.fill(); x.fillStyle='#7ab868'; x.beginPath(); x.arc(6,7,3,0,Math.PI*2); x.fill(); }
+      if(kind==='lamp'){ c=cv(24,52); x=ctx(c); px(x,10,20,4,30,'#3b4248'); px(x,8,18,8,4,'#2f353b'); px(x,7,8,10,11,'#f6e7a2'); px(x,6,6,12,3,'#4a5158'); px(x,9,2,6,5,'#3d444b'); x.fillStyle='rgba(255,240,170,.14)'; x.beginPath(); x.arc(12,13,14,0,Math.PI*2); x.fill(); px(x,8,48,8,3,'#4a5158'); }
+      else if(kind==='bench'){ c=cv(36,22); x=ctx(c); px(x,2,9,32,4,'#6d4a2f'); px(x,3,4,30,6,'#855d3b'); px(x,3,5,30,1,'#9a7048'); px(x,5,13,3,7,'#4a382b'); px(x,28,13,3,7,'#4a382b'); px(x,4,3,28,2,'#704d31'); }
+      else if(kind==='edicola'){ c=cv(48,52); x=ctx(c); px(x,2,12,44,34,'#2f6a4d'); px(x,4,16,40,24,'#f3ecd8'); px(x,6,18,12,7,'#c9564a'); px(x,20,18,10,7,'#4a87b8'); px(x,32,18,8,7,'#7a9a5a'); px(x,6,27,10,6,'#e0ab69'); px(x,18,27,10,6,'#d9c7a5'); px(x,4,40,40,4,'#6b5632'); px(x,0,8,48,6,'#8a7046'); px(x,2,44,44,4,'#5a4528'); px(x,-1,6,50,4,'#9a8052'); }
+      else if(kind==='plant'){ c=cv(18,22); x=ctx(c); px(x,6,13,6,7,'#8b6244'); px(x,5,12,8,2,'#a07050'); x.fillStyle='#5f9a4e'; x.beginPath(); x.arc(9,8,7,0,Math.PI*2); x.fill(); x.fillStyle='#7ab868'; x.beginPath(); x.arc(7,7,3,0,Math.PI*2); x.fill(); x.fillStyle='#d96f8b'; px(x,11,6,2,2,'#d96f8b'); }
+      else if(kind==='cart'){ c=cv(40,28); x=ctx(c); px(x,4,10,28,10,'#7a5637'); px(x,5,11,26,8,'#986d48'); px(x,6,4,24,8,'#c9564a'); px(x,8,6,4,4,'#f2d24f'); px(x,14,6,4,4,'#e0ab69'); px(x,20,6,4,4,'#f0e4cf'); px(x,6,20,6,6,'#4a382b'); px(x,24,20,6,6,'#4a382b'); px(x,7,21,4,4,'#8b8f95'); px(x,25,21,4,4,'#8b8f95'); }
+      else if(kind==='sign'){ c=cv(28,34); x=ctx(c); px(x,12,14,4,18,'#65432e'); px(x,2,2,24,14,'#f0e4cf'); px(x,2,2,24,2,'#7a5637'); px(x,4,6,20,2,'#b44a3a'); px(x,6,10,16,2,'#5a7a8f'); }
+      else if(kind==='table_out'){ c=cv(28,20); x=ctx(c); px(x,2,8,24,4,'#8b6244'); px(x,3,6,22,3,'#a07050'); px(x,4,12,3,6,'#65432e'); px(x,21,12,3,6,'#65432e'); px(x,12,4,4,3,'#f0e4cf'); }
+      else if(kind==='chair_out'){ c=cv(14,18); x=ctx(c); px(x,3,2,8,6,'#7a5637'); px(x,3,8,8,3,'#986d48'); px(x,3,11,2,5,'#65432e'); px(x,9,11,2,5,'#65432e'); }
       else { c=cv(16,16); x=ctx(c); px(x,0,0,16,16,'#d44d9a'); }
       return this.cache[key]=c;
     },
