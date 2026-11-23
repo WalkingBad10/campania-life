@@ -274,6 +274,11 @@
         this.player.vx = 0; this.player.vy = 0;
         this.player.dir = this.map.spawnDir || (id === 'prev' ? this.player.dir : 'down');
         this.entities.push(this.player);
+        const interiorSpots = {
+          bar: [[6*T+8,5*T+8],[4*T+8,9*T+8],[13*T+8,8*T+8],[15*T+8,5*T+8]],
+          casa_nonna: [[7*T+8,17*T+8],[20*T+8,17*T+8],[7*T+8,8*T+8],[20*T+8,8*T+8]]
+        };
+        let iSpot = 0;
         for (const nid in D.npcs) {
           const def = D.npcs[nid];
           if (!def) continue;
@@ -281,10 +286,10 @@
           if (inThisMap) {
             const n = new CL.NPC(this, nid, def);
             if (isInterior) {
-              const cx = this.map.width / 2, cy = this.map.height - 80;
-              n.x = cx; n.y = cy; n.homeX = n.x; n.homeY = n.y;
-              // keep NPCs from blocking church entrance carpet/spawn
-              if (target.map === 'casa_nonna') { n.x = 7 * T + 8; n.y = 17 * T + 8; n.homeX = n.x; n.homeY = n.y; }
+              const spots = interiorSpots[target.map];
+              if (spots && spots[iSpot]) { n.x = spots[iSpot][0]; n.y = spots[iSpot][1]; iSpot++; }
+              else { n.x = this.map.width / 2; n.y = this.map.height - 80; }
+              n.homeX = n.x; n.homeY = n.y;
             }
             this.entities.push(n);
           }

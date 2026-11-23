@@ -89,7 +89,7 @@
   /* --------------------------------------------------------------- PNG */
   D.npcs = {
     nonna:    { name: 'Nonna Assunta', look: { hair: '#d8d4cc', skin: '#e8b48a', shirt: '#7a4b6b', pants: '#4b4152' }, home: 'napoli', x: 20, y: 20, role: 'family' },
-    barista:  { name: 'Ciro il barista', look: { hair: '#2d2622', skin: '#d79c74', shirt: '#f0ede2', pants: '#3a4650' }, home: 'napoli', x: 44, y: 37, role: 'shop' },
+    barista:  { name: 'Ciro il barista', look: { hair: '#2d2622', skin: '#d79c74', shirt: '#f0ede2', pants: '#3a4650' }, home: 'bar', x: 6, y: 5, role: 'shop' },
     banchiere:{ name: 'Dott.ssa Rina', look: { hair: '#4a2c20', skin: '#e6b892', shirt: '#37556b', pants: '#283743' }, home: 'napoli', x: 32, y: 37, role: 'bank' },
     medico:   { name: 'Dott. Esposito', look: { hair: '#39332e', skin: '#dba67e', shirt: '#eef2ee', pants: '#58707c' }, home: 'napoli', x: 18, y: 37, role: 'clinic' },
     negoziante:{name: 'Sora Maria', look: { hair: '#6b3f2a', skin: '#d29a72', shirt: '#c5584a', pants: '#4e3b36' }, home: 'napoli', x: 39, y: 33, role: 'shop' },
@@ -101,7 +101,13 @@
     archeologo:{name: 'Prof. Rovelli', look: { hair: '#aaa39a', skin: '#dfa97f', shirt: '#8a6a4b', pants: '#3a3a35' }, home: 'pompei', x: 29, y: 23, role: 'job' },
     fidanzata:{name: 'Giulia', look: { hair: '#3a211a', skin: '#e8b389', shirt: '#d96f8b', pants: '#4c4358' }, home: 'napoli', x: 28, y: 31, role: 'social' },
     passante1:{name: 'Studente', look: { hair: '#2a2018', skin: '#dba67e', shirt: '#4a87b8', pants: '#3f4550' }, home: 'napoli', x: 25, y: 28, role: 'ambient' },
-    passante2:{name: 'Signora Lucia', look: { hair: '#8b5a3c', skin: '#e0b088', shirt: '#7a9a5a', pants: '#5a4a58' }, home: 'napoli', x: 42, y: 29, role: 'ambient' }
+    passante2:{name: 'Signora Lucia', look: { hair: '#8b5a3c', skin: '#e0b088', shirt: '#7a9a5a', pants: '#5a4a58' }, home: 'napoli', x: 42, y: 29, role: 'ambient' },
+    turista_piazza:{name:'Claire', look:{hair:'#d7b06a',skin:'#f0c8a0',shirt:'#5aa7d6',pants:'#6a6f7a'}, home:'napoli', x:33, y:27, role:'ambient'},
+    studente: {name:'Luca', look:{hair:'#3a2f2a',skin:'#dcae84',shirt:'#3f7a5a',pants:'#404854'}, home:'napoli', x:47, y:29, role:'ambient'},
+    fioraia:  {name:'Rosa la fioraia', look:{hair:'#7b3b3b',skin:'#e0b08a',shirt:'#d96b8b',pants:'#5a4b52'}, home:'napoli', x:27, y:35, role:'ambient'},
+    vigile:   {name:'Agente Esposito', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'napoli', x:52, y:32, role:'ambient'},
+    cliente_bar1:{name:'Gennaro', look:{hair:'#5b4a3d',skin:'#d5a276',shirt:'#7a5b44',pants:'#4a4f58'}, home:'bar', x:4, y:9, role:'ambient'},
+    cliente_bar2:{name:'Mirella', look:{hair:'#6b3a2a',skin:'#e3b289',shirt:'#c05858',pants:'#5a4a60'}, home:'bar', x:13, y:8, role:'ambient'}
   };
 
   /* --------------------------------------------------------------- quest */

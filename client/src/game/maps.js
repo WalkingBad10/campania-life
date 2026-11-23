@@ -340,9 +340,12 @@
     for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
     for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
     for (let x = 1; x < w - 1; x++) { g[1][x] = 'j'; g[2][x] = 'j'; }
+    // pavimento zona tavoli
+    for (let y = 7; y <= 12; y++) for (let x = 2; x <= 17; x++) g[y][x] = 'Z';
     // bancone
     for (let x = 2; x <= 10; x++) g[4][x] = 'u';
     g[3][3] = '0'; g[3][5] = '3'; g[3][7] = 'y'; g[3][9] = '0';
+    g[5][4] = 'w'; g[5][8] = 'w';
     // scaffali dietro
     g[2][2] = 's'; g[2][4] = 's'; g[2][6] = 's'; g[2][8] = 's'; g[2][10] = 's';
     // tavoli e sedie
@@ -350,17 +353,20 @@
     tables.forEach(([tx,ty]) => { g[ty][tx] = 'v'; if (g[ty-1]) g[ty-1][tx] = 'w'; if (g[ty+1]) g[ty+1][tx] = 'w'; if (g[ty][tx-1]) g[ty][tx-1] = 'w'; if (g[ty][tx+1]) g[ty][tx+1] = 'w'; });
     // finestre/decor
     g[1][14] = '7'; g[1][16] = '7';
-    g[2][17] = '9'; g[11][17] = '9';
+    g[2][17] = '9'; g[11][17] = '9'; g[11][2] = '9';
     const dx = 10, dy = h - 1;
     g[dy][dx] = 'D';
     portal(m, dx, dy, 1, 1, 'prev', { x: 44 * T, y: 46 * T }, 'Esci');
     poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
     poi(m, 6, 5, 'bar_counter', 'service', 'Bancone — ordina', 'shop', { shop: 'bar' });
     poi(m, 4, 9, 'seat', 'furniture', 'Siediti e mangia', 'eat_bar');
+    poi(m, 13, 9, 'seat2', 'furniture', 'Siediti e mangia', 'eat_bar');
     decor(m, 3, 3, 'warm_light', { r: 28, color: 'rgba(255,190,120,.16)' });
     decor(m, 15, 6, 'warm_light', { r: 24, color: 'rgba(255,190,120,.14)' });
     decor(m, 10, 10, 'warm_light', { r: 24, color: 'rgba(255,190,120,.12)' });
+    decor(m, 6, 3, 'window_light', { w: 12, h: 8, color: 'rgba(255,220,160,.10)' });
     m.spawn = { x: dx * T, y: (h - 3) * T };
+    m.spawnDir = 'up';
     return m;
   }
 

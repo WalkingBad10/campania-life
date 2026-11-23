@@ -305,59 +305,66 @@
 
     /* ---------------------------------------------------------- personaggi */
     character(look, dir, frame) {
-      const key = ['c3', look.hair, look.skin, look.shirt, look.pants, dir, frame].join('|');
+      const key = ['c4', look.hair, look.skin, look.shirt, look.pants, dir, frame].join('|');
       if (this.cache[key]) return this.cache[key];
       const c = cv(16, 24), x = ctx(c), d = P.dark;
       const skinD = shade(look.skin, -22), skinL = shade(look.skin, 12);
       const shirtD = shade(look.shirt, -28), shirtL = shade(look.shirt, 16);
       const hairD = shade(look.hair, -28), hairL = shade(look.hair, 18);
       const pantsD = shade(look.pants, -24), pantsL = shade(look.pants, 14);
-      const bob = frame === 1 ? 1 : frame === 3 ? -1 : 0;
-      const legA = frame === 1 ? 2 : frame === 3 ? -2 : 0;
-      const armA = frame === 1 ? -1 : frame === 3 ? 1 : 0;
-      // ombra
-      px(x, 3, 22, 10, 2, 'rgba(18,22,28,.20)');
-      // gambe
-      px(x, 5, 17 + bob, 3, 4 + Math.max(0, legA), look.pants);
-      px(x, 9, 17 + bob, 3, 4 + Math.max(0, -legA), look.pants);
-      px(x, 5, 17 + bob, 1, 3, pantsL); px(x, 9, 17 + bob, 1, 3, pantsL);
-      px(x, 6, 20 + bob + Math.max(0, legA), 2, 1, pantsD); px(x, 10, 20 + bob + Math.max(0, -legA), 1, 1, pantsD);
-      // scarpe
-      px(x, 4, 21 + bob + legA, 4, 2, '#4a3a32'); px(x, 9, 21 + bob - legA, 4, 2, '#4a3a32');
-      px(x, 4, 22 + bob + legA, 4, 1, '#352922'); px(x, 9, 22 + bob - legA, 4, 1, '#352922');
-      // busto
-      px(x, 4, 11 + bob, 8, 7, look.shirt);
-      px(x, 4, 11 + bob, 8, 1, shirtD); px(x, 4, 17 + bob, 8, 1, shirtD);
-      px(x, 5, 12 + bob, 2, 4, shirtL); px(x, 8, 13 + bob, 1, 3, shirtD);
-      // braccia
-      px(x, 2, 12 + bob + armA, 2, 4, look.shirt); px(x, 12, 12 + bob - armA, 2, 4, look.shirt);
-      px(x, 2, 15 + bob + armA, 2, 1, skinD); px(x, 12, 15 + bob - armA, 2, 1, skinD);
-      px(x, 2, 16 + bob + armA, 2, 1, look.skin); px(x, 12, 16 + bob - armA, 2, 1, look.skin);
-      // collo
-      px(x, 7, 10 + bob, 2, 2, skinD);
-      // testa
-      px(x, 4, 3 + bob, 8, 8, look.skin);
-      px(x, 3, 5 + bob, 1, 5, look.skin); px(x, 12, 5 + bob, 1, 5, look.skin);
-      px(x, 4, 4 + bob, 1, 5, skinL); px(x, 4, 10 + bob, 8, 1, skinD);
-      // capelli
-      px(x, 3, 2 + bob, 10, 3, look.hair); px(x, 3, 4 + bob, 1, 4, look.hair); px(x, 12, 4 + bob, 1, 4, look.hair);
-      px(x, 4, 1 + bob, 8, 1, hairL); px(x, 4, 2 + bob, 8, 1, hairD);
-      if (dir === 'up') {
-        px(x, 3, 3 + bob, 10, 8, look.hair); px(x, 5, 5 + bob, 6, 4, hairD); px(x, 4, 2 + bob, 8, 1, hairL);
-      } else if (dir === 'left') {
-        px(x, 4, 4 + bob, 3, 6, look.hair);
-        px(x, 5, 7 + bob, 1, 2, d); px(x, 5, 7 + bob, 1, 1, '#fff');
-        px(x, 6, 9 + bob, 2, 1, shade(look.skin, -30)); px(x, 3, 8 + bob, 1, 2, skinD);
-      } else if (dir === 'right') {
-        px(x, 9, 4 + bob, 3, 6, look.hair);
-        px(x, 10, 7 + bob, 1, 2, d); px(x, 10, 7 + bob, 1, 1, '#fff');
-        px(x, 8, 9 + bob, 2, 1, shade(look.skin, -30)); px(x, 12, 8 + bob, 1, 2, skinD);
+      const shoe = '#4a3a32', shoeD = '#352922';
+      const f = frame % 4;
+      const bob = (f === 1 || f === 3) ? -1 : 0;
+      const legA = f === 1 ? 2 : f === 3 ? -2 : 0;
+      const armA = f === 1 ? -1 : f === 3 ? 1 : 0;
+      const isSide = dir === 'left' || dir === 'right';
+      px(x, 3, 22, 10, 2, 'rgba(18,22,28,.22)');
+      if (isSide) {
+        const lx = 6 + (f===1?1:f===3?-1:0);
+        px(x, lx, 17 + bob, 3, 4, look.pants); px(x, lx, 17+bob, 1, 3, pantsL);
+        px(x, lx+1, 21 + bob, 3, 2, shoe); px(x, lx+1, 22+bob, 3, 1, shoeD);
       } else {
-        px(x, 6, 7 + bob, 1, 2, d); px(x, 10, 7 + bob, 1, 2, d);
-        px(x, 6, 7 + bob, 1, 1, '#fff'); px(x, 10, 7 + bob, 1, 1, '#fff');
-        px(x, 7, 8 + bob, 1, 1, '#8b5a4a'); px(x, 11, 8 + bob, 1, 1, '#8b5a4a');
-        px(x, 8, 9 + bob, 1, 1, shade(look.skin, -30));
-        px(x, 7, 10 + bob, 3, 1, 'rgba(120,60,50,.18)');
+        px(x, 5, 17 + bob, 3, 4 + Math.max(0, legA), look.pants);
+        px(x, 9, 17 + bob, 3, 4 + Math.max(0, -legA), look.pants);
+        px(x, 5, 17 + bob, 1, 3, pantsL); px(x, 9, 17 + bob, 1, 3, pantsL);
+        px(x, 4, 21 + bob + legA, 4, 2, shoe); px(x, 9, 21 + bob - legA, 4, 2, shoe);
+        px(x, 4, 22 + bob + legA, 4, 1, shoeD); px(x, 9, 22 + bob - legA, 4, 1, shoeD);
+      }
+      const bx = isSide ? 5 : 4, bw = isSide ? 6 : 8;
+      px(x, bx, 11 + bob, bw, 7, look.shirt);
+      px(x, bx, 11 + bob, bw, 1, shirtD); px(x, bx, 17 + bob, bw, 1, shirtD);
+      px(x, bx+1, 12 + bob, 2, 4, shirtL);
+      px(x, bx+2, 16 + bob, bw-4, 1, pantsD);
+      if (isSide) {
+        const ax = dir === 'left' ? 4 : 10;
+        px(x, ax, 12 + bob + armA, 2, 4, look.shirt);
+        px(x, ax, 16 + bob + armA, 2, 2, look.skin);
+      } else {
+        px(x, 2, 12 + bob + armA, 2, 4, look.shirt); px(x, 12, 12 + bob - armA, 2, 4, look.shirt);
+        px(x, 2, 16 + bob + armA, 2, 2, look.skin); px(x, 12, 16 + bob - armA, 2, 2, look.skin);
+      }
+      px(x, 7, 10 + bob, 2, 2, skinD);
+      const hx = 4;
+      px(x, hx, 3 + bob, 8, 8, look.skin);
+      px(x, hx-1, 5 + bob, 1, 5, look.skin); px(x, hx+8, 5 + bob, 1, 5, look.skin);
+      px(x, hx, 4 + bob, 1, 5, skinL); px(x, hx, 10 + bob, 8, 1, skinD);
+      px(x, hx-1, 2 + bob, 10, 3, look.hair); px(x, hx-1, 4 + bob, 1, 4, look.hair); px(x, hx+8, 4 + bob, 1, 4, look.hair);
+      px(x, hx, 1 + bob, 8, 1, hairL); px(x, hx, 2 + bob, 8, 1, hairD);
+      if (dir === 'up') {
+        px(x, hx-1, 3 + bob, 10, 8, look.hair); px(x, hx+1, 5 + bob, 6, 4, hairD); px(x, hx, 2 + bob, 8, 1, hairL);
+      } else if (dir === 'left') {
+        px(x, hx, 4 + bob, 3, 6, look.hair);
+        px(x, hx+1, 7 + bob, 1, 2, d); px(x, hx+1, 7 + bob, 1, 1, '#fff');
+        px(x, hx+2, 9 + bob, 2, 1, shade(look.skin, -30));
+      } else if (dir === 'right') {
+        px(x, hx+5, 4 + bob, 3, 6, look.hair);
+        px(x, hx+6, 7 + bob, 1, 2, d); px(x, hx+6, 7 + bob, 1, 1, '#fff');
+        px(x, hx+4, 9 + bob, 2, 1, shade(look.skin, -30));
+      } else {
+        px(x, hx+2, 7 + bob, 1, 2, d); px(x, hx+6, 7 + bob, 1, 2, d);
+        px(x, hx+2, 7 + bob, 1, 1, '#fff'); px(x, hx+6, 7 + bob, 1, 1, '#fff');
+        px(x, hx+4, 9 + bob, 1, 1, shade(look.skin, -30));
+        px(x, hx+3, 10 + bob, 3, 1, 'rgba(120,60,50,.18)');
       }
       return this.cache[key] = c;
     },
