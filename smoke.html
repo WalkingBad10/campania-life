@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head><meta charset="utf-8"><title>CL smoke test</title></head>
+<body>
+<canvas id="game" width="480" height="270"></canvas>
+<pre id="out">running…</pre>
+<script src="client/src/game/core.js"></script>
+<script src="client/src/game/data.js"></script>
+<script src="client/src/game/art.js"></script>
+<script src="client/src/game/maps.js"></script>
+<script src="client/src/game/systems.js"></script>
+<script src="client/src/game/entities.js"></script>
+<script src="client/src/game/engine.js"></script>
+<script>
+window.__errors = [];
+window.onerror = function (m, s, l, c) { window.__errors.push(m + ' @' + l + ':' + c); };
+window.__result = null;
+try {
+  CL.art.init();
+  CL.input.init();
+  var g = new CL.Game(document.getElementById('game'));
+  CL.game = g;
+  g.newGame({ name: 'Test', surname: 'Prova', look: { hair: '#2d2622', skin: '#d79c74', shirt: '#c75b3b', pants: '#3a4650' }, perk: 'nativo' });
+  for (var i = 0; i < 180; i++) g.update(1 / 60);
+  g.render();
+  CL.systems.time.addMinutes(90);
+  CL.systems.economy.earn(600, 'test');
+  CL.systems.inventory.add('rete', 3);
+  CL.systems.jobs.work('barista');
+  CL.systems.quests.start('richiamo_mare');
+  g.enterMap('costiera');
+  for (var j = 0; j < 60; j++) g.update(1 / 60);
+  g.render();
+  CL.systems.actions.fish();
+  g.enterMap('grotta');
+  g.render();
+  CL.systems.creatures.tryCatch({ id: 'gabbiotto', map: 'costiera', x: 100, y: 100 });
+  var snap = g.snapshot();
+  window.__result = {
+    ok: true,
+    errors: window.__errors,
+    map: g.map.id,
+    clock: snap.clock,
+    money: snap.money,
+    quests: snap.quests.length,
+    entities: g.entities.length,
+    creatures: g.creatures.length,
+    tiles: Object.keys(CL.art.tiles).length,
+    zones: ['napoli','costiera','vesuvio','pompei','capri'].map(function(id){ return CL.maps.get(id).w; })
+  };
+} catch (e) {
+  window.__result = { ok: false, error: String(e && e.stack || e), errors: window.__errors };
+}
+document.getElementById('out').textContent = JSON.stringify(window.__result, null, 2);
+</script>
+</body>
+</html>

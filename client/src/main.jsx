@@ -1,0 +1,17 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+// Motore di gioco (moduli plain JS che popolano window.CL).
+import './game/core.js';
+import './game/data.js';
+import './game/art.js';
+import './game/maps.js';
+import './game/systems.js';
+import './game/entities.js';
+import './game/engine.js';
+
+import './styles.css';
+import App from './App.jsx';
+
+CL.art.init();
+createRoot(document.getElementById('root')).render(<App />);

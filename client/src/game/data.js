@@ -1,0 +1,289 @@
+/* CAMPANIA LIFE — data.js
+ * Contenuto originale del gioco: oggetti, lavori, immobili, creature, PNG, quest, negozi, dialoghi.
+ * Tutti i nomi e le creature sono inventati per questo progetto.
+ */
+(function (w) {
+  'use strict';
+  const CL = w.CL, D = CL.data = {};
+
+  /* ------------------------------------------------------------- oggetti */
+  D.items = {
+    pane:        { name: 'Pane fresco',        desc: 'Crosta croccante, mollica morbida.',   type: 'food', price: 3,   effect: { hunger: 22 }, icon: 'bread' },
+    caffe:       { name: 'Caffè napoletano',   desc: 'Nero, dolce, serve a svegliarsi.',     type: 'food', price: 2,   effect: { hunger: 8, energy: 16 }, icon: 'cup' },
+    arancino:    { name: 'Arancino',           desc: 'Riso, ragù e mozzarella. Delizioso.',  type: 'food', price: 6,   effect: { hunger: 38, mood: 10 }, icon: 'arancino' },
+    pizza:       { name: 'Pizza a portafoglio',desc: 'Piegata, calda, perfetta in piedi.',   type: 'food', price: 9,   effect: { hunger: 52, mood: 14 }, icon: 'pizza' },
+    pesce:       { name: 'Pesce azzurro',      desc: 'Pescato con le tue mani.',             type: 'food', price: 12,  effect: { hunger: 44, energy: 8 }, icon: 'fish' },
+    acqua:       { name: 'Acqua di sorrento',  desc: 'Disseta e rinfresca.',                 type: 'food', price: 1,   effect: { thirst: 40 }, icon: 'bottle' },
+    fiore:       { name: 'Mazzolino di fiori', desc: 'Profumato. Piace a tutti.',            type: 'gift', price: 8,   gift: 6, icon: 'flower' },
+    cioccolato:  { name: 'Cioccolato di Capri',desc: 'Dolce e avvolgente.',                  type: 'gift', price: 11,  gift: 9, icon: 'box' },
+    vino:        { name: 'Falanghina',         desc: 'Un bicchiere di sole campano.',        type: 'gift', price: 16,  gift: 12, icon: 'bottle' },
+    rete:        { name: 'Reta da cattura',    desc: 'Per le creature. Si consuma.',         type: 'tool', price: 14,  stack: true, icon: 'net' },
+    canna:       { name: 'Canna da pesca',     desc: 'Richiede il molo. Pressa E per pescare.', type: 'tool', price: 65, unique: true, icon: 'rod' },
+    bicicletta:  { name: 'Bicicletta',         desc: 'Più veloce a piedi, niente carburante.', type: 'vehicle', price: 180, unique: true, icon: 'bike' },
+    moto:        { name: 'Vespa 125',          desc: 'Simbolo di libertà. Consumo ridotto.', type: 'vehicle', price: 1450, unique: true, icon: 'scooter' },
+    auto:        { name: 'Utilitaria',         desc: 'Quattro posti e un bagagliaio.',       type: 'vehicle', price: 8200, unique: true, icon: 'car' },
+    mappa:       { name: 'Mappa della Campania',desc: 'Mostra tutte le zone e i luoghi.',     type: 'key', price: 20, unique: true, icon: 'map' },
+    ombrello:    { name: 'Ombrello',           desc: 'Tiene asciutti sotto la pioggia.',     type: 'tool', price: 12, unique: true, icon: 'umbrella' },
+    cappello:    { name: 'Cappello di paglia', desc: 'Protegge dal sole di mezzogiorno.',    type: 'outfit', price: 25, unique: true, icon: 'hat' },
+    divisa:      { name: 'Divisa da lavoro',   desc: 'Ti fa sembrare un professionista.',    type: 'outfit', price: 40, unique: true, icon: 'shirt' },
+    chiave_casa: { name: 'Chiavi di casa',     desc: 'Aprono la tua porta.',                 type: 'key', price: 0, unique: true, icon: 'key' },
+    chiave_bottega:{ name:'Chiavi della bottega', desc:'Aprono la tua attività.',            type:'key', price:0, unique:true, icon:'key' },
+    trofeo:      { name: 'Trofeo del Vulcano', desc: 'Un ricordo del tuo viaggio.',          type: 'quest', price: 0, unique: true, icon: 'trophy' }
+  };
+  D.foodOrder = ['pane', 'arancino', 'pizza', 'caffe', 'acqua', 'pesce'];
+
+  /* -------------------------------------------------------------- lavori */
+  D.jobs = {
+    barista: {
+      name: 'Barista', place: 'bar', hours: [9, 17], pay: 11, energy: 18, rep: 0,
+      req: null, desc: 'Prepara caffè e chiacchiera con i clienti del Caffè Vittoria.',
+      events: ['Un cliente ti lascia una mancia di 8 €.', 'Ti rovesci il caffè addosso: -4 energia.', 'Il proprietario ti offre un arancino.']
+    },
+    consegne: {
+      name: 'Consegne', place: 'ufficio', hours: [10, 18], pay: 14, energy: 22, rep: 2,
+      req: { item: 'bicicletta' }, desc: 'Porta pacchi per le strade di Napoli. Serve una bicicletta.',
+      events: ['Scopri una scorciatoia: +6 €.', 'Una buca ti costa 6 energia.', 'Consegna doppia: +10 €.']
+    },
+    guida: {
+      name: 'Guida turistica', place: 'pompei', hours: [8, 16], pay: 18, energy: 16, rep: 20,
+      req: { rep: 20 }, desc: 'Racconta la storia degli scavi. Richiede 20 di reputazione.',
+      events: ['Un turista ti lascia 12 € di mancia.', 'Un gruppo numeroso: +9 €.', 'Fa molto caldo: -5 energia.']
+    },
+    pescatore: {
+      name: 'Pescatore', place: 'molo', hours: [6, 14], pay: 13, energy: 20, rep: 0,
+      req: { item: 'canna' }, desc: 'Esci sul molo all’alba. Serve una canna da pesca.',
+      events: ['Pesci 2 pesci extra.', 'Il sole ti brucia: -6 energia.', 'Un pesce grande: +15 €.']
+    },
+    operaio: {
+      name: 'Operaio edile', place: 'cantiere', hours: [7, 15], pay: 16, energy: 28, rep: 0,
+      req: null, desc: 'Lavoro duro ma ben pagato al cantiere del centro.',
+      events: ['Trovi 20 € in un muro.', 'Turno pesante: -8 energia.', 'Il capo ti elogia: +3 reputazione.']
+    }
+  };
+
+  /* ------------------------------------------------------------ immobili */
+  D.properties = {
+    monolocale: { name: 'Monolocale a Napoli', price: 4500, income: 55, interior: 'casa_giocatore', zone: 'napoli', desc: 'Piccolo, luminoso, tutto tuo. Letto, cucina e una finestra sul cortile.' },
+    appartamento: { name: 'Appartamento a Chiaia', price: 12000, income: 135, interior: 'appartamento', zone: 'napoli', desc: 'Due stanze, terrazzo e vista sui tetti. Il sogno di ogni napoletano.' },
+    casa_amalfi: { name: 'Casetta ad Amalfi', price: 28000, income: 260, interior: 'casa_amalfi', zone: 'costiera', desc: 'Bianca, con gerani e vista mare. Si sente il profumo di limoni.' },
+    bottega: { name: 'Bottega di famiglia', price: 19000, income: 310, interior: 'bottega', zone: 'napoli', desc: 'Un’attività commerciale tutta tua. Ogni giorno porta ricavi.' }
+  };
+
+  /* ------------------------------------------------------------- creature */
+  D.creatures = {
+    gabbiotto:   { name: 'Gabbiotto',   kind: 'Volante', rare: 1, zones: ['costiera'], color: '#e8eef0', accent: '#e8a13c', eye: '#22313b', desc: 'Ruba le brioche dai bar lungomare. Furbo ma affettuoso.', shape: 'gull' },
+    lumacara:    { name: 'Lumacara',    kind: 'Muco',    rare: 1, zones: ['napoli', 'costiera'], color: '#9fc06a', accent: '#d98a4b', eye: '#2b3327', desc: 'Lascia una scia lucida. Se la accarezzi, si nasconde.', shape: 'snail' },
+    cicalone:    { name: 'Cicalone',    kind: 'Suono',   rare: 1, zones: ['napoli', 'vesuvio'], color: '#7fa65a', accent: '#c9d86a', eye: '#243019', desc: 'Il suo canto si sente per tutto il borgo d’estate.', shape: 'cicada' },
+    polpettone:  { name: 'Polpettone',  kind: 'Cucina',  rare: 2, zones: ['napoli'], color: '#b96b42', accent: '#6f9b52', eye: '#2a1c17', desc: 'Nato da una pentola di ragù rimasta incustodita.', shape: 'meatball' },
+    scorfano:    { name: 'Scorfano',    kind: 'Acqua',   rare: 2, zones: ['costiera'], color: '#c45c4a', accent: '#f0a25c', eye: '#1c2630', desc: 'Brutto, burbero, ma ha un cuore d’oro. Vive tra gli scogli.', shape: 'fish' },
+    pastorello:  { name: 'Pastorello',  kind: 'Lana',    rare: 2, zones: ['vesuvio'], color: '#efe3c8', accent: '#7a5b45', eye: '#2f2620', desc: 'Una piccola pecora delle falde del vulcano.', shape: 'sheep' },
+    farfalla:    { name: 'Ali di Capri',kind: 'Volante', rare: 3, zones: ['costiera', 'vesuvio'], color: '#8fd8df', accent: '#f2a7c0', eye: '#23313b', desc: 'Le ali sembrano dipinte dal mare di Capri.', shape: 'butterfly' },
+    vesuviano:   { name: 'Vesuviano',   kind: 'Fuoco',   rare: 4, zones: ['vesuvio'], color: '#e8613c', accent: '#f7c24b', eye: '#3a1712', desc: 'Vive nelle grotte calde del vulcano. Non brucia, ma fa sola calda.', shape: 'lava' },
+    sirenetta:   { name: 'Sirenetta',   kind: 'Acqua',   rare: 4, zones: ['costiera'], color: '#5fc7c2', accent: '#f4c9a0', eye: '#173740', desc: 'Canta di notte vicino allo scoglio. Chi l’ascolta sorride.', shape: 'siren' }
+  };
+  D.creatureOrder = ['gabbiotto', 'lumacara', 'cicalone', 'polpettone', 'scorfano', 'pastorello', 'farfalla', 'vesuviano', 'sirenetta'];
+
+  /* ------------------------------------------------------------ zone/mappe */
+  D.zones = {
+    napoli: { name: 'Napoli Centro', track: 'town', weather: true, tint: '#d8e2d0', desc: 'Tra vicoli, piazze e caffè.' },
+    costiera: { name: 'Costiera Amalfitana', track: 'coast', weather: true, tint: '#cfe9e6', desc: 'Mare, limoni e mulattiere.' },
+    vesuvio: { name: 'Falde del Vesuvio', track: 'mountain', weather: true, tint: '#cdd8bd', desc: 'Sentieri, grotte e vigneti.' },
+    pompei: { name: 'Scavi di Pompei', track: 'town', weather: true, tint: '#e2d8bf', desc: 'Le rovine raccontano il passato.' }
+  };
+
+  /* --------------------------------------------------------------- PNG */
+  D.npcs = {
+    nonna:    { name: 'Nonna Assunta', look: { hair: '#d8d4cc', skin: '#e8b48a', shirt: '#7a4b6b', pants: '#4b4152' }, home: 'napoli', x: 15, y: 14, role: 'family' },
+    barista:  { name: 'Ciro il barista', look: { hair: '#2d2622', skin: '#d79c74', shirt: '#f0ede2', pants: '#3a4650' }, home: 'napoli', x: 24, y: 21, role: 'shop' },
+    banchiere:{ name: 'Dott.ssa Rina', look: { hair: '#4a2c20', skin: '#e6b892', shirt: '#37556b', pants: '#283743' }, home: 'napoli', x: 42, y: 17, role: 'bank' },
+    medico:   { name: 'Dott. Esposito', look: { hair: '#39332e', skin: '#dba67e', shirt: '#eef2ee', pants: '#58707c' }, home: 'napoli', x: 46, y: 31, role: 'clinic' },
+    negoziante:{name: 'Sora Maria', look: { hair: '#6b3f2a', skin: '#d29a72', shirt: '#c5584a', pants: '#4e3b36' }, home: 'napoli', x: 20, y: 35, role: 'shop' },
+    capo:     { name: 'Il capo cantiere', look: { hair: '#2b2624', skin: '#c98d64', shirt: '#e6a23c', pants: '#3d4146' }, home: 'napoli', x: 35, y: 37, role: 'job' },
+    pescatore:{ name: 'Vecchio Pescatore', look: { hair: '#c9c4b6', skin: '#c58b63', shirt: '#4d8ea3', pants: '#394f59' }, home: 'costiera', x: 21, y: 27, role: 'job' },
+    turista:  { name: 'Turista tedesco', look: { hair: '#d6b45c', skin: '#eec3a0', shirt: '#d8664c', pants: '#5b6d7a' }, home: 'costiera', x: 37, y: 19, role: 'quest' },
+    barcaiolo:{ name: 'Gennaro il barcaiolo', look: { hair: '#241f1e', skin: '#b9794f', shirt: '#f2e2bd', pants: '#356079' }, home: 'costiera', x: 63, y: 32, role: 'transport' },
+    guardiano:{ name: 'Guardiano del vulcano', look: { hair: '#8a8378', skin: '#b57755', shirt: '#6b7a4a', pants: '#3e4238' }, home: 'vesuvio', x: 17, y: 37, role: 'quest' },
+    archeologo:{name: 'Prof. Rovelli', look: { hair: '#aaa39a', skin: '#dfa97f', shirt: '#8a6a4b', pants: '#3a3a35' }, home: 'pompei', x: 29, y: 23, role: 'job' },
+    fidanzata:{name: 'Giulia', look: { hair: '#3a211a', skin: '#e8b389', shirt: '#d96f8b', pants: '#4c4358' }, home: 'napoli', x: 32, y: 25, role: 'social' }
+  };
+
+  /* --------------------------------------------------------------- quest */
+  D.quests = {
+    primo_giorno: {
+      name: 'Il primo giorno', giver: 'nonna', reward: { money: 100, items: { rete: 3 } },
+      desc: 'Nonna ti aspetta. Fai conoscenza con il quartiere e trova il tuo primo lavoro.',
+      stages: [
+        { text: 'Vai a trovare Nonna Assunta a casa', type: 'talk', target: 'nonna', count: 1 },
+        { text: 'Prendi un caffè al Caffè Vittoria', type: 'visit', target: 'bar', count: 1 },
+        { text: 'Guadagna 50 €', type: 'money', target: 50, count: 1 },
+        { text: 'Racconta a nonna com’è andata', type: 'talk', target: 'nonna', count: 2 }
+      ]
+    },
+    richiamo_mare: {
+      name: 'Il richiamo del mare', giver: 'pescatore', reward: { money: 120, items: { canna: 1 } },
+      desc: 'La costiera nasconde creature e storie. Il vecchio pescatore ti insegnerà.',
+      stages: [
+        { text: 'Raggiungi la Costiera Amalfitana', type: 'visit', target: 'costiera', count: 1 },
+        { text: 'Pesca al molo', type: 'fish', target: 1, count: 1 },
+        { text: 'Cattura una creatura del mare', type: 'catchzone', target: 'costiera', count: 1 }
+      ]
+    },
+    casa_tua: {
+      name: 'Una casa tutta tua', giver: 'banchiere', reward: { money: 200, rep: 5 },
+      desc: 'La banca finanzia i tuoi sogni. Metti da parte abbastanza per un tetto.',
+      stages: [
+        { text: 'Abbiamo 500 € in tasca', type: 'wealth', target: 500, count: 1 },
+        { text: 'Acquista un immobile', type: 'buyproperty', target: 1, count: 1 },
+        { text: 'Dormi nella tua nuova casa', type: 'sleephome', target: 1, count: 1 }
+      ]
+    },
+    vulcano_dorme: {
+      name: 'Il vulcano dorme', giver: 'guardiano', reward: { money: 300, items: { trofeo: 1 }, rep: 10 },
+      desc: 'Il guardiano ha visto qualcosa nella grotta. Chi si avvicina al fuoco?',
+      stages: [
+        { text: 'Esplora la grotta del Vesuvio', type: 'visit', target: 'grotta', count: 1 },
+        { text: 'Cattura un Vesuviano', type: 'catch', target: 'vesuviano', count: 1 },
+        { text: 'Parla con il Guardiano', type: 'talk', target: 'guardiano', count: 2 }
+      ]
+    },
+    sapori: {
+      name: 'Il tour dei sapori', giver: 'barista', reward: { money: 180, rep: 8 },
+      desc: 'Ciro ha bisogno di qualcuno che porti i sapori del bar in giro per la città.',
+      stages: [
+        { text: 'Lavora come barista', type: 'work', target: 'barista', count: 1 },
+        { text: 'Consegna 3 piatti', type: 'work', target: 'consegne', count: 3 },
+        { text: 'Riporta il conto a Ciro', type: 'talk', target: 'barista', count: 2 }
+      ]
+    }
+  };
+  D.questOrder = ['primo_giorno', 'richiamo_mare', 'casa_tua', 'vulcano_dorme', 'sapori'];
+
+  /* --------------------------------------------------------------- negozi */
+  D.shops = {
+    negozio: { name: 'Bottega di Sora Maria', stock: ['pane', 'acqua', 'arancino', 'pizza', 'rete', 'fiore', 'ombrello', 'cappello', 'mappa'] },
+    bar: { name: 'Caffè Vittoria', stock: ['caffe', 'pane', 'arancino', 'pizza', 'acqua', 'cioccolato'] },
+    banca: { name: 'Banca di Napoli', stock: ['mappa'] },
+    costiera: { name: 'Chiosco del mare', stock: ['acqua', 'pizza', 'pesce', 'rete', 'canna', 'fiore', 'vino', 'ombrello'] },
+    pompei: { name: 'Souvenir degli scavi', stock: ['acqua', 'pane', 'vino', 'cioccolato', 'fiore', 'mappa'] },
+    bottega: { name: 'La tua bottega', stock: ['pane', 'caffe', 'arancino', 'pizza', 'acqua', 'fiore', 'cioccolato', 'vino'] }
+  };
+
+  /* -------------------------------------------------------------- dialoghi */
+  const line = (t, choices) => ({ text: t, choices: choices || null });
+  const choice = (label, action, data) => ({ label, action, data: data || {} });
+  D.dialogue = {
+    nonna(g) {
+      const q = g.state.quests.primo_giorno;
+      if (!q || q.stage === 4) return line('Mi fa piacere vederti sorridere, ragazzo. La Campania è grande: girala, conoscila, innamoratene. E torna a trovare nonna.', [
+        choice('Parlami della famiglia', 'talk_family'),
+        choice('Mi dai un consiglio?', 'talk_tip'),
+        choice('Arrivederci, nonna', 'close')
+      ]);
+      if (q.stage === 0) return line('Finalmente sei qui! Vai al Caffè Vittoria, prendi un caffè e poi trova un modo per guadagnare qualcosa. Il vicolo ti insegnerà.', [choice('Ci vado subito', 'close')]);
+      if (q.stage === 3) return line('Hai già guadagnato qualcosa? Bravo! Ricorda: il denaro va e viene, ma le persone restano.', [choice('Grazie nonna', 'close')]);
+      return line('Com’è andata al bar? Non fare il timido, chiedi pure informazioni a Ciro.', [choice('Lo farò', 'close')]);
+    },
+    barista(g) {
+      return line('Benvenuto al Caffè Vittoria! Il caffè qui si beve in piedi, in due sorsi. Vuoi qualcosa?', [
+        choice('Compra qualcosa', 'shop', { shop: 'bar' }),
+        choice('Voglio lavorare qui', 'job', { job: 'barista' }),
+        choice('Parlami del quartiere', 'talk_neighborhood'),
+        choice('Esco', 'close')
+      ]);
+    },
+    banchiere(g) {
+      return line('Buongiorno. Posso aiutarti con un conto, un prestito o... con i tuoi risparmi. Hai già pensato a una casa?', [
+        choice('Apri il conto / deposita', 'bank', { mode: 'menu' }),
+        choice('Mostrami gli immobili', 'property'),
+        choice('Vattene', 'close')
+      ]);
+    },
+    medico(g) {
+      return line('Sei stanco? Il riposo è il miglior rimedio. Se hai bisogno, qui ti rimettiamo in sesto.', [
+        choice('Riposati (25 €)', 'heal'),
+        choice('Come sto?', 'status'),
+        choice('Grazie, arrivederci', 'close')
+      ]);
+    },
+    negoziante(g) {
+      return line('Amore, entra, guarda, tocca. Se ti serve qualcosa per la tua avventura, ce l’ho.', [
+        choice('Compra', 'shop', { shop: 'negozio' }),
+        choice('Vendi oggetti', 'sell'),
+        choice('Esco', 'close')
+      ]);
+    },
+    capo(g) {
+      return line('Ehi tu! Cerco braccia per il cantiere. Si lavora duro, si paga bene. Che dici?', [
+        choice('Voglio lavorare', 'job', { job: 'operaio' }),
+        choice('Ci penso', 'close')
+      ]);
+    },
+    pescatore(g) {
+      return line('Il mare non regala niente a chi non si sveglia presto. Hai una canna? Io ti insegnerei, ma...', [
+        choice('Voglio imparare', 'job', { job: 'pescatore' }),
+        choice('Compra una canna al chiosco', 'close'),
+        choice('Mi racconti del mare?', 'talk_sea'),
+        choice('Arrivederci', 'close')
+      ]);
+    },
+    turista(g) {
+      return line('Entschuldigung! I am looking for the most beautiful view. They tell me the mountain is magical...', [
+        choice('Vai alla Costiera', 'talk_coast'),
+        choice('Parlami del Vesuvio', 'talk_vesuvio'),
+        choice('Ciao!', 'close')
+      ]);
+    },
+    barcaiolo(g) {
+      return line('Il battello fa la spola tra il molo e l’isola. Se hai fretta, ti ci porto io. 12 € a persona.', [
+        choice('Vai a Capri (12 €)', 'boat'),
+        choice('No, grazie', 'close')
+      ]);
+    },
+    guardiano(g) {
+      const q = g.state.quests.vulcano_dorme;
+      if (q && q.stage === 2) return line('Hai visto il bagliore nella grotta, vero? Portami una prova e ti dirò tutto.', [choice('Ci provo', 'close')]);
+      return line('Questo monte non dorme mai davvero. Se scendi nella grotta, porta una rete... e coraggio.', [
+        choice('Inizio l’esplorazione', 'quest_start', { id: 'vulcano_dorme' }),
+        choice('Mi spieghi la grotta', 'talk_cave'),
+        choice('Arrivederci', 'close')
+      ]);
+    },
+    archeologo(g) {
+      return line('Le rovine parlano a chi sa ascoltare. Vuoi accompagnare i visitatori?', [
+        choice('Lavora come guida', 'job', { job: 'guida' }),
+        choice('Compra un ricordo', 'shop', { shop: 'pompei' }),
+        choice('Esco', 'close')
+      ]);
+    },
+    fidanzata(g) {
+      const rel = g.state.relations.giulia || 0;
+      if (rel >= 30) return line('Sai? Mi piace passare il tempo con te. Se vuoi, ci vediamo al tramonto sul lungomare.', [
+        choice('Ti aspetto al molo', 'date'),
+        choice('Porto un regalo', 'gift'),
+        choice('A dopo', 'close')
+      ]);
+      return line('Ciao! Ho visto che giri per la città. Se ti serve una mano, chiedi pure.', [
+        choice('Conosciamoci meglio', 'talk_social'),
+        choice('Ti regalo qualcosa', 'gift'),
+        choice('Arrivederci', 'close')
+      ]);
+    }
+  };
+
+  /* --------------------------------------------------------------- varie */
+  D.weather = [
+    { id: 'sole', name: 'Sole', icon: '☀', dark: 0, speed: 0 },
+    { id: 'nuvole', name: 'Nuvoloso', icon: '☁', dark: .06, speed: 0 },
+    { id: 'pioggia', name: 'Pioggia', icon: '☂', dark: .16, speed: 1 },
+    { id: 'temporale', name: 'Temporale', icon: '⚡', dark: .26, speed: 2 }
+  ];
+  D.tips = [
+    'Nonna Assunta ha sempre un consiglio. E un caffè.',
+    'La reputazione apre porte: lavora bene e la gente ti noterà.',
+    'Le creature appaiono più spesso di notte e dopo la pioggia.',
+    'Se hai fame o sonno, le tue prestazioni calano. Mangiare e dormire non sono optional!',
+    'La bicicletta non consume carburante: è il mezzo migliore per iniziare.',
+    'Ogni immobile genera un piccolo ricavo quotidiano.',
+    'Tab apre il telefono: lì trovi lavoro, banca, immobili e mappe.'
+  ];
+})(window);
