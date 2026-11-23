@@ -390,8 +390,11 @@
     /* --------------------------------------------------------- interazioni */
     handleAction(a, data, src) {
       switch (a) {
-        case 'enter':
-          this.enterMap(data.to); break;
+        case 'enter': case 'door':
+          if (data && data.to) this.enterMap(data.to);
+          else if (src && src.data && src.data.to) this.enterMap(src.data.to);
+          else this.enterMap('prev');
+          break;
         case 'exit':
           this.enterMap('prev'); break;
         case 'travel':
