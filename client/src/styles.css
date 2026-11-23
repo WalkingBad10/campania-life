@@ -171,3 +171,16 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
   .hud-help span{display:none}
   .hud-quest{width:40vw}
 }
+
+/* Mobile controls */
+.mobile-controls{position:absolute;inset:0;pointer-events:none;z-index:45;display:none}
+@media (pointer:coarse),(max-width:900px){.mobile-controls{display:block}}
+.mc-joy-wrap{position:absolute;left:2.2vmin;bottom:2.2vmin;pointer-events:auto}
+.mc-joy{width:120px;height:120px;border-radius:50%;background:rgba(20,30,40,.35);border:2px solid rgba(233,184,74,.45);position:relative;touch-action:none;backdrop-filter:blur(2px)}
+.mc-knob{width:52px;height:52px;border-radius:50%;background:rgba(233,184,74,.72);border:2px solid rgba(255,248,220,.8);position:absolute;left:50%;top:50%;margin:-26px 0 0 -26px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.mc-actions{position:absolute;right:2.2vmin;bottom:2.5vmin;display:flex;gap:10px;align-items:flex-end;pointer-events:auto}
+.mc-btn{width:62px;height:62px;border-radius:50%;font-size:14px;font-weight:800;border:2px solid #e9b84a;background:rgba(20,30,40,.55);color:#f6e8c8;box-shadow:0 3px 0 rgba(0,0,0,.35);touch-action:manipulation;user-select:none}
+.mc-btn:active,.mc-btn.on{transform:translateY(1px);background:rgba(233,184,74,.85);color:#1b2730}
+.mc-run{width:72px;height:72px;font-size:11px}
+.mc-a{width:74px;height:74px;font-size:22px}
+.mc-m{width:56px;height:56px;font-size:12px}

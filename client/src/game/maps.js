@@ -6,7 +6,8 @@
   'use strict';
   const CL = w.CL, U = CL.util, T = CL.TILE;
 
-  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, A: 1, M: 1, R: 1, Z: 1, h: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
+  // Floor tiles A,M,R,h,Z,k are walkable; walls/furniture/props remain solid.
+  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
 
   function blank(x, y, ch) { return Array.from({ length: y }, () => new Array(x).fill(ch)); }
   function rect(g, x, y, ww, hh, ch) {
@@ -118,6 +119,7 @@
     // Arredi urbani: piazza viva e proporzionata
     [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24], [24, 28], [40, 28]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'U'; });
     [[22, 23], [46, 23], [22, 33], [46, 33], [30, 23], [38, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'E'; });
+    // Piccoli mercatini in piazza (decorativi, passaggio libero)
     scatter(g, ',', 30, c => c === 'D', R);
     // Fioriere/confini più leggibili
     [[13,16],[17,16],[29,16],[41,16],[47,16],[51,16],[13,37],[51,37]].forEach(([x,y])=>{ if(g[y]&&g[y][x]==='D') g[y][x]='P'; });
@@ -140,6 +142,10 @@
     decor(m, 25, 35, 'cart', { h: 20 });
     decor(m, 47, 36, 'table_out', { h: 12 }); decor(m, 45, 36, 'chair_out', { h: 10 }); decor(m, 49, 36, 'chair_out', { h: 10 });
     decor(m, 33, 37, 'sign', { h: 20 });
+    // Bancarelle mercato
+    decor(m, 24, 30, 'awning', { w: 48, color: '#c95a3a', h: 12 });
+    decor(m, 36, 30, 'awning', { w: 48, color: '#3f7a4a', h: 12 });
+    decor(m, 25, 30, 'cart', { h: 20 }); decor(m, 39, 30, 'cart', { h: 20 });
 
     // Portali interni / servizi (ID preservati)
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 8 * T, y: 10 * T }, 'Ingresso Gesù Nuovo');

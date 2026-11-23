@@ -7,6 +7,7 @@ import TitleScreen from './components/TitleScreen.jsx';
 import CharacterCreation from './components/CharacterCreation.jsx';
 import SettingsPanel from './components/SettingsPanel.jsx';
 import ConfirmDialog from './components/ConfirmDialog.jsx';
+import MobileControls from './components/MobileControls.jsx';
 
 export default function App() {
   const canvasRef = useRef(null);
@@ -163,6 +164,7 @@ export default function App() {
       {dlg && <DialogueBox dlg={dlg} onChoice={applyChoice} />}
       {menu && <PhoneMenu tab={menu.tab} data={menu.data} game={gameRef.current} onTab={tab => setMenu({ tab, data: {} })} onClose={() => setMenu(null)} onToast={pushToast} />}
       {confirm && <ConfirmDialog data={confirm} onClose={() => setConfirm(null)} />}
+      <MobileControls visible={screen === 'game' && !menu && !dlg && !confirm} />
       <Toasts items={toasts} />
     </div>
   );
