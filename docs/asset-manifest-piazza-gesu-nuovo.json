@@ -1,0 +1,213 @@
+{
+  "version": 1,
+  "project": "CAMPANIA OPEN CODE 1",
+  "scope": "Piazza del Gesù Nuovo + Chiesa + Bar + NPC + arredi urbani",
+  "basePath": "client/public/assets/pixel",
+  "rules": {
+    "format": "png-rgba-8bit",
+    "transparentBackground": true,
+    "pixelPerfect": true,
+    "noTextNoWatermarkNoFrame": true,
+    "noStretch": true,
+    "tileSize": 16,
+    "fallbackIfMissing": true
+  },
+  "assets": [
+    {
+      "file": "gesu-facade.png",
+      "type": "building-overlay",
+      "width": 352,
+      "height": 208,
+      "sprite": { "w": 352, "h": 208, "frames": 1 },
+      "layout": "Single facade sprite: diamond rustication, central marble portal, upper windows/cornice. No sky/ground.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 9, "tileY": 3 },
+      "footprintTiles": { "w": 22, "h": 13 }
+    },
+    {
+      "file": "guglia.png",
+      "type": "landmark-overlay",
+      "width": 128,
+      "height": 176,
+      "sprite": { "w": 128, "h": 176, "frames": 1 },
+      "layout": "Single obelisk sprite: marble base, statues, obelisk, bronze ornaments, Madonna/cross.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 32, "tileY": 25 },
+      "footprintTiles": { "w": 8, "h": 11 }
+    },
+    {
+      "file": "palazzo-ne.png",
+      "type": "building-overlay",
+      "width": 320,
+      "height": 192,
+      "sprite": { "w": 320, "h": 192, "frames": 1 },
+      "layout": "Historic northeast palace facade, distinct ochre plaster, shutters, balconies, cornice.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 34, "tileY": 2 },
+      "footprintTiles": { "w": 20, "h": 12 }
+    },
+    {
+      "file": "palazzo-sw.png",
+      "type": "building-overlay",
+      "width": 256,
+      "height": 128,
+      "sprite": { "w": 256, "h": 128, "frames": 1 },
+      "layout": "Southwest palace facade variant.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 10, "tileY": 39 },
+      "footprintTiles": { "w": 16, "h": 8 }
+    },
+    {
+      "file": "palazzo-banca.png",
+      "type": "building-overlay",
+      "width": 160,
+      "height": 128,
+      "sprite": { "w": 160, "h": 128, "frames": 1 },
+      "layout": "Bank/service building facade, sober entrance; no readable raster text.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 28, "tileY": 39 },
+      "footprintTiles": { "w": 10, "h": 8 }
+    },
+    {
+      "file": "palazzo-bar.png",
+      "type": "building-overlay",
+      "width": 128,
+      "height": 128,
+      "sprite": { "w": 128, "h": 128, "frames": 1 },
+      "layout": "Bar building facade with awning/window; stylized sign only, no readable text.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 40, "tileY": 39 },
+      "footprintTiles": { "w": 8, "h": 8 }
+    },
+    {
+      "file": "palazzo-se.png",
+      "type": "building-overlay",
+      "width": 128,
+      "height": 128,
+      "sprite": { "w": 128, "h": 128, "frames": 1 },
+      "layout": "Southeast palace facade variant.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 50, "tileY": 39 },
+      "footprintTiles": { "w": 8, "h": 8 }
+    },
+    {
+      "file": "palazzo-e.png",
+      "type": "building-overlay",
+      "width": 160,
+      "height": 192,
+      "sprite": { "w": 160, "h": 192, "frames": 1 },
+      "layout": "East tall palace facade with balconies/cornice.",
+      "transparent": true,
+      "animation": null,
+      "anchor": { "type": "bottom-left-tile", "map": "napoli", "tileX": 55, "tileY": 16 },
+      "footprintTiles": { "w": 10, "h": 12 }
+    },
+    {
+      "file": "piazza-tiles.png",
+      "type": "tileset",
+      "width": 128,
+      "height": 64,
+      "sprite": { "cols": 8, "rows": 4, "tileW": 16, "tileH": 16, "frames": 1 },
+      "layout": "Row-major 16x16 tiles: basalto, basalto_var1, basalto_var2, sagrato, sagrato_bordo_n, sagrato_bordo_s, sagrato_bordo_e, sagrato_bordo_w, marciapiede, marciapiede_bordo, strada, strada_linea, attraversamento, cordolo, ombra_edificio, accento_pietra; remaining 16 reserved variants.",
+      "transparent": false,
+      "animation": null
+    },
+    {
+      "file": "urban-props.png",
+      "type": "spritesheet",
+      "width": 256,
+      "height": 128,
+      "sprite": { "cols": 8, "rows": 4, "cellW": 32, "cellH": 32, "frames": 1 },
+      "layout": "R1: lampione_off,lampione_on,panchina,fioriera,cartello,carretto,tavolino_bar,sedia_bar; R2: edicola,ombrellone,cestino,segnale_piazza,pianta_alta,pianta_piccola,colonnina,riservato; R3-R4 reserved.",
+      "transparent": true,
+      "animation": null
+    },
+    {
+      "file": "urban-props-shadow.png",
+      "type": "spritesheet",
+      "width": 256,
+      "height": 128,
+      "sprite": { "cols": 8, "rows": 4, "cellW": 32, "cellH": 32, "frames": 1 },
+      "layout": "Ground shadows matching urban-props.png indices.",
+      "transparent": true,
+      "animation": null
+    },
+    {
+      "file": "church-tiles.png",
+      "type": "tileset",
+      "width": 128,
+      "height": 128,
+      "sprite": { "cols": 8, "rows": 8, "tileW": 16, "tileH": 16, "frames": 1 },
+      "layout": "R1 marmo,marmo_decor,tappeto_rosso,tappeto_bordo,muro_interno,muro_affresco,colonna,arco; R2 altare_base,altare_top,panca,inginocchiatoio,cappella_sx,cappella_dx,porta_interna,finestra; R3 candela_off,candela_on1,candela_on2,dipinto,statua_base,statua_top,oro_trim,pavimento_presbiterio; R4-R8 reserved.",
+      "transparent": false,
+      "animation": { "candela": { "frames": ["candela_on1", "candela_on2"], "fps": 4 } }
+    },
+    {
+      "file": "church-props.png",
+      "type": "spritesheet",
+      "width": 256,
+      "height": 256,
+      "sprite": { "cols": 8, "rows": 8, "cellW": 32, "cellH": 32, "frames": 1 },
+      "layout": "Multi-cell props: main altar, pulpit, confessional, cross, chandelier, pews, statues, candelabra, flowers, lectern. IDs mapped in integration manifest extension.",
+      "transparent": true,
+      "animation": { "candela_prop": { "frames": 2, "fps": 4, "optional": true } }
+    },
+    {
+      "file": "bar-tiles.png",
+      "type": "tileset",
+      "width": 128,
+      "height": 128,
+      "sprite": { "cols": 8, "rows": 8, "tileW": 16, "tileH": 16, "frames": 1 },
+      "layout": "R1 pavimento_bar,muro_bar,zoccolino,bancone_top,bancone_front,scaffale,vetrina,porta; R2 tavolo,sedia,sgabello,cassa,macchina_caffe,lavandino,menu_board,finestra; R3-R8 reserved.",
+      "transparent": false,
+      "animation": { "macchina_caffe": { "frames": 2, "fps": 3, "optional": true } }
+    },
+    {
+      "file": "bar-props.png",
+      "type": "spritesheet",
+      "width": 256,
+      "height": 192,
+      "sprite": { "cols": 8, "rows": 6, "cellW": 32, "cellH": 32, "frames": 1 },
+      "layout": "Bar counter, back shelf bottles, pastry case, espresso machine, tables, chairs, warm lamps, plant.",
+      "transparent": true,
+      "animation": { "steam": { "frames": 2, "fps": 3, "optional": true } }
+    },
+    {
+      "file": "npc-sheet.png",
+      "type": "spritesheet",
+      "width": 512,
+      "height": 384,
+      "sprite": { "cols": 32, "rows": 16, "frameW": 16, "frameH": 24, "frames": 4, "directions": ["down", "left", "right", "up"] },
+      "layout": "8 NPC blocks. Each NPC: 4 directions x 4 frames (idle,walk1,walk2,walk3) = 16 frames. NPC order: nonna, barista, prete, turista, studente, venditore, signora, musicista.",
+      "transparent": true,
+      "animation": { "walk": { "frames": 4, "fps": 8 }, "idle": { "frames": 1 } }
+    },
+    {
+      "file": "npc-portraits.png",
+      "type": "spritesheet",
+      "width": 256,
+      "height": 64,
+      "sprite": { "cols": 8, "rows": 2, "frameW": 32, "frameH": 32, "frames": 1 },
+      "layout": "Same NPC order as npc-sheet. Row 1 neutral, row 2 happy/alt optional.",
+      "transparent": true,
+      "animation": null
+    },
+    {
+      "file": "light-fx.png",
+      "type": "spritesheet",
+      "width": 128,
+      "height": 64,
+      "sprite": { "cols": 4, "rows": 2, "cellW": 32, "cellH": 32, "frames": 1 },
+      "layout": "lampione_glow, window_glow_warm, candle_glow, interior_ambient; remaining reserved.",
+      "transparent": true,
+      "animation": null
+    }
+  ]
+}
