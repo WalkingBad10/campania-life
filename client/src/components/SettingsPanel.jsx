@@ -56,7 +56,7 @@ export default function SettingsPanel({ onBack, onToast }) {
               onChange={e => { setSpeed(+e.target.value); change('timescale', +e.target.value); }} /> <b>×{speed}</b></label>
             <label className="check"><input type="checkbox" checked={shake} onChange={e => { setShake(e.target.checked); change('shake', e.target.checked); }} /> Effetti schermo</label>
             <h3>Controlli</h3>
-            <p className="muted">Frecce / WASD: movimento · E: interagisci · Q: cattura · Space: conferma · Tab: telefono · I: zaino · M: mappa · J: missioni · C: collezione · Esc: menu</p>
+            <p className="muted">Frecce / WASD: movimento · E: interagisci · Space: conferma · Tab: telefono · I: zaino · M: mappa · J: missioni · Esc: menu</p>
           </div>
           <div>
             <h3>{CL.api.ready ? '☁ Account collegato' : '☁ Account (opzionale)'}</h3>

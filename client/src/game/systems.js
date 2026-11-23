@@ -377,65 +377,18 @@
     list() { return Object.keys(D.properties).map(id => ({ id, ...D.properties[id], owned: this.owns(id) })); }
   };
 
-  /* --------------------------------------------------------------- creature */
+  /* creature rimosse: simulatore vita reale */
   S.creatures = {
-    spawn(mapId) {
-      const st = CL.state, map = CL.maps.get(mapId), zone = map.zone;
-      const rng = U.rng(U.hash(mapId + ':' + st.time.day));
-      const ids = Object.keys(D.creatures).filter(id => D.creatures[id].zones.indexOf(mapId) >= 0);
-      if (!ids.length) return [];
-      const n = Math.min(9, 4 + (zone === 'vesuvio' ? 2 : 0));
-      const out = [];
-      for (let i = 0; i < n; i++) {
-        const id = ids[(rng() * ids.length) | 0];
-        const p = CL.maps.randomWalkable(map, rng);
-        out.push({ id, x: p.x, y: p.y, map: mapId, bob: rng() * 6, wander: rng() * 6 });
-      }
-      return out;
-    },
-    respawn() { EV.emit('respawn'); },
-    caught(id) { return CL.state.creatures[id] || 0; },
-    total() { return Object.values(CL.state.creatures).reduce((a, b) => a + b, 0); },
-    chance(creature) {
-      const def = D.creatures[creature.id]; if (!def) return 0;
-      let c = .72 - def.rare * .075;
-      if (S.time.isNight()) c += .10;
-      c += S.weather.catchBonus();
-      if (S.needs.speedFactor() < .9) c -= .06;
-      return U.clamp(c, .12, .95);
-    },
-    tryCatch(creature) {
-      const st = CL.state;
-      if (!S.inventory.has('rete')) { toast('Ti serve una reta da cattura! (Negozio o bar)', 'bad'); sfx('fail'); return false; }
-      S.inventory.remove('rete');
-      const c = this.chance(creature), ok = U.chance(c), def = D.creatures[creature.id];
-      if (ok) {
-        st.creatures[creature.id] = (st.creatures[creature.id] || 0) + 1;
-        st.stats.caught++;
-        st.xp += 10 + def.rare * 6;
-        S.quests.progress('catch', creature.id);
-        S.quests.progress('catchzone', CL.maps.get(creature.map).zone);
-        toast('Catturato ' + def.name + '! (+' + (10 + def.rare * 6) + ' XP)', 'good');
-        sfx('catch');
-      } else {
-        toast(def.name + ' è scappato via...', 'bad'); sfx('fail');
-      }
-      this.levelCheck(); refresh(); autosave(); return ok;
-    },
-    levelCheck() {
-      const st = CL.state;
-      while (st.xp >= st.level * 120) {
-        st.level++; st.needs.energy = U.clamp(st.needs.energy + 15, 0, 100);
-        toast('Livello ' + st.level + '! +15 energia', 'good'); sfx('level');
-      }
-    }
+    spawn() { return []; }, respawn() {}, caught() { return 0; }, total() { return 0; },
+    chance() { return 0; }, tryCatch() { return false; },
+    levelCheck() { const st = CL.state; while (st.xp >= st.level * 120) { st.level++; st.needs.energy = U.clamp(st.needs.energy + 15, 0, 100); toast('Livello ' + st.level + '! +15 energia', 'good'); sfx('level'); } }
   };
 
   /* ------------------------------------------------------------- obiettivi */
   const ACH = {
     primo_passo: { name: 'Primo passo', desc: 'Fai il tuo primo lavoro', test: s => s.stats.worked >= 1 },
     ricco: { name: 'Tenuta di famiglia', desc: 'Possiedi 3 immobili', test: s => s.properties.length >= 3 },
-    collezionista: { name: 'Collezionista', desc: 'Cattura 5 creature diverse', test: s => Object.keys(s.creatures).length >= 5 },
+    collezionista: { name: 'Collezionista', desc: 'Raggiungi 5000 €', test: s => S.economy.wealth() >= 5000 },
     pescatore: { name: 'Pescatore provetto', desc: 'Pesca 10 volte', test: s => s.stats.fished >= 10 },
     viaggiatore: { name: 'Viaggiatore', desc: 'Visita tutte le zone', test: s => ['napoli', 'costiera', 'vesuvio', 'pompei'].every(z => (s.flags.visited || {})[z]) },
     milionario: { name: 'Milionario campano', desc: 'Raggiungi 10.000 €', test: s => S.economy.wealth() >= 10000 },

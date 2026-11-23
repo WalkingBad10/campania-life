@@ -31,8 +31,9 @@
   }
 
   function makeMap(id, zone, w, h, ground) {
-    return { id, zone, w, h, g: ground, portals: [], pois: [], spawn: { x: w * T / 2, y: h * T / 2 }, name: id };
+    return { id, zone, w, h, g: ground, portals: [], pois: [], decors: [], spawn: { x: w * T / 2, y: h * T / 2 }, name: id };
   }
+  function decor(m, x, y, type, data) { m.decors.push({ x: x * T, y: y * T, type, data: data || {} }); }
   function portal(m, x, y, ww, hh, to, spawn, label) {
     m.portals.push({ x: x * T, y: y * T, w: (ww || 1) * T, h: (hh || 1) * T, to, spawn: spawn || { x: 0, y: 0 }, label: label || 'Vai' });
   }
@@ -117,8 +118,22 @@
     // Arredi urbani: lampioni, panchine, segni - piazza viva ma non affollata
     [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'U'; });
     [[22, 23], [46, 23], [22, 33], [46, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'E'; });
-    // Dettagli basolato
     scatter(g, ',', 20, c => c === 'D', R);
+
+    // Decorazioni architettoniche/fedeltà visiva (overlay)
+    decor(m, 9, 3, 'gesu_facade');
+    decor(m, 35, 3, 'palazzo_ne');
+    decor(m, 11, 40, 'palazzo_sw');
+    decor(m, 29, 40, 'palazzo_banca');
+    decor(m, 41, 40, 'palazzo_bar');
+    decor(m, 51, 40, 'palazzo_se');
+    decor(m, 56, 17, 'palazzo_e');
+    decor(m, 38, 34, 'edicola');
+    decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a' });
+    decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95' });
+    decor(m, 20, 10, 'portal_arch');
+    [[15,18],[27,18],[45,18],[15,35],[49,35],[53,23]].forEach(([x,y]) => decor(m, x, y, 'lamp'));
+    [[22,22],[46,22],[22,32],[46,32]].forEach(([x,y]) => decor(m, x, y, 'bench'));
 
     // Portali interni / servizi (ID preservati)
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 8 * T, y: 10 * T }, 'Ingresso Gesù Nuovo');

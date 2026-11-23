@@ -33,7 +33,7 @@
       this.ctx = canvas.getContext('2d');
       this.ctx.imageSmoothingEnabled = false;
       this.running = false; this.last = 0; this.acc = 0;
-      this.entities = []; this.creatures = []; this.particles = new CL.Particles();
+      this.entities = []; this.particles = new CL.Particles();
       this.map = null; this.player = null; this.prompt = null; this.promptTarget = null;
       this.refreshT = 0; this.fadeT = 0; this.rainT = 0; this.weatherT = 0;
       this.state = null;
@@ -142,7 +142,7 @@
         CL.input.consume('inventory') && CL.ui.openMenu('zaino');
         CL.input.consume('map') && CL.ui.openMenu('mappa');
         CL.input.consume('quests') && CL.ui.openMenu('diario');
-        CL.input.consume('collection') && CL.ui.openMenu('collezione');
+        /* collezione rimossa */
         ['slot1', 'slot2', 'slot3', 'slot4', 'slot5'].forEach((k, i) => {
           if (CL.input.consume(k)) {
             const foods = D.foodOrder.filter(id => S.inventory.has(id));
@@ -180,21 +180,14 @@
     }
 
     useAbility() {
-      const p = this.player;
-      let best = null, bd = 46;
-      for (const c of this.creatures) {
-        const d = U.dist(p.x, p.y, c.x, c.y);
-        if (d < bd) { bd = d; best = c; }
-      }
-      if (!best) { CL.ui.toast('Nessuna creatura a portata di rete.', 'info'); return; }
-      best.interact(p);
+      CL.ui.toast('Nessuna azione speciale qui.', 'info');
     }
 
     updatePrompt() {
       const p = this.player;
       if (p.vehicle) { this.prompt = 'E · Scendi dal ' + p.vehicle.label(); this.promptTarget = p.vehicle; return; }
       let best = null, bd = 30;
-      const cands = this.entities.filter(e => e !== p && e.alive && (e instanceof CL.NPC || e instanceof CL.Creature || e instanceof CL.Vehicle));
+      const cands = this.entities.filter(e => e !== p && e.alive && (e instanceof CL.NPC || e instanceof CL.Vehicle));
       for (const e of cands) {
         const d = U.dist(p.x, p.y, e.x, e.y);
         if (d < bd) { bd = d; best = e; }
@@ -208,7 +201,6 @@
       this.promptTarget = best;
       if (!best) { this.prompt = null; return; }
       if (best instanceof CL.NPC) this.prompt = 'E · Parla con ' + best.name;
-      else if (best instanceof CL.Creature) this.prompt = 'E / Q · Cattura ' + best.def.name;
       else if (best instanceof CL.Vehicle) this.prompt = 'E · Monta sul ' + best.label();
       else this.prompt = 'E · ' + best.label;
     }
@@ -285,24 +277,8 @@
       }
     }
 
-    spawnCreatures() {
-      this.creatures = [];
-      if (!this.map || MAPS.get(this.map.id).zone === 'interno') return;
-      try {
-        const list = S.creatures.spawn(this.map.id) || [];
-        for (const c of list) {
-          try {
-            const e = new CL.Creature(this, c);
-            this.creatures.push(e); this.entities.push(e);
-          } catch (e) { console.error('[CL] spawn creature', e); }
-        }
-      } catch (e) { console.error('[CL] spawnCreatures', e); }
-    }
-
-    removeEntity(e) {
-      const i = this.entities.indexOf(e); if (i >= 0) this.entities.splice(i, 1);
-      const j = this.creatures.indexOf(e); if (j >= 0) this.creatures.splice(j, 1);
-    }
+    spawnCreatures() { /* disabilitato: simulatore vita reale */ }
+    removeEntity(e) { const i = this.entities.indexOf(e); if (i >= 0) this.entities.splice(i, 1); e.alive = false; }
 
     checkPortals(ent) {
       try {
@@ -411,13 +387,20 @@
         if (ch === 'O') {
           const up = ty > 0 ? m.g[ty - 1][tx] : '';
           const left = tx > 0 ? m.g[ty][tx - 1] : '';
-          if (up !== 'O' && left !== 'O') items.push({ y: ty * T + 3 * T, kind: 'O', tx, ty }); // anchor bottom of base
+          if (up !== 'O' && left !== 'O') items.push({ y: ty * T + 3 * T, kind: 'O', tx, ty });
+        }
+      }
+      for (const d of (m.decors || [])) {
+        const dy = d.type === 'lamp' ? d.y + 16 : d.type === 'bench' ? d.y + 10 : d.y + (d.data.h || 0);
+        if (d.x > CL.camera.x - 160 && d.x < CL.camera.x + CL.VIEW_W + 160 && d.y > CL.camera.y - 200 && d.y < CL.camera.y + CL.VIEW_H + 160) {
+          items.push({ y: dy, decor: d });
         }
       }
       for (const e of this.entities) if (e.alive) items.push({ y: e.y + (e.offsetY || 0), ent: e });
       items.sort((a, b) => a.y - b.y);
       for (const it of items) {
         if (it.ent) it.ent.draw(c);
+        else if (it.decor) this.drawDecor(c, it.decor);
         else if (it.kind === 'T') {
           const variant = (it.tx * 13 + it.ty * 7) % 3;
           const img = m.zone === 'costiera' ? ART.lemonTree(variant) : ART.tree(variant);
@@ -467,44 +450,150 @@
     }
 
     drawGuglia(c, x, y) {
-      // Base 4x3 tile O = collisione. Overlay alto disegnato sopra, ordinato per profondità.
-      // x,y = top-left del cluster O (32px*3px in tile coords -> 64x48px base area)
       c.save();
       const cx = x + 32;
-      const by = y + 48; // bottom of 3-tile base
-      // ombra a terra
-      c.fillStyle = 'rgba(0,0,0,.20)';
-      c.beginPath(); c.ellipse(cx, by - 2, 34, 8, 0, 0, Math.PI * 2); c.fill();
-      // basamento scalonato
-      c.fillStyle = '#cfc5b3'; c.fillRect(cx - 26, by - 22, 52, 20);
-      c.fillStyle = '#ddd4c3'; c.fillRect(cx - 23, by - 20, 46, 16);
-      c.fillStyle = '#b6aa96'; c.fillRect(cx - 26, by - 4, 52, 2);
-      c.fillStyle = '#a99d88'; c.fillRect(cx - 28, by - 24, 56, 3);
-      // pannelli/decorazioni base
-      c.fillStyle = '#c7bcaa'; c.fillRect(cx - 18, by - 18, 36, 12);
-      c.fillStyle = '#9f9381'; c.fillRect(cx - 18, by - 7, 36, 1);
-      // statue ai quattro lati (stilizzate, pixel art)
-      const statue = (sx, sy) => { c.fillStyle = '#d8cfbe'; c.fillRect(sx - 2, sy - 8, 4, 8); c.fillRect(sx - 3, sy - 10, 6, 3); c.fillStyle = '#bfb5a2'; c.fillRect(sx - 1, sy - 7, 2, 5); };
-      statue(cx - 20, by - 22); statue(cx + 20, by - 22); statue(cx - 8, by - 22); statue(cx + 8, by - 22);
-      // plinto mediano
-      c.fillStyle = '#d4cab8'; c.fillRect(cx - 14, by - 34, 28, 12);
-      c.fillStyle = '#ebe3d2'; c.fillRect(cx - 11, by - 32, 22, 9);
-      c.fillStyle = '#b0a48f'; c.fillRect(cx - 15, by - 35, 30, 2);
-      // obelisco principale
-      c.fillStyle = '#c8bea9'; c.fillRect(cx - 7, by - 92, 14, 60);
-      c.fillStyle = '#e8e0cf'; c.fillRect(cx - 5, by - 90, 10, 56);
-      c.fillStyle = '#b7ab96'; c.fillRect(cx - 7, by - 34, 14, 2);
-      // ghirlande/anelli
-      c.fillStyle = '#a79c88'; c.fillRect(cx - 9, by - 60, 18, 2); c.fillRect(cx - 8, by - 74, 16, 2);
-      // punta/rame dorato
-      c.fillStyle = '#c9a44a'; c.fillRect(cx - 4, by - 102, 8, 12);
-      c.fillStyle = '#f0d06a'; c.fillRect(cx - 2, by - 100, 4, 8);
-      // croce/stellina
-      c.fillStyle = '#d4b04f'; c.fillRect(cx - 1, by - 112, 2, 10);
-      c.fillRect(cx - 5, by - 108, 10, 2);
-      c.fillStyle = '#fff2a0'; c.fillRect(cx - 1, by - 111, 2, 2);
-      // bordi luce
-      c.fillStyle = 'rgba(255,255,255,.12)'; c.fillRect(cx - 5, by - 90, 1, 56);
+      const by = y + 48;
+      c.fillStyle = 'rgba(0,0,0,.20)'; c.beginPath(); c.ellipse(cx, by - 2, 36, 9, 0, 0, Math.PI * 2); c.fill();
+      // base scalonata
+      c.fillStyle = '#cfc4b1'; c.fillRect(cx - 28, by - 24, 56, 22);
+      c.fillStyle = '#ddd3c1'; c.fillRect(cx - 24, by - 22, 48, 18);
+      c.fillStyle = '#b6aa95'; c.fillRect(cx - 28, by - 4, 56, 2);
+      c.fillStyle = '#a89c87'; c.fillRect(cx - 30, by - 26, 60, 3);
+      c.fillStyle = '#c5baa8'; c.fillRect(cx - 20, by - 20, 40, 14);
+      for (let i = -1; i <= 1; i++) { c.fillStyle = '#a99d89'; c.fillRect(cx + i * 12 - 1, by - 20, 1, 14); }
+      // statue base
+      const statue = (sx, sy) => { c.fillStyle = '#d8cfbe'; c.fillRect(sx - 2, sy - 9, 4, 9); c.fillRect(sx - 3, sy - 11, 6, 3); c.fillStyle = '#c0b5a1'; c.fillRect(sx - 1, sy - 8, 2, 6); c.fillStyle = '#ece4d4'; c.fillRect(sx - 2, sy - 9, 1, 3); };
+      statue(cx - 22, by - 24); statue(cx + 22, by - 24); statue(cx - 8, by - 24); statue(cx + 8, by - 24);
+      // plinto
+      c.fillStyle = '#d5cab8'; c.fillRect(cx - 15, by - 38, 30, 14);
+      c.fillStyle = '#ebe3d2'; c.fillRect(cx - 12, by - 36, 24, 10);
+      c.fillStyle = '#b0a48f'; c.fillRect(cx - 16, by - 39, 32, 2);
+      c.fillStyle = '#9f9380'; c.fillRect(cx - 10, by - 30, 20, 1);
+      // obelisco
+      c.fillStyle = '#c9bea9'; c.fillRect(cx - 8, by - 98, 16, 62);
+      c.fillStyle = '#e9e1d0'; c.fillRect(cx - 6, by - 96, 12, 58);
+      c.fillStyle = '#b8ac97'; c.fillRect(cx - 9, by - 38, 18, 2);
+      c.fillStyle = 'rgba(255,255,255,.10)'; c.fillRect(cx - 6, by - 96, 2, 58);
+      // anelli/ornamenti
+      c.fillStyle = '#a89d89'; c.fillRect(cx - 10, by - 62, 20, 2); c.fillRect(cx - 9, by - 78, 18, 2);
+      c.fillStyle = '#c9a44a'; c.fillRect(cx - 11, by - 64, 2, 6); c.fillRect(cx + 9, by - 64, 2, 6);
+      // punta e croce
+      c.fillStyle = '#c9a44a'; c.fillRect(cx - 5, by - 108, 10, 12);
+      c.fillStyle = '#f0d06a'; c.fillRect(cx - 3, by - 106, 6, 8);
+      c.fillStyle = '#d4b04f'; c.fillRect(cx - 1, by - 120, 2, 12); c.fillRect(cx - 6, by - 115, 12, 2);
+      c.fillStyle = '#fff2a0'; c.fillRect(cx - 1, by - 119, 2, 2);
+      c.restore();
+    }
+
+    drawDecor(c, d) {
+      const x = d.x, y = d.y;
+      c.save();
+      switch (d.type) {
+        case 'gesu_facade': {
+          // Facciata bugnata Gesù Nuovo: 22 tile wide x 11 high in map, overlay adds depth/portale
+          const w = 22 * T, h = 12 * T;
+          // ombra
+          c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(x - 2, y + h - 2, w + 4, 6);
+          // corpo
+          c.fillStyle = '#686d72'; c.fillRect(x, y, w, h);
+          // bugnato a punta di diamante
+          for (let yy = 0; yy < h; yy += 8) for (let xx = 0; xx < w; xx += 8) {
+            const dark = ((xx / 8 + yy / 8) % 2 === 0);
+            c.fillStyle = dark ? '#50555a' : '#747a80';
+            c.fillRect(x + xx, y + yy, 8, 8);
+            c.fillStyle = dark ? '#5c6268' : '#82888e';
+            c.beginPath();
+            c.moveTo(x + xx + 4, y + yy + 1); c.lineTo(x + xx + 7, y + yy + 4);
+            c.lineTo(x + xx + 4, y + yy + 7); c.lineTo(x + xx + 1, y + yy + 4); c.closePath(); c.fill();
+          }
+          // cornice superiore
+          c.fillStyle = '#8b9096'; c.fillRect(x - 2, y - 4, w + 4, 6);
+          c.fillStyle = '#5b6066'; c.fillRect(x - 2, y + 2, w + 4, 2);
+          // portale monumentale
+          const pxm = x + w / 2, py = y + h - 32;
+          c.fillStyle = '#4a3a2a'; c.fillRect(pxm - 18, py - 28, 36, 60);
+          c.fillStyle = '#6b523a'; c.fillRect(pxm - 14, py - 24, 28, 56);
+          c.fillStyle = '#3f2f22'; c.fillRect(pxm - 1, py - 24, 2, 56);
+          c.fillStyle = '#8a6a46'; c.fillRect(pxm - 14, py - 24, 28, 2);
+          c.fillStyle = '#c9a44a'; c.fillRect(pxm - 4, py + 4, 2, 2); c.fillRect(pxm + 2, py + 4, 2, 2);
+          // arco sopra portale
+          c.fillStyle = '#7a8086'; c.fillRect(pxm - 20, py - 32, 40, 6);
+          c.fillStyle = '#93999f'; c.fillRect(pxm - 16, py - 30, 32, 2);
+          // finestre alte
+          [x + 48, x + w - 64].forEach(wx => {
+            c.fillStyle = '#3e444a'; c.fillRect(wx, y + 20, 20, 28);
+            c.fillStyle = '#6d8fa8'; c.fillRect(wx + 2, y + 22, 16, 24);
+            c.fillStyle = '#5a5f66'; c.fillRect(wx + 9, y + 22, 2, 24); c.fillRect(wx + 2, y + 33, 16, 2);
+          });
+          break;
+        }
+        case 'palazzo_ne': case 'palazzo_sw': case 'palazzo_banca': case 'palazzo_bar': case 'palazzo_se': case 'palazzo_e': {
+          const specs = {
+            palazzo_ne: { w: 20 * T, h: 12 * T, wall: '#d7c9ad', trim: '#8b6a45', win: '#7ea8bf' },
+            palazzo_sw: { w: 16 * T, h: 7 * T, wall: '#e0d2b8', trim: '#7a5a3a', win: '#88afc4' },
+            palazzo_banca: { w: 10 * T, h: 7 * T, wall: '#ddd0bc', trim: '#6b7d8f', win: '#90b5c8' },
+            palazzo_bar: { w: 8 * T, h: 7 * T, wall: '#e4d6be', trim: '#7a4a32', win: '#87aec2' },
+            palazzo_se: { w: 8 * T, h: 7 * T, wall: '#dccfb8', trim: '#7a6245', win: '#86acc1' },
+            palazzo_e: { w: 10 * T, h: 12 * T, wall: '#d9ccb2', trim: '#80674a', win: '#82abc0' },
+          }[d.type];
+          const W = specs.w, H = specs.h;
+          c.fillStyle = 'rgba(0,0,0,.10)'; c.fillRect(x + 2, y + H, W - 2, 4);
+          c.fillStyle = specs.wall; c.fillRect(x, y, W, H);
+          c.fillStyle = 'rgba(255,255,255,.06)'; c.fillRect(x, y, W, 8);
+          c.fillStyle = specs.trim; c.fillRect(x, y, W, 4); c.fillRect(x, y + H - 4, W, 4);
+          // finestre con persiane/balconi
+          for (let wy = y + 14; wy < y + H - 16; wy += 22) {
+            for (let wx = x + 8; wx < x + W - 12; wx += 20) {
+              c.fillStyle = '#5a452d'; c.fillRect(wx - 1, wy - 1, 14, 16);
+              c.fillStyle = specs.win; c.fillRect(wx, wy, 12, 14);
+              c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(wx, wy, 12, 3);
+              c.fillStyle = specs.trim; c.fillRect(wx + 5, wy, 2, 14); c.fillRect(wx, wy + 6, 12, 2);
+              // persiane
+              c.fillStyle = '#6a5338'; c.fillRect(wx - 3, wy, 3, 14); c.fillRect(wx + 12, wy, 3, 14);
+              // balcone ogni tanto
+              if (((wx + wy) % 40) < 20) { c.fillStyle = '#4f5962'; c.fillRect(wx - 4, wy + 12, 20, 2); c.fillRect(wx - 4, wy + 14, 20, 3); }
+            }
+          }
+          // portone
+          const dx = x + W / 2 - 8; c.fillStyle = '#5a4028'; c.fillRect(dx, y + H - 20, 16, 20);
+          c.fillStyle = '#775738'; c.fillRect(dx + 1, y + H - 19, 14, 18); c.fillStyle = '#c9a44a'; c.fillRect(dx + 11, y + H - 10, 2, 2);
+          break;
+        }
+        case 'edicola': {
+          c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(x + 2, y + 30, 28, 4);
+          c.fillStyle = '#2f6a4d'; c.fillRect(x, y + 4, 32, 28);
+          c.fillStyle = '#f3ecd8'; c.fillRect(x + 3, y + 8, 26, 18);
+          c.fillStyle = '#c9564a'; c.fillRect(x + 5, y + 10, 8, 5); c.fillStyle = '#4a87b8'; c.fillRect(x + 15, y + 10, 12, 5);
+          c.fillStyle = '#6b5632'; c.fillRect(x + 2, y + 26, 28, 4);
+          c.fillStyle = '#8a7046'; c.fillRect(x - 1, y + 2, 34, 4);
+          break;
+        }
+        case 'awning': {
+          const W = d.data.w || 32; const col = d.data.color || '#b94a3a';
+          for (let i = 0; i < W; i += 8) { c.fillStyle = (i / 8) % 2 === 0 ? col : '#efe2c6'; c.fillRect(x + i, y, 8, 10); }
+          c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(x, y + 10, W, 2);
+          break;
+        }
+        case 'lamp': {
+          c.fillStyle = 'rgba(0,0,0,.15)'; c.beginPath(); c.ellipse(x + 8, y + 16, 5, 2, 0, 0, Math.PI * 2); c.fill();
+          c.fillStyle = '#3b4248'; c.fillRect(x + 7, y - 16, 2, 32);
+          c.fillStyle = '#2f353b'; c.fillRect(x + 5, y - 18, 6, 3);
+          c.fillStyle = '#f6e7a2'; c.fillRect(x + 4, y - 24, 8, 7);
+          c.fillStyle = 'rgba(255,240,170,.18)'; c.beginPath(); c.arc(x + 8, y - 20, 10, 0, Math.PI * 2); c.fill();
+          break;
+        }
+        case 'bench': {
+          c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(x + 2, y + 10, 20, 3);
+          c.fillStyle = '#6d4a2f'; c.fillRect(x + 2, y + 2, 20, 3); c.fillRect(x + 3, y - 3, 18, 6);
+          c.fillStyle = '#855d3b'; c.fillRect(x + 3, y - 2, 18, 2);
+          c.fillStyle = '#4a382b'; c.fillRect(x + 4, y + 5, 2, 6); c.fillRect(x + 18, y + 5, 2, 6);
+          break;
+        }
+        case 'portal_arch': {
+          c.fillStyle = '#7e858c'; c.fillRect(x - 2, y, 36, 4); c.fillRect(x, y + 4, 4, 20); c.fillRect(x + 28, y + 4, 4, 20);
+          break;
+        }
+      }
       c.restore();
     }
 

@@ -17,7 +17,7 @@
     fiore:       { name: 'Mazzolino di fiori', desc: 'Profumato. Piace a tutti.',            type: 'gift', price: 8,   gift: 6, icon: 'flower' },
     cioccolato:  { name: 'Cioccolato di Capri',desc: 'Dolce e avvolgente.',                  type: 'gift', price: 11,  gift: 9, icon: 'box' },
     vino:        { name: 'Falanghina',         desc: 'Un bicchiere di sole campano.',        type: 'gift', price: 16,  gift: 12, icon: 'bottle' },
-    rete:        { name: 'Reta da cattura',    desc: 'Per le creature. Si consuma.',         type: 'tool', price: 14,  stack: true, icon: 'net' },
+    rete:        { name: 'Borsa della spesa',  desc: 'Utile per commissioni e lavoro.',       type: 'tool', price: 14,  stack: true, icon: 'net' },
     canna:       { name: 'Canna da pesca',     desc: 'Richiede il molo. Pressa E per pescare.', type: 'tool', price: 65, unique: true, icon: 'rod' },
     bicicletta:  { name: 'Bicicletta',         desc: 'Più veloce a piedi, niente carburante.', type: 'vehicle', price: 180, unique: true, icon: 'bike' },
     moto:        { name: 'Vespa 125',          desc: 'Simbolo di libertà. Consumo ridotto.', type: 'vehicle', price: 1450, unique: true, icon: 'scooter' },
@@ -69,19 +69,14 @@
     bottega: { name: 'Bottega di famiglia', price: 19000, income: 310, interior: 'bottega', zone: 'napoli', desc: 'Un’attività commerciale tutta tua. Ogni giorno porta ricavi.' }
   };
 
-  /* ------------------------------------------------------------- creature */
-  D.creatures = {
-    gabbiotto:   { name: 'Gabbiotto',   kind: 'Volante', rare: 1, zones: ['costiera'], color: '#e8eef0', accent: '#e8a13c', eye: '#22313b', desc: 'Ruba le brioche dai bar lungomare. Furbo ma affettuoso.', shape: 'gull' },
-    lumacara:    { name: 'Lumacara',    kind: 'Muco',    rare: 1, zones: ['napoli', 'costiera'], color: '#9fc06a', accent: '#d98a4b', eye: '#2b3327', desc: 'Lascia una scia lucida. Se la accarezzi, si nasconde.', shape: 'snail' },
-    cicalone:    { name: 'Cicalone',    kind: 'Suono',   rare: 1, zones: ['napoli', 'vesuvio'], color: '#7fa65a', accent: '#c9d86a', eye: '#243019', desc: 'Il suo canto si sente per tutto il borgo d’estate.', shape: 'cicada' },
-    polpettone:  { name: 'Polpettone',  kind: 'Cucina',  rare: 2, zones: ['napoli'], color: '#b96b42', accent: '#6f9b52', eye: '#2a1c17', desc: 'Nato da una pentola di ragù rimasta incustodita.', shape: 'meatball' },
-    scorfano:    { name: 'Scorfano',    kind: 'Acqua',   rare: 2, zones: ['costiera'], color: '#c45c4a', accent: '#f0a25c', eye: '#1c2630', desc: 'Brutto, burbero, ma ha un cuore d’oro. Vive tra gli scogli.', shape: 'fish' },
-    pastorello:  { name: 'Pastorello',  kind: 'Lana',    rare: 2, zones: ['vesuvio'], color: '#efe3c8', accent: '#7a5b45', eye: '#2f2620', desc: 'Una piccola pecora delle falde del vulcano.', shape: 'sheep' },
-    farfalla:    { name: 'Ali di Capri',kind: 'Volante', rare: 3, zones: ['costiera', 'vesuvio'], color: '#8fd8df', accent: '#f2a7c0', eye: '#23313b', desc: 'Le ali sembrano dipinte dal mare di Capri.', shape: 'butterfly' },
-    vesuviano:   { name: 'Vesuviano',   kind: 'Fuoco',   rare: 4, zones: ['vesuvio'], color: '#e8613c', accent: '#f7c24b', eye: '#3a1712', desc: 'Vive nelle grotte calde del vulcano. Non brucia, ma fa sola calda.', shape: 'lava' },
-    sirenetta:   { name: 'Sirenetta',   kind: 'Acqua',   rare: 4, zones: ['costiera'], color: '#5fc7c2', accent: '#f4c9a0', eye: '#173740', desc: 'Canta di notte vicino allo scoglio. Chi l’ascolta sorride.', shape: 'siren' }
+  /* ----------------------------------------------------------- fauna locale (atmosfera, no cattura) */
+  D.fauna = {
+    gabbiano: { name: 'Gabbiano', zones: ['napoli', 'costiera'], color: '#f2efe2', accent: '#e9b84a' },
+    piccione: { name: 'Piccione', zones: ['napoli', 'pompei'], color: '#9aa3ad', accent: '#7e8791' },
+    gatto:    { name: 'Gatto', zones: ['napoli', 'pompei'], color: '#d7a86c', accent: '#8b6244' },
+    farfalla: { name: 'Farfalla', zones: ['costiera', 'vesuvio'], color: '#8fd8df', accent: '#f2a7c0' }
   };
-  D.creatureOrder = ['gabbiotto', 'lumacara', 'cicalone', 'polpettone', 'scorfano', 'pastorello', 'farfalla', 'vesuviano', 'sirenetta'];
+  D.creatures = {}; D.creatureOrder = [];
 
   /* ------------------------------------------------------------ zone/mappe */
   D.zones = {
@@ -127,7 +122,7 @@
       stages: [
         { text: 'Raggiungi la Costiera Amalfitana', type: 'visit', target: 'costiera', count: 1 },
         { text: 'Pesca al molo', type: 'fish', target: 1, count: 1 },
-        { text: 'Cattura una creatura del mare', type: 'catchzone', target: 'costiera', count: 1 }
+        { text: 'Visita la Costiera al tramonto', type: 'visit', target: 'costiera', count: 1 }
       ]
     },
     casa_tua: {
@@ -144,7 +139,7 @@
       desc: 'Il guardiano ha visto qualcosa nella grotta. Chi si avvicina al fuoco?',
       stages: [
         { text: 'Esplora la grotta del Vesuvio', type: 'visit', target: 'grotta', count: 1 },
-        { text: 'Cattura un Vesuviano', type: 'catch', target: 'vesuviano', count: 1 },
+        { text: 'Raccogli 150 € per l’equipaggiamento', type: 'money', target: 150, count: 1 },
         { text: 'Parla con il Guardiano', type: 'talk', target: 'guardiano', count: 2 }
       ]
     },
@@ -282,7 +277,7 @@
   D.tips = [
     'Nonna Assunta ha sempre un consiglio. E un caffè.',
     'La reputazione apre porte: lavora bene e la gente ti noterà.',
-    'Le creature appaiono più spesso di notte e dopo la pioggia.',
+    'Di notte alcuni negozi chiudono, ma la città resta viva.',
     'Se hai fame o sonno, le tue prestazioni calano. Mangiare e dormire non sono optional!',
     'La bicicletta non consume carburante: è il mezzo migliore per iniziare.',
     'Ogni immobile genera un piccolo ricavo quotidiano.',

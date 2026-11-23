@@ -153,7 +153,7 @@ export default function App() {
           <div className="panel">
             <h2>CREDITI</h2>
             <p><b>CAMPANIA LIFE — Avventure tra Mare e Montagna</b><br />
-              Un progetto originale. Sprite, creature, mappe, musiche e testi sono generati o scritti per questo gioco.</p>
+              Un progetto originale. Sprite, mappe, musiche e testi sono generati o scritti per questo gioco.</p>
             <p className="muted">Frontend React · Motore Canvas 2D · Backend Python FastAPI · Database PostgreSQL.</p>
             <div className="panel-actions"><button onClick={() => setScreen('title')}>INDIETRO</button></div>
           </div>

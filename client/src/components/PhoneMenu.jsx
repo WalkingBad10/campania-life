@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 const TABS = [
   ['phone', '📱 Telefono'], ['zaino', '🎒 Zaino'], ['lavori', '💼 Lavori'],
   ['banca', '🏦 Banca'], ['immobili', '🏠 Immobili'], ['mappa', '🗺 Mappa'],
-  ['collezione', '✨ Creature'], ['diario', '📖 Missioni'], ['personaggio', '👤 Profilo']
+  ['diario', '📖 Missioni'], ['personaggio', '👤 Profilo']
 ];
 
 const SPAWNS = {
@@ -51,7 +51,7 @@ export default function PhoneMenu({ tab, data, game, onTab, onClose, onToast }) 
   if (tab === 'phone') {
     const apps = [
       ['zaino', '🎒', 'Zaino'], ['lavori', '💼', 'Lavori'], ['banca', '🏦', 'Banca'],
-      ['immobili', '🏠', 'Immobili'], ['mappa', '🗺', 'Mappa'], ['collezione', '✨', 'Creature'],
+      ['immobili', '🏠', 'Immobili'], ['mappa', '🗺', 'Mappa'],
       ['diario', '📖', 'Missioni'], ['personaggio', '👤', 'Profilo'], ['negozio', '🛒', 'Negozio']
     ];
     content = <>
@@ -139,20 +139,7 @@ export default function PhoneMenu({ tab, data, game, onTab, onClose, onToast }) 
     </>;
   }
 
-  else if (tab === 'collezione') {
-    content = <>
-      <p className="muted">Catturate: <b>{S.creatures.total()}</b> · Specie diverse: {Object.keys(st.creatures).length}/{CL.data.creatureOrder.length}. Usa Q vicino a una creatura con una rete.</p>
-      <div className="grid">{CL.data.creatureOrder.map(id => {
-        const c = CL.data.creatures[id], n = S.creatures.caught(id), img = CL.art.creature(id, 0);
-        return <div className={'tile ' + (n ? '' : 'locked')} key={id}>
-          <img className="cr-img" src={img.toDataURL()} alt="" />
-          <b>{n ? c.name : '???'}</b>
-          <div className="sub">{n ? c.kind + ' · ×' + n : 'Non ancora vista'}</div>
-          {n > 0 && <div className="sub tiny">{c.desc}</div>}
-        </div>;
-      })}</div>
-    </>;
-  }
+ 
 
   else if (tab === 'diario') {
     const active = S.quests.active(), done = Object.keys(st.quests).filter(id => st.quests[id].done);
