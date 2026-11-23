@@ -40,8 +40,27 @@
   }
 
   const ART = CL.art = {
-    P, ready: false, tiles: {}, cache: {},
-    init() { if (this.ready) return; this.ready = true; this.buildTiles(); },
+    P, ready: false, tiles: {}, cache: {}, images: {}, _imgReady: false,
+    init() { if (this.ready) return; this.ready = true; this.buildTiles(); this.loadAssets(); },
+    assetUrl(name) {
+      const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/';
+      return base.replace(/\/?$/, '/') + 'assets/pixel/' + name;
+    },
+    loadAssets() {
+      if (this._imgReady) return;
+      const files = {
+        gesu: 'gesu-facade.png', guglia: 'guglia.png',
+        palazzo_ne: 'palazzo-ne.png', palazzo_sw: 'palazzo-sw.png', palazzo_banca: 'palazzo-banca.png',
+        palazzo_bar: 'palazzo-bar.png', palazzo_se: 'palazzo-se.png', palazzo_e: 'palazzo-e.png',
+        lamp: 'prop-lamp.png', bench: 'prop-bench.png', edicola: 'prop-edicola.png', plant: 'prop-plant.png',
+        cart: 'prop-cart.png', sign: 'prop-sign.png', table_out: 'prop-table.png', chair_out: 'prop-chair.png'
+      };
+      for (const [k, f] of Object.entries(files)) {
+        const img = new Image(); img.decoding = 'async'; img.src = this.assetUrl(f);
+        img.onload = () => { this.images[k] = img; }; img.onerror = () => { /* fallback code-drawn */ };
+      }
+      this._imgReady = true;
+    },
     px, shade, ell, cv, ctx,
 
     /* --------------------------------------------------------- tiles 16x16 */
@@ -459,6 +478,7 @@
     // professionale disegnato a mano, ma coerenti, cacheati e sostituibili.
     _stamp(c, fn) { const x = ctx(c); fn(x, c.width, c.height); return c; },
     buildingSprite(kind) {
+      if (this.images[kind]) return this.images[kind];
       const key = 'bld:' + kind; if (this.cache[key]) return this.cache[key];
       const S = {
         gesu:      { w: 352, h: 208, wall:'#6a6f74', trim:'#8f9499', roof:'#5a4a3a' },
@@ -585,6 +605,7 @@
       px(x,2,14,2,H-22,'rgba(0,0,0,.05)'); px(x,W-4,14,2,H-22,'rgba(255,255,255,.04)');
     },
     gugliaSprite() {
+      if (this.images.guglia) return this.images.guglia;
       const key = 'bld:guglia'; if (this.cache[key]) return this.cache[key];
       const W=128, H=176; const c=cv(W,H), x=ctx(c); const cx=W/2, by=H-8;
       // shadow
@@ -615,6 +636,7 @@
       return this.cache[key] = c;
     },
     propSprite(kind) {
+      if (this.images[kind]) return this.images[kind];
       const key='prop:'+kind; if(this.cache[key]) return this.cache[key];
       let c,x;
       if(kind==='lamp'){ c=cv(24,52); x=ctx(c); px(x,10,20,4,30,'#3b4248'); px(x,8,18,8,4,'#2f353b'); px(x,7,8,10,11,'#f6e7a2'); px(x,6,6,12,3,'#4a5158'); px(x,9,2,6,5,'#3d444b'); x.fillStyle='rgba(255,240,170,.14)'; x.beginPath(); x.arc(12,13,14,0,Math.PI*2); x.fill(); px(x,8,48,8,3,'#4a5158'); }
