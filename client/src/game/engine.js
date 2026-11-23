@@ -45,6 +45,8 @@
       this.state = null;
       this.debug = true;
       this.enterCooldown = 0;
+      this.portalGrace = 0;
+      this.entryPos = null;
       this.dbg = { blocked:'', axis:{x:0,y:0}, modal:false, keys:'', lastMap:'' };
       this.hooks();
     }
@@ -83,8 +85,20 @@
         this.state.pos.map = this.state.pos.map || 'napoli';
         this.state.pos.x = Number.isFinite(this.state.pos.x) ? this.state.pos.x : 31 * T;
         this.state.pos.y = Number.isFinite(this.state.pos.y) ? this.state.pos.y : 35 * T;
+        // Migrazione salvataggi vecchi: se posizione chiesa vecchia/bloccata, usa nuovo spawn sicuro sul tappeto.
+        if (this.state.pos.map === 'casa_nonna') {
+          const m = MAPS.get('casa_nonna');
+          const oldSpawns = [{x:14*T,y:19*T},{x:14*T+8,y:19*T+8},{x:232,y:312}];
+          const nearOld = oldSpawns.some(p => U.dist(this.state.pos.x, this.state.pos.y, p.x, p.y) < 28);
+          let blocked = false;
+          try { blocked = !MAPS.walkable(m, Math.floor(this.state.pos.x/T), Math.floor(this.state.pos.y/T)); } catch(e) {}
+          if (nearOld || blocked) { this.state.pos.x = m.spawn.x; this.state.pos.y = m.spawn.y; this.state.pos.dir = m.spawnDir || 'up'; }
+        }
         this.enterMap(this.state.pos.map, this.state.pos.x, this.state.pos.y, true);
-        if (this.player) this.player.dir = this.state.pos.dir || 'down';
+        if (this.player) {
+          this.player.dir = this.state.pos.dir || (this.map && this.map.spawnDir) || 'down';
+          if (!this.canMove(this.player.x, this.player.y, this.player.w, this.player.h)) this.unstuckPlayer(true);
+        }
         CL.audio.setTrack(MAPS.get(this.map.id).zone === 'interno' ? 'interior' : (D.zones[MAPS.get(this.map.id).zone] || {}).track || 'town');
         return true;
       } catch (err) {
@@ -142,6 +156,7 @@
       CL.camera.update(dt);
       this.particles.update(dt);
       if (this.enterCooldown > 0) this.enterCooldown = Math.max(0, this.enterCooldown - dt);
+      if (this.portalGrace > 0) this.portalGrace = Math.max(0, this.portalGrace - dt);
       if (!this.state || !this.player) return;
       const modal = !!CL.ui.isModal() && this.enterCooldown <= 0;
       this.dbg.modal = modal;
@@ -257,6 +272,7 @@
         this.player.vehicle = null;
         this.player.x = tx; this.player.y = ty;
         this.player.vx = 0; this.player.vy = 0;
+        this.player.dir = this.map.spawnDir || (id === 'prev' ? this.player.dir : 'down');
         this.entities.push(this.player);
         for (const nid in D.npcs) {
           const def = D.npcs[nid];
@@ -264,7 +280,12 @@
           const inThisMap = def.home === target.map || (isInterior && def.role === 'shop' && target.map === 'bar' && nid === 'barista');
           if (inThisMap) {
             const n = new CL.NPC(this, nid, def);
-            if (isInterior) { n.x = this.map.width / 2; n.y = this.map.height - 80; n.homeX = n.x; n.homeY = n.y; }
+            if (isInterior) {
+              const cx = this.map.width / 2, cy = this.map.height - 80;
+              n.x = cx; n.y = cy; n.homeX = n.x; n.homeY = n.y;
+              // keep NPCs from blocking church entrance carpet/spawn
+              if (target.map === 'casa_nonna') { n.x = 7 * T + 8; n.y = 17 * T + 8; n.homeX = n.x; n.homeY = n.y; }
+            }
             this.entities.push(n);
           }
         }
@@ -273,9 +294,19 @@
         this.state.pos.x = tx; this.state.pos.y = ty;
         this.fadeT = 0;
         this.enterCooldown = .25;
+        this.portalGrace = .9;
+        this.entryPos = { map: target.map, x: this.player.x, y: this.player.y };
         CL.camera.snap(this.player);
         // Ensure spawn not blocked (e.g. NPC/object overlap or bad map data)
         this.unstuckPlayer(true);
+        if (target.map === 'casa_nonna') {
+          const safeX = this.map.spawn.x, safeY = this.map.spawn.y;
+          const tile = MAPS.tile(this.map, Math.floor(this.player.x/T), Math.floor(this.player.y/T));
+          if (!this.canMove(this.player.x, this.player.y, this.player.w, this.player.h) || tile !== 'R') {
+            this.player.x = safeX; this.player.y = safeY; this.player.dir = this.map.spawnDir || 'up';
+          }
+        }
+        this.entryPos = { map: target.map, x: this.player.x, y: this.player.y };
         try { S.actions.visit(target.map); } catch (e) { console.error(e); }
         this.dbg.lastMap = target.map;
         this.dbg.blocked = '';
@@ -318,6 +349,10 @@
         if (this.fadeT > 0.2) return;
         const p = MAPS.portalAt(this.map, ent.x, ent.y);
         if (!p) return;
+        if (this.portalGrace > 0 && this.entryPos && this.entryPos.map === this.map.id) {
+          const moved = U.dist(ent.x, ent.y, this.entryPos.x, this.entryPos.y);
+          if (moved < 20) return; // evita uscita immediata allo spawn/ingresso
+        }
         let to = p.to, x = p.spawn.x, y = p.spawn.y;
         if (to === 'prev') {
           const prev = this.state.pos.prev || { map: 'napoli', x: 31 * T, y: 35 * T };

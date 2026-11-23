@@ -291,11 +291,16 @@
     // cappelle laterali (muri)
     for (let y = 4; y < 18; y++) { g[y][3] = (y % 4 === 0) ? 'A' : 'j'; g[y][w - 4] = (y % 4 === 0) ? 'A' : 'j'; }
     for (const yy of [5, 9, 13]) { g[yy][1] = '6'; g[yy][2] = '5'; g[yy][w - 2] = '6'; g[yy][w - 3] = '5'; }
-    // navata centrale tappeto
-    for (let y = 4; y < 19; y++) { g[y][13] = 'R'; g[y][14] = 'R'; }
-    // panche
-    for (const yy of [7, 9, 11, 13, 15]) { for (let x = 6; x <= 8; x++) g[yy][x] = 'n'; for (let x = 19; x <= 21; x++) g[yy][x] = 'n'; }
-    for (const yy of [7, 9, 11, 13, 15]) { g[yy][11] = 'n'; g[yy][12] = 'n'; g[yy][15] = 'n'; g[yy][16] = 'n'; }
+    // navata centrale tappeto rosso (corridoio centrale continuo fino all'altare)
+    for (let y = 4; y <= 20; y++) { g[y][13] = 'R'; g[y][14] = 'R'; }
+    // tappeto ingresso/porta: zona libera garantita (ampia, davanti alla porta)
+    for (let y = 18; y <= 20; y++) for (let x = 12; x <= 15; x++) g[y][x] = 'R';
+    // panche (mai sul corridoio centrale 13-14)
+    for (const yy of [7, 9, 11, 13, 15]) {
+      for (let x = 6; x <= 8; x++) g[yy][x] = 'n';
+      for (let x = 19; x <= 21; x++) g[yy][x] = 'n';
+      g[yy][11] = 'n'; g[yy][12] = 'n'; g[yy][15] = 'n'; g[yy][16] = 'n';
+    }
     // altare maggiore
     for (let x = 11; x <= 16; x++) g[3][x] = 'q';
     g[4][12] = '5'; g[4][15] = '5'; g[3][13] = '6'; g[3][14] = '6';
@@ -303,13 +308,15 @@
     for (let y = 3; y <= 5; y++) for (let x = 10; x <= 17; x++) if (g[y][x] === 'A') g[y][x] = 'M';
     // ingressi laterali visivi / confessionali
     g[17][1] = '8'; g[17][w - 2] = '8';
-    // candele e piante
+    // candele e piante (fuori dal corridoio centrale ingresso)
     g[18][4] = '5'; g[18][23] = '5'; g[16][6] = '9'; g[16][21] = '9';
-    // porta uscita
+    // porta uscita sulla parete sud, tappeto davanti
     const dx = 14, dy = h - 1;
     g[dy][dx] = 'D'; g[dy][13] = '#'; g[dy][15] = '#';
-    portal(m, dx, dy, 1, 1, 'prev', { x: 20 * T, y: 15 * T }, 'Esci in piazza');
-    poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
+    for (let y = 18; y <= 20; y++) for (let x = 12; x <= 15; x++) g[y][x] = 'R';
+    // Portale uscita sul tappeto, in fondo vicino alla porta (riga 20), NON sulla riga spawn.
+    portal(m, 13, 20, 2, 1, 'prev', { x: 20 * T, y: 16 * T }, 'Esci in piazza');
+    poi(m, dx, 20, 'exit', 'door', 'Esci dalla chiesa', 'exit');
     poi(m, 13, 4, 'altar', 'scenery', 'Altare maggiore', 'flavor');
     poi(m, 7, 8, 'pew', 'scenery', 'Panca — siediti un momento', 'rest_pew');
     poi(m, 2, 6, 'chapel_l', 'scenery', 'Cappella laterale', 'flavor');
@@ -318,7 +325,10 @@
     decor(m, 7, 4, 'candle_glow', { h: 8 }); decor(m, 20, 4, 'candle_glow', { h: 8 });
     decor(m, 4, 9, 'candle_glow', { h: 8 }); decor(m, 23, 9, 'candle_glow', { h: 8 });
     decor(m, 14, 2, 'window_light', { w: 16, h: 10, color: 'rgba(255,210,140,.22)' });
-    m.spawn = { x: dx * T, y: (h - 3) * T };
+    // Spawn ESATTO: centro tappeto rosso, parte inferiore vicino ingresso, ma sopra portale uscita.
+    // Tappeto centrale: colonne 13-14 (R). Riga 18 = 2 celle sopra portale uscita riga 20, libera.
+    m.spawn = { x: 14 * T, y: 18 * T + 8 }; // centro tappeto rosso (tra tile 13-14), riga 18
+    m.spawnDir = 'up';
     return m;
   }
 
