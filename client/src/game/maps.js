@@ -72,7 +72,7 @@
     vline(g, 58, 34, 47, 'r', 2); vline(g, 57, 34, 47, 'p'); vline(g, 60, 34, 47, 'p');
     vline(g, 12, 39, 47, 'r', 2); vline(g, 11, 39, 47, 'p'); vline(g, 14, 39, 47, 'p');
 
-    // Guglia dell'Immacolata: base solida 4x3, parte alta disegnata in overlay con depth
+    // Guglia dell'Immacolata: base solida 4x3
     rect(g, 34, 25, 4, 3, 'O');
     rect(g, 35, 26, 2, 1, 'D');
 
@@ -120,20 +120,21 @@
     [[22, 23], [46, 23], [22, 33], [46, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'E'; });
     scatter(g, ',', 20, c => c === 'D', R);
 
-    // Decorazioni architettoniche/fedeltà visiva (overlay)
-    decor(m, 9, 3, 'gesu_facade');
-    decor(m, 35, 3, 'palazzo_ne');
-    decor(m, 11, 40, 'palazzo_sw');
-    decor(m, 29, 40, 'palazzo_banca');
-    decor(m, 41, 40, 'palazzo_bar');
-    decor(m, 51, 40, 'palazzo_se');
-    decor(m, 56, 17, 'palazzo_e');
-    decor(m, 38, 34, 'edicola');
-    decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a' });
-    decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95' });
-    decor(m, 20, 10, 'portal_arch');
-    [[15,18],[27,18],[45,18],[15,35],[49,35],[53,23]].forEach(([x,y]) => decor(m, x, y, 'lamp'));
-    [[22,22],[46,22],[22,32],[46,32]].forEach(([x,y]) => decor(m, x, y, 'bench'));
+    // Overlay architettonici (sprite code-drawn, cacheati)
+    decor(m, 9, 3, 'gesu_facade', { h: 12 * T });
+    decor(m, 34, 2, 'palazzo_ne', { h: 12 * T });
+    decor(m, 10, 39, 'palazzo_sw', { h: 7 * T });
+    decor(m, 28, 39, 'palazzo_banca', { h: 7 * T });
+    decor(m, 40, 39, 'palazzo_bar', { h: 7 * T });
+    decor(m, 50, 39, 'palazzo_se', { h: 7 * T });
+    decor(m, 55, 16, 'palazzo_e', { h: 12 * T });
+    decor(m, 38, 34, 'edicola', { h: 48 });
+    decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
+    decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });
+    decor(m, 20, 10, 'portal_arch', { h: 24 });
+    [[15,18],[27,18],[45,18],[15,35],[49,35],[53,23]].forEach(([x,y]) => decor(m, x, y, 'lamp', { h: 16 }));
+    [[22,22],[46,22],[22,32],[46,32]].forEach(([x,y]) => decor(m, x, y, 'bench', { h: 10 }));
+    [[18,16],[26,16],[42,16],[48,16],[18,37],[50,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
 
     // Portali interni / servizi (ID preservati)
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 8 * T, y: 10 * T }, 'Ingresso Gesù Nuovo');

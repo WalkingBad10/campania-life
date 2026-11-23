@@ -400,6 +400,177 @@
       x.fillStyle = 'rgba(10,16,24,.15)'; x.fillRect(0, 25, 32, 7);
     },
 
+    /* ------------------------------------------------------ asset pack Napoli */
+    // Sprite originali generati a runtime (code-drawn). Non equivalenti a un asset pack
+    // professionale disegnato a mano, ma coerenti, cacheati e sostituibili.
+    _stamp(c, fn) { const x = ctx(c); fn(x, c.width, c.height); return c; },
+    buildingSprite(kind) {
+      const key = 'bld:' + kind; if (this.cache[key]) return this.cache[key];
+      const S = {
+        gesu:      { w: 352, h: 208, wall:'#6a6f74', trim:'#8f9499', roof:'#5a4a3a' },
+        palazzo_ne:{ w: 320, h: 192, wall:'#dccba8', trim:'#8a6540', roof:'#8b4a3a', shutters:'#5e7a4a' },
+        palazzo_sw:{ w: 256, h: 128, wall:'#e2d3b4', trim:'#7a5a38', roof:'#9a5540', shutters:'#6f8650' },
+        palazzo_banca:{ w:160,h:128, wall:'#ddd0bc', trim:'#657a8e', roof:'#7a5842', shutters:'#708090' },
+        palazzo_bar:{ w:128, h:128, wall:'#e4d5bd', trim:'#7a4a32', roof:'#8b4a3a', shutters:'#6b7a46' },
+        palazzo_se:{ w:128, h:128, wall:'#daceb6', trim:'#7a6245', roof:'#8a5240', shutters:'#607848' },
+        palazzo_e: { w:160, h:192, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c', shutters:'#648050' },
+      }[kind];
+      if (!S) return null;
+      const c = cv(S.w, S.h), x = ctx(c), R = U.rng(U.hash(kind));
+      const W=S.w, H=S.h;
+      // shadow
+      px(x,4,H-4,W-4,4,'rgba(20,16,12,.12)');
+      // wall base
+      px(x,0,8,W,H-8,S.wall);
+      // subtle plaster texture
+      for (let i=0;i<Math.floor(W*H/18);i++){ const pxl=(R()*W)|0, pyl=8+((R()*(H-8))|0); px(x,pxl,pyl,1,1, R()>.5?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)'); }
+      // roof/cornice
+      px(x,-2,0,W+4,10,S.roof); px(x,-1,8,W+2,3,shade(S.roof,18)); px(x,0,10,W,2,shade(S.roof,-20));
+      // base trim
+      px(x,0,H-8,W,8,shade(S.trim,-10)); px(x,0,H-8,W,1,shade(S.trim,20));
+      if (kind === 'gesu') {
+        this._drawGesuFacade(x,W,H);
+      } else {
+        this._drawPalazzoFacade(x,W,H,S,kind,R);
+      }
+      return this.cache[key] = c;
+    },
+    _drawGesuFacade(x,W,H) {
+      // Bugnato a punta di diamante - caratteristico
+      for (let yy=10; yy<H-8; yy+=10) for (let xx=0; xx<W; xx+=10) {
+        const dark = ((xx/10 + yy/10) % 2 === 0);
+        const base = dark ? '#4f555b' : '#70767d';
+        const face = dark ? '#5a6067' : '#7f868d';
+        px(x,xx,yy,10,10,base);
+        // diamond
+        x.fillStyle = face;
+        x.beginPath();
+        x.moveTo(xx+5,yy+1); x.lineTo(xx+9,yy+5); x.lineTo(xx+5,yy+9); x.lineTo(xx+1,yy+5); x.closePath(); x.fill();
+        px(x,xx+4,yy+2,2,1,'rgba(255,255,255,.10)');
+        px(x,xx+2,yy+5,1,2,'rgba(0,0,0,.08)');
+      }
+      // cornice sommitale
+      px(x,0,6,W,6,'#8d9399'); px(x,0,12,W,2,'#61676d');
+      // portale monumentale
+      const cx=W/2, py=H-8;
+      px(x,cx-34,py-96,68,96,'#3f3125');
+      px(x,cx-30,py-92,60,92,'#5f472f');
+      px(x,cx-28,py-90,26,90,'#6f5338'); px(x,cx+2,py-90,26,90,'#6f5338');
+      px(x,cx-1,py-90,2,90,'#3d2c1f');
+      // pannelli porte
+      for (const sx of [-22,8]) { px(x,cx+sx,py-78,14,28,'#7d6042'); px(x,cx+sx,py-44,14,28,'#7d6042'); px(x,cx+sx+1,py-77,12,1,'#93744f'); }
+      px(x,cx-10,py-30,4,4,'#c9a44a'); px(x,cx+6,py-30,4,4,'#c9a44a');
+      // architrave/tympan
+      px(x,cx-40,py-104,80,10,'#858b91'); px(x,cx-36,py-102,72,3,'#9aa0a6');
+      px(x,cx-44,py-110,88,8,'#747a80');
+      // colonne/pilastri laterali portale
+      px(x,cx-38,py-96,6,96,'#7f858b'); px(x,cx+32,py-96,6,96,'#7f858b');
+      px(x,cx-37,py-96,2,96,'#989ea4');
+      // finestre superiori
+      [[cx-90,50],[cx+70,50]].forEach(([wx,wy])=>{
+        px(x,wx,wy,24,34,'#40464c'); px(x,wx+2,wy+2,20,30,'#6f93ad');
+        px(x,wx+11,wy+2,2,30,'#566067'); px(x,wx+2,wy+16,20,2,'#566067');
+        px(x,wx+2,wy+2,20,4,'rgba(255,255,255,.15)');
+        px(x,wx-2,wy+32,28,4,'#6a7076');
+      });
+      // rosoncino/oculo sopra portale
+      px(x,cx-10,36,20,20,'#4a5056'); x.fillStyle='#7fa1b8'; x.beginPath(); x.arc(cx,46,8,0,Math.PI*2); x.fill();
+      px(x,cx-1,38,2,16,'#596067'); px(x,cx-8,45,16,2,'#596067');
+    },
+    _drawPalazzoFacade(x,W,H,S,kind,R) {
+      const wall=S.wall, trim=S.trim, shut=S.shutters||'#647a4a', win=S.win||'#86aec2';
+      // cornice piani
+      const floors = kind==='palazzo_ne'||kind==='palazzo_e' ? 3 : 2;
+      const fh = Math.floor((H-28)/floors);
+      for (let f=0; f<floors; f++) {
+        const fy = 14 + f*fh;
+        px(x,0,fy+fh-2,W,2,shade(trim,10));
+        // finestre
+        const cols = Math.max(2, Math.floor(W/44));
+        const margin = Math.floor((W - cols*28)/(cols+1));
+        for (let i=0;i<cols;i++) {
+          const wx = margin + i*(28+margin);
+          const wy = fy + 8;
+          // cornice finestra
+          px(x,wx-3,wy-3,34,28,'#6b5540');
+          px(x,wx-2,wy-2,32,26,shade(wall,-8));
+          // vetro
+          px(x,wx,wy,28,22,win);
+          px(x,wx,wy,28,4,'rgba(255,255,255,.20)');
+          px(x,wx+13,wy,2,22,shade(trim,5)); px(x,wx,wy+10,28,2,shade(trim,5));
+          // persiane
+          px(x,wx-5,wy-1,5,24,shut); px(x,wx+28,wy-1,5,24,shut);
+          px(x,wx-4,wy+2,3,1,shade(shut,20)); px(x,wx-4,wy+6,3,1,shade(shut,20)); px(x,wx-4,wy+10,3,1,shade(shut,20));
+          px(x,wx+29,wy+2,3,1,shade(shut,20)); px(x,wx+29,wy+6,3,1,shade(shut,20)); px(x,wx+29,wy+10,3,1,shade(shut,20));
+          // balcone al secondo piano
+          if (f < floors-1 && (i%2===0 || kind.includes('banca'))) {
+            px(x,wx-8,wy+20,44,3,'#505962');
+            px(x,wx-8,wy+23,44,5,'#434b53');
+            for(let bx=wx-6;bx<wx+36;bx+=4) px(x,bx,wy+23,1,5,'#5f6872');
+            px(x,wx-6,wy+18,40,3,'#6f7d54'); // piante
+          }
+        }
+      }
+      // portone/insegna
+      const dx = Math.floor(W/2)-14;
+      if (kind === 'palazzo_bar') {
+        px(x,dx-2,H-34,32,34,'#4a3524'); px(x,dx,H-32,28,32,'#6b4a30');
+        px(x,dx+12,H-32,2,32,'#3f2c1f'); px(x,dx+20,H-18,3,3,'#c9a44a');
+        // insegna
+        px(x,dx-18,H-56,64,14,'#f0e4cf'); px(x,dx-18,H-56,64,2,'#7a4a32');
+        px(x,dx-8,H-53,44,8,'#b44a3a');
+      } else if (kind === 'palazzo_banca') {
+        px(x,dx-4,H-34,36,34,'#4a5560'); px(x,dx-2,H-32,32,32,'#607080');
+        px(x,dx+13,H-32,2,32,'#455260'); px(x,dx+24,H-18,3,3,'#c9a44a');
+        px(x,dx-14,H-54,56,12,'#e8edf2'); px(x,dx-6,H-51,40,6,'#4a6f8e');
+      } else {
+        px(x,dx,H-32,28,32,'#5a4028'); px(x,dx+1,H-31,26,31,'#775738');
+        px(x,dx+13,H-31,2,31,'#4a331f'); px(x,dx+20,H-16,3,3,'#c9a44a');
+      }
+      // dettagli intonaco
+      px(x,2,14,2,H-22,'rgba(0,0,0,.05)'); px(x,W-4,14,2,H-22,'rgba(255,255,255,.04)');
+    },
+    gugliaSprite() {
+      const key = 'bld:guglia'; if (this.cache[key]) return this.cache[key];
+      const W=128, H=176; const c=cv(W,H), x=ctx(c); const cx=W/2, by=H-8;
+      // shadow
+      x.fillStyle='rgba(0,0,0,.18)'; x.beginPath(); x.ellipse(cx,by,44,10,0,0,Math.PI*2); x.fill();
+      // stepped base
+      px(x,cx-38,by-28,76,28,'#cec3b0'); px(x,cx-34,by-26,68,24,'#ddd3c1');
+      px(x,cx-30,by-24,60,20,'#c7bca9'); px(x,cx-38,by-4,76,3,'#b0a491');
+      px(x,cx-42,by-32,84,5,'#b8ac98');
+      // panels
+      for(let i=-2;i<=2;i++){ px(x,cx+i*14-5,by-22,10,14,'#d6ccba'); px(x,cx+i*14-4,by-21,8,1,'#eae2d2'); }
+      // statues
+      const st=(sx,sy)=>{ px(x,sx-3,sy-14,6,14,'#d9d0c0'); px(x,sx-4,sy-16,8,4,'#ccc2b0'); px(x,sx-2,sy-12,4,8,'#beb3a0'); px(x,sx-3,sy-14,1,4,'#ebe3d4'); };
+      st(cx-28,by-30); st(cx+28,by-30); st(cx-10,by-30); st(cx+10,by-30);
+      // middle plinth
+      px(x,cx-20,by-48,40,18,'#d4cab8'); px(x,cx-16,by-46,32,14,'#ebe3d2'); px(x,cx-22,by-50,44,3,'#b3a793');
+      px(x,cx-14,by-36,28,2,'#a99d89');
+      // obelisk
+      px(x,cx-10,by-116,20,70,'#c8bea9'); px(x,cx-7,by-114,14,66,'#e8e0cf');
+      px(x, cx-10,by-48,20,3,'#b7ab96'); px(x,cx-7,by-114,2,66,'rgba(255,255,255,.12)');
+      // rings
+      px(x,cx-12,by-74,24,3,'#a99d89'); px(x,cx-11,by-90,22,3,'#a99d89');
+      // ornaments
+      px(x,cx-13,by-76,3,8,'#c9a44a'); px(x,cx+10,by-76,3,8,'#c9a44a');
+      // top
+      px(x,cx-6,by-128,12,14,'#c9a44a'); px(x,cx-4,by-126,8,10,'#f0d06a');
+      px(x,cx-2,by-146,4,20,'#d4b04f'); px(x,cx-8,by-140,16,3,'#d4b04f');
+      px(x,cx-2,by-145,4,3,'#fff2a0');
+      return this.cache[key] = c;
+    },
+    propSprite(kind) {
+      const key='prop:'+kind; if(this.cache[key]) return this.cache[key];
+      let c,x;
+      if(kind==='lamp'){ c=cv(24,48); x=ctx(c); px(x,10,18,4,30,'#3b4248'); px(x,8,16,8,4,'#2f353b'); px(x,7,8,10,10,'#f6e7a2'); px(x,6,6,12,3,'#4a5158'); x.fillStyle='rgba(255,240,170,.14)'; x.beginPath(); x.arc(12,13,12,0,Math.PI*2); x.fill(); px(x,8,44,8,3,'#4a5158'); }
+      else if(kind==='bench'){ c=cv(32,20); x=ctx(c); px(x,2,8,28,4,'#6d4a2f'); px(x,3,4,26,5,'#855d3b'); px(x,3,5,26,1,'#9a7048'); px(x,4,12,3,7,'#4a382b'); px(x,25,12,3,7,'#4a382b'); }
+      else if(kind==='edicola'){ c=cv(48,48); x=ctx(c); px(x,2,10,44,34,'#2f6a4d'); px(x,4,14,40,24,'#f3ecd8'); px(x,6,16,12,7,'#c9564a'); px(x,20,16,10,7,'#4a87b8'); px(x,32,16,8,7,'#7a9a5a'); px(x,4,38,40,4,'#6b5632'); px(x,0,6,48,6,'#8a7046'); px(x,2,42,44,4,'#5a4528'); }
+      else if(kind==='plant'){ c=cv(16,20); x=ctx(c); px(x,5,12,6,7,'#8b6244'); px(x,4,11,8,2,'#a07050'); x.fillStyle='#5f9a4e'; x.beginPath(); x.arc(8,8,6,0,Math.PI*2); x.fill(); x.fillStyle='#7ab868'; x.beginPath(); x.arc(6,7,3,0,Math.PI*2); x.fill(); }
+      else { c=cv(16,16); x=ctx(c); px(x,0,0,16,16,'#d44d9a'); }
+      return this.cache[key]=c;
+    },
+
     /* ----------------------------------------------------------- icone UI */
     iconData(name) {
       const key = 'icon' + name; if (this.cache[key]) return this.cache[key];
