@@ -146,6 +146,9 @@
     decor(m, 24, 30, 'awning', { w: 48, color: '#c95a3a', h: 12 });
     decor(m, 36, 30, 'awning', { w: 48, color: '#3f7a4a', h: 12 });
     decor(m, 25, 30, 'cart', { h: 20 }); decor(m, 39, 30, 'cart', { h: 20 });
+    decor(m, 23, 41, 'piazza_strip', { w: 120, h: 42, oy: -26 }); // M1 extracted decor
+    decor(m, 7, 33, 'ns_palazzo2', { w: 96, h: 164, oy: -148 }); // extracted historic facade
+    decor(m, 62, 33, 'ns_palazzo3', { w: 84, h: 168, oy: -152 }); // extracted historic facade
 
     // Portali interni / servizi (ID preservati)
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 8 * T, y: 10 * T }, 'Ingresso Gesù Nuovo');
@@ -169,6 +172,11 @@
     poi(m, 39 * T, 35 * T, 'edicola_poi', 'service', 'Edicola', 'shop', { shop: 'negozio' });
     poi(m, 32 * T, 44 * T, 'banca_poi', 'service', 'Banca', 'bank');
     poi(m, 62 * T, 42 * T, 'cantiere_job', 'service', 'Cantiere', 'job', { job: 'operaio' });
+    // Nuovi interni M1 (struttura base, accessibili)
+    building(m, 36, 45, 5, 4, 'pizzeria', 'Entra in pizzeria', 'door');
+    building(m, 54, 17, 5, 4, 'metro', 'Entra in metro', 'door');
+    poi(m, 38, 49, 'pizzeria_sign', 'sign', 'Pizzeria', 'flavor');
+    poi(m, 56, 21, 'metro_sign', 'sign', 'Metro Toledo', 'flavor');
     return m;
   }
 
@@ -322,14 +330,14 @@
     poi(m, 2, 6, 'chapel_l', 'scenery', 'Cappella laterale', 'flavor');
     poi(m, 25, 6, 'chapel_r', 'scenery', 'Cappella laterale', 'flavor');
     // decor estratti da reference sheet (M1) — dimensionati e posizionati, non sfondo fisso
-    decor(m, 11, 2, 'church_altar', { w: 96, h: 118 });
-    decor(m, 5, 10, 'church_pew', { w: 54, h: 24 }); decor(m, 9, 10, 'church_pew', { w: 54, h: 24 });
-    decor(m, 16, 10, 'church_pew', { w: 54, h: 24 }); decor(m, 20, 10, 'church_pew', { w: 54, h: 24 });
-    decor(m, 5, 13, 'church_pew', { w: 54, h: 24 }); decor(m, 9, 13, 'church_pew', { w: 54, h: 24 });
-    decor(m, 16, 13, 'church_pew', { w: 54, h: 24 }); decor(m, 20, 13, 'church_pew', { w: 54, h: 24 });
-    decor(m, 1, 5, 'church_statue', { w: 28, h: 78 }); decor(m, 25, 5, 'church_statue', { w: 28, h: 78 });
-    decor(m, 3, 3, 'church_painting1', { w: 56, h: 40 }); decor(m, 22, 3, 'church_painting1', { w: 56, h: 40 });
-    decor(m, 7, 4, 'church_candle', { w: 12, h: 26 }); decor(m, 20, 4, 'church_candle', { w: 12, h: 26 });
+    decor(m, 11, 4, 'church_altar', { w: 96, h: 118, oy: -102 });
+    decor(m, 5, 11, 'church_pew', { w: 54, h: 24, oy: -8 }); decor(m, 9, 11, 'church_pew', { w: 54, h: 24, oy: -8 });
+    decor(m, 16, 11, 'church_pew', { w: 54, h: 24, oy: -8 }); decor(m, 20, 11, 'church_pew', { w: 54, h: 24, oy: -8 });
+    decor(m, 5, 14, 'church_pew', { w: 54, h: 24, oy: -8 }); decor(m, 9, 14, 'church_pew', { w: 54, h: 24, oy: -8 });
+    decor(m, 16, 14, 'church_pew', { w: 54, h: 24, oy: -8 }); decor(m, 20, 14, 'church_pew', { w: 54, h: 24, oy: -8 });
+    decor(m, 1, 9, 'church_statue', { w: 28, h: 78, oy: -62 }); decor(m, 25, 9, 'church_statue', { w: 28, h: 78, oy: -62 });
+    decor(m, 3, 5, 'church_painting1', { w: 56, h: 40, oy: -24 }); decor(m, 22, 5, 'church_painting1', { w: 56, h: 40, oy: -24 });
+    decor(m, 7, 5, 'church_candle', { w: 12, h: 26, oy: -10 }); decor(m, 20, 5, 'church_candle', { w: 12, h: 26, oy: -10 });
     // luci calde
     decor(m, 7, 4, 'candle_glow', { h: 8 }); decor(m, 20, 4, 'candle_glow', { h: 8 });
     decor(m, 4, 9, 'candle_glow', { h: 8 }); decor(m, 23, 9, 'candle_glow', { h: 8 });
@@ -349,20 +357,14 @@
     for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
     for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
     for (let x = 1; x < w - 1; x++) { g[1][x] = 'j'; g[2][x] = 'j'; }
-    // pavimento zona tavoli
     for (let y = 7; y <= 12; y++) for (let x = 2; x <= 17; x++) g[y][x] = 'Z';
-    // bancone
     for (let x = 2; x <= 10; x++) g[4][x] = 'u';
     g[3][3] = '0'; g[3][5] = '3'; g[3][7] = 'y'; g[3][9] = '0';
     g[5][4] = 'w'; g[5][8] = 'w';
-    // scaffali dietro
     g[2][2] = 's'; g[2][4] = 's'; g[2][6] = 's'; g[2][8] = 's'; g[2][10] = 's';
-    // tavoli e sedie
     const tables = [[4,8],[8,8],[13,8],[15,5],[4,11],[9,11],[14,11]];
     tables.forEach(([tx,ty]) => { g[ty][tx] = 'v'; if (g[ty-1]) g[ty-1][tx] = 'w'; if (g[ty+1]) g[ty+1][tx] = 'w'; if (g[ty][tx-1]) g[ty][tx-1] = 'w'; if (g[ty][tx+1]) g[ty][tx+1] = 'w'; });
-    // finestre/decor
-    g[1][14] = '7'; g[1][16] = '7';
-    g[2][17] = '9'; g[11][17] = '9'; g[11][2] = '9';
+    g[1][14] = '7'; g[1][16] = '7'; g[2][17] = '9'; g[11][17] = '9'; g[11][2] = '9';
     const dx = 10, dy = h - 1;
     g[dy][dx] = 'D';
     portal(m, dx, dy, 1, 1, 'prev', { x: 44 * T, y: 46 * T }, 'Esci');
@@ -370,11 +372,10 @@
     poi(m, 6, 5, 'bar_counter', 'service', 'Bancone — ordina', 'shop', { shop: 'bar' });
     poi(m, 4, 9, 'seat', 'furniture', 'Siediti e mangia', 'eat_bar');
     poi(m, 13, 9, 'seat2', 'furniture', 'Siediti e mangia', 'eat_bar');
-    // M1 extracted bar decor
-    decor(m, 2, 2, 'bar_shelf', { w: 132, h: 34 });
-    decor(m, 2, 4, 'bar_counter', { w: 150, h: 38 });
-    decor(m, 4, 8, 'bar_table', { w: 48, h: 20 }); decor(m, 13, 8, 'bar_table', { w: 48, h: 20 });
-    decor(m, 14, 4, 'bar_detail', { w: 48, h: 62 });
+    decor(m, 2, 2, 'bar_shelf', { w: 132, h: 34, oy: -18 });
+    decor(m, 2, 5, 'bar_counter', { w: 150, h: 38, oy: -22 });
+    decor(m, 4, 9, 'bar_table', { w: 48, h: 20, oy: -4 }); decor(m, 13, 9, 'bar_table', { w: 48, h: 20, oy: -4 });
+    decor(m, 14, 6, 'bar_detail', { w: 48, h: 62, oy: -46 });
     decor(m, 3, 3, 'warm_light', { r: 28, color: 'rgba(255,190,120,.16)' });
     decor(m, 15, 6, 'warm_light', { r: 24, color: 'rgba(255,190,120,.14)' });
     decor(m, 10, 10, 'warm_light', { r: 24, color: 'rgba(255,190,120,.12)' });
@@ -384,9 +385,65 @@
     return m;
   }
 
+  function pizzeriaInterior() {
+    const w = 22, h = 14;
+    const m = makeMap('pizzeria', 'interno', w, h, blank(w, h, 'h'));
+    m.name = 'Pizzeria Da Michele';
+    const g = m.g;
+    for (let x=0;x<w;x++){ g[0][x]='#'; g[h-1][x]='#'; }
+    for (let y=0;y<h;y++){ g[y][0]='#'; g[y][w-1]='#'; }
+    for (let x=1;x<w-1;x++){ g[1][x]='j'; g[2][x]='j'; }
+    for (let y=7;y<=12;y++) for (let x=2;x<=19;x++) g[y][x]='Z';
+    // oven/counter zone
+    for (let x=2;x<=8;x++) g[4][x]='u';
+    g[3][3]='0'; g[3][5]='y'; g[3][7]='0';
+    // tables
+    [[4,9],[9,9],[14,9],[16,6],[5,11],[11,11],[16,11]].forEach(([tx,ty])=>{ g[ty][tx]='v'; if(g[ty-1]) g[ty-1][tx]='w'; if(g[ty+1]) g[ty+1][tx]='w'; if(g[ty][tx-1]) g[ty][tx-1]='w'; if(g[ty][tx+1]) g[ty][tx+1]='w'; });
+    g[1][16]='7'; g[1][18]='7'; g[2][20]='9';
+    const dx=11, dy=h-1; g[dy][dx]='D';
+    portal(m, dx, dy, 1, 1, 'prev', { x: 50 * T, y: 46 * T }, 'Esci');
+    poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
+    poi(m, 5, 5, 'pizza_counter', 'service', 'Bancone pizzeria — ordina', 'shop', { shop: 'pizzeria' });
+    poi(m, 4, 10, 'seat_p', 'furniture', 'Siediti', 'eat_bar');
+    decor(m, 2, 4, 'pizzeria_oven', { w: 96, h: 110, oy: -94 });
+    decor(m, 9, 5, 'pizzeria_counter', { w: 120, h: 56, oy: -40 });
+    decor(m, 14, 9, 'pizzeria_table', { w: 60, h: 34, oy: -18 });
+    decor(m, 4, 3, 'warm_light', { r: 30, color:'rgba(255,180,110,.16)' });
+    decor(m, 15, 8, 'warm_light', { r: 26, color:'rgba(255,180,110,.12)' });
+    m.spawn = { x: dx*T, y:(h-3)*T }; m.spawnDir='up';
+    return m;
+  }
+
+  function metroInterior() {
+    const w=24, h=16;
+    const m=makeMap('metro','interno',w,h,blank(w,h,'h'));
+    m.name='Metro Toledo - Atrio';
+    const g=m.g;
+    for(let x=0;x<w;x++){g[0][x]='#'; g[h-1][x]='#';}
+    for(let y=0;y<h;y++){g[y][0]='#'; g[y][w-1]='#';}
+    for(let x=1;x<w-1;x++){g[1][x]='j'; g[2][x]='j';}
+    for(let y=3;y<=13;y++) for(let x=1;x<=22;x++) g[y][x]='M';
+    // gates/corridor
+    for(let x=5;x<=18;x++) g[6][x]=(x%3===0)?'M':'u';
+    for(let y=7;y<=11;y++){ g[y][11]='M'; g[y][12]='M'; }
+    g[1][6]='7'; g[1][17]='7';
+    const dx=12, dy=h-1; g[dy][dx]='D';
+    portal(m,dx,dy,1,1,'prev',{x:55*T,y:18*T},'Esci');
+    poi(m,dx,dy,'exit','door','Esci dalla metro','exit');
+    poi(m,12,7,'metro_info','service','Tornelli / info metro','flavor');
+    decor(m,2,4,'metro_hall',{w:180,h:110,oy:-94});
+    decor(m,5,7,'metro_gate',{w:140,h:48,oy:-32});
+    decor(m,3,12,'metro_platform',{w:220,h:44,oy:-28});
+    decor(m,12,4,'window_light',{w:14,h:10,color:'rgba(180,220,255,.12)'});
+    m.spawn={x:dx*T,y:(h-3)*T}; m.spawnDir='up';
+    return m;
+  }
+
   function interior(id, kind, w, h, decorate) {
     if (id === 'casa_nonna') return churchGesu();
     if (id === 'bar') return barInterior();
+    if (id === 'pizzeria') return pizzeriaInterior();
+    if (id === 'metro') return metroInterior();
     const m = makeMap(id, 'interno', w, h, blank(w, h, kind === 'cave' ? 'k' : 'h'));
     const g = m.g;
     for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
@@ -472,7 +529,9 @@
         case 'casa_amalfi': m = interior(id, 'home', 18, 13, mm => { mm.g[3][3] = 'P'; mm.g[3][14] = 'P'; }); break;
         case 'bottega': m = interior(id, 'shop', 18, 12); break;
         case 'souvenir': m = interior(id, 'shop', 16, 11); break;
-        case 'bar': m = interior(id, 'bar', 18, 12); break;
+        case 'bar': m = barInterior(); break;
+        case 'pizzeria': m = pizzeriaInterior(); break;
+        case 'metro': m = metroInterior(); break;
         case 'negozio': m = interior(id, 'shop', 18, 12); break;
         case 'banca': m = interior(id, 'bank', 16, 12); break;
         case 'clinica': m = interior(id, 'clinic', 18, 12); break;
@@ -485,7 +544,7 @@
           return m;
       }
       m.width = m.w * T; m.height = m.h * T;
-      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
+      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', pizzeria:'Pizzeria Da Michele', metro:'Metro Toledo - Atrio', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
       m.name = m.name || defaultNames[id] || id;
       this.cache[id] = m;
       return m;

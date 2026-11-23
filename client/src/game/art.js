@@ -64,6 +64,9 @@
         m1_church_arch: 'm1-church_arch.png', m1_church_pew: 'm1-church_pew.png',
         m1_church_candle: 'm1-church_candle.png', m1_church_statue: 'm1-church_statue.png',
         m1_bar_counter: 'm1-bar_counter.png', m1_bar_shelf: 'm1-bar_shelf.png', m1_bar_table: 'm1-bar_table.png', m1_bar_detail: 'm1-bar_detail.png',
+        m1_ns_palazzo1: 'm1-ns-palazzo1.png', m1_ns_palazzo2: 'm1-ns-palazzo2.png', m1_ns_palazzo3: 'm1-ns-palazzo3.png',
+        m1_pizzeria_oven:'m1-pizzeria-oven.png', m1_pizzeria_counter:'m1-pizzeria-counter.png', m1_pizzeria_table:'m1-pizzeria-table.png',
+        m1_metro_hall:'m1-metro-hall.png', m1_metro_platform:'m1-metro-platform.png', m1_metro_gate:'m1-metro-gate.png',
       };
       for (const [k, f] of Object.entries(files)) {
         const img = new Image(); img.decoding = 'async'; img.src = this.assetUrl(f);
@@ -675,7 +678,10 @@
         church_altar:'m1_church_altar', church_altar2:'m1_church_altar2', church_painting1:'m1_church_painting1',
         church_candle:'m1_church_candle', church_statue:'m1_church_statue',
         bar_counter:'m1_bar_counter', bar_shelf:'m1_bar_shelf', bar_table:'m1_bar_table', bar_detail:'m1_bar_detail',
-        piazza_strip:'m1_piazza_strip'
+        piazza_strip:'m1_piazza_strip',
+        ns_palazzo1:'m1_ns_palazzo1', ns_palazzo2:'m1_ns_palazzo2', ns_palazzo3:'m1_ns_palazzo3',
+        pizzeria_oven:'m1_pizzeria_oven', pizzeria_counter:'m1_pizzeria_counter', pizzeria_table:'m1_pizzeria_table',
+        metro_hall:'m1_metro_hall', metro_platform:'m1_metro_platform', metro_gate:'m1_metro_gate'
       };
       if (m1[kind] && this.images[m1[kind]]) return this.images[m1[kind]];
       const key='prop:'+kind; if(this.cache[key]) return this.cache[key];

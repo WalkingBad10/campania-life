@@ -632,12 +632,18 @@
         case 'chair_out': { const img = ART.propSprite('chair_out'); if (img) c.drawImage(img, x - 3, y - 10); break; }
         case 'church_pew': case 'church_column': case 'church_arch': case 'church_altar': case 'church_altar2':
         case 'church_painting1': case 'church_candle': case 'church_statue':
-        case 'bar_counter': case 'bar_shelf': case 'bar_table': case 'bar_detail': case 'piazza_strip': {
+        case 'bar_counter': case 'bar_shelf': case 'bar_table': case 'bar_detail': case 'piazza_strip':
+        case 'ns_palazzo1': case 'ns_palazzo2': case 'ns_palazzo3':
+        case 'pizzeria_oven': case 'pizzeria_counter': case 'pizzeria_table':
+        case 'metro_hall': case 'metro_platform': case 'metro_gate': {
           const img = ART.propSprite(d.type);
           if (img) {
             const dw = d.data.w || img.width;
             const dh = d.data.h || img.height;
-            c.drawImage(img, x, y, dw, dh);
+            // Bottom-anchor by default for prop decor; data.oy/ox allow fine tuning.
+            const ox = d.data.ox || 0;
+            const oy = d.data.oy !== undefined ? d.data.oy : (16 - dh);
+            c.drawImage(img, x + ox, y + oy, dw, dh);
           }
           break;
         }

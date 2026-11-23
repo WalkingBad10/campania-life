@@ -165,6 +165,7 @@
   D.shops = {
     negozio: { name: 'Bottega di Sora Maria', stock: ['pane', 'acqua', 'arancino', 'pizza', 'rete', 'fiore', 'ombrello', 'cappello', 'mappa'] },
     bar: { name: 'Caffè Vittoria', stock: ['caffe', 'pane', 'arancino', 'pizza', 'acqua', 'cioccolato'] },
+    pizzeria: { name: 'Pizzeria Da Michele', stock: ['pizza', 'acqua', 'caffe'] },
     banca: { name: 'Banca di Napoli', stock: ['mappa'] },
     costiera: { name: 'Chiosco del mare', stock: ['acqua', 'pizza', 'pesce', 'rete', 'canna', 'fiore', 'vino', 'ombrello'] },
     pompei: { name: 'Souvenir degli scavi', stock: ['acqua', 'pane', 'vino', 'cioccolato', 'fiore', 'mappa'] },
