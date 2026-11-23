@@ -12,6 +12,14 @@ import './game/engine.js';
 
 import './styles.css';
 import App from './App.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
+
+window.addEventListener('error', (e) => {
+  console.error('[CL] global error', e.error || e.message, e);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('[CL] unhandled rejection', e.reason);
+});
 
 CL.art.init();
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById('root')).render(<ErrorBoundary><App /></ErrorBoundary>);

@@ -250,9 +250,21 @@
   CL.save = {
     KEY: 'campania_life_save_v1',
     has() { return !!(LS ? LS.getItem(this.KEY) : memFallback); },
+    backup(reason) {
+      try {
+        const raw = LS ? LS.getItem(this.KEY) : memFallback;
+        if (raw) {
+          const k = this.KEY + '_backup_' + (reason || 'auto');
+          if (LS) LS.setItem(k, raw); else memFallback = raw;
+        }
+      } catch (e) {}
+    },
     write(obj) {
-      const s = JSON.stringify({ v: 1, t: Date.now(), data: obj });
-      try { if (LS) LS.setItem(this.KEY, s); else memFallback = s; return true; } catch (e) { memFallback = s; return false; }
+      try {
+        const s = JSON.stringify({ v: 1, t: Date.now(), data: obj });
+        if (LS) LS.setItem(this.KEY, s); else memFallback = s;
+        return true;
+      } catch (e) { console.warn('save failed', e); return false; }
     },
     read() {
       try {

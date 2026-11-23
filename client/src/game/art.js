@@ -46,7 +46,7 @@
 
     /* --------------------------------------------------------- tiles 16x16 */
     buildTiles() {
-      for (const ch of '.TD,rpSW~#=fcoXBo^gkPCVX') this.tiles[ch] = this.tile(ch);
+      for (const ch of ".TD,rpSW~#=fcoXBo^gkPCVXOH'") this.tiles[ch] = this.tile(ch);
     },
     tile(ch) {
       const c = cv(16, 16), x = ctx(c), R = U.rng(U.hash('tile' + ch));
@@ -116,6 +116,16 @@
         case 'G':
           px(x, 0, 0, 16, 16, P.pave); px(x, 2, 3, 3, 13, P.stone); px(x, 11, 3, 3, 13, P.stone);
           px(x, 2, 2, 12, 3, P.stoneL); px(x, 6, 5, 4, 11, '#2c2933'); break;
+        case 'O': // base guglia / monumento (solida)
+          px(x, 0, 0, 16, 16, P.pave);
+          ell(x, 8, 9, 7, 5, '#d7cfbf'); ell(x, 8, 9, 5, 3, '#ece6d7');
+          px(x, 3, 12, 10, 2, '#b8ad97'); px(x, 7, 6, 2, 2, '#9f9480'); break;
+        case 'H': // facciata storica
+          px(x, 0, 0, 16, 16, '#b7aa95'); px(x, 0, 0, 16, 2, '#d2c7b2'); px(x, 0, 14, 16, 2, '#8a7f6f');
+          for (let y = 3; y < 14; y += 4) for (let xx = 2; xx < 14; xx += 4) { px(x, xx, y, 2, 2, '#9d907d'); px(x, xx + 1, y + 1, 1, 1, '#cbbfa8'); }
+          break;
+        case "'": // dettaglio/accento
+          px(x, 0, 0, 16, 16, P.pave); px(x, 7, 4, 2, 8, '#c9a44a'); break;
         default: px(x, 0, 0, 16, 16, '#d44d9a');
       }
       return c;

@@ -60,7 +60,24 @@ export default function App() {
     setHasSave(CL.save.has());
     const queued = CL.ui.takeToasts ? CL.ui.takeToasts() : [];
     queued.forEach(t => pushToast(t.msg, t.type));
-    return () => { g.stop(); };
+
+    const onErr = e => {
+      console.error('[CL] window error', e.error || e.message || e);
+      pushToast('Errore imprevisto recuperato. La partita resta attiva.', 'bad');
+      e.preventDefault?.();
+    };
+    const onRej = e => {
+      console.error('[CL] unhandled rejection', e.reason);
+      pushToast('Problema di rete/caricamento recuperato.', 'bad');
+      e.preventDefault?.();
+    };
+    window.addEventListener('error', onErr);
+    window.addEventListener('unhandledrejection', onRej);
+    return () => {
+      window.removeEventListener('error', onErr);
+      window.removeEventListener('unhandledrejection', onRej);
+      g.stop();
+    };
   }, [pushToast]);
 
   /* Tasti globali di chiusura */
@@ -108,7 +125,8 @@ export default function App() {
   const applyChoice = action => {
     const g = gameRef.current;
     if (!g) return;
-    g.handleAction(action.action, action.data || {}, null);
+    try { g.handleAction(action.action, action.data || {}, null); }
+    catch (e) { console.error(e); pushToast('Azione non riuscita, la partita continua.', 'bad'); }
   };
 
   return (

@@ -22,7 +22,8 @@
     '.': '#6e9d4e', ',': '#9d855d', r: '#555b60', p: '#b8b1a0', S: '#e3cd99',
     W: '#2c7a9c', '~': '#54a5b4', '#': '#bf7350', '=': '#ab4a39', f: '#d8c7a6',
     c: '#8b6244', o: '#65432e', X: '#6fa9b8', B: '#d9e0d4', '^': '#8b8a80',
-    g: '#b9ae91', k: '#3b3640', P: '#4f8a4c', C: '#5b8fa6', V: '#24343f', G: '#2c2933', D: '#e9b84a'
+    g: '#b9ae91', k: '#3b3640', P: '#4f8a4c', C: '#5b8fa6', V: '#24343f', G: '#2c2933', D: '#e9b84a',
+    O: '#d7cfbf', H: '#b7aa95', "'": '#c9a44a'
   };
 
   class Game {
@@ -56,20 +57,31 @@
     }
 
     load(data) {
-      if (!data || !data.pos) return false;
-      this.state = data; CL.state = data;
-      this.state.inventory = this.state.inventory || {};
-      this.state.flags = this.state.flags || {};
-      this.state.stats = this.state.stats || {};
-      this.state.quests = this.state.quests || {};
-      this.state.creatures = this.state.creatures || {};
-      this.state.relations = this.state.relations || {};
-      this.state.achievements = this.state.achievements || [];
-      this.state.needs = this.state.needs || { hunger: 80, thirst: 80, energy: 80, mood: 70, hygiene: 70 };
-      this.state.profile = this.state.profile || CL.createState().profile;
-      this.enterMap(this.state.pos.map, this.state.pos.x, this.state.pos.y, true);
-      CL.audio.setTrack(MAPS.get(this.map.id).zone === 'interno' ? 'interior' : (D.zones[MAPS.get(this.map.id).zone] || {}).track || 'town');
-      return true;
+      try {
+        if (!data || typeof data !== 'object' || !data.pos) throw new Error('save invalido');
+        CL.save.backup('pre_load');
+        this.state = data; CL.state = data;
+        this.state.inventory = this.state.inventory || {};
+        this.state.flags = this.state.flags || {};
+        this.state.stats = this.state.stats || {};
+        this.state.quests = this.state.quests || {};
+        this.state.creatures = this.state.creatures || {};
+        this.state.relations = this.state.relations || {};
+        this.state.achievements = this.state.achievements || [];
+        this.state.needs = this.state.needs || { hunger: 80, thirst: 80, energy: 80, mood: 70, hygiene: 70 };
+        this.state.profile = this.state.profile || CL.createState().profile;
+        this.state.pos.map = this.state.pos.map || 'napoli';
+        this.state.pos.x = Number.isFinite(this.state.pos.x) ? this.state.pos.x : 31 * T;
+        this.state.pos.y = Number.isFinite(this.state.pos.y) ? this.state.pos.y : 35 * T;
+        this.enterMap(this.state.pos.map, this.state.pos.x, this.state.pos.y, true);
+        if (this.player) this.player.dir = this.state.pos.dir || 'down';
+        CL.audio.setTrack(MAPS.get(this.map.id).zone === 'interno' ? 'interior' : (D.zones[MAPS.get(this.map.id).zone] || {}).track || 'town');
+        return true;
+      } catch (err) {
+        console.error('[CL] load failed', err);
+        CL.ui.toast('Salvataggio danneggiato: avvio sicuro senza chiudere la sessione.', 'bad');
+        return false;
+      }
     }
 
     serialize() {
@@ -99,8 +111,15 @@
       const loop = now => {
         if (!this.running) return;
         let dt = Math.min(.05, (now - this.last) / 1000); this.last = now;
-        this.update(dt); this.render();
-        CL.input.endFrame();
+        try {
+          this.update(dt);
+          this.render();
+        } catch (err) {
+          console.error('[CL] frame error', err);
+          // Mai tornare al menu: mostra errore e continua al frame successivo.
+          if (CL.ui && CL.ui.toast) CL.ui.toast('Errore recuperato: ' + (err && err.message ? err.message : 'sconosciuto'), 'bad');
+        }
+        try { CL.input.endFrame(); } catch (e) {}
         this.raf = requestAnimationFrame(loop);
       };
       this.raf = requestAnimationFrame(loop);
@@ -115,8 +134,8 @@
       if (!this.state || !this.player) return;
       if (!CL.ui.isModal()) {
         S.time.advance(dt);
-        CL.input.consume('interact') && this.player.interact();
-        CL.input.consume('ability') && this.useAbility();
+        try { CL.input.consume('interact') && this.player.interact(); } catch (e) { console.error(e); CL.ui.toast('Interazione non riuscita.', 'bad'); }
+        try { CL.input.consume('ability') && this.useAbility(); } catch (e) { console.error(e); }
         CL.input.consume('menu') && CL.ui.openMenu('phone');
         CL.input.consume('pause') && CL.ui.openMenu('impostazioni');
         CL.input.consume('inventory') && CL.ui.openMenu('zaino');
@@ -129,7 +148,12 @@
             if (foods[i]) S.inventory.use(foods[i]);
           }
         });
-        for (const e of this.entities) e.update(dt);
+        for (let i = this.entities.length - 1; i >= 0; i--) {
+          const e = this.entities[i];
+          if (!e || !e.alive) continue;
+          try { e.update(dt); }
+          catch (err) { console.error('[CL] entity update', e && e.id, err); }
+        }
         const focus = this.player.vehicle || this.player;
         CL.camera.follow(focus, dt, 1);
         this.updatePrompt();
@@ -197,59 +221,81 @@
     /* ------------------------------------------------------------ vecino mappe */
     enterMap(id, x, y, silent) {
       if (!this.state) return;
-      const prev = this.state.pos || {};
-      if (!silent && this.map && MAPS.get(this.map.id).zone === 'interno' && MAPS.get(id).zone !== 'interno') {
-        // uscita da un interno
-      }
-      if (!silent && MAPS.get(id).zone === 'interno' && (!this.map || MAPS.get(this.map.id).zone !== 'interno')) {
-        this.state.pos.prev = { map: this.map ? this.map.id : 'napoli', x: prev.x, y: prev.y };
-      }
-      const target = id === 'prev'
-        ? (this.state.pos.prev || { map: 'napoli', x: 240, y: 272 })
-        : { map: id, x: x !== undefined ? x : MAPS.get(id).spawn.x, y: y !== undefined ? y : MAPS.get(id).spawn.y };
-      const isInterior = MAPS.get(target.map).zone === 'interno';
-      const ownedInteriors = ['casa_giocatore', 'appartamento', 'casa_amalfi', 'bottega'];
-      if (ownedInteriors.indexOf(target.map) >= 0 && !S.property.owns(target.map)) {
-        CL.ui.toast('Questo immobile non è ancora tuo.', 'bad'); CL.audio.sfx('fail'); return;
-      }
-      this.particles.clear();
-      this.map = MAPS.get(target.map);
-      CL.camera.setBounds(this.map.width, this.map.height);
-      this.entities = []; this.creatures = [];
-      if (!this.player) this.player = new CL.Player(this, target.x, target.y);
-      this.player.vehicle = null;
-      this.player.x = target.x; this.player.y = target.y;
-      this.entities.push(this.player);
-      // PNG presenti in questa mappa
-      for (const nid in D.npcs) {
-        const def = D.npcs[nid];
-        if (def.home === target.map || (isInterior && def.role === 'shop' && (target.map === 'bar' && nid === 'barista'))) {
-          const n = new CL.NPC(this, nid, def);
-          if (isInterior) { n.x = this.map.width / 2; n.y = this.map.height - 80; n.homeX = n.x; n.homeY = n.y; }
-          this.entities.push(n);
+      try {
+        const prev = this.state.pos || {};
+        const resolve = raw => {
+          if (raw === 'prev') return this.state.pos.prev || { map: 'napoli', x: 31 * T, y: 35 * T };
+          const m = MAPS.get(raw);
+          if (!m) return { map: 'napoli', x: 31 * T, y: 35 * T };
+          return { map: m.id, x: x !== undefined ? x : m.spawn.x, y: y !== undefined ? y : m.spawn.y };
+        };
+        const target = resolve(id);
+        const targetMap = MAPS.get(target.map) || MAPS.get('napoli');
+        const isInterior = targetMap.zone === 'interno';
+        const ownedInteriors = ['casa_giocatore', 'appartamento', 'casa_amalfi', 'bottega'];
+        if (ownedInteriors.indexOf(target.map) >= 0 && !S.property.owns(target.map)) {
+          CL.ui.toast('Questo immobile non è ancora tuo.', 'bad'); CL.audio.sfx('fail'); return;
+        }
+        if (!silent && isInterior && (!this.map || MAPS.get(this.map.id).zone !== 'interno')) {
+          this.state.pos.prev = { map: this.map ? this.map.id : 'napoli', x: prev.x, y: prev.y };
+        }
+        this.particles.clear();
+        this.map = targetMap;
+        CL.camera.setBounds(this.map.width, this.map.height);
+        this.entities = []; this.creatures = [];
+        const tx = Number.isFinite(target.x) ? target.x : this.map.spawn.x;
+        const ty = Number.isFinite(target.y) ? target.y : this.map.spawn.y;
+        if (!this.player) this.player = new CL.Player(this, tx, ty);
+        this.player.vehicle = null;
+        this.player.x = tx; this.player.y = ty;
+        this.player.vx = 0; this.player.vy = 0;
+        this.entities.push(this.player);
+        for (const nid in D.npcs) {
+          const def = D.npcs[nid];
+          if (!def) continue;
+          const inThisMap = def.home === target.map || (isInterior && def.role === 'shop' && target.map === 'bar' && nid === 'barista');
+          if (inThisMap) {
+            const n = new CL.NPC(this, nid, def);
+            if (isInterior) { n.x = this.map.width / 2; n.y = this.map.height - 80; n.homeX = n.x; n.homeY = n.y; }
+            this.entities.push(n);
+          }
+        }
+        if (!isInterior) this.spawnCreatures();
+        this.state.pos.map = target.map;
+        this.state.pos.x = tx; this.state.pos.y = ty;
+        CL.camera.snap(this.player);
+        try { S.actions.visit(target.map); } catch (e) { console.error(e); }
+        if (!silent) {
+          this.fadeT = .35;
+          CL.audio.sfx('door');
+          CL.ui.toast('📍 ' + this.map.name, 'info');
+          this.save();
+        }
+        CL.ui.refresh();
+      } catch (err) {
+        console.error('[CL] enterMap failed', id, err);
+        CL.ui.toast('Cambio zona recuperato. Riprova.', 'bad');
+        if (!this.map) {
+          this.map = MAPS.get('napoli');
+          const s = this.map.spawn;
+          if (!this.player) this.player = new CL.Player(this, s.x, s.y);
+          this.entities = [this.player];
         }
       }
-      if (!isInterior) this.spawnCreatures();
-      this.state.pos.map = target.map;
-      CL.camera.snap(this.player);
-      S.actions.visit(target.map);
-      if (!silent) {
-        this.fadeT = .35;
-        CL.audio.sfx('door');
-        CL.ui.toast('📍 ' + this.map.name, 'info');
-        this.save();
-      }
-      CL.ui.refresh();
     }
 
     spawnCreatures() {
       this.creatures = [];
       if (!this.map || MAPS.get(this.map.id).zone === 'interno') return;
-      const list = S.creatures.spawn(this.map.id);
-      for (const c of list) {
-        const e = new CL.Creature(this, c);
-        this.creatures.push(e); this.entities.push(e);
-      }
+      try {
+        const list = S.creatures.spawn(this.map.id) || [];
+        for (const c of list) {
+          try {
+            const e = new CL.Creature(this, c);
+            this.creatures.push(e); this.entities.push(e);
+          } catch (e) { console.error('[CL] spawn creature', e); }
+        }
+      } catch (e) { console.error('[CL] spawnCreatures', e); }
     }
 
     removeEntity(e) {
@@ -258,16 +304,19 @@
     }
 
     checkPortals(ent) {
-      if (ent !== this.player && !(ent instanceof CL.Vehicle && ent.mounted)) return;
-      if (this.fadeT > 0) return;
-      const p = MAPS.portalAt(this.map, ent.x, ent.y);
-      if (!p) return;
-      let to = p.to, x = p.spawn.x, y = p.spawn.y;
-      if (to === 'prev') {
-        const prev = this.state.pos.prev || { map: 'napoli', x: 240, y: 272 };
-        to = prev.map; x = prev.x; y = prev.y;
-      }
-      this.enterMap(to, x, y);
+      try {
+        if (!this.map || !this.state) return;
+        if (ent !== this.player && !(ent instanceof CL.Vehicle && ent.mounted)) return;
+        if (this.fadeT > 0) return;
+        const p = MAPS.portalAt(this.map, ent.x, ent.y);
+        if (!p) return;
+        let to = p.to, x = p.spawn.x, y = p.spawn.y;
+        if (to === 'prev') {
+          const prev = this.state.pos.prev || { map: 'napoli', x: 31 * T, y: 35 * T };
+          to = prev.map; x = prev.x; y = prev.y;
+        }
+        this.enterMap(to, x, y);
+      } catch (e) { console.error('[CL] checkPortals', e); }
     }
 
     canMove(x, y, wid, hei) {
@@ -287,8 +336,10 @@
         case 'travel':
           CL.ui.confirm('Vai a ' + (D.zones[data.to] ? D.zones[data.to].name : data.to) + '?',
             'Cammini per un po’ e raggiungi la zona.', () => {
-              const sp = { costiera: { x: 3 * T, y: 14 * T }, napoli: { x: 62 * T, y: 28 * T }, vesuvio: { x: 32 * T, y: 45 * T }, pompei: { x: 5 * T, y: 30 * T } }[data.to] || MAPS.get(data.to).spawn;
-              S.time.skip(.6); this.enterMap(data.to, sp.x, sp.y);
+              try {
+                const sp = { costiera: { x: 3 * T, y: 14 * T }, napoli: { x: 62 * T, y: 28 * T }, vesuvio: { x: 32 * T, y: 45 * T }, pompei: { x: 5 * T, y: 30 * T } }[data.to] || (MAPS.get(data.to) || MAPS.get('napoli')).spawn;
+                S.time.skip(.6); this.enterMap(data.to, sp.x, sp.y);
+              } catch (e) { console.error(e); CL.ui.toast('Viaggio non riuscito.', 'bad'); }
             }); break;
         case 'shop': CL.ui.openShop(data.shop || 'negozio'); break;
         case 'sell': CL.ui.openMenu('vendi'); break;
@@ -351,11 +402,16 @@
         const ch = m.g[ty][tx], img = ART.tiles[ch];
         if (img) c.drawImage(img, tx * T, ty * T);
       }
-      // oggetti in alto + entità, ordinati per profondità
+      // oggetti alti + entità, ordinati per profondità
       const items = [];
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
         const ch = m.g[ty][tx];
         if (ch === 'T' || ch === '^') items.push({ y: ty * T + 16, kind: ch, tx, ty });
+        if (ch === 'O') {
+          const up = ty > 0 ? m.g[ty - 1][tx] : '';
+          const left = tx > 0 ? m.g[ty][tx - 1] : '';
+          if (up !== 'O' && left !== 'O') items.push({ y: ty * T + 3 * T, kind: 'O', tx, ty }); // anchor bottom of base
+        }
       }
       for (const e of this.entities) if (e.alive) items.push({ y: e.y + (e.offsetY || 0), ent: e });
       items.sort((a, b) => a.y - b.y);
@@ -365,6 +421,8 @@
           const variant = (it.tx * 13 + it.ty * 7) % 3;
           const img = m.zone === 'costiera' ? ART.lemonTree(variant) : ART.tree(variant);
           c.drawImage(img, it.tx * T - 8, it.ty * T - 24);
+        } else if (it.kind === 'O') {
+          this.drawGuglia(c, it.tx * T, it.ty * T);
         } else c.drawImage(ART.rock((it.tx + it.ty) % 3), it.tx * T - 2, it.ty * T - 8);
       }
       c.restore();
@@ -405,6 +463,30 @@
         c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
       }
       this.drawMinimap(c);
+    }
+
+    drawGuglia(c, x, y) {
+      // Base già nel tile O (collisione). Disegniamo il fusto sopra per profondità.
+      c.save();
+      c.fillStyle = 'rgba(0,0,0,.18)';
+      c.fillRect(x + 4, y + 20, 24, 4);
+      const cx = x + 16;
+      // piedistallo
+      c.fillStyle = '#d8d0c0'; c.fillRect(cx - 14, y + 10, 28, 12);
+      c.fillStyle = '#bdb39f'; c.fillRect(cx - 14, y + 20, 28, 2);
+      c.fillStyle = '#ece4d2'; c.fillRect(cx - 11, y + 12, 22, 7);
+      // obelisco
+      c.fillStyle = '#cfc5b1'; c.fillRect(cx - 5, y - 28, 10, 40);
+      c.fillStyle = '#efe8d8'; c.fillRect(cx - 3, y - 26, 6, 36);
+      // dettagli
+      c.fillStyle = '#9e9483'; c.fillRect(cx - 7, y + 6, 14, 4);
+      c.fillStyle = '#c9a44a'; c.fillRect(cx - 2, y - 36, 4, 8);
+      c.fillStyle = '#f3d77a'; c.fillRect(cx - 1, y - 42, 2, 6);
+      // statue stilizzate
+      c.fillStyle = '#d7ccb8';
+      c.fillRect(cx - 16, y + 2, 3, 8); c.fillRect(cx + 13, y + 2, 3, 8);
+      c.fillRect(cx - 4, y + 2, 3, 8); c.fillRect(cx + 1, y + 2, 3, 8);
+      c.restore();
     }
 
     drawMinimap(c) {

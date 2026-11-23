@@ -6,7 +6,7 @@
   'use strict';
   const CL = w.CL, U = CL.util, T = CL.TILE;
 
-  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1 };
+  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1 };
 
   function blank(x, y, ch) { return Array.from({ length: y }, () => new Array(x).fill(ch)); }
   function rect(g, x, y, ww, hh, ch) {
@@ -50,44 +50,68 @@
 
   /* ------------------------------------------------------------- NAPOLI */
   function napoli() {
-    const m = makeMap('napoli', 'napoli', 64, 44, blank(64, 44, '.'));
+    // Area prioritaria: Piazza del Gesù Nuovo / inizio Via Benedetto Croce.
+    const m = makeMap('napoli', 'napoli', 64, 44, blank(64, 44, 'p'));
+    m.name = 'Piazza del Gesù Nuovo';
+    m.spawn = { x: 31 * T, y: 35 * T };
     const R = U.rng(7717), g = m.g;
-    scatter(g, ',', 90, c => c === '.', R);
-    // strade
-    [8, 18, 28, 38].forEach(y => { hline(g, 0, 63, y, 'r', 2); hline(g, 0, 63, y - 1, 'p'); hline(g, 0, 63, y + 2, 'p'); });
-    [12, 26, 40, 54].forEach(x => { vline(g, x, 0, 43, 'r', 2); vline(g, x - 1, 0, 43, 'p'); vline(g, x + 2, 0, 43, 'p'); });
-    // piazza
-    rect(g, 28, 22, 9, 7, 'p'); g[25][32] = 'X';
-    poi(m, 32, 26, 'fontana', ' scenery', 'Fontana della Piazza', 'flavor');
-    // parco
-    for (let i = 0; i < 22; i++) {
-      const x = 3 + (R() * 9 | 0), y = 30 + (R() * 12 | 0);
-      if (g[y][x] === '.') g[y][x] = 'T';
-    }
-    // edifici
-    building(m, 12, 10, 5, 4, 'casa_nonna', 'Entra a casa di nonna');
-    building(m, 21, 16, 6, 4, 'bar', 'Entra al Caffè Vittoria');
-    building(m, 39, 12, 6, 5, 'banca', 'Entra in banca');
-    building(m, 43, 27, 7, 5, 'clinica', 'Entra in clinica');
-    building(m, 17, 31, 6, 4, 'negozio', 'Entra nella bottega');
-    building(m, 32, 33, 6, 4, 'ufficio', 'Entra nell’ufficio lavori');
-    building(m, 49, 15, 7, 5, 'casa_giocatore', 'Parla con l’agente immobiliare', 'realtor');
-    building(m, 45, 34, 8, 4, 'cantiere', 'Entra al cantiere', 'jobsite');
-    // collegamenti tra zone
-    portal(m, 0, 18, 1, 2, 'costiera', { x: 3 * T, y: 14 * T }, 'Vai in Costiera');
-    portal(m, 54, 0, 2, 1, 'vesuvio', { x: 54 * T, y: 46 * T }, 'Vai al Vesuvio');
-    portal(m, 63, 27, 1, 2, 'pompei', { x: 5 * T, y: 30 * T }, 'Vai a Pompei');
-    poi(m, 0, 18, 'to_costiera', 'sign', 'Costiera Amalfitana →', 'travel', { to: 'costiera' });
-    poi(m, 54, 0, 'to_vesuvio', 'sign', 'Vesuvio ↑', 'travel', { to: 'vesuvio' });
-    poi(m, 63, 27, 'to_pompei', 'sign', 'Scavi di Pompei →', 'travel', { to: 'pompei' });
-    // punti di interazione
-    poi(m, 32, 25, 'fontana2', 'flavor', 'Fontana antica', 'flavor');
-    poi(m, 49, 21, 'realtor', 'service', 'Agenzia immobiliare', 'property');
-    poi(m, 49, 39, 'cantiere_job', 'service', 'Cantiere', 'job', { job: 'operaio' });
-    poi(m, 35, 38, 'ufficio_job', 'service', 'Ufficio lavori', 'jobs');
-    // panchine e lampioni (decorativi, non bloccanti)
-    [[16, 20], [30, 13], [44, 20], [22, 40]].forEach(([x, y]) => { if (g[y][x] === '.') g[y][x] = ','; });
-    m.spawn = { x: 15 * T, y: 17 * T };
+
+    // Basolato piazza e marciapiedi
+    rect(g, 14, 18, 36, 18, 'D');
+    rect(g, 18, 12, 28, 6, 'p'); // sagrato
+
+    // Assi viari (semplificati ma riconoscibili)
+    hline(g, 46, 63, 28, 'r', 2); hline(g, 46, 63, 27, 'p'); hline(g, 46, 63, 30, 'p'); // Via B. Croce est
+    hline(g, 0, 14, 30, 'r', 2);  hline(g, 0, 14, 29, 'p');  hline(g, 0, 14, 32, 'p');  // lato ovest
+    vline(g, 30, 0, 12, 'r', 2);  vline(g, 29, 0, 12, 'p');  vline(g, 32, 0, 12, 'p');  // nord
+    vline(g, 30, 36, 43, 'r', 2); vline(g, 29, 36, 43, 'p'); vline(g, 32, 36, 43, 'p'); // sud
+
+    // Guglia dell'Immacolata: base solida, parte alta disegnata in render (passabile dietro)
+    rect(g, 30, 24, 4, 3, 'O'); // base con collisione
+    rect(g, 31, 25, 2, 1, 'D');
+
+    // Chiesa del Gesù Nuovo - facciata bugnata stilizzata
+    rect(g, 20, 3, 24, 10, '#');
+    rect(g, 22, 4, 20, 8, 'B');
+    for (let y = 4; y < 12; y += 2) for (let x = 22; x < 42; x += 2) g[y][x] = (x + y) % 4 === 0 ? '#' : 'B';
+    rect(g, 31, 10, 2, 3, 'D'); // portale
+
+    // Palazzi storici
+    rect(g, 48, 16, 12, 9, '#'); rect(g, 50, 18, 2, 2, 'V'); rect(g, 55, 18, 2, 2, 'V'); rect(g, 53, 24, 2, 1, 'D');
+    rect(g, 4, 16, 10, 10, '#'); rect(g, 6, 18, 2, 2, 'V');  rect(g, 10, 18, 2, 2, 'V'); rect(g, 8, 25, 2, 1, 'D');
+    rect(g, 4, 33, 14, 8, '#');  rect(g, 6, 35, 2, 2, 'V');  rect(g, 14, 33, 2, 1, 'D'); // complesso sud-ovest
+    rect(g, 50, 33, 10, 7, '#'); rect(g, 52, 35, 2, 2, 'V'); rect(g, 52, 33, 2, 1, 'D'); // lato est
+
+    // Esercizi
+    rect(g, 40, 33, 6, 4, '#'); rect(g, 42, 36, 2, 1, 'D'); // bar
+    rect(g, 35, 33, 4, 4, '#'); rect(g, 36, 36, 1, 1, 'D'); // edicola/negozio
+    rect(g, 20, 33, 7, 4, '#'); rect(g, 23, 36, 1, 1, 'D'); // banca
+
+    // Arredi urbani leggeri
+    scatter(g, ',', 30, c => c === 'D' || c === 'p', R);
+    [[18, 20], [45, 20], [18, 31], [45, 31]].forEach(([x, y]) => { if (g[y][x] !== '#') g[y][x] = 'P'; });
+
+    // Portali interni / servizi
+    portal(m, 31, 12, 2, 1, 'casa_nonna', { x: 8 * T, y: 10 * T }, 'Ingresso Chiesa');
+    portal(m, 42, 36, 2, 1, 'bar', { x: 9 * T, y: 10 * T }, 'Caffè');
+    portal(m, 36, 36, 1, 1, 'negozio', { x: 9 * T, y: 10 * T }, 'Edicola');
+    portal(m, 23, 36, 1, 1, 'banca', { x: 8 * T, y: 10 * T }, 'Banca');
+    portal(m, 14, 33, 2, 1, 'clinica', { x: 9 * T, y: 10 * T }, 'Ingresso servizio');
+    portal(m, 53, 24, 2, 1, 'ufficio', { x: 9 * T, y: 10 * T }, 'Ufficio');
+    portal(m, 8, 25, 2, 1, 'casa_giocatore', { x: 9 * T, y: 10 * T }, 'Agenzia', 'realtor');
+
+    // Collegamenti zona (placeholder sicuri)
+    portal(m, 63, 28, 1, 2, 'costiera', { x: 3 * T, y: 14 * T }, 'Verso la Costiera');
+    portal(m, 0, 30, 1, 2, 'pompei', { x: 54 * T, y: 30 * T }, 'Verso Toledo');
+    portal(m, 30, 43, 2, 1, 'vesuvio', { x: 32 * T, y: 3 * T }, 'Verso sud');
+
+    poi(m, 32 * T, 25 * T, 'guglia', 'landmark', "Guglia dell'Immacolata", 'flavor');
+    poi(m, 32 * T, 8 * T, 'gesu', 'landmark', 'Chiesa del Gesù Nuovo', 'flavor');
+    poi(m, 56 * T, 29 * T, 'croce', 'landmark', 'Via Benedetto Croce', 'flavor');
+    poi(m, 44 * T, 35 * T, 'bar_poi', 'service', 'Caffè', 'shop', { shop: 'bar' });
+    poi(m, 36 * T, 35 * T, 'edicola_poi', 'service', 'Edicola', 'shop', { shop: 'negozio' });
+    poi(m, 23 * T, 35 * T, 'banca_poi', 'service', 'Banca', 'bank');
+    poi(m, 49 * T, 39 * T, 'cantiere_job', 'service', 'Cantiere', 'job', { job: 'operaio' });
     return m;
   }
 
@@ -242,6 +266,7 @@
   const MAPS = CL.maps = {
     cache: {},
     get(id) {
+      if (!id) id = 'napoli';
       if (this.cache[id]) return this.cache[id];
       let m;
       switch (id) {
@@ -262,7 +287,11 @@
         case 'clinica': m = interior(id, 'clinic', 18, 12); break;
         case 'ufficio': m = interior(id, 'office', 18, 12); break;
         case 'grotta': m = interior(id, 'cave', 18, 20); break;
-        default: m = interior(id, 'home', 16, 12);
+        default:
+          console.warn('[CL] Mappa sconosciuta:', id, '- fallback napoli');
+          m = this.cache.napoli || napoli();
+          this.cache.napoli = m;
+          return m;
       }
       m.width = m.w * T; m.height = m.h * T;
       m.name = ({ napoli: 'Napoli Centro', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Casa di nonna', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' })[id] || id;

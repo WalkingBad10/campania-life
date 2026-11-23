@@ -143,14 +143,22 @@
     },
     faint() {
       const st = CL.state;
-      toast('Sei svenuto per la stanchezza! Ti risvegli in clinica.', 'bad');
-      st.pos.map = 'clinica'; st.pos.prev = 'napoli';
-      st.pos.x = 9 * CL.TILE; st.pos.y = 9 * CL.TILE;
-      st.money = Math.max(0, st.money - 20);
-      st.needs.energy = 45; st.needs.hunger = Math.max(st.needs.hunger, 30); st.needs.thirst = Math.max(st.needs.thirst, 30);
-      S.time.skip(3); sfx('fail');
-      if (CL.game) CL.game.enterMap('clinica', st.pos.x, st.pos.y);
-      autosave();
+      if (st.flags && st.flags.fainting) return;
+      st.flags = st.flags || {};
+      st.flags.fainting = true;
+      try {
+        toast('Sei svenuto per la stanchezza! Ti risvegli in clinica.', 'bad');
+        st.pos.prev = st.pos.map || 'napoli';
+        st.pos.map = 'clinica';
+        st.pos.x = 9 * CL.TILE; st.pos.y = 9 * CL.TILE;
+        st.money = Math.max(0, st.money - 20);
+        st.needs.energy = 45; st.needs.hunger = Math.max(st.needs.hunger, 30); st.needs.thirst = Math.max(st.needs.thirst, 30);
+        S.time.skip(3); sfx('fail');
+        if (CL.game) CL.game.enterMap('clinica', st.pos.x, st.pos.y);
+        autosave();
+      } finally {
+        st.flags.fainting = false;
+      }
     },
     speedFactor() {
       const n = CL.state.needs;
