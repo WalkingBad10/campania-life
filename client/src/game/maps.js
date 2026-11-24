@@ -146,30 +146,28 @@
     [[13,16],[17,16],[29,16],[41,16],[47,16],[51,16],[13,37],[51,37]].forEach(([x,y])=>{ if (g[y] && g[y][x] === 'D') setTile(g, x, y, 'P'); });
 
     // Overlay architettonici (sprite code-drawn, cacheati)
-    decor(m, 9, 3, 'gesu_facade', { h: 12 * T });
-    decor(m, 34, 2, 'palazzo_ne', { h: 12 * T });
-    decor(m, 10, 39, 'palazzo_sw', { h: 7 * T });
-    decor(m, 28, 39, 'palazzo_banca', { h: 7 * T });
-    decor(m, 40, 39, 'palazzo_bar', { h: 7 * T });
-    decor(m, 50, 39, 'palazzo_se', { h: 7 * T });
-    decor(m, 55, 16, 'palazzo_e', { h: 12 * T });
-    decor(m, 38, 34, 'edicola', { h: 48 });
+    decor(m, 9, 3, 'gesu_facade', { h: 13 * T, oy: -16 });
+    decor(m, 34, 2, 'palazzo_ne', { h: 12 * T, oy: 0 });
+    decor(m, 10, 39, 'palazzo_sw', { h: 8 * T, oy: -16 });
+    decor(m, 28, 39, 'palazzo_banca', { h: 8 * T, oy: -16 });
+    decor(m, 40, 39, 'palazzo_bar', { h: 8 * T, oy: -16 });
+    decor(m, 50, 39, 'palazzo_se', { h: 8 * T, oy: -16 });
+    decor(m, 55, 16, 'palazzo_e', { h: 12 * T, oy: 0 });
+    decor(m, 41, 34, 'edicola', { h: 48 });
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
     decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });
     decor(m, 20, 10, 'portal_arch', { h: 24 });
-    [[15,18],[27,18],[45,18],[15,35],[49,35],[53,23],[24,28],[40,28],[20,29],[44,29]].forEach(([x,y]) => decor(m, x, y, 'lamp', { h: 16 }));
-    [[22,22],[46,22],[22,32],[46,32],[30,22],[38,32],[29,35],[43,35]].forEach(([x,y]) => decor(m, x, y, 'bench', { h: 10 }));
     [[18,16],[26,16],[42,16],[48,16],[18,37],[50,37],[13,16],[51,16],[13,37],[51,37],[21,37],[47,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
     decor(m, 25, 35, 'cart', { h: 20 });
     decor(m, 47, 36, 'table_out', { h: 12 }); decor(m, 45, 36, 'chair_out', { h: 10 }); decor(m, 49, 36, 'chair_out', { h: 10 });
     decor(m, 33, 37, 'sign', { h: 20 });
+    decor(m, 40, 46, 'sign', { h: 20 });
+    decor(m, 58, 28, 'sign', { h: 20 });
+    [[18,18],[42,18],[26,37],[36,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
     // Bancarelle mercato
     decor(m, 24, 30, 'awning', { w: 48, color: '#c95a3a', h: 12 });
     decor(m, 36, 30, 'awning', { w: 48, color: '#3f7a4a', h: 12 });
     decor(m, 25, 30, 'cart', { h: 20 }); decor(m, 39, 30, 'cart', { h: 20 });
-    decor(m, 23, 41, 'piazza_strip', { w: 120, h: 42, oy: -26 }); // M1 extracted decor
-    decor(m, 7, 33, 'ns_palazzo2', { w: 96, h: 164, oy: -148 }); // extracted historic facade
-    decor(m, 62, 33, 'ns_palazzo3', { w: 84, h: 168, oy: -152 }); // extracted historic facade
 
     // Portali interni / servizi (ID preservati)
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 14 * T, y: 18 * T + 8 }, 'Ingresso Gesù Nuovo');

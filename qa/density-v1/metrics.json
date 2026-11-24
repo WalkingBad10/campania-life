@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-24",
+  "increment": "visual-density-v1",
+  "regression": "23/23 PASS",
+  "build": "index-mAEusJQS.js",
+  "browser": "http://127.0.0.1:3000/?qa=density-final2",
+  "note": "Stesse condizioni di qa/collision-fix/metrics.json: canvas 480x270, mezzogiorno, animT=0, input azzerato. Palette su 5 bit per canale; edgeDensity su confronto luminanza tra pixel adiacenti.",
+  "changes": [
+    "varianti deterministiche D0-D3/p0-p3 e r_h/r_v senza modificare la griglia",
+    "transizioni cordolo marciapiede-carreggiata e strisce pedonali",
+    "ancoraggi delle facciate allineati al footprint solido, guglia riproporzionata",
+    "rimossi decor duplicati/sovrapposti a portali e marciapiedi",
+    "veicoli ambientali non solidi su Napoli, Costiera, Bacoli, Salerno, Avellino, Caserta",
+    "sfondo testurizzato per gli interni più piccoli della viewport"
+  ],
+  "edgeDensityBeforeAfter": {
+    "napoli": [0.092, 0.122],
+    "costiera": [0.123, 0.137],
+    "bacoli": [0.124, 0.138],
+    "salerno": [0.087, 0.139],
+    "avellino": [0.144, 0.158],
+    "caserta": [0.063, 0.123]
+  },
+  "maps": [
+    { "id": "napoli", "palette": 1166, "edgeDensity": 0.122, "contrast": 254, "luminance": 123.4, "entities": 15, "vehicles": 2, "at": [480, 448] },
+    { "id": "costiera", "palette": 670, "edgeDensity": 0.137, "contrast": 230, "luminance": 130.5, "entities": 6, "vehicles": 2, "at": [64, 288] },
+    { "id": "vesuvio", "palette": 441, "edgeDensity": 0.148, "contrast": 243, "luminance": 129.2, "entities": 2, "vehicles": 0, "at": [504, 728] },
+    { "id": "pompei", "palette": 270, "edgeDensity": 0.096, "contrast": 235, "luminance": 148, "entities": 2, "vehicles": 0, "at": [80, 480] },
+    { "id": "capri", "palette": 480, "edgeDensity": 0.13, "contrast": 244, "luminance": 133.1, "entities": 1, "vehicles": 0, "at": [240, 272] },
+    { "id": "bacoli", "palette": 596, "edgeDensity": 0.138, "contrast": 245, "luminance": 129, "entities": 3, "vehicles": 1, "at": [80, 224] },
+    { "id": "salerno", "palette": 391, "edgeDensity": 0.139, "contrast": 225, "luminance": 137.5, "entities": 3, "vehicles": 1, "at": [64, 304] },
+    { "id": "avellino", "palette": 527, "edgeDensity": 0.158, "contrast": 224, "luminance": 120.9, "entities": 3, "vehicles": 1, "at": [48, 272] },
+    { "id": "caserta", "palette": 325, "edgeDensity": 0.123, "contrast": 244, "luminance": 140.7, "entities": 3, "vehicles": 1, "at": [480, 576] },
+    { "id": "casa_nonna", "palette": 2316, "edgeDensity": 0.123, "contrast": 223, "luminance": 140.1, "entities": 1, "vehicles": 0, "at": [224, 296] },
+    { "id": "casa_giocatore", "palette": 394, "edgeDensity": 0.074, "contrast": 234, "luminance": 87.3, "entities": 1, "vehicles": 0, "at": [128, 144] },
+    { "id": "appartamento", "palette": 401, "edgeDensity": 0.101, "contrast": 234, "luminance": 109, "entities": 1, "vehicles": 0, "at": [160, 176] },
+    { "id": "casa_amalfi", "palette": 398, "edgeDensity": 0.087, "contrast": 235, "luminance": 97.6, "entities": 1, "vehicles": 0, "at": [144, 160] },
+    { "id": "bottega", "palette": 316, "edgeDensity": 0.08, "contrast": 235, "luminance": 92.2, "entities": 1, "vehicles": 0, "at": [144, 144] },
+    { "id": "souvenir", "palette": 310, "edgeDensity": 0.066, "contrast": 234, "luminance": 82.7, "entities": 1, "vehicles": 0, "at": [128, 128] },
+    { "id": "bar", "palette": 2927, "edgeDensity": 0.108, "contrast": 224, "luminance": 87.9, "entities": 4, "vehicles": 0, "at": [160, 176] },
+    { "id": "pizzeria", "palette": 2468, "edgeDensity": 0.119, "contrast": 225, "luminance": 98.7, "entities": 3, "vehicles": 0, "at": [176, 192] },
+    { "id": "metro", "palette": 1720, "edgeDensity": 0.146, "contrast": 236, "luminance": 120.9, "entities": 1, "vehicles": 0, "at": [192, 208] },
+    { "id": "metro2", "palette": 1681, "edgeDensity": 0.146, "contrast": 236, "luminance": 120.9, "entities": 1, "vehicles": 0, "at": [192, 208] },
+    { "id": "negozio", "palette": 316, "edgeDensity": 0.08, "contrast": 235, "luminance": 92.2, "entities": 1, "vehicles": 0, "at": [144, 144] },
+    { "id": "banca", "palette": 316, "edgeDensity": 0.072, "contrast": 234, "luminance": 88, "entities": 1, "vehicles": 0, "at": [128, 144] },
+    { "id": "clinica", "palette": 319, "edgeDensity": 0.078, "contrast": 235, "luminance": 92.3, "entities": 1, "vehicles": 0, "at": [144, 144] },
+    { "id": "ufficio", "palette": 308, "edgeDensity": 0.077, "contrast": 235, "luminance": 94.2, "entities": 1, "vehicles": 0, "at": [144, 144] },
+    { "id": "grotta", "palette": 162, "edgeDensity": 0.045, "contrast": 222, "luminance": 58.7, "entities": 1, "vehicles": 0, "at": [144, 272] }
+  ]
+}

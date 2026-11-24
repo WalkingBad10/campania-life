@@ -225,6 +225,19 @@
       this.fuel = 100; this.mounted = false; this.homeX = x; this.homeY = y;
     }
     update(dt) {
+      if (this.ambient && !this.mounted) {
+        const ax = this.dir === 'left' ? -1 : this.dir === 'right' ? 1 : 0;
+        const ay = this.dir === 'up' ? -1 : this.dir === 'down' ? 1 : 0;
+        const nx = this.x + ax * this.speed * dt, ny = this.y + ay * this.speed * dt;
+        const blocked = !this.game.canMove(nx, ny, this.w, this.h) || CL.maps.portalAt(this.game.map, nx, ny);
+        if (blocked) {
+          this.dir = this.dir === 'left' ? 'right' : this.dir === 'right' ? 'left' : this.dir === 'up' ? 'down' : 'up';
+        } else {
+          this.x = nx; this.y = ny;
+          this.offsetY = Math.sin(CL.state.time.total * .02) * .4;
+        }
+        return;
+      }
       if (!this.mounted) { this.offsetY = Math.sin(CL.state.time.total * .02) * .4; return; }
       const ax = CL.input.axis();
       this.moving = !!(ax.x || ax.y);
@@ -248,6 +261,7 @@
       }
     }
     interact(player) {
+      if (this.ambient && !this.mounted) { CL.ui.toast('Il traffico cittadino non si ferma.', 'info'); return; }
       if (this.mounted) {
         this.mounted = false; player.vehicle = null;
         player.x = this.x + 16; player.y = this.y + 6;

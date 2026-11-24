@@ -317,6 +317,7 @@
           }
         }
         if (!isInterior) this.spawnCreatures();
+        if (!isInterior) this.spawnAmbientVehicles();
         this.state.pos.map = target.map;
         this.state.pos.x = tx; this.state.pos.y = ty;
         this.fadeT = 0;
@@ -387,6 +388,34 @@
     }
 
     spawnCreatures() { /* disabilitato: simulatore vita reale */ }
+
+    spawnAmbientVehicles() {
+      // Traffico leggero e parcheggi: entità non solide, senza toccare griglie o salvataggi.
+      const routes = {
+        napoli: [
+          { type: 'scooter', tx: 60, ty: 31, dir: 'left' },
+          { type: 'car', tx: 58, ty: 42, dir: 'up' },
+          { type: 'bike', tx: 12, ty: 43, dir: 'up' }
+        ],
+        costiera: [
+          { type: 'car', tx: 30, ty: 14, dir: 'right' },
+          { type: 'scooter', tx: 55, ty: 14, dir: 'left' }
+        ],
+        bacoli: [{ type: 'car', tx: 20, ty: 10, dir: 'right' }],
+        salerno: [{ type: 'scooter', tx: 30, ty: 18, dir: 'right' }],
+        avellino: [{ type: 'car', tx: 24, ty: 24, dir: 'up' }],
+        caserta: [{ type: 'car', tx: 30, ty: 32, dir: 'right' }]
+      };
+      const list = routes[this.map.id] || [];
+      for (const r of list) {
+        const x = r.tx * T + T / 2, y = r.ty * T + T / 2;
+        if (!this.canMove(x, y, 16, 10) || MAPS.portalAt(this.map, x, y)) continue;
+        const v = new CL.Vehicle(this, r.type, x, y, r.dir);
+        v.ambient = true;
+        v.speed *= .38;
+        this.entities.push(v);
+      }
+    }
     removeEntity(e) { const i = this.entities.indexOf(e); if (i >= 0) this.entities.splice(i, 1); e.alive = false; }
 
     applyFurniture(map) {
@@ -557,7 +586,7 @@
       const c = this.ctx;
       c.setTransform(1, 0, 0, 1, 0, 0);
       c.clearRect(0, 0, CL.VIEW_W, CL.VIEW_H);
-      c.fillStyle = '#1a2630'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
+      this.drawVoidBackdrop(c);
       if (!this.map) return;
       const m = this.map;
       c.save();
@@ -567,13 +596,15 @@
       const x1 = Math.min(m.w - 1, Math.ceil((CL.camera.x + CL.VIEW_W) / T) + 1);
       const y1 = Math.min(m.h - 1, Math.ceil((CL.camera.y + CL.VIEW_H) / T) + 1);
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
-        const ch = m.g[ty][tx], img = ART.tiles[ch];
+        const ch = m.g[ty][tx], img = ART.tileFor(ch, tx, ty, m);
         if (img) c.drawImage(img, tx * T, ty * T);
         if ((ch === 'W' || ch === '~') && (tx * 7 + ty * 3 + Math.floor(this.animT * 2)) % 9 === 0) {
           c.fillStyle = 'rgba(255,255,255,.13)';
           c.fillRect(tx * T + 2 + ((this.animT * 6) % 10), ty * T + 5, 7, 1);
         }
       }
+      this.drawTileTransitions(c, m, x0, y0, x1, y1);
+      this.drawCrosswalks(c, m);
       // Velatura artistica: scene M1 già presenti nel runtime, a bassa opacità.
       // I tile restano leggibili e le collisioni restano allineate alla griglia.
       const bg = ART.backdropFor && ART.backdropFor(m.id);
@@ -599,7 +630,7 @@
         }
       }
       for (const d of (m.decors || [])) {
-        const dy = d.type === 'lamp' ? d.y + 16 : d.type === 'bench' ? d.y + 10 : d.y + (d.data.h || 0);
+        const dy = this.decorSortY(d);
         if (d.x > CL.camera.x - 160 && d.x < CL.camera.x + CL.VIEW_W + 160 && d.y > CL.camera.y - 200 && d.y < CL.camera.y + CL.VIEW_H + 160) {
           items.push({ y: dy, decor: d });
         }
@@ -715,9 +746,75 @@
       this.drawMinimap(c);
     }
 
+    drawVoidBackdrop(c) {
+      // Le mappe interne più piccole della viewport non mostrano più un rettangolo piatto.
+      c.fillStyle = '#1a2630'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
+      for (let y = 0; y < CL.VIEW_H; y += 16) for (let x = 0; x < CL.VIEW_W; x += 16) {
+        const odd = ((x / 16) + (y / 16)) % 2 === 0;
+        c.fillStyle = odd ? 'rgba(255,255,255,.018)' : 'rgba(0,0,0,.055)';
+        c.fillRect(x, y, 16, 16);
+        c.fillStyle = 'rgba(255,255,255,.022)'; c.fillRect(x, y, 16, 1);
+      }
+    }
+
+    drawTileTransitions(c, m, x0, y0, x1, y1) {
+      const at = (tx, ty) => CL.maps.tile(m, tx, ty);
+      for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
+        const px = tx * T, py = ty * T, ch = at(tx, ty);
+        if (ch === 'p') {
+          if (at(tx, ty - 1) === 'r') { c.fillStyle = '#d8d0c0'; c.fillRect(px, py, T, 2); c.fillStyle = '#918a7c'; c.fillRect(px, py + 2, T, 1); }
+          if (at(tx, ty + 1) === 'r') { c.fillStyle = '#9a9284'; c.fillRect(px, py + T - 2, T, 2); c.fillStyle = '#d8d0c0'; c.fillRect(px, py + T - 3, T, 1); }
+          if (at(tx - 1, ty) === 'r') { c.fillStyle = '#d8d0c0'; c.fillRect(px, py, 2, T); c.fillStyle = '#918a7c'; c.fillRect(px + 2, py, 1, T); }
+          if (at(tx + 1, ty) === 'r') { c.fillStyle = '#9a9284'; c.fillRect(px + T - 2, py, 2, T); c.fillStyle = '#d8d0c0'; c.fillRect(px + T - 3, py, 1, T); }
+        } else if (ch === 'r') {
+          if (at(tx, ty - 1) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px, py, T, 1); }
+          if (at(tx, ty + 1) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px, py + T - 1, T, 1); }
+          if (at(tx - 1, ty) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px, py, 1, T); }
+          if (at(tx + 1, ty) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px + T - 1, py, 1, T); }
+        }
+      }
+    }
+
+    drawCrosswalks(c, m) {
+      const rules = {
+        napoli: [
+          { x: 7, y: 31, w: 4, h: 2, dir: 'h' },
+          { x: 60, y: 31, w: 5, h: 2, dir: 'h' },
+          { x: 11, y: 43, w: 3, h: 4, dir: 'v' },
+          { x: 57, y: 40, w: 3, h: 4, dir: 'v' }
+        ],
+        costiera: [{ x: 20, y: 14, w: 5, h: 2, dir: 'h' }, { x: 50, y: 14, w: 5, h: 2, dir: 'h' }],
+        bacoli: [{ x: 18, y: 10, w: 5, h: 2, dir: 'h' }],
+        salerno: [{ x: 28, y: 18, w: 5, h: 2, dir: 'h' }],
+        avellino: [{ x: 22, y: 22, w: 3, h: 4, dir: 'v' }],
+        caserta: [{ x: 28, y: 32, w: 5, h: 2, dir: 'h' }]
+      };
+      for (const r of (rules[m.id] || [])) {
+        if (CL.maps.tile(m, r.x, r.y) !== 'r') continue;
+        c.save();
+        c.globalAlpha = .72;
+        c.fillStyle = '#e8e2cf';
+        if (r.dir === 'h') {
+          for (let i = 0; i < r.w; i += 2) c.fillRect((r.x + i) * T + 2, r.y * T + 1, 2, r.h * T - 2);
+        } else {
+          for (let i = 0; i < r.h; i += 2) c.fillRect(r.x * T + 1, (r.y + i) * T + 2, r.w * T - 2, 2);
+        }
+        c.restore();
+      }
+    }
+
+    decorSortY(d) {
+      if (d.type === 'lamp') return d.y + 16;
+      if (d.type === 'bench') return d.y + 10;
+      if (d.type === 'awning') return d.y + 12;
+      const h = d.data.h || 16;
+      const oy = d.data.oy !== undefined ? d.data.oy : (16 - h);
+      return d.y + oy + h;
+    }
+
     drawGuglia(c, x, y) {
       const img = ART.gugliaSprite();
-      if (img) c.drawImage(img, x - 32, y - 128);
+      if (img) c.drawImage(img, x, y - 40, 64, 88);
     }
 
     drawDecor(c, d) {
@@ -726,17 +823,16 @@
       switch (d.type) {
         case 'gesu_facade': {
           const img = ART.buildingSprite('gesu');
-          if (img) c.drawImage(img, x, y);
+          if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy !== undefined ? d.data.oy : 0));
           break;
         }
         case 'palazzo_ne': case 'palazzo_sw': case 'palazzo_banca': case 'palazzo_bar': case 'palazzo_se': case 'palazzo_e': {
           const img = ART.buildingSprite(d.type);
-          if (img) c.drawImage(img, x, y);
+          if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy !== undefined ? d.data.oy : 0));
           break;
         }
         case 'guglia_overlay': {
-          const img = ART.gugliaSprite();
-          if (img) c.drawImage(img, x - 32, y - 128);
+          this.drawGuglia(c, x, y);
           break;
         }
         case 'edicola': {

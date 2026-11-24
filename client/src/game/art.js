@@ -90,6 +90,63 @@
     /* --------------------------------------------------------- tiles 16x16 */
     buildTiles() {
       for (const ch of ".TD,rpSW~#=fcoXBo^gkPCVZOH'LFKQYIUENJAMRZhjlnqstuvwxyz1234567890") this.tiles[ch] = this.tile(ch);
+      // Varianti deterministiche: la griglia resta invariata, cambia solo il disegno.
+      for (let v = 0; v < 4; v++) {
+        this.tiles['D' + v] = this.variantTile('D', v);
+        this.tiles['p' + v] = this.variantTile('p', v);
+      }
+      for (let v = 0; v < 2; v++) {
+        this.tiles['r_h' + v] = this.variantTile('r', v, 'h');
+        this.tiles['r_v' + v] = this.variantTile('r', v, 'v');
+      }
+    },
+    variantTile(ch, variant, orient) {
+      const c = cv(16, 16), x = ctx(c);
+      x.drawImage(this.tiles[ch], 0, 0);
+      const R = U.rng(U.hash('tile-variant:' + ch + ':' + variant + ':' + (orient || '')));
+      if (ch === 'D') {
+        // Basolato: giunti e usura leggermente diversi per evitare la copia identica.
+        for (let i = 0; i < 5; i++) {
+          const xx = (R() * 16) | 0, yy = (R() * 16) | 0;
+          px(x, xx, yy, 3 + ((R() * 2) | 0), 1, i % 2 ? 'rgba(255,255,255,.16)' : 'rgba(52,49,45,.28)');
+          if (i % 2 === 0) px(x, xx, yy + 1, 1, 2, 'rgba(52,49,45,.20)');
+        }
+        px(x, variant * 3, 0, 1, 16, 'rgba(52,49,45,.22)');
+        px(x, 0, variant * 4, 16, 1, 'rgba(52,49,45,.18)');
+      } else if (ch === 'p') {
+        // Marciapiede: venature e giunti sfalsati, sempre su griglia 16x16.
+        for (let i = 0; i < 6; i++) {
+          const xx = (R() * 16) | 0, yy = (R() * 16) | 0;
+          px(x, xx, yy, 1 + ((R() * 3) | 0), 1, i % 2 ? 'rgba(255,255,255,.17)' : 'rgba(78,72,64,.24)');
+        }
+        px(x, (variant * 4 + 1) % 16, 0, 1, 16, 'rgba(78,72,64,.22)');
+        px(x, 0, (variant * 3 + 2) % 16, 16, 1, 'rgba(78,72,64,.18)');
+      } else if (ch === 'r') {
+        if (orient === 'v') {
+          // La stessa griglia 'r' viene orientata in base ai vicini: nessun nuovo tile solido.
+          px(x, 0, 6, 16, 4, P.road);
+          for (let yy = 0; yy < 16; yy += 4) px(x, 7, yy, 2, 2, P.line);
+          px(x, 7, 0, 1, 16, '#4a4f53');
+        } else {
+          for (let yy = 0; yy < 16; yy += 8) px(x, 0, yy + 3, 16, 1, 'rgba(20,24,26,.10)');
+        }
+        for (let i = 0; i < 4; i++) px(x, (R() * 16) | 0, (R() * 16) | 0, 2, 1, 'rgba(20,24,26,.08)');
+      }
+      return c;
+    },
+    tileFor(ch, tx, ty, map) {
+      if ((ch === 'D' || ch === 'p') && this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)]) {
+        return this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)];
+      }
+      if (ch === 'r' && map && CL.maps && CL.maps.tile) {
+        const at = (xx, yy) => CL.maps.tile(map, xx, yy) === 'r';
+        const hor = (at(tx - 1, ty) ? 1 : 0) + (at(tx + 1, ty) ? 1 : 0);
+        const ver = (at(tx, ty - 1) ? 1 : 0) + (at(tx, ty + 1) ? 1 : 0);
+        const orient = ver > hor ? 'v' : 'h';
+        const key = 'r_' + orient + (U.hash('rv:' + tx + ':' + ty) % 2);
+        return this.tiles[key] || this.tiles.r;
+      }
+      return this.tiles[ch];
     },
     tile(ch) {
       const c = cv(16, 16), x = ctx(c), R = U.rng(U.hash('tile' + ch));
