@@ -12,3 +12,13 @@ Queste immagini **non sono asset di gioco**: sono state scaricate solo per confr
 | `obelisco_immacolata3.jpg` | [Commons](https://commons.wikimedia.org/wiki/File:Obelisco_Immacolata3.jpg) | Public domain | Guglia dell'Immacolata |
 
 Dati vettoriali: OpenStreetMap API, way `563345000` (piazza), `261249895` (chiesa), `261256738` (guglia). Testo urbanistico: [Wikipedia it](https://it.wikipedia.org/wiki/Piazza_del_Ges%C3%B9_Nuovo).
+
+## Fonti del consolidamento metrico e delle nuove zone
+
+- Guglia, monumento completo «alto oltre trenta metri»: [Comune di Napoli / Art Bonus](https://artbonus.gov.it/guglia-dellimmacolata-concezione.html). Disegni di restauro 2026 con livelli fino a `+36 m`: [Portale Appalti Comune di Napoli](https://acquistitelematici.comune.napoli.it/PortaleAppalti/do/FrontEnd/DocDig/downloadDocumentoPubblico.action?id=61112). Misura storica 130 palmi ≈ 34 m: [Volpe / Degli Onofri, 1847](https://era-prod11.ethz.ch/download/pdf/28965709.pdf). I 22 m restano attribuiti al solo obelisco ([Wikipedia it](https://it.wikipedia.org/wiki/Obelisco_dell%27Immacolata)).
+- Campanile di Santa Chiara, `height = 48 m`: [OSM way 150562144](https://www.openstreetmap.org/way/150562144).
+- Bacoli / Baia: parco archeologico [OSM way 124092891](https://www.openstreetmap.org/way/124092891), castello aragonese [OSM way 144917231](https://www.openstreetmap.org/way/144917231), templi di Diana, Mercurio e Venere (impronte 39×30, 22×22, 34×33 m).
+- Fuorigrotta: stadio [OSM way 22790881](https://www.openstreetmap.org/way/22790881), Piazzale Tecchio ≈ 231×198 m, Teatro Mediterraneo ≈ 99×79 m, griglia ENE-WSW e filari di palme.
+- Pianura: Piazza San Giorgio [OSM way 580193824](https://www.openstreetmap.org/way/580193824) ≈ 85×94 m, chiesa 40×31 m, borgo in piperno e tufo sul versante di Camaldoli.
+
+Queste fonti sono usate solo per misure e disposizione: nessuna immagine protetta è stata copiata negli asset distribuiti.
