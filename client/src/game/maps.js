@@ -186,18 +186,23 @@
     portal(m, 12, 47, 2, 1, 'vesuvio', { x: 32 * T, y: 44 * T }, 'Verso sud');
 
     // POI / landmark
-    poi(m, 36 * T, 26 * T, 'guglia', 'landmark', "Guglia dell'Immacolata", 'flavor');
-    poi(m, 20 * T, 9 * T, 'gesu', 'landmark', 'Chiesa del Gesù Nuovo', 'flavor');
-    poi(m, 63 * T, 32 * T, 'croce', 'landmark', 'Via Benedetto Croce', 'flavor');
-    poi(m, 44 * T, 44 * T, 'bar_poi', 'service', 'Caffè Vittoria', 'shop', { shop: 'bar' });
-    poi(m, 39 * T, 35 * T, 'edicola_poi', 'service', 'Edicola', 'shop', { shop: 'negozio' });
-    poi(m, 32 * T, 44 * T, 'banca_poi', 'service', 'Banca', 'bank');
-    poi(m, 62 * T, 42 * T, 'cantiere_job', 'service', 'Cantiere', 'job', { job: 'operaio' });
+    poi(m, 36, 26, 'guglia', 'landmark', "Guglia dell'Immacolata", 'flavor');
+    poi(m, 20, 9, 'gesu', 'landmark', 'Chiesa del Gesù Nuovo', 'flavor');
+    poi(m, 63, 32, 'croce', 'landmark', 'Via Benedetto Croce', 'flavor');
+    poi(m, 44, 44, 'bar_poi', 'service', 'Caffè Vittoria', 'shop', { shop: 'bar' });
+    poi(m, 39, 35, 'edicola_poi', 'service', 'Edicola', 'shop', { shop: 'negozio' });
+    poi(m, 32, 44, 'banca_poi', 'service', 'Banca', 'bank');
+    poi(m, 62, 42, 'cantiere_job', 'service', 'Cantiere', 'job', { job: 'operaio' });
     // Nuovi interni M1 (struttura base, accessibili)
-    building(m, 36, 45, 5, 4, 'pizzeria', 'Entra in pizzeria', 'door');
+    // Pizzeria: varco tra banca e bar, porta alla riga 46 con avvicinamento dalla 47.
+    building(m, 38, 43, 2, 4, 'pizzeria', 'Entra in pizzeria', 'door');
     building(m, 54, 17, 5, 4, 'metro', 'Entra in metro', 'door');
-    poi(m, 38, 49, 'pizzeria_sign', 'sign', 'Pizzeria', 'flavor');
-    poi(m, 56, 21, 'metro_sign', 'sign', 'Metro Toledo', 'flavor');
+    // Corridoio pedonale che collega la metro alla piazza senza attraversare muri.
+    rect(g, 56, 21, 1, 7, 'p');
+    setTile(g, 56, 28, 'p');
+
+    poi(m, 39, 47, 'pizzeria_sign', 'sign', 'Pizzeria', 'flavor');
+    poi(m, 56, 28, 'metro_sign', 'sign', 'Metro Toledo', 'flavor');
     return m;
   }
 
@@ -267,7 +272,7 @@
     portal(m, 63, 44, 1, 2, 'caserta', { __useTargetSpawn: true }, 'Verso Caserta');
     poi(m, 32, 46, 'to_napoli', 'sign', 'Napoli ↓', 'travel', { to: 'napoli' });
     poi(m, 62, 44, 'to_caserta', 'sign', '→ Caserta', 'travel', { to: 'caserta' });
-    m.spawn = { x: 32 * T, y: 45 * T };
+    m.spawn = { x: 31 * T + T / 2, y: 45 * T + T / 2 };
     return m;
   }
 

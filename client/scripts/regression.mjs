@@ -780,6 +780,49 @@ async function main() {
     assert(ensureWalkable(game), 'player still walkable after prop collisions');
   }, ctx);
 
+  await test('deterministic solidity invariants on all maps', async () => {
+    const ids = [
+      'napoli', 'costiera', 'vesuvio', 'pompei', 'capri', 'bacoli', 'salerno', 'avellino', 'caserta',
+      'casa_nonna', 'casa_giocatore', 'appartamento', 'casa_amalfi', 'bottega', 'souvenir',
+      'bar', 'pizzeria', 'metro', 'metro2', 'negozio', 'banca', 'clinica', 'ufficio', 'grotta'
+    ];
+    for (const id of ids) {
+      const m = CL.maps.get(id);
+      assert(m && m.id === id, `${id} map exists`);
+      assert(m.g.length === m.h, `${id} row count`);
+      assert(m.g.every(row => row.length === m.w), `${id} column count`);
+      assert(m.width === m.w * T && m.height === m.h * T, `${id} pixel size`);
+
+      for (let ty = 0; ty < m.h; ty++) for (let tx = 0; tx < m.w; tx++) {
+        const ch = m.g[ty][tx];
+        if (!CL.maps.solidChar(ch)) continue;
+        assert(!okPos(CL, m, tx * T + T / 2, ty * T + T / 2, 10, 8),
+          `${id} solid tile ${tx},${ty}:${ch} does not block player footprint`);
+      }
+      for (const ch of ['D', 'Y', 'G']) assert(!CL.maps.solidChar(ch), `${id} passage ${ch} became solid`);
+      for (const ch of '#=HLKFIO') assert(CL.maps.solidChar(ch), `${id} building char ${ch} missing from SOLID`);
+
+      assert(m.spawn.x >= 0 && m.spawn.x <= m.width, `${id} spawn x in bounds`);
+      assert(m.spawn.y >= 0 && m.spawn.y <= m.height, `${id} spawn y in bounds`);
+      assert(okPos(CL, m, m.spawn.x, m.spawn.y, 10, 8), `${id} spawn walkable`);
+      for (const p of m.portals) {
+        const px = p.x + p.w / 2, py = p.y + p.h / 2;
+        assert(px >= 0 && px <= m.width, `${id}->${p.to} portal x in bounds`);
+        assert(py >= 0 && py <= m.height, `${id}->${p.to} portal y in bounds`);
+        assert(okPos(CL, m, px, py, 10, 8), `${id}->${p.to} portal center walkable`);
+        assert(CL.maps.portalAt(m, px, py) === p, `${id}->${p.to} portalAt mismatch`);
+      }
+      for (const q of m.pois) {
+        assert(q.x >= 0 && q.x <= m.width, `${id} poi ${q.id} x in bounds`);
+        assert(q.y >= 0 && q.y <= m.height, `${id} poi ${q.id} y in bounds`);
+        if (q.type === 'door') {
+          const tx = Math.floor((q.x + 8) / T), ty = Math.floor((q.y + 8) / T);
+          assert(!CL.maps.solidChar(CL.maps.tile(m, tx, ty)), `${id} door poi ${q.id} on solid tile`);
+        }
+      }
+    }
+  }, ctx);
+
   await test('regional maps: Bacoli, Salerno, Avellino, Caserta are reachable', async () => {
     newGame(ctx);
     const links = [
