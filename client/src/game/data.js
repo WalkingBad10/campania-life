@@ -194,7 +194,14 @@
     capri_guide:{name:'Guida di Capri', look:{hair:'#3a2a22',skin:'#dfae86',shirt:'#5aa7c4',pants:'#46525e'}, home:'capri', x:15, y:12, role:'quest'},
     metro2_user:{name:'Passeggero verso Dante', look:{hair:'#5c5148',skin:'#d7a47c',shirt:'#7b6b8a',pants:'#3f4750'}, home:'metro2', x:8, y:10, role:'ambient'},
     chiesa_fedele:{name:'Fedele in preghiera', look:{hair:'#8a8176',skin:'#e0b08a',shirt:'#7a5a72',pants:'#4b4552'}, home:'casa_nonna', x:7, y:17, role:'ambient'},
-    chiesa_sacerdote:{name:'Padre Raffaele', look:{hair:'#3a342e',skin:'#d9a67e',shirt:'#efe9dc',pants:'#3b4248'}, home:'casa_nonna', x:20, y:17, role:'ambient'}
+    chiesa_sacerdote:{name:'Padre Raffaele', look:{hair:'#3a342e',skin:'#d9a67e',shirt:'#efe9dc',pants:'#3b4248'}, home:'casa_nonna', x:20, y:17, role:'ambient'},
+    capri_turista:{name:'Turista in vacanza', look:{hair:'#c9a75f',skin:'#efc49f',shirt:'#4aa7c4',pants:'#d9d2c0'}, home:'capri', x:16, y:13, role:'ambient'},
+    vesuvio_escursionista:{name:'Escursionista', look:{hair:'#4a3225',skin:'#d09a70',shirt:'#c46a45',pants:'#4b5259'}, home:'vesuvio', x:32, y:40, role:'ambient'},
+    pompei_visitatore:{name:'Visitatore degli scavi', look:{hair:'#6b432c',skin:'#dfae87',shirt:'#8fa9c4',pants:'#4e4755'}, home:'pompei', x:14, y:28, role:'ambient'},
+    bacoli_pescatore:{name:'Pescatore di Baia', look:{hair:'#3a2b22',skin:'#c98d64',shirt:'#4f8f8a',pants:'#3f4a55'}, home:'bacoli', x:10, y:14, role:'ambient'},
+    salerno_turista:{name:'Passeggero del lungomare', look:{hair:'#8d8579',skin:'#e0b18b',shirt:'#e0c273',pants:'#514658'}, home:'salerno', x:30, y:19, role:'ambient'},
+    avellino_vignaiolo2:{name:'Contadino irpino', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:26, y:18, role:'ambient'},
+    caserta_turista:{name:'Visitatore della Reggia', look:{hair:'#5c5148',skin:'#d7a47c',shirt:'#7b6b8a',pants:'#3f4750'}, home:'caserta', x:28, y:27, role:'ambient'}
   };
 
   /* --------------------------------------------------------------- quest */

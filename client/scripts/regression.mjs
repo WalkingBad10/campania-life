@@ -903,6 +903,112 @@ async function main() {
     }
   }, ctx);
 
+  await test('architectural overlays stay anchored and regional hubs stay alive', async () => {
+    newGame(ctx);
+    const expected = {
+      napoli: ['facade_cornice', 'facade_balcony', 'laundry_line'],
+      costiera: ['fishing_net', 'laundry_line'], pompei: ['ruin_column'],
+      bacoli: ['laundry_line'], salerno: ['laundry_line']
+    };
+    for (const [id, types] of Object.entries(expected)) {
+      const m = CL.maps.get(id);
+      for (const type of types) assert(m.decors.some(d => d.type === type), `${id} has ${type}`);
+    }
+    const anchors = [
+      ['costiera', 'fishing_net', ch => ch === 'o', 'walkable wooden deck'],
+      ['pompei', 'ruin_column', ch => CL.maps.solidChar(ch), 'solid ruin wall']
+    ];
+    for (const [id, type, valid, label] of anchors) {
+      const m = CL.maps.get(id);
+      for (const d of m.decors.filter(x => x.type === type)) {
+        const tx = Math.floor(d.x / T), ty = Math.floor(d.y / T);
+        assert(valid(CL.maps.tile(m, tx, ty)), `${id} ${type} anchored to ${label} ${tx},${ty}`);
+      }
+    }
+    const napoli = CL.maps.get('napoli');
+    const facadeWidths = {
+      gesu_facade: 352, palazzo_ne: 320, palazzo_sw: 256,
+      palazzo_banca: 160, palazzo_bar: 128, palazzo_se: 128, palazzo_e: 160
+    };
+    const facades = napoli.decors.filter(d => facadeWidths[d.type]).map(f => ({
+      type: f.type,
+      x0: f.x, x1: f.x + facadeWidths[f.type],
+      y0: f.y + (f.data.oy || 0), y1: f.y + (f.data.oy || 0) + (f.data.h || 0)
+    }));
+    for (const d of napoli.decors.filter(x => x.type === 'facade_cornice' || x.type === 'facade_balcony')) {
+      assert(facades.some(f => d.x >= f.x0 - 8 && d.x <= f.x1 + 8 && d.y >= f.y0 - 8 && d.y <= f.y1 + 8),
+        `${d.type} anchored inside a facade box`);
+    }
+    for (const id of Object.keys(CL.maps.cache)) {
+      const m = CL.maps.get(id);
+      for (const d of (m.decors || []).filter(x => x.type === 'laundry_line')) {
+        assert(Number.isFinite(d.data.x2) && Number.isFinite(d.data.y2), `${id} laundry endpoints finite`);
+        assert(d.data.x2 >= 0 && d.data.x2 <= m.width && d.data.y2 >= 0 && d.data.y2 <= m.height,
+          `${id} laundry endpoints inside map`);
+      }
+    }
+    for (const id of ['capri', 'vesuvio', 'pompei', 'bacoli', 'salerno', 'avellino', 'caserta']) {
+      game.enterMap(id, undefined, undefined, true);
+      step(game, 2);
+      const npcs = game.entities.filter(e => e instanceof CL.NPC);
+      assert(npcs.length >= 2, `${id} has at least two residents (${npcs.length})`);
+      for (const n of npcs) {
+        assert(okPos(CL, game.map, n.x, n.y, n.w, n.h), `${id} resident ${n.id} walkable`);
+        assert(!CL.maps.portalAt(game.map, n.x, n.y), `${id} resident ${n.id} outside portal`);
+      }
+    }
+  }, ctx);
+
+  await test('architectural audit fixes align sprites, props and routes', async () => {
+    newGame(ctx);
+    const napoli = CL.maps.get('napoli');
+    const edicola = napoli.decors.find(d => d.type === 'edicola');
+    assert(edicola && Math.floor(edicola.x / T) === 38 && Math.floor(edicola.y / T) === 34,
+      'edicola sprite sits on its K footprint');
+    assert(CL.maps.tile(napoli, 38, 34) === 'K', 'edicola footprint is solid at 38,34');
+    assert(!napoli.decors.some(d => d.type === 'portal_arch'), 'duplicate portal arch removed');
+    assert(CL.maps.solidChar(napoli.g[26][35]), 'guglia pocket is no longer walkable');
+    const palazzoE = napoli.decors.find(d => d.type === 'palazzo_e');
+    assert(palazzoE && palazzoE.data.h === 5 * T, 'palazzo_e overlay stops before metro corridor');
+    assert(CL.art.buildingSprite('palazzo_e').height === 5 * T, 'palazzo_e sprite is clipped to 80px');
+    const awningSort = game.decorSortY({ type: 'awning', y: 44 * T, data: { h: 12 } });
+    const facadeSort = game.decorSortY({ type: 'palazzo_banca', y: 39 * T, data: { h: 8 * T, oy: -16 } });
+    assert(awningSort > facadeSort, 'shop awnings render above facade overlays');
+    assert(!CL.maps.solidChar('o'), 'wooden walkways are walkable');
+
+    const reachable = (m, sx, sy, tx, ty) => {
+      const queue = [[sx, sy]], seen = new Set([sx + ',' + sy]);
+      for (let head = 0; head < queue.length; head++) {
+        const [x, y] = queue[head];
+        if (x === tx && y === ty) return true;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = x + dx, ny = y + dy, key = nx + ',' + ny;
+          if (nx < 0 || ny < 0 || nx >= m.w || ny >= m.h || seen.has(key)) continue;
+          seen.add(key);
+          if (CL.maps.solidChar(m.g[ny][nx])) continue;
+          queue.push([nx, ny]);
+        }
+      }
+      return false;
+    };
+    const vesuvio = CL.maps.get('vesuvio');
+    for (const [x, y] of [[30, 11], [30, 12], [31, 12], [32, 12]]) {
+      assert(!CL.maps.solidChar(vesuvio.g[y][x]), `vesuvio grotta approach ${x},${y} walkable`);
+    }
+    assert(reachable(vesuvio, 31, 45, 30, 10), 'grotta portal reachable from Vesuvio spawn');
+
+    const costiera = CL.maps.get('costiera');
+    for (let y = 24; y <= 32; y++) {
+      assert(!CL.maps.solidChar(costiera.g[y][63]), `costiera boat walkway ${63},${y} walkable`);
+    }
+    assert(reachable(costiera, 4, 18, 63, 30), 'boat POI reachable from Costiera spawn');
+    const barcaiolo = CL.data.npcs.barcaiolo;
+    assert(okPos(CL, costiera, barcaiolo.x * T + T / 2, barcaiolo.y * T + T / 2, 10, 8),
+      'barcaiolo spawn is on the walkway');
+    const reggia = CL.maps.get('caserta').pois.find(p => p.id === 'reggia');
+    assert(reggia && reggia.data.decorative, 'remote reggia POI is decorative');
+  }, ctx);
+
   await test('regional maps: Bacoli, Salerno, Avellino, Caserta are reachable', async () => {
     newGame(ctx);
     const links = [

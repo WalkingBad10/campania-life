@@ -10,7 +10,7 @@ Da `CampaniaLife/`:
 PATH="/Users/armandosantucci/Library/Application Support/Codex/artifact-sessions/runtime-generations/generation-Nd2VFI/runtime/bin:$PATH" node client/scripts/regression.mjs
 ```
 
-Deve stampare `RESULTS N/N passed`. L'ultima baseline verde è `26/26`.
+Deve stampare `RESULTS N/N passed`. L'ultima baseline verde è `28/28` (`qa/arch-v2`).
 
 ## 2. Build
 

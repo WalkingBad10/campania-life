@@ -232,8 +232,10 @@
       }
       if (!best) {
         for (const poi of this.map.pois) {
+          if (poi.data && poi.data.decorative) continue;
+          const radius = poi.type === 'landmark' ? 56 : (poi.type === 'furniture' || poi.type === 'scenery') ? 36 : 26;
           const d = U.dist(p.x, p.y, poi.x, poi.y + 8);
-          if (d < 26 && (!best || d < bd)) { best = poi; bd = d; }
+          if (d < radius && (!best || d < bd)) { best = poi; bd = d; }
         }
       }
       this.promptTarget = best;
@@ -839,7 +841,8 @@
     decorSortY(d) {
       if (d.type === 'lamp') return d.y + 16;
       if (d.type === 'bench') return d.y + 10;
-      if (d.type === 'awning') return d.y + 12;
+      // Le tende dei negozi devono restare sopra le facciate M1 che le coprivano.
+      if (d.type === 'awning') return d.y + 48;
       const h = d.data.h || 16;
       const oy = d.data.oy !== undefined ? d.data.oy : (16 - h);
       return d.y + oy + h;
@@ -876,6 +879,64 @@
           const W = d.data.w || 32; const col = d.data.color || '#b94a3a';
           for (let i = 0; i < W; i += 8) { c.fillStyle = (i / 8) % 2 === 0 ? col : '#efe2c6'; c.fillRect(x + i, y, 8, 10); }
           c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(x, y + 10, W, 2);
+          break;
+        }
+        case 'facade_cornice': {
+          const W = d.data.w || 32, y0 = y + (d.data.oy || 0), col = d.data.color || '#b9b0a0';
+          c.fillStyle = 'rgba(0,0,0,.16)'; c.fillRect(x + 1, y0 + 4, W, 2);
+          c.fillStyle = col; c.fillRect(x, y0, W, 3);
+          c.fillStyle = 'rgba(255,255,255,.24)'; c.fillRect(x, y0, W, 1);
+          c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(x, y0 + 3, W, 1);
+          for (let i = 4; i < W; i += 8) { c.fillStyle = 'rgba(0,0,0,.13)'; c.fillRect(x + i, y0 + 2, 2, 2); }
+          break;
+        }
+        case 'facade_balcony': {
+          const W = d.data.w || 40, y0 = y + (d.data.oy || 0);
+          c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(x + 2, y0 + 5, W, 2);
+          c.fillStyle = '#b7ae9d'; c.fillRect(x, y0, W, 3);
+          c.fillStyle = '#727a80'; c.fillRect(x + 2, y0 - 6, W - 4, 2);
+          for (let i = x + 3; i < x + W - 2; i += 4) { c.fillStyle = '#59636b'; c.fillRect(i, y0 - 5, 1, 5); }
+          if (d.data.pots !== false) {
+            for (let i = x + 6; i < x + W - 4; i += 14) {
+              c.fillStyle = '#3f6f45'; c.fillRect(i, y0 - 9, 5, 4);
+              c.fillStyle = '#c9584a'; c.fillRect(i + 1, y0 - 11, 2, 2);
+              c.fillStyle = '#e0b24a'; c.fillRect(i + 3, y0 - 11, 2, 2);
+            }
+          }
+          break;
+        }
+        case 'laundry_line': {
+          const x2 = d.data.x2 !== undefined ? d.data.x2 : x + 48;
+          const y2 = d.data.y2 !== undefined ? d.data.y2 : y;
+          const sag = d.data.sag || 8, colors = d.data.colors || ['#e9e2d0', '#b94a3a', '#6f93ad'];
+          const low = Math.max(y, y2) + sag;
+          c.strokeStyle = 'rgba(60,55,50,.55)'; c.lineWidth = 1;
+          c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo((x + x2) / 2, low, x2, y2); c.stroke();
+          const sway = Math.sin(this.animT * 1.1 + x * .01) * 1.2;
+          for (let i = 0; i < 3; i++) {
+            const t = (i + 1) / 4;
+            const px = Math.round(x + (x2 - x) * t);
+            const py = Math.round((1 - t) * (1 - t) * y + 2 * (1 - t) * t * low + t * t * y2);
+            c.fillStyle = colors[i % colors.length]; c.fillRect(px - 4 + sway, py, 8, 7);
+            c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(px - 4 + sway, py + 6, 8, 1);
+          }
+          break;
+        }
+        case 'fishing_net': {
+          const W = d.data.w || 24, H = d.data.h || 20;
+          c.strokeStyle = 'rgba(74,66,52,.58)'; c.lineWidth = 1;
+          for (let i = 0; i <= W; i += 5) { c.beginPath(); c.moveTo(x + i, y); c.lineTo(x + i, y + H); c.stroke(); }
+          for (let j = 0; j <= H; j += 5) { c.beginPath(); c.moveTo(x, y + j); c.lineTo(x + W, y + j); c.stroke(); }
+          c.fillStyle = '#c95a3a'; c.fillRect(x + W - 3, y + H - 6, 4, 4);
+          c.fillStyle = '#e8dcc0'; c.fillRect(x - 1, y + H - 3, 5, 3);
+          break;
+        }
+        case 'ruin_column': {
+          const H = d.data.h || 18;
+          c.fillStyle = '#b9ad98'; c.fillRect(x, y - H + 4, 8, H - 4);
+          c.fillStyle = '#d2c7b2'; c.fillRect(x - 2, y - H, 12, 4);
+          c.fillStyle = '#9c907d'; c.fillRect(x - 1, y, 10, 3);
+          c.fillStyle = 'rgba(0,0,0,.14)'; c.fillRect(x + 6, y - H + 5, 2, H - 6);
           break;
         }
         case 'lamp': { const img = ART.propSprite('lamp'); if (img) c.drawImage(img, x - 4, y - 36); break; }

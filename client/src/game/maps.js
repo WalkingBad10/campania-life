@@ -8,7 +8,7 @@
 
   // Floor tiles A,M,R,h,Z,k,' and gate/door tiles G,Y stay walkable (portals use them).
   // Walls, furniture and street props are solid: U = lampione, E = panchina.
-  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, U: 1, E: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
+  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, U: 1, E: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
 
   function blank(x, y, ch) { return Array.from({ length: y }, () => new Array(x).fill(ch)); }
   function setTile(g, x, y, ch) { if (g[y] && g[y][x] !== undefined) g[y][x] = ch; }
@@ -94,9 +94,8 @@
     vline(g, 58, 34, 47, 'r', 2); vline(g, 57, 34, 47, 'p'); vline(g, 60, 34, 47, 'p');
     vline(g, 12, 39, 47, 'r', 2); vline(g, 11, 39, 47, 'p'); vline(g, 14, 39, 47, 'p');
 
-    // Guglia dell'Immacolata: base solida 4x3
+    // Guglia dell'Immacolata: base solida 4x3, nessuna tasca camminabile.
     rect(g, 34, 25, 4, 3, 'O');
-    rect(g, 35, 26, 2, 1, 'D');
 
     // CHIESA DEL GESÙ NUOVO (lato ovest/nord, facciata bugnata immediatamente riconoscibile)
     rect(g, 8, 2, 24, 13, '#');
@@ -152,11 +151,10 @@
     decor(m, 28, 39, 'palazzo_banca', { h: 8 * T, oy: -16 });
     decor(m, 40, 39, 'palazzo_bar', { h: 8 * T, oy: -16 });
     decor(m, 50, 39, 'palazzo_se', { h: 8 * T, oy: -16 });
-    decor(m, 55, 16, 'palazzo_e', { h: 12 * T, oy: 0 });
-    decor(m, 41, 34, 'edicola', { h: 48 });
+    decor(m, 55, 16, 'palazzo_e', { h: 5 * T, oy: 0 });
+    decor(m, 38, 34, 'edicola', { h: 48 });
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
     decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });
-    decor(m, 20, 10, 'portal_arch', { h: 24 });
     [[18,16],[26,16],[42,16],[48,16],[18,37],[50,37],[13,16],[51,16],[13,37],[51,37],[21,37],[47,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
     decor(m, 25, 35, 'cart', { h: 20 });
     decor(m, 47, 36, 'table_out', { h: 12 }); decor(m, 45, 36, 'chair_out', { h: 10 }); decor(m, 49, 36, 'chair_out', { h: 10 });
@@ -168,6 +166,23 @@
     decor(m, 24, 30, 'awning', { w: 48, color: '#c95a3a', h: 12 });
     decor(m, 36, 30, 'awning', { w: 48, color: '#3f7a4a', h: 12 });
     decor(m, 25, 30, 'cart', { h: 20 }); decor(m, 39, 30, 'cart', { h: 20 });
+    // Cornicioni e balconi ancorati ai prospetti: nessun nuovo tile solido.
+    decor(m, 9, 2, 'facade_cornice', { w: 352, oy: 6, color: '#9aa0a6' });
+    decor(m, 34, 2, 'facade_cornice', { w: 320, oy: 6, color: '#b79c72' });
+    decor(m, 10, 38, 'facade_cornice', { w: 256, oy: 6, color: '#c2a77e' });
+    decor(m, 28, 38, 'facade_cornice', { w: 160, oy: 6, color: '#9aa9b5' });
+    decor(m, 40, 38, 'facade_cornice', { w: 128, oy: 6, color: '#b58b62' });
+    decor(m, 50, 38, 'facade_cornice', { w: 128, oy: 6, color: '#b49a72' });
+    decor(m, 55, 16, 'facade_cornice', { w: 160, oy: 6, color: '#bfa27a' });
+    decor(m, 36, 4, 'facade_balcony', { w: 44, oy: 0 });
+    decor(m, 38, 8, 'facade_balcony', { w: 44, oy: 0, pots: false });
+    decor(m, 12, 6, 'facade_balcony', { w: 48, oy: 0 });
+    decor(m, 24, 6, 'facade_balcony', { w: 48, oy: 0 });
+    decor(m, 42, 10, 'facade_balcony', { w: 40, oy: 0 });
+    decor(m, 30, 41, 'facade_balcony', { w: 44, oy: 0 });
+    // Panni stesi tra gli edifici, sospesi sulle strade pedonali.
+    decor(m, 22, 38, 'laundry_line', { x2: 30 * T, y2: 38 * T, sag: 9 });
+    decor(m, 45, 38, 'laundry_line', { x2: 53 * T, y2: 38 * T, sag: 7, colors: ['#f0e6d2', '#5f8fa8', '#d2a24a'] });
 
     // Portali interni / servizi (ID preservati)
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 14 * T, y: 18 * T + 8 }, 'Ingresso Gesù Nuovo');
@@ -212,8 +227,9 @@
     hline(g, 0, 71, 14, 'r', 2); hline(g, 0, 71, 13, 'p'); hline(g, 0, 71, 16, 'p');
     hline(g, 0, 71, 22, 'S', 2); hline(g, 0, 71, 25, '~');
     for (let y = 26; y < 40; y++) hline(g, 0, 71, y, 'W');
-    // molo
+    // Molo e passerella: superfici in legno camminabili, collegate alla riva e al battello.
     rect(g, 20, 23, 4, 11, 'o'); setTile(g, 21, 33, 'o'); setTile(g, 22, 33, 'o');
+    rect(g, 63, 24, 1, 9, 'o');
     poi(m, 21, 31, 'molo', 'service', 'Molo da pesca', 'fish');
     // scogli
     [[9, 27], [14, 30], [34, 28], [45, 31], [55, 27], [68, 30]].forEach(([x, y]) => { setTile(g, x, y, '^'); });
@@ -236,6 +252,10 @@
     poi(m, 0, 14, 'to_napoli', 'sign', '← Napoli', 'travel', { to: 'napoli' });
     poi(m, 60, 1, 'to_bacoli', 'sign', '↑ Bacoli', 'travel', { to: 'bacoli' });
     poi(m, 70, 14, 'to_salerno', 'sign', '→ Salerno', 'travel', { to: 'salerno' });
+    // Reti e panni: dettagli ancorati al molo solido e alle facciate, non alle vie.
+    decor(m, 20, 25, 'fishing_net', { w: 24, h: 20, oy: 0 });
+    decor(m, 22, 29, 'fishing_net', { w: 20, h: 18, oy: 0 });
+    decor(m, 36, 12, 'laundry_line', { x2: 43 * T, y2: 12 * T, sag: 6 });
     m.spawn = { x: 4 * T, y: 18 * T };
     return m;
   }
@@ -260,8 +280,9 @@
     // alberi e rocce
     scatter(g, 'T', 90, c => c === '.', R);
     scatter(g, '^', 35, c => c === '.', R);
-    // grotta
+    // Grotta: sentiero breve dalla vetta al portale, senza spostare il portale storico.
     setTile(g, 30, 10, 'G');
+    for (const [x, y] of [[30, 11], [30, 12], [31, 12], [32, 12]]) setTile(g, x, y, ',');
     portal(m, 30, 10, 1, 1, 'grotta', { x: 8 * T, y: 18 * T }, 'Entra nella grotta');
     poi(m, 30, 10, 'grotta', 'cave', 'Grotta del Vesuvio', 'enter', { to: 'grotta' });
     // collegamenti
@@ -293,6 +314,8 @@
     portal(m, 55, 20, 1, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     poi(m, 1, 30, 'to_napoli', 'sign', '← Napoli', 'travel', { to: 'napoli' });
     poi(m, 54, 20, 'to_avellino', 'sign', '→ Avellino', 'travel', { to: 'avellino' });
+    // Colonne scandite sui muri delle rovine: la collisione resta sui tile già solidi.
+    [[9, 24], [10, 24], [18, 24], [19, 24]].forEach(([x, y]) => decor(m, x, y, 'ruin_column', { h: 18, oy: 0 }));
     m.spawn = { x: 5 * T, y: 30 * T };
     return m;
   }
@@ -326,6 +349,7 @@
     building(m, 36, 14, 6, 4, 'bar', 'Bar sul porto', 'shop', { shop: 'bacoli' });
     poi(m, 12, 7, 'terme_baia', 'landmark', 'Terme di Baia', 'flavor');
     poi(m, 24, 23, 'porto_bacoli', 'service', 'Porto di Bacoli', 'fish');
+    decor(m, 18, 18, 'laundry_line', { x2: 24 * T, y2: 18 * T, sag: 6 });
     portal(m, 4, 0, 2, 1, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
     portal(m, 44, 22, 2, 2, 'napoli', { __useTargetSpawn: true }, 'Battello per Napoli');
     m.spawn = { x: 5 * T, y: 14 * T };
@@ -349,6 +373,7 @@
     building(m, 12, 21, 6, 4, 'souvenir', 'Bottega salernitana', 'shop', { shop: 'salerno' });
     poi(m, 12, 9, 'arechi', 'landmark', 'Castello di Arechi', 'flavor');
     poi(m, 28, 31, 'lungomare_salerno', 'landmark', 'Lungomare di Salerno', 'flavor');
+    decor(m, 18, 12, 'laundry_line', { x2: 30 * T, y2: 12 * T, sag: 7, colors: ['#f0e6d2', '#b76570', '#6f93ad'] });
     portal(m, 54, 17, 2, 2, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
     portal(m, 2, 18, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     m.spawn = { x: 4 * T, y: 19 * T };
@@ -390,7 +415,7 @@
     rect(g, 28, 18, 4, 2, 'Y');
     building(m, 8, 22, 6, 4, 'bar', 'Bar della Reggia', 'shop', { shop: 'caserta' });
     building(m, 46, 22, 6, 4, 'souvenir', 'Souvenir della Reggia', 'shop', { shop: 'caserta' });
-    poi(m, 30, 10, 'reggia', 'landmark', 'Reggia di Caserta', 'flavor');
+    poi(m, 30, 10, 'reggia', 'landmark', 'Reggia di Caserta', 'flavor', { decorative: true });
     poi(m, 30, 27, 'viale_re', 'landmark', 'Viale del Re', 'flavor');
     portal(m, 2, 32, 2, 2, 'vesuvio', { __useTargetSpawn: true }, 'Torna al Vesuvio');
     portal(m, 56, 32, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');

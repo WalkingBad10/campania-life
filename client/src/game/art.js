@@ -566,7 +566,10 @@
     // professionale disegnato a mano, ma coerenti, cacheati e sostituibili.
     _stamp(c, fn) { const x = ctx(c); fn(x, c.width, c.height); return c; },
     buildingSprite(kind) {
-      if (this.images[kind]) return this.images[kind];
+      // Le facciate devono passare dal compositore: le PNG M1 restano come overlay,
+      // così le bande trasparenti non mostrano il basolato sottostante.
+      const composed = ['gesu', 'palazzo_ne', 'palazzo_sw', 'palazzo_banca', 'palazzo_bar', 'palazzo_se', 'palazzo_e'];
+      if (this.images[kind] && !composed.includes(kind)) return this.images[kind];
       const key = 'bld:' + kind; if (this.cache[key]) return this.cache[key];
       const S = {
         gesu:      { w: 352, h: 208, wall:'#6a6f74', trim:'#8f9499', roof:'#5a4a3a' },
@@ -575,11 +578,12 @@
         palazzo_banca:{ w:160,h:128, wall:'#ddd0bc', trim:'#657a8e', roof:'#7a5842', shutters:'#708090' },
         palazzo_bar:{ w:128, h:128, wall:'#e4d5bd', trim:'#7a4a32', roof:'#8b4a3a', shutters:'#6b7a46' },
         palazzo_se:{ w:128, h:128, wall:'#daceb6', trim:'#7a6245', roof:'#8a5240', shutters:'#607848' },
-        palazzo_e: { w:160, h:192, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c', shutters:'#648050' },
+        palazzo_e: { w:160, h:192, clipH:80, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c', shutters:'#648050' },
       }[kind];
       if (!S) return null;
-      const c = cv(S.w, S.h), x = ctx(c), R = U.rng(U.hash(kind));
-      const W=S.w, H=S.h;
+      const H = S.clipH || S.h;
+      const c = cv(S.w, H), x = ctx(c), R = U.rng(U.hash(kind));
+      const W=S.w;
       // shadow
       px(x,4,H-4,W-4,4,'rgba(20,16,12,.12)');
       // wall base
@@ -596,19 +600,17 @@
         palazzo_ne:'m1_piazza_a', palazzo_sw:'m1_piazza_b', palazzo_e:'m1_piazza_c',
         palazzo_se:'m1_piazza_d', palazzo_bar:'m1_piazza_e', palazzo_banca:'m1_piazza_f'
       };
+      if (kind === 'gesu') this._drawGesuFacade(x, W, H);
+      else this._drawPalazzoFacade(x, W, H, S, kind, R);
       const m1Key = m1Facade[kind];
       if (m1Key && this.images[m1Key]) {
         const img = this.images[m1Key];
-        x.clearRect(0,0,W,H);
-        // Fit preserving aspect ratio, anchored to bottom
-        const scale = Math.min(W/img.width, H/img.height);
-        const dw = Math.round(img.width*scale), dh = Math.round(img.height*scale);
-        const dx = Math.floor((W-dw)/2), dy = H-dh;
+        // Fit preserving aspect ratio, anchored to bottom. Il fallback procedurale
+        // resta visibile nelle bande scoperte: niente buchi sul basolato sottostante.
+        const scale = Math.min(W / img.width, H / img.height);
+        const dw = Math.round(img.width * scale), dh = Math.round(img.height * scale);
+        const dx = Math.floor((W - dw) / 2), dy = H - dh;
         x.drawImage(img, dx, dy, dw, dh);
-      } else if (kind === 'gesu') {
-        this._drawGesuFacade(x,W,H);
-      } else {
-        this._drawPalazzoFacade(x,W,H,S,kind,R);
       }
       return this.cache[key] = c;
     },
