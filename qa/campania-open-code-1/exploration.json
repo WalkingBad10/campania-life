@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T22:59:23.496Z",
+  "generatedAt": "2026-11-24T23:11:57.561Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "scope": "EMULAZIONE Playwright/Chromium. Non sostituisce test su MacBook e Pixel 9 Pro XL fisici.",
   "devices": [
@@ -9,10 +9,10 @@
       "debugPanels": 0,
       "metrics": {
         "napoli": {
-          "palette": 1454,
-          "edgeDensity": 0.134,
+          "palette": 1497,
+          "edgeDensity": 0.151,
           "contrast": 230,
-          "luminance": 133.5,
+          "luminance": 131.2,
           "map": {
             "w": 72,
             "h": 48,
@@ -575,10 +575,10 @@
       "debugPanels": 0,
       "metrics": {
         "napoli": {
-          "palette": 1454,
-          "edgeDensity": 0.134,
+          "palette": 1497,
+          "edgeDensity": 0.151,
           "contrast": 230,
-          "luminance": 133.5,
+          "luminance": 131.2,
           "map": {
             "w": 72,
             "h": 48,

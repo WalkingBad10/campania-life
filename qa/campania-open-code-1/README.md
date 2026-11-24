@@ -46,7 +46,7 @@ La geometria reale non è più "adattata a occhio" alla griglia: esiste un unico
 Correzioni applicate:
 
 1. **Guglia** — il conflitto 22 vs 30 m è stato risolto: 22 m è il solo obelisco, ~30 m il monumento completo. L'asset M1 (128 × 176) è stato **ricomposto architettonicamente** a 126 × 240 px con `generate-monuments.py --force-guglia`: statue, cornici, plinth e gradini mantengono le proporzioni fotografiche, mentre il **solo fusto** passa da 27 a 91 righe. Nessuno stiramento uniforme. `drawGuglia()` lo disegna a dimensione naturale, centrato sull'impronta solida `rect(g,34,25,4,3,'O')`. I gradini esterni fino a 15,7 m restano attraversabili; il cuore solido resta 8 × 6 m.
-2. **Gesù e palazzi** — facciata M1 a 448 × 248 px, massa allargata da 24 a 28 celle senza spostare portale `19,14` né le finestre storiche. `palazzo_ne` a 288 × 160 px, `palazzo_e` a 160 × 160 px. Nessun `facade_cornice` / `facade_balcony` generico.
+2. **Gesù e palazzi** — facciata M1 a 448 × 248 px, massa allargata da 24 a 28 celle senza spostare portale `19,14` né le finestre storiche. `palazzo_ne` a 288 × 160 px, `palazzo_e` a 160 × 160 px. Nessun `facade_cornice` / `facade_balcony` generico. Le facciate M1 non vengono più lasciate con ampie bande laterali vuote: le campate dei fianchi vengono ricomposte specchiando i lati dell'asset, senza stirarlo, e l'eventuale fascia superiore viene chiusa con cornice del tetto.
 3. **Campanile** — l'altezza OSM `48 m` sostituisce il vecchio valore di lavoro 50 m: rigenerato a 112 × 384 px e riancorato sul bordo sud di Santa Chiara (riga 28, y=448, cuspide a y=64). Prima la cuspide finiva a y = −96, fuori mappa e mai inquadrabile.
 4. **Scala uniforme** — `WORLD_SCALE` applicato una sola volta tramite `_world()` in `art.js`; i tile di suolo e le architetture metriche restano a 8 px/m; ritratti UI usano il character originale non scalato.
 5. **Collisioni e profondità** — aggiornate dopo ogni ridimensionamento; POI, spawn e portali esistenti invariati.
@@ -81,6 +81,7 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
   - pannelli debug visibili: **0**;
   - screenshot complete in questa cartella (`macbook-*.png`, `pixel9proxl-*.png`), incluse le 4 inquadrature di confronto per dispositivo.
 - `client/scripts/render-audit.mjs`: dimensioni **effettivamente disegnate** dal motore — Guglia 126 × 240, campanile 112 × 384, Gesù 448 × 248, palazzo NE 288 × 160, facciate metriche delle nuove zone — **0 errori**. I 38 anchor volutamente fuori bounds (arredi a muro, riempimento viewport, gronda del Gesù) sono documentati in `render-audit.json` e non sono architetture tagliate.
+- `client/scripts/texture-audit.mjs`: **50/50 PNG distribuiti referenziati**, 0 file inutilizzati, **17/17 facciate** alla dimensione metrica corretta e senza campate laterali vuote. I fogli estratti e gli asset M1 non usati sono stati spostati in `_source-sheets/` (esclusi dal build e da Git), non più nella cartella distribuita.
 
 ## Limiti dichiarati
 - Le schermate e le metriche sono **emulazione Playwright/Chromium**, non test su dispositivi fisici.

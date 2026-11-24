@@ -668,6 +668,9 @@
       const img = this.images[m1Facade[kind]];
       if (img && img.width && img.height) {
         // Rasterizzazione a 2 px per uploaded M1: risoluzione e pixel art uniformi.
+        // L'aspect-fit non deforma l'asset; le bande laterali/create dal diverso
+        // rapporto vengono ricomposte con le campate laterali dell'edificio, non
+        // lasciate vuote. Così le facciate non sembrano sprite incollati a caso.
         const PIX = 2;
         const low = cv(Math.ceil(W / PIX), Math.ceil(H / PIX));
         const lx = ctx(low); lx.imageSmoothingEnabled = true;
@@ -676,6 +679,33 @@
         const dh = Math.max(1, Math.round(img.height * scale));
         const dx = Math.floor((low.width - dw) / 2), dy = low.height - dh;
         lx.drawImage(img, dx, dy, dw, dh);
+        // Ricomposizione architettonica dei vuoti laterali: specchia le ali
+        // dell'edificio senza ripetere il portale centrale.
+        const strip = Math.max(6, Math.min(20, Math.floor(dw * 0.18)));
+        for (let out = 0; out < dx; ) {
+          const sw = Math.min(strip, dx - out);
+          lx.save();
+          lx.translate(out + sw, 0); lx.scale(-1, 1);
+          lx.drawImage(low, dx, 0, sw, low.height, 0, 0, sw, low.height);
+          lx.restore();
+          if (out + sw < dx) px(lx, out + sw, 0, 1, low.height, 'rgba(0,0,0,.10)');
+          out += sw;
+        }
+        const rightStart = dx + dw;
+        for (let out = 0; out < low.width - rightStart; ) {
+          const sw = Math.min(strip, low.width - rightStart - out);
+          lx.save();
+          lx.translate(rightStart + out + sw, 0); lx.scale(-1, 1);
+          lx.drawImage(low, rightStart - sw, 0, sw, low.height, 0, 0, sw, low.height);
+          lx.restore();
+          if (out > 0) px(lx, rightStart + out, 0, 1, low.height, 'rgba(0,0,0,.10)');
+          out += sw;
+        }
+        // Colmare l'eventuale fascia superiore con cornice/colori del tetto.
+        if (dy > 0) {
+          px(lx, 0, 0, low.width, dy, S.roof);
+          px(lx, 0, dy - 1, low.width, 1, shade(S.roof, 18));
+        }
         x.imageSmoothingEnabled = false;
         x.drawImage(low, 0, 0, W, H);
       } else if (S.proc) {

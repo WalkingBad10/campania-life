@@ -1,0 +1,236 @@
+{
+  "ok": true,
+  "errors": [],
+  "referencedPngs": 50,
+  "publicPngs": 50,
+  "unreferencedPublicPngs": [],
+  "missingPublicPngs": [],
+  "missingLoadedImages": [],
+  "scale": {
+    "pxPerM": 8,
+    "worldScale": 0.5913
+  },
+  "facades": [
+    {
+      "kind": "gesu",
+      "width": 448,
+      "height": 248,
+      "expected": [
+        448,
+        248
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
+      "maxQuietPx": 54,
+      "pass": true
+    },
+    {
+      "kind": "palazzo_ne",
+      "width": 288,
+      "height": 160,
+      "expected": [
+        288,
+        160
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 1,
+      "maxQuietPx": 35,
+      "pass": true
+    },
+    {
+      "kind": "palazzo_sw",
+      "width": 224,
+      "height": 128,
+      "expected": [
+        224,
+        128
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
+      "maxQuietPx": 27,
+      "pass": true
+    },
+    {
+      "kind": "palazzo_banca",
+      "width": 160,
+      "height": 128,
+      "expected": [
+        160,
+        128
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
+      "maxQuietPx": 19,
+      "pass": true
+    },
+    {
+      "kind": "palazzo_bar",
+      "width": 128,
+      "height": 128,
+      "expected": [
+        128,
+        128
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
+      "maxQuietPx": 15,
+      "pass": true
+    },
+    {
+      "kind": "palazzo_se",
+      "width": 128,
+      "height": 128,
+      "expected": [
+        128,
+        128
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 3,
+      "maxQuietPx": 15,
+      "pass": true
+    },
+    {
+      "kind": "palazzo_e",
+      "width": 160,
+      "height": 80,
+      "expected": [
+        160,
+        80
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
+      "maxQuietPx": 19,
+      "pass": true
+    },
+    {
+      "kind": "fuorigrotta_blocco",
+      "width": 192,
+      "height": 144,
+      "expected": [
+        192,
+        144
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 7,
+      "maxQuietPx": 23,
+      "pass": true
+    },
+    {
+      "kind": "fuorigrotta_torre",
+      "width": 160,
+      "height": 240,
+      "expected": [
+        160,
+        240
+      ],
+      "leftQuietPx": 5,
+      "rightQuietPx": 17,
+      "maxQuietPx": 19,
+      "pass": true
+    },
+    {
+      "kind": "fuorigrotta_teatro",
+      "width": 560,
+      "height": 280,
+      "expected": [
+        560,
+        280
+      ],
+      "leftQuietPx": 16,
+      "rightQuietPx": 12,
+      "maxQuietPx": 67,
+      "pass": true
+    },
+    {
+      "kind": "fuorigrotta_mostra",
+      "width": 320,
+      "height": 160,
+      "expected": [
+        320,
+        160
+      ],
+      "leftQuietPx": 8,
+      "rightQuietPx": 7,
+      "maxQuietPx": 38,
+      "pass": true
+    },
+    {
+      "kind": "pianura_chiesa",
+      "width": 320,
+      "height": 248,
+      "expected": [
+        320,
+        248
+      ],
+      "leftQuietPx": 3,
+      "rightQuietPx": 0,
+      "maxQuietPx": 38,
+      "pass": true
+    },
+    {
+      "kind": "pianura_borgo",
+      "width": 160,
+      "height": 112,
+      "expected": [
+        160,
+        112
+      ],
+      "leftQuietPx": 3,
+      "rightQuietPx": 9,
+      "maxQuietPx": 19,
+      "pass": true
+    },
+    {
+      "kind": "pianura_municipio",
+      "width": 312,
+      "height": 200,
+      "expected": [
+        312,
+        200
+      ],
+      "leftQuietPx": 12,
+      "rightQuietPx": 11,
+      "maxQuietPx": 37,
+      "pass": true
+    },
+    {
+      "kind": "bacoli_terme",
+      "width": 312,
+      "height": 144,
+      "expected": [
+        312,
+        144
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 6,
+      "maxQuietPx": 37,
+      "pass": true
+    },
+    {
+      "kind": "bacoli_castello",
+      "width": 288,
+      "height": 176,
+      "expected": [
+        288,
+        176
+      ],
+      "leftQuietPx": 2,
+      "rightQuietPx": 3,
+      "maxQuietPx": 35,
+      "pass": true
+    },
+    {
+      "kind": "bacoli_casa",
+      "width": 128,
+      "height": 96,
+      "expected": [
+        128,
+        96
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
+      "maxQuietPx": 15,
+      "pass": true
+    }
+  ]
+}

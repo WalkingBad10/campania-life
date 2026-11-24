@@ -22,3 +22,5 @@ Dati vettoriali: OpenStreetMap API, way `563345000` (piazza), `261249895` (chies
 - Pianura: Piazza San Giorgio [OSM way 580193824](https://www.openstreetmap.org/way/580193824) ≈ 85×94 m, chiesa 40×31 m, borgo in piperno e tufo sul versante di Camaldoli.
 
 Queste fonti sono usate solo per misure e disposizione: nessuna immagine protetta è stata copiata negli asset distribuiti.
+
+I fogli estratti locali e gli asset M1 non referenziati dal motore sono conservati in `qa/campania-open-code-1/_source-sheets/` (esclusi da Git e dal build). La cartella distribuita `client/public/assets/pixel/` contiene solo i 50 PNG effettivamente caricati da `art.js`; `texture-audit.mjs` verifica questo inventario e ricomposizione delle campate laterali delle facciate M1.
