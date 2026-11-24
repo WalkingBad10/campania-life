@@ -530,6 +530,19 @@
         const ch = m.g[ty][tx], img = ART.tiles[ch];
         if (img) c.drawImage(img, tx * T, ty * T);
       }
+      // Velatura artistica: scene M1 già presenti nel runtime, a bassa opacità.
+      // I tile restano leggibili e le collisioni restano allineate alla griglia.
+      const bg = ART.backdropFor && ART.backdropFor(m.id);
+      if (bg) {
+        const W = m.w * T, H = m.h * T;
+        const scale = Math.max(W / bg.width, H / bg.height);
+        const dw = bg.width * scale, dh = bg.height * scale;
+        c.save();
+        c.globalAlpha = .16;
+        c.imageSmoothingEnabled = true;
+        c.drawImage(bg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+        c.restore();
+      }
       // oggetti alti + entità, ordinati per profondità
       const items = [];
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {

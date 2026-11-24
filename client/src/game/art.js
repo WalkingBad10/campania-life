@@ -46,6 +46,13 @@
       const base = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/';
       return base.replace(/\/?$/, '/') + 'assets/pixel/' + name;
     },
+    backdropFor(mapId) {
+      const key = {
+        bar: 'm1_bg_bar', casa_nonna: 'm1_bg_church',
+        pizzeria: 'm1_bg_pizzeria', metro: 'm1_bg_metro', metro2: 'm1_bg_metro'
+      }[mapId];
+      return key ? this.images[key] : null;
+    },
     loadAssets() {
       if (this._imgReady) return;
       const files = {
@@ -67,6 +74,10 @@
         m1_ns_palazzo1: 'm1-ns-palazzo1.png', m1_ns_palazzo2: 'm1-ns-palazzo2.png', m1_ns_palazzo3: 'm1-ns-palazzo3.png',
         m1_pizzeria_oven:'m1-pizzeria-oven.png', m1_pizzeria_counter:'m1-pizzeria-counter.png', m1_pizzeria_table:'m1-pizzeria-table.png',
         m1_metro_hall:'m1-metro-hall.png', m1_metro_platform:'m1-metro-platform.png', m1_metro_gate:'m1-metro-gate.png',
+        // Scene di sfondo per interni: usate come velatura a bassa opacità sopra i tile,
+        // così la collisione resta allineata alla grafica dei tile stessi.
+        m1_bg_bar:'m1-bar-room.png', m1_bg_church:'m1-church-hall.png',
+        m1_bg_pizzeria:'m1-pz-hall.png', m1_bg_metro:'m1-mt-hall.png',
       };
       for (const [k, f] of Object.entries(files)) {
         const img = new Image(); img.decoding = 'async'; img.src = this.assetUrl(f);
