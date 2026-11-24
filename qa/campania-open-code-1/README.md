@@ -79,6 +79,8 @@ Correzioni applicate:
 
 `client/scripts/mobile-start.mjs` (`npm run test:mobile-start`) usa veri tap e un trascinamento touch del joystick, poi verifica: ingresso effettivo in `napoli`, HUD e giocatore presenti, movimento delle coordinate, save `v1` con posizione aggiornata, «CONTINUA» dopo reload e backend opzionale offline. Il test è eseguito anche nella workflow Pages sulla build pubblicata.
 
+I due workflow falliti notificati (`45510849895`, 24 s, e `45511020367`, 26 s) avevano la stessa annotazione sullo step `Install Playwright Chromium`: exit code 1. L'analisi degli artifact/run ha mostrato che il download/installazione del browser nella CI era l'unico passo in errore: build Vite e test locale erano già verdi. Non è stato disabilitato il test: è stata rimossa l'installazione esplicita di Chromium e `mobile-start.mjs` usa il Chromium bundlato quando presente, con fallback al Chrome di sistema dell'runner GitHub. Il run finale `45511188531` ha completato build e deploy con successo.
+
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
 
@@ -87,7 +89,8 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
 ## Invarianti preservate
 - Save key `campania_life_save_v1`, forma `{ v:1, t, data }`, nessun nuovo campo top-level.
 - Marker beta invariato: `BETA PUBBLICA · Richiede verifica manuale su MacBook e smartphone`.
-- URL pubblico: `https://walkingbad10.github.io/campania-life/`.
+- URL pubblico: `https://walkingbad10.github.io/campania-life/` (invariato).
+- Deploy finale verificato: run `45511188531` `success` (build `138859007577` e deploy `138859324288` entrambi `success`), bundle remoto `index-DabNvwyZ.js`. Sul sito pubblico `npm run test:mobile-start` entra in `napoli`, muove il giocatore da `240,272` a `240,228`, salva in `campania_life_save_v1` e ripristina con «CONTINUA». Marker beta e chiave save presenti nel bundle remoto.
 - Spawn Napoli `240,272`; guglia base `34,25,4x3` e POI `36,26`; edicola `38,34`; `palazzo_e` altezza `5*T`; corridoio metro `56,21..28` percorribile.
 - `U` lampione e `E` panchina solidi; `G`, `Y`, `D`, `d`, `e` attraversabili.
 - Portali, POI, missioni, negozi, interazioni e formato salvataggi invariati.
