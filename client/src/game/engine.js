@@ -487,6 +487,10 @@
         case 'date': CL.ui.toast('Appuntamento al tramonto sul lungomare. Che romanticismo!', 'good'); S.relations.gift('giulia', 'fiore'); break;
         case 'close': CL.ui.closeDialogue(); break;
         case 'talk_family': CL.ui.dialogueText('Nonna Assunta', 'La famiglia è la cosa più importante. Tuo nonno faceva il pescatore, tua madre la maestra. Tu... puoi fare tutto quello che vuoi.'); break;
+        case 'family_meal':
+          if (S.family.meal()) CL.ui.dialogueText('Nonna Assunta', D.family.meal.text);
+          else CL.ui.dialogueText('Nonna Assunta', 'La tavola è apparecchiata, ma oggi hai già mangiato. Torna domani, tesoro.');
+          break;
         case 'talk_tip': CL.ui.dialogueText('Nonna Assunta', U.pick(D.tips)); break;
         case 'talk_neighborhood': CL.ui.dialogueText('Ciro', 'Qui vicino c’è tutto: il forno, la banca, il cantiere. Vai a Pompei se vuoi vedere la storia, o sul Vesuvio se vuoi stare bene.'); break;
         case 'talk_sea': CL.ui.dialogueText('Vecchio Pescatore', 'Il mare dà e il mare toglie. Io gli chiedo solo un pesce al giorno e un po’ di silenzio.'); break;

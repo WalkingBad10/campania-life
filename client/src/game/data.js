@@ -82,6 +82,15 @@
     villetta_salerno: { name: 'Villetta sul mare', price: 26000, income: 220, interior: 'casa_amalfi', zone: 'salerno', desc: 'Vista lungomare, a due passi dal centro storico.' }
   };
 
+  /* ------------------------------------------------------------- vita familiare */
+  D.family = {
+    meal: {
+      npc: 'nonna', affinity: 3, label: 'Pranza con nonna',
+      needs: { hunger: 32, mood: 12, energy: 8 },
+      text: 'Nonna ti serve un piatto caldo. Per un momento, il vicolo sa di casa.'
+    }
+  };
+
   /* ----------------------------------------------------------- fauna locale (atmosfera, no cattura) */
   D.fauna = {
     gabbiano: { name: 'Gabbiano', zones: ['napoli', 'costiera'], color: '#f2efe2', accent: '#e9b84a' },
@@ -204,7 +213,10 @@
   D.dialogue = {
     nonna(g) {
       const q = g.state.quests.primo_giorno;
+      const ready = CL.systems && CL.systems.family && CL.systems.family.mealReady();
+      const mealChoice = ready && ready.ok ? [choice(D.family.meal.label, 'family_meal')] : [];
       if (!q || q.stage === 4) return line('Mi fa piacere vederti sorridere, ragazzo. La Campania è grande: girala, conoscila, innamoratene. E torna a trovare nonna.', [
+        ...mealChoice,
         choice('Parlami della famiglia', 'talk_family'),
         choice('Mi dai un consiglio?', 'talk_tip'),
         choice('Arrivederci, nonna', 'close')

@@ -328,6 +328,25 @@ async function main() {
     assert(ensureWalkable(game), 'fresh spawn walkable');
   }, ctx);
 
+  await test('family meal is affinity-gated and once per day', async () => {
+    newGame(ctx);
+    const F = CL.systems.family;
+    assert(F.meal() === false, 'meal locked at low affinity');
+    CL.state.relations.nonna = 3;
+    CL.state.quests.primo_giorno.stage = 4;
+    assert(F.mealReady().ok, 'meal ready at affinity 3');
+    assert(CL.data.dialogue.nonna(game).choices.some(c => c.action === 'family_meal'), 'nonna offers meal');
+    CL.state.needs.hunger = 30; CL.state.needs.mood = 20; CL.state.needs.energy = 40;
+    const before = { ...CL.state.needs };
+    assert(F.meal(), 'meal served');
+    assert(CL.state.needs.hunger > before.hunger && CL.state.needs.mood > before.mood && CL.state.needs.energy > before.energy, 'meal restores needs');
+    assert(CL.state.flags.lastFamilyMealDay === CL.state.time.day, 'meal day recorded');
+    assert(!F.mealReady().ok && F.meal() === false, 'meal not repeatable same day');
+    assert(!CL.data.dialogue.nonna(game).choices.some(c => c.action === 'family_meal'), 'choice hidden after meal');
+    CL.state.time.day += 1;
+    assert(F.mealReady().ok && F.meal(), 'meal available next day');
+  }, ctx);
+
   await test('church ingress altar exit and spawn invariants', async () => {
     newGame(ctx);
     const ch = CL.maps.get('casa_nonna');

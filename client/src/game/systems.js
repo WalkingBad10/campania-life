@@ -356,6 +356,26 @@
     best() { return Object.entries(CL.state.relations).sort((a, b) => b[1] - a[1]).slice(0, 5); }
   };
 
+  /* ---------------------------------------------------------- vita familiare */
+  S.family = {
+    cfg() { return (D.family && D.family.meal) || null; },
+    mealReady() {
+      const c = this.cfg(); if (!c) return { ok: false, why: 'Nessun pasto familiare disponibile.', cfg: null };
+      const st = CL.state, level = st.relations[c.npc] || 0;
+      if (level < c.affinity) return { ok: false, why: 'Parla con ' + (D.npcs[c.npc] ? D.npcs[c.npc].name : c.npc) + ' per guadagnare fiducia (affinità ' + c.affinity + ').', cfg: c };
+      if (st.flags.lastFamilyMealDay === st.time.day) return { ok: false, why: 'Oggi hai già pranzato con la famiglia.', cfg: c };
+      return { ok: true, cfg: c };
+    },
+    meal() {
+      const r = this.mealReady(); if (!r.ok) { toast(r.why, 'info'); return false; }
+      const st = CL.state, c = r.cfg;
+      st.flags.lastFamilyMealDay = st.time.day;
+      S.needs.apply(c.needs);
+      toast(c.text, 'good');
+      sfx('confirm'); refresh(); autosave(); return true;
+    }
+  };
+
   /* -------------------------------------------------------------- immobili */
   S.property = {
     owns(id) { return CL.state.properties.indexOf(id) >= 0; },
