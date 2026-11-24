@@ -1,8 +1,14 @@
 {
   "date": "2026-11-24",
   "increment": "living-world-v1",
-  "regression": "25/25 PASS",
+  "regression": "26/26 PASS",
   "build": "index-CgNY0vjI.js",
+  "pagesVerification": {
+    "commit": "a916072538c8e5a16116109e616c669edd4c8522",
+    "workflow": "Deploy Campania Life to GitHub Pages #45389409799 — success",
+    "remoteBundle": "assets/index-Dw0qDZR3.js",
+    "checkedStrings": ["BETA PUBBLICA", "Richiede verifica manuale", "campania_life_save_v1", "Vincenzo il bottegaio", "Aiuto di Sora Maria", "Fedele in preghiera", "Guida di Capri", "Il traffico cittadino non si ferma"]
+  },
   "browser": "http://127.0.0.1:3000/?qa=living-world-final",
   "consoleErrors": 0,
   "note": "Stesse condizioni di qa/density-v1/metrics.json: canvas 480x270, mezzogiorno, animT=0, input azzerato, quattro immobili posseduti. Palette su 5 bit per canale; edgeDensity su confronto luminanza tra pixel adiacenti. Le immagini sono salvate su disco ma non sono state lette visivamente dal modello: il gate usa le metriche numeriche.",

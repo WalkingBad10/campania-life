@@ -10,7 +10,7 @@ Da `CampaniaLife/`:
 PATH="/Users/armandosantucci/Library/Application Support/Codex/artifact-sessions/runtime-generations/generation-Nd2VFI/runtime/bin:$PATH" node client/scripts/regression.mjs
 ```
 
-Deve stampare `RESULTS N/N passed`. L'ultima baseline verde è `25/25`.
+Deve stampare `RESULTS N/N passed`. L'ultima baseline verde è `26/26`.
 
 ## 2. Build
 
@@ -73,4 +73,4 @@ Confrontare l'output con `qa/living-world-v1/metrics.json`:
 - ogni mappa interna Abitata ha almeno un NPC, come nella baseline;
 - screenshot delle mappe chiave salvati in `qa/<increment>/`.
 
-I confronti automatically leggibili dal modello sono le metriche numeriche: gli screenshot sono conservati per la revisione manuale dell'utente.
+I confronti automaticamente leggibili dal modello sono le metriche numeriche: gli screenshot sono conservati per la revisione manuale dell'utente.

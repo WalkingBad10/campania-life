@@ -863,6 +863,46 @@ async function main() {
     }
   }, ctx);
 
+  await test('deterministic visual variants, crosswalks and decor anchors', async () => {
+    CL.art.init();
+    for (const key of ['D0','D1','D2','D3','p0','p1','p2','p3','r_h0','r_h1','r_v0','r_v1']) {
+      assert(CL.art.tiles[key], `variant tile ${key} built`);
+    }
+    const napoli = CL.maps.get('napoli');
+    assert(CL.art.tileFor('D', 12, 30, napoli) === CL.art.tileFor('D', 12, 30, napoli), 'D variant deterministic');
+    const roadTile = CL.art.tileFor('r', 60, 31, napoli);
+    assert(roadTile === CL.art.tiles.r_h0 || roadTile === CL.art.tiles.r_h1 ||
+           roadTile === CL.art.tiles.r_v0 || roadTile === CL.art.tiles.r_v1, 'road uses oriented variant');
+    const crosswalks = {
+      napoli: [[7,31],[60,31],[12,46],[59,38]],
+      costiera: [[20,14],[50,14]], bacoli: [[18,10]], salerno: [[28,18]],
+      avellino: [[24,21]], caserta: [[28,32]]
+    };
+    for (const [id, points] of Object.entries(crosswalks)) {
+      const map = CL.maps.get(id);
+      for (const [x, y] of points) assert(CL.maps.tile(map, x, y) === 'r', `${id} crosswalk ${x},${y} on road`);
+    }
+    const ids = ['napoli','costiera','vesuvio','pompei','capri','bacoli','salerno','avellino','caserta',
+      'casa_nonna','casa_giocatore','appartamento','casa_amalfi','bottega','souvenir','bar','pizzeria',
+      'metro','metro2','negozio','banca','clinica','ufficio','grotta'];
+    for (const id of ids) {
+      const map = CL.maps.get(id), seen = new Set();
+      for (const d of (map.decors || [])) {
+        assert(Number.isFinite(d.x) && Number.isFinite(d.y), `${id} decor ${d.type} finite`);
+        assert(d.x % T === 0 && d.y % T === 0, `${id} decor ${d.type} on tile grid`);
+        const h = d.data && d.data.h;
+        if (h !== undefined) {
+          const oy = d.data.oy === undefined ? 16 - h : d.data.oy;
+          assert(Number.isFinite(h) && Number.isFinite(oy), `${id} decor ${d.type} anchor finite`);
+          assert(d.y + oy + h <= (map.h + 1) * T, `${id} decor ${d.type} inside map`);
+        }
+        const key = `${d.type}:${d.x}:${d.y}`;
+        assert(!seen.has(key), `${id} decor ${d.type} not duplicated at ${d.x},${d.y}`);
+        seen.add(key);
+      }
+    }
+  }, ctx);
+
   await test('regional maps: Bacoli, Salerno, Avellino, Caserta are reachable', async () => {
     newGame(ctx);
     const links = [
