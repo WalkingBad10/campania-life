@@ -866,7 +866,13 @@
 
     drawGuglia(c, x, y) {
       const img = ART.gugliaSprite();
-      if (img) c.drawImage(img, x, y - 40, 64, 88);
+      if (!img) return;
+      // L'impronta solida O e' 4x3 celle: la base dell'asset metrico coincide
+      // con il bordo inferiore dell'impronta, lo sviluppo va verso l'alto.
+      const fw = 4 * T, fh = 3 * T;
+      const dx = x + Math.round((fw - img.width) / 2);
+      const dy = y + fh - img.height;
+      c.drawImage(img, dx, dy);
     }
 
     drawDecor(c, d) {
@@ -888,7 +894,8 @@
           break;
         }
         case 'campanile': {
-          const img = ART.campanileSprite(); if (img) c.drawImage(img, x, y);
+          const img = ART.campanileSprite();
+          if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy || 0));
           break;
         }
         case 'edicola': {

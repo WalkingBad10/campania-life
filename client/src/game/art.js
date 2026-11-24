@@ -56,7 +56,7 @@
     loadAssets() {
       if (this._imgReady) return;
       const files = {
-        gesu: 'gesu-facade.png', guglia: 'guglia.png',
+        gesu: 'gesu-facade.png', guglia: 'guglia.png', campanile: 'campanile.png',
         palazzo_ne: 'palazzo-ne.png', palazzo_sw: 'palazzo-sw.png', palazzo_banca: 'palazzo-banca.png',
         palazzo_bar: 'palazzo-bar.png', palazzo_se: 'palazzo-se.png', palazzo_e: 'palazzo-e.png',
         lamp: 'prop-lamp.png', bench: 'prop-bench.png', edicola: 'prop-edicola.png', plant: 'prop-plant.png',
@@ -85,6 +85,34 @@
       }
       this._imgReady = true;
     },
+    /* Scala uniforme del mondo (WORLD_SCALE = 8 px/m). Il canvas originale resta
+     * delle dimensioni originarie e lo sprite ridotto viene ancorato in basso
+     * al centro: tutti gli offset di disegno esistenti restano validi.
+     * I tile di suolo e le architetture metriche NON passano da qui.
+     */
+    _world(key, make) {
+      if (this.cache[key]) return this.cache[key];
+      const src = make(); if (!src || !src.width || !src.height) return src;
+      const w = Math.max(1, Math.round(src.width * CL.WORLD_SCALE));
+      const h = Math.max(1, Math.round(src.height * CL.WORLD_SCALE));
+      const c = cv(src.width, src.height), x = ctx(c);
+      x.imageSmoothingEnabled = true;
+      x.drawImage(src, Math.floor((src.width - w) / 2), src.height - h, w, h);
+      return this.cache[key] = c;
+    },
+    tree(v) { return this._world('w:tree:' + v, () => this._tree(v)); },
+    lemonTree(v) { return this._world('w:lemon:' + v, () => this._lemonTree(v)); },
+    rock(v) { return this._world('w:rock:' + v, () => this._rock(v)); },
+    flower(v) { return this._world('w:flower:' + v, () => this._flower(v)); },
+    fountain() { return this._world('w:fountain', () => this._fountain()); },
+    character(look, dir, frame) {
+      return this._world('w:c:' + [look.hair, look.skin, look.shirt, look.pants, dir, frame].join('|'),
+        () => this._character(look, dir, frame));
+    },
+    creature(id, frame) { return this._world('w:cr:' + id + ':' + frame, () => this._creature(id, frame)); },
+    vehicle(type, dir) { return this._world('w:v:' + type + ':' + dir, () => this._vehicle(type, dir)); },
+    propSprite(kind) { return this._world('w:p:' + kind, () => this._propSprite(kind)); },
+
     px, shade, ell, cv, ctx,
 
     /* --------------------------------------------------------- tiles 16x16 */
@@ -372,7 +400,7 @@
     },
 
     /* ------------------------------------------------------- oggetti alti */
-    tree(variant) {
+    _tree(variant) {
       const key = 'tree' + variant; if (this.cache[key]) return this.cache[key];
       const c = cv(32, 40), x = ctx(c), R = U.rng(variant * 977 + 13);
       px(x, 14, 28, 5, 12, P.woodD); px(x, 15, 28, 3, 12, P.wood);
@@ -383,28 +411,30 @@
       for (let i = 0; i < 26; i++) px(x, 5 + (R() * 22 | 0), 8 + (R() * 19 | 0), 1, 1, R() > .5 ? shade(base, 32) : shade(base, -22));
       return this.cache[key] = c;
     },
-    lemonTree(variant) {
-      const c = this.tree(variant), key = 'lemon' + variant;
+    _lemonTree(variant) {
+      // Usa il disegno grezzo: il wrapping di scala avviene una sola volta,
+      // in lemonTree(), altrimenti l'albero verrebbe scalato due volte.
+      const c = this._tree(variant), key = 'lemon' + variant;
       if (this.cache[key]) return this.cache[key];
       const n = cv(32, 40), x = ctx(n); x.drawImage(c, 0, 0);
       [[9, 16], [22, 21], [15, 10], [25, 13]].forEach(([a, b]) => { px(x, a, b, 2, 3, '#f2d24f'); px(x, a, b, 1, 1, '#fff0a0'); });
       return this.cache[key] = n;
     },
-    rock(variant) {
+    _rock(variant) {
       const key = 'rock' + variant; if (this.cache[key]) return this.cache[key];
       const c = cv(20, 14), x = ctx(c);
       ell(x, 10, 9, 9, 5, P.dark); ell(x, 10, 8, 8, 5, P.stone); ell(x, 7, 6, 4, 3, P.stoneL);
       px(x, 12, 9, 3, 1, P.stoneD);
       return this.cache[key] = c;
     },
-    flower(variant) {
+    _flower(variant) {
       const key = 'flower' + variant; if (this.cache[key]) return this.cache[key];
       const c = cv(8, 10), x = ctx(c), col = ['#f2d24f', '#e88fae', '#f3f0e0', '#c58fe0'][variant % 4];
       px(x, 3, 5, 1, 5, '#4f8a4c'); px(x, 3, 6, 3, 1, '#4f8a4c');
       px(x, 2, 2, 3, 2, col); px(x, 3, 1, 1, 4, col); px(x, 3, 3, 1, 1, '#e8a13c');
       return this.cache[key] = c;
     },
-    fountain() {
+    _fountain() {
       if (this.cache.fountain) return this.cache.fountain;
       const c = cv(32, 26), x = ctx(c);
       ell(x, 16, 19, 14, 6, P.dark); ell(x, 16, 18, 13, 5, P.stoneL); ell(x, 16, 18, 10, 3, '#6fa9b8');
@@ -414,7 +444,7 @@
     },
 
     /* ---------------------------------------------------------- personaggi */
-    character(look, dir, frame) {
+    _character(look, dir, frame) {
       const key = ['c4', look.hair, look.skin, look.shirt, look.pants, dir, frame].join('|');
       if (this.cache[key]) return this.cache[key];
       const c = cv(16, 24), x = ctx(c), d = P.dark;
@@ -480,7 +510,7 @@
     },
 
     /* ------------------------------------------------------------- creature */
-    creature(id, frame) {
+    _creature(id, frame) {
       const def = D.creatures[id]; if (!def) return null;
       const key = ['cr', id, frame].join('|'); if (this.cache[key]) return this.cache[key];
       const c = cv(24, 24), x = ctx(c), a = def.color, b = def.accent, e = def.eye;
@@ -549,7 +579,7 @@
     },
 
     /* ------------------------------------------------------------- veicoli */
-    vehicle(type, dir) {
+    _vehicle(type, dir) {
       const key = ['veh', type, dir].join('|'); if (this.cache[key]) return this.cache[key];
       const c = cv(type === 'bus' ? 34 : type === 'car' ? 30 : type === 'scooter' ? 26 : 24, 20), x = ctx(c);
       const ty = type === 'bus' ? '#d9a63c' : type === 'car' ? '#3f8fae' : type === 'scooter' ? '#c94f43' : '#4f8f6a';
@@ -584,7 +614,7 @@
       x.clearRect(0, 0, 32, 32);
       x.fillStyle = '#2b3944'; x.fillRect(0, 0, 32, 32);
       x.fillStyle = 'rgba(255,255,255,.05)'; x.fillRect(0, 0, 32, 14);
-      const big = this.character(look, 'down', 0);
+      const big = this._character(look, 'down', 0);
       x.imageSmoothingEnabled = false;
       x.drawImage(big, 3, -6, 16 * 2, 24 * 2);
       x.fillStyle = 'rgba(10,16,24,.15)'; x.fillRect(0, 25, 32, 7);
@@ -600,13 +630,14 @@
       // perché si sovrapponeva alle aperture dell'asset e creava duplicazioni.
       const key = 'bld:' + kind; if (this.cache[key]) return this.cache[key];
       const S = {
-        gesu:      { w: 384, h: 208, wall:'#6a6f74', trim:'#8f9499', roof:'#5a4a3a' },
-        palazzo_ne:{ w: 320, h: 192, wall:'#dccba8', trim:'#8a6540', roof:'#8b4a3a' },
+        // Dimensioni metriche (PX_PER_M = 8): 56x31 m e 36x20 m.
+        gesu:      { w: 448, h: 248, wall:'#6a6f74', trim:'#8f9499', roof:'#5a4a3a' },
+        palazzo_ne:{ w: 288, h: 160, wall:'#dccba8', trim:'#8a6540', roof:'#8b4a3a' },
         palazzo_sw:{ w: 224, h: 128, wall:'#e2d3b4', trim:'#7a5a38', roof:'#9a5540' },
         palazzo_banca:{ w:160,h:128, wall:'#ddd0bc', trim:'#657a8e', roof:'#7a5842' },
         palazzo_bar:{ w:128, h:128, wall:'#e4d5bd', trim:'#7a4a32', roof:'#8b4a3a' },
         palazzo_se:{ w:128, h:128, wall:'#daceb6', trim:'#7a6245', roof:'#8a5240' },
-        palazzo_e: { w:160, h:192, clipH:80, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c' },
+        palazzo_e: { w:160, h:160, clipH:80, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c' },
       }[kind];
       if (!S) return null;
       const H = S.clipH || S.h, W = S.w;
@@ -657,61 +688,92 @@
       return this.cache[key] = c;
     },
     gugliaSprite() {
+      // L'asset M1 `guglia.png` e' quello autorevole: silhouette 128x176 che
+      // corrisponde ai 15,7 m di ingombro OSM e ai 22 m documentati. Viene
+      // disegnato a dimensione naturale (drawGuglia), senza stiramenti.
+      // Il fallback sotto riproduce la stessa sagoma quando il PNG non e'
+      // disponibile (es. harness di regressione senza caricamento immagini).
       if (this.images.guglia) return this.images.guglia;
       const key = 'bld:guglia'; if (this.cache[key]) return this.cache[key];
-      const W=128, H=176; const c=cv(W,H), x=ctx(c); const cx=W/2, by=H-8;
-      // shadow
-      x.fillStyle='rgba(0,0,0,.18)'; x.beginPath(); x.ellipse(cx,by,44,10,0,0,Math.PI*2); x.fill();
-      // stepped base
-      px(x,cx-38,by-28,76,28,'#cec3b0'); px(x,cx-34,by-26,68,24,'#ddd3c1');
-      px(x,cx-30,by-24,60,20,'#c7bca9'); px(x,cx-38,by-4,76,3,'#b0a491');
-      px(x,cx-42,by-32,84,5,'#b8ac98');
-      // panels
-      for(let i=-2;i<=2;i++){ px(x,cx+i*14-5,by-22,10,14,'#d6ccba'); px(x,cx+i*14-4,by-21,8,1,'#eae2d2'); }
-      // statues
-      const st=(sx,sy)=>{ px(x,sx-3,sy-14,6,14,'#d9d0c0'); px(x,sx-4,sy-16,8,4,'#ccc2b0'); px(x,sx-2,sy-12,4,8,'#beb3a0'); px(x,sx-3,sy-14,1,4,'#ebe3d4'); };
-      st(cx-28,by-30); st(cx+28,by-30); st(cx-10,by-30); st(cx+10,by-30);
-      // middle plinth
-      px(x,cx-20,by-48,40,18,'#d4cab8'); px(x,cx-16,by-46,32,14,'#ebe3d2'); px(x,cx-22,by-50,44,3,'#b3a793');
-      px(x,cx-14,by-36,28,2,'#a99d89');
-      // obelisk
-      px(x,cx-10,by-116,20,70,'#c8bea9'); px(x,cx-7,by-114,14,66,'#e8e0cf');
-      px(x, cx-10,by-48,20,3,'#b7ab96'); px(x,cx-7,by-114,2,66,'rgba(255,255,255,.12)');
-      // rings
-      px(x,cx-12,by-74,24,3,'#a99d89'); px(x,cx-11,by-90,22,3,'#a99d89');
-      // ornaments
-      px(x,cx-13,by-76,3,8,'#c9a44a'); px(x,cx+10,by-76,3,8,'#c9a44a');
-      // top
-      px(x,cx-6,by-128,12,14,'#c9a44a'); px(x,cx-4,by-126,8,10,'#f0d06a');
-      px(x,cx-2,by-146,4,20,'#d4b04f'); px(x,cx-8,by-140,16,3,'#d4b04f');
-      px(x,cx-2,by-145,4,3,'#fff2a0');
+      const W = CL.mpx(15.7), H = CL.mpx(22), c = cv(W, H), x = ctx(c), cx = W / 2;
+      const poly = (pts, col) => {
+        x.fillStyle = col; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
+        x.closePath(); x.fill();
+      };
+      x.fillStyle = 'rgba(18,22,28,.18)';
+      x.beginPath(); x.ellipse(cx, H - 6, 60, 6, 0, 0, Math.PI * 2); x.fill();
+      // Gradinata: 4 m di altezza (32 px), 15,7 m di larghezza (126 px).
+      px(x, 1, 166, 126, 8, '#b8ac98'); px(x, 1, 166, 126, 2, '#e2d9c7');
+      px(x, 1, 172, 126, 2, '#958a78');
+      px(x, 7, 158, 114, 8, '#cec3b0'); px(x, 7, 158, 114, 2, '#ece3d1');
+      px(x, 22, 150, 84, 8, '#c3b7a4'); px(x, 22, 150, 84, 2, '#ded4c2');
+      // Plinth con quattro statue: 7 m (56 px), larghezza ~10 m (80 px).
+      px(x, 23, 128, 82, 22, '#d3c9b6'); px(x, 23, 128, 82, 2, '#efe7d7');
+      for (const sx of [30, 51, 72, 93]) {
+        px(x, sx - 3, 133, 8, 3, '#b3a793');
+        px(x, sx - 2, 121, 6, 12, '#d9d0be'); px(x, sx - 2, 121, 2, 12, '#efe7d6');
+        px(x, sx - 1, 116, 4, 5, '#cfc5b2'); px(x, sx - 2, 115, 6, 1, '#b8ad99');
+      }
+      for (const rx of [26, 47, 68, 89]) {
+        px(x, rx, 130, 12, 14, '#e6ddcb'); px(x, rx + 1, 131, 10, 12, '#c6bba8');
+        px(x, rx + 5, 133, 2, 9, '#d9cfbc');
+      }
+      px(x, 26, 124, 76, 4, '#c9bda9'); px(x, 26, 124, 76, 2, '#eee5d3');
+      // Fusto dell'obelisco: 7 m (56 px), rastremato 20 -> 15 px.
+      poly([[56, 123], [72, 123], [71, 68], [57, 68]], '#cdc2ae');
+      poly([[56, 123], [57, 68], [60, 68], [59, 123]], '#e8dfcd');
+      poly([[71, 123], [72, 123], [71, 68], [69, 68]], '#ab9f8c');
+      for (const yy of [110, 92, 78]) px(x, 56, yy, 16, 2, '#a99d89');
+      for (const yy of [102, 84]) { px(x, 53, yy, 3, 6, '#c9a44a'); px(x, 72, yy, 3, 6, '#c9a44a'); }
+      // Immacolata in rame e coronamento: 5 m (40 px).
+      px(x, 56, 64, 16, 4, '#c9bda9'); px(x, 58, 62, 12, 2, '#e2d8c4');
+      poly([[57, 62], [71, 62], [69, 32], [59, 32]], '#4f9a86');
+      poly([[57, 62], [60, 62], [61, 32], [59, 32]], '#79bca7');
+      px(x, 60, 22, 8, 10, '#63ad97'); px(x, 62, 12, 4, 11, '#a9d6c4');
+      px(x, 60, 9, 8, 3, '#3f7c6b'); px(x, 56, 24, 3, 16, '#4f9a86'); px(x, 69, 24, 3, 16, '#4f9a86');
+      px(x, 62, 4, 4, 5, '#d4b04f'); px(x, 63, 0, 2, 5, '#f2d66b');
       return this.cache[key] = c;
     },
     campanileSprite() {
-      // Campanile di Santa Chiara: laterizio, pietra chiara e cuspide maiolicata.
+      // Campanile di Santa Chiara: 50 m alto, 14 m di pianta = 400 x 112 px.
+      if (this.images.campanile) return this.images.campanile;
       const key = 'bld:campanile'; if (this.cache[key]) return this.cache[key];
-      const W=40, H=112, c=cv(W,H), x=ctx(c), cx=W/2;
-      x.fillStyle='rgba(0,0,0,.14)'; x.beginPath(); x.ellipse(cx,H-4,18,4,0,0,Math.PI*2); x.fill();
-      px(x,4,H-12,32,12,'#7f6550'); px(x,5,H-12,30,3,'#a08469');
-      px(x,7,40,26,H-52,'#a85b46');
-      for (let yy=44; yy<H-14; yy+=7) { px(x,7,yy,26,1,'#8d4938'); for(let xx=7+(yy%14?0:4);xx<33;xx+=8) px(x,xx,yy+1,1,6,'#8d4938'); }
-      px(x,5,34,30,8,'#d6cbb7'); px(x,6,36,28,4,'#eee5d3');
-      px(x,8,40,24,5,'#5b4b40');
-      // cella campanaria con archi
-      px(x,7,14,26,26,'#c4b7a0'); px(x,9,16,22,22,'#d8cdb8');
-      for (const ax of [11,20]) {
-        px(x,ax,20,7,15,'#3d4147');
-        x.fillStyle='#3d4147'; x.beginPath(); x.arc(ax+3,20,3,Math.PI,0); x.fill();
-        px(x,ax+2,22,3,13,'#e7dfcf');
+      const W = CL.mpx(14), H = CL.mpx(50), c = cv(W, H), x = ctx(c), cx = W / 2;
+      const poly = (pts, col) => {
+        x.fillStyle = col; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
+        x.closePath(); x.fill();
+      };
+      // base scarpata (~10 m), due ordini in laterizio, cella, cuspide a maioliche
+      poly([[16, 320], [96, 320], [112, 399], [0, 399]], '#8d7259');
+      poly([[16, 320], [56, 320], [56, 399], [0, 399]], '#a08469');
+      px(x, 16, 316, 80, 4, '#d6cbb7');
+      px(x, 18, 176, 76, 140, '#a85b46'); px(x, 18, 176, 5, 140, '#8d4938'); px(x, 89, 176, 5, 140, '#8d4938');
+      for (let yy = 190; yy < 312; yy += 34) {
+        px(x, 18, yy, 76, 2, '#8d4938');
+        for (const xx of [32, 56, 80]) { px(x, xx, yy + 4, 8, 17, '#3d4147'); px(x, xx + 1, yy + 5, 6, 15, '#e7dfcf'); }
       }
-      px(x,6,12,28,4,'#6b5540'); px(x,8,8,24,4,'#d6cbb7');
-      // cuspide con maioliche verde/blu/giallo
-      x.fillStyle='#8b4a3a'; x.beginPath(); x.moveTo(4,8); x.lineTo(cx,0); x.lineTo(36,8); x.closePath(); x.fill();
-      px(x,11,5,4,2,'#2fa6a3'); px(x,18,3,4,2,'#e7b32b'); px(x,25,5,4,2,'#2e6f9e');
-      px(x,cx-1,-4,2,8,'#c9a44a');
+      px(x, 14, 164, 84, 12, '#d6cbb7'); px(x, 16, 166, 80, 3, '#eee5d3');
+      px(x, 20, 70, 72, 93, '#a85b46'); px(x, 20, 70, 5, 93, '#8d4938'); px(x, 87, 70, 5, 93, '#8d4938');
+      for (let yy = 84; yy < 156; yy += 30) {
+        px(x, 20, yy, 72, 2, '#8d4938');
+        for (const xx of [40, 64]) { px(x, xx, yy + 4, 8, 15, '#3d4147'); px(x, xx + 1, yy + 5, 6, 13, '#e7dfcf'); }
+      }
+      px(x, 16, 58, 80, 12, '#d6cbb7');
+      px(x, 18, 18, 76, 39, '#c4b7a0'); px(x, 20, 21, 72, 33, '#d8cdb8');
+      for (const ax of [26, 50, 74]) {
+        x.fillStyle = '#3d4147'; x.beginPath(); x.arc(ax + 6, 34, 6, Math.PI, 0); x.fill();
+        px(x, ax, 34, 12, 16, '#3d4147'); px(x, ax + 4, 36, 4, 11, '#c9a44a'); px(x, ax + 2, 28, 8, 2, '#e7dfcf');
+      }
+      px(x, 14, 14, 84, 4, '#6b5540');
+      poly([[10, 14], [56, 0], [102, 14]], '#8b4a3a');
+      poly([[18, 14], [56, 4], [94, 14]], '#3f8f86');
+      poly([[28, 14], [56, 7], [84, 14]], '#d9b24f');
+      px(x, 55, 0, 3, 4, '#d4b04f');
       return this.cache[key] = c;
     },
-    propSprite(kind) {
+    _propSprite(kind) {
       if (this.images[kind]) return this.images[kind];
       // M1 extracted image props mapped to generic kinds
       const m1 = {

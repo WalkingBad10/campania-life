@@ -94,20 +94,22 @@
     rect(g, 7, 29, 2, 1, 'Y');
 
     // Chiesa del Gesù Nuovo: bugnato a punta di diamante, portale centrale.
-    rect(g, 8, 2, 24, 13, '#');
-    for (let y = 3; y < 14; y++) for (let x = 9; x < 31; x++) setTile(g, x, y, 'H');
+    // Prospetto documentato 56 m = 28 celle (prima 24): la massa viene allargata
+    // senza toccare portale 19,14 né le finestre storiche 13,5 e 25,5.
+    rect(g, 8, 2, 28, 13, '#');
+    for (let y = 3; y < 14; y++) for (let x = 9; x < 35; x++) setTile(g, x, y, 'H');
     rect(g, 19, 11, 2, 4, 'Y'); rect(g, 19, 10, 2, 1, '#');
     rect(g, 13, 5, 2, 3, 'I'); rect(g, 25, 5, 2, 3, 'I');
-    rect(g, 9, 2, 22, 1, '='); rect(g, 8, 14, 24, 1, 'p');
+    rect(g, 9, 2, 26, 1, '='); rect(g, 8, 14, 28, 1, 'p');
 
     // Palazzo delle Congregazioni / istituti scolastici, a nord-est.
-    rect(g, 34, 2, 20, 12, '#');
-    for (let y = 3; y < 13; y++) for (let x = 35; x < 53; x++) {
+    rect(g, 36, 2, 18, 12, '#');
+    for (let y = 3; y < 13; y++) for (let x = 37; x < 53; x++) {
       if (y === 5 || y === 8 || y === 11) setTile(g, x, y, (x % 4 < 2) ? 'L' : '#');
       else if ((x % 6 === 0) && y > 3) setTile(g, x, y, 'F');
       else setTile(g, x, y, '#');
     }
-    rect(g, 43, 12, 2, 2, 'Y'); rect(g, 34, 13, 20, 1, 'p');
+    rect(g, 43, 12, 2, 2, 'Y'); rect(g, 36, 13, 18, 1, 'p');
 
     // Santa Chiara: fronte est compatto e campanile innestato nella massa, non isolato.
     rect(g, 55, 16, 10, 12, '#');
@@ -162,15 +164,19 @@
     [[22,27],[39,27],[22,35],[42,35],[46,29]].forEach(([x,y]) => place(x,y,'E'));
 
     // ---- 4) Architettura e dettagli ancorati ----
-    decor(m, 8, 2, 'gesu_facade', { h: 13 * T, oy: 0 });
-    decor(m, 34, 2, 'palazzo_ne', { h: 12 * T, oy: 0 });
+    // 56x31 m = 448x248 px: la base resta sulla linea di gronda (y=240).
+    decor(m, 8, 2, 'gesu_facade', { h: 248, oy: -40 });
+    decor(m, 36, 2, 'palazzo_ne', { h: 160, oy: 32 });
     decor(m, 0, 16, 'palazzo_sw', { h: 14 * T, oy: 0 }); // fronte continuo dei palazzi nobiliari a ovest
     decor(m, 10, 39, 'palazzo_sw', { h: 8 * T, oy: -16 });
     decor(m, 28, 39, 'palazzo_banca', { h: 8 * T, oy: -16 });
     decor(m, 40, 39, 'palazzo_bar', { h: 8 * T, oy: -16 });
     decor(m, 50, 39, 'palazzo_se', { h: 8 * T, oy: -16 });
     decor(m, 55, 16, 'palazzo_e', { h: 5 * T, oy: 0 });
-    decor(m, 59, 12, 'campanile', { h: 112, oy: 0 });
+    // 50 m = 400 px. La base va sul bordo sud della massa di Santa Chiara
+    // (riga 28, y=448): ancorandola alla vecchia gronda (y=304) la cuspide
+    // finiva a y=-96, cioè fuori mappa e mai inquadrabile.
+    decor(m, 59, 12, 'campanile', { h: 400, oy: -144 });
     decor(m, 38, 34, 'edicola', { h: 48 });
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
     decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });

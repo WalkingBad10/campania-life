@@ -9,6 +9,15 @@
   CL.TILE = 16;
   CL.VIEW_W = 480;
   CL.VIEW_H = 270;
+  // Sistema metrico unico (qa/campania-open-code-1/PROPORTIONS.md).
+  // Il vincolo e' il prospetto del Gesu' Nuovo: 56x31 m deve stare in 480x270 px.
+  CL.PX_PER_M = 8;                 // 1 m reale = 8 px di gioco
+  CL.M_PER_TILE = CL.TILE / CL.PX_PER_M; // 1 cella = 2,0 m di suolo
+  CL.ADULT_M = 1.70;               // adulto di riferimento
+  CL.ADULT_SRC_PX = 23;            // altezza visibile dello sprite originale
+  CL.SRC_PX_PER_M = CL.ADULT_SRC_PX / CL.ADULT_M;
+  CL.WORLD_SCALE = CL.PX_PER_M / CL.SRC_PX_PER_M; // scala uniforme sprite mondo
+  CL.mpx = m => Math.round(m * CL.PX_PER_M);
 
   /* ---------------------------------------------------------------- util */
   const U = CL.util = {};

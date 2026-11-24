@@ -933,7 +933,7 @@ async function main() {
     }
     const napoli = CL.maps.get('napoli');
     const facadeWidths = {
-      gesu_facade: 384, palazzo_ne: 320, palazzo_sw: 224,
+      gesu_facade: 448, palazzo_ne: 288, palazzo_sw: 224,
       palazzo_banca: 160, palazzo_bar: 128, palazzo_se: 128, palazzo_e: 160
     };
     const facades = napoli.decors.filter(d => facadeWidths[d.type]).map(f => ({
@@ -962,6 +962,36 @@ async function main() {
         assert(!CL.maps.portalAt(game.map, n.x, n.y), `${id} resident ${n.id} outside portal`);
       }
     }
+  }, ctx);
+
+  await test('documented metric scale is applied to architecture and world sprites', async () => {
+    CL.art.init();
+    assert(CL.PX_PER_M === 8, 'PX_PER_M is the documented 8 px/m');
+    assert(CL.M_PER_TILE === 2, 'one 16px tile represents 2 metres');
+    assert(Math.abs(CL.WORLD_SCALE - 8 / (23 / 1.7)) < 1e-9, 'world scale derived from the 1.70m adult');
+    const guglia = CL.art.gugliaSprite();
+    assert(guglia.width === 126 && guglia.height === 176, `guglia ${guglia.width}x${guglia.height} (15,7x22 m)`);
+    const campanile = CL.art.campanileSprite();
+    assert(campanile.width === 112 && campanile.height === 400, `campanile ${campanile.width}x${campanile.height} (14x50 m)`);
+    const gesu = CL.art.buildingSprite('gesu');
+    assert(gesu.width === 448 && gesu.height === 248, `Gesu facade ${gesu.width}x${gesu.height} (56x31 m)`);
+    const napoli = CL.maps.get('napoli');
+    const gf = napoli.decors.find(d => d.type === 'gesu_facade');
+    assert(gf.y + gf.data.oy + gf.data.h === 15 * T, 'Gesu facade base stays on the 15th row cornice');
+    const cd = napoli.decors.find(d => d.type === 'campanile');
+    assert(cd.y + cd.data.oy + cd.data.h === 28 * T, 'campanile base sits on the south edge of Santa Chiara');
+    assert(cd.y + cd.data.oy === 3 * T, 'campanile cusp stays inside the map (row 3)');
+    // La scala non deve spostare gli ancoraggi salvati.
+    for (let y = 25; y < 28; y++) for (let x = 34; x < 38; x++) {
+      assert(CL.maps.tile(napoli, x, y) === 'O', `guglia footprint tile ${x},${y} unchanged`);
+    }
+    assert(napoli.pois.some(p => p.id === 'guglia' && p.x === 36 * T && p.y === 26 * T), 'guglia POI unchanged');
+    assert(napoli.spawn.x === 36 * T && napoli.spawn.y === 36 * T, 'Naples spawn unchanged');
+    const look = { hair: '#2d2622', skin: '#d79c74', shirt: '#c75b3b', pants: '#3a4650' };
+    const ch = CL.art.character(look, 'down', 0);
+    assert(ch.width === 16 && ch.height === 24, 'scaled character keeps original draw anchor');
+    assert(CL.art.cache['w:c:' + [look.hair, look.skin, look.shirt, look.pants, 'down', 0].join('|')],
+      'character sprite was uniformly scaled through the world cache');
   }, ctx);
 
   await test('architectural audit fixes align sprites, props and routes', async () => {

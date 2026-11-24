@@ -41,6 +41,7 @@ const MAPS = [
 ];
 
 // Posizioni di probe: davanti a facciate/piani di lavoro dove prima il giocatore poteva essere coperto.
+// 36,24 e' dietro la Guglia: li' l'occlusione e' il comportamento atteso.
 const PROBES = {
   napoli: [[20, 13], [18, 38], [58, 28], [44, 15], [15, 17], [36, 24], [36, 30]],
   bar: [[10, 10]],
@@ -112,7 +113,8 @@ async function enterMap(page, id, tileX, tileY) {
 }
 
 async function playerVisibility(page, id, tileX, tileY) {
-  return page.evaluate(({ id, tileX, tileY }) => {
+  const expectOccluded = id === 'napoli' && tileX === 36 && tileY === 24;
+  return page.evaluate(({ id, tileX, tileY, expectOccluded }) => {
     const CL = window.CL, G = CL.game, T = CL.TILE;
     const m = CL.maps.get(id);
     const x = tileX * T + T / 2, y = tileY * T + T / 2;
@@ -129,8 +131,11 @@ async function playerVisibility(page, id, tileX, tileY) {
       const delta = Math.abs(shown[i]-hidden[i]) + Math.abs(shown[i+1]-hidden[i+1]) + Math.abs(shown[i+2]-hidden[i+2]);
       if (delta > 12) diff++;
     }
-    return { map: id, tile: [tileX, tileY], visiblePixels: diff, pass: diff >= 40 };
-  }, { id, tileX, tileY });
+    return {
+      map: id, tile: [tileX, tileY], visiblePixels: diff, expectOccluded,
+      pass: expectOccluded ? diff < 40 : diff >= 40
+    };
+  }, { id, tileX, tileY, expectOccluded });
 }
 
 async function runDevice(browser, device) {
@@ -160,6 +165,33 @@ async function runDevice(browser, device) {
     await page.locator('canvas').screenshot({ path: resolve(OUT, `${device.id}-${id}.png`), animations: 'disabled' });
   }
 
+  // Geometria metrica della Guglia: l'asset M1 a dimensione naturale deve
+  // corrispondere ai 22 m documentati e alla base dell'impronta solida O.
+  const gugliaGeometry = await page.evaluate(() => {
+    const CL = window.CL, T = CL.TILE;
+    const img = CL.art.gugliaSprite();
+    return {
+      width: img.width, height: img.height,
+      footprint: [34 * T, 25 * T, 4 * T, 3 * T],
+      baseY: 28 * T, topY: 28 * T - img.height,
+      adultPx: Math.round(CL.ADULT_M * CL.PX_PER_M),
+      ratioToAdult: +(img.height / (CL.ADULT_M * CL.PX_PER_M)).toFixed(2)
+    };
+  });
+
+  // Inquadrature dedicate al confronto con fotografie reali: la persona e'
+  // vicina al monumento, quindi il rapporto adulto/monumento e' leggibile.
+  const VIEWPOINTS = [
+    ['napoli-guglia-davanti', 36, 30],
+    ['napoli-guglia-dietro', 36, 24],
+    ['napoli-gesu-prospetto', 20, 18],
+    ['napoli-campanile', 50, 22]
+  ];
+  for (const [name, tx, ty] of VIEWPOINTS) {
+    await enterMap(page, 'napoli', tx, ty);
+    await page.locator('canvas').screenshot({ path: resolve(OUT, `${device.id}-${name}.png`), animations: 'disabled' });
+  }
+
   const visibility = [];
   for (const [id, spots] of Object.entries(PROBES)) {
     for (const [x, y] of spots) visibility.push(await playerVisibility(page, id, x, y));
@@ -172,7 +204,7 @@ async function runDevice(browser, device) {
     pass: behind.visiblePixels < front.visiblePixels
   } : null;
   await context.close();
-  return { device: device.label, errors, debugPanels, metrics, visibility, depthOrder };
+  return { device: device.label, errors, debugPanels, metrics, gugliaGeometry, visibility, depthOrder };
 }
 
 async function main() {
@@ -196,16 +228,23 @@ async function main() {
   const depthFailures = results.filter(r => r.depthOrder && !r.depthOrder.pass)
     .map(r => `${r.device}: guglia dietro ${r.depthOrder.behind} >= davanti ${r.depthOrder.front}`);
   const debugFailures = results.filter(r => r.debugPanels > 0).map(r => `${r.device}: ${r.debugPanels} pannelli debug visibili`);
+  const metricFailures = results.filter(r => {
+    const g = r.gugliaGeometry;
+    // 126 px e' il fallback metrico, 128 px l'asset M1 effettivo (15,7~16 m).
+    return (g.width !== 126 && g.width !== 128) || g.height !== 176 || Math.abs(g.ratioToAdult - 22 / 1.7) > .1;
+  }).map(r => `${r.device}: geometria guglia ${JSON.stringify(r.gugliaGeometry)}`);
   console.log(`Visual exploration: ${results.length} devices, ${MAPS.length} maps each`);
   console.log(`Console/page errors: ${errors.length}`);
   console.log(`Player-occlusion failures: ${hidden.length}`);
   console.log(`Natural depth failures: ${depthFailures.length}`);
   console.log(`Debug panel failures: ${debugFailures.length}`);
+  console.log(`Metric geometry failures: ${metricFailures.length}`);
   if (errors.length) console.log(errors.join('\n'));
   if (hidden.length) console.log(hidden.join('\n'));
   if (depthFailures.length) console.log(depthFailures.join('\n'));
   if (debugFailures.length) console.log(debugFailures.join('\n'));
-  if (errors.length || hidden.length || depthFailures.length || debugFailures.length) process.exitCode = 1;
+  if (metricFailures.length) console.log(metricFailures.join('\n'));
+  if (errors.length || hidden.length || depthFailures.length || debugFailures.length || metricFailures.length) process.exitCode = 1;
 }
 
 main().catch(err => { console.error(err); process.exitCode = 1; });
