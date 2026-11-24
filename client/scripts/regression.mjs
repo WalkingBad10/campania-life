@@ -1011,8 +1011,8 @@ async function main() {
     const gf = napoli.decors.find(d => d.type === 'gesu_facade');
     assert(gf.y + gf.data.oy + gf.data.h === 15 * T, 'Gesu facade base stays on the 15th row cornice');
     const cd = napoli.decors.find(d => d.type === 'campanile');
-    assert(cd.y + cd.data.oy + cd.data.h === 28 * T, 'campanile base sits on the south edge of Santa Chiara');
-    assert(cd.y + cd.data.oy === 4 * T, 'campanile cusp stays inside the map (row 4)');
+    assert(cd.y + cd.data.oy + cd.data.h === 25 * T, 'campanile base sits on its 9x9 OSM footprint');
+    assert(cd.y + cd.data.oy === 1 * T, 'campanile cusp stays inside the map (row 1)');
     // La scala non deve spostare gli ancoraggi salvati.
     for (let y = 25; y < 28; y++) for (let x = 34; x < 38; x++) {
       assert(CL.maps.tile(napoli, x, y) === 'O', `guglia footprint tile ${x},${y} unchanged`);
@@ -1022,7 +1022,7 @@ async function main() {
     const look = { hair: '#2d2622', skin: '#d79c74', shirt: '#c75b3b', pants: '#3a4650' };
     const ch = CL.art.character(look, 'down', 0);
     assert(ch.width === 16 && ch.height === 24, 'scaled character keeps original draw anchor');
-    assert(CL.art.cache['w:c:' + [look.hair, look.skin, look.shirt, look.pants, 'down', 0].join('|')],
+    assert(CL.art.cache['w:c2:' + [look.hair, look.skin, look.shirt, look.pants, 'down', 0, 'walk'].join('|')],
       'character sprite was uniformly scaled through the world cache');
   }, ctx);
 
@@ -1203,6 +1203,77 @@ async function main() {
       assert(recovery[i].at - recovery[i-1].at > 2400 || recovery[i].msg !== recovery[i-1].msg, 'repeated recovery toast');
     }
     assert(ensureWalkable(game), 'walkable after long session');
+  }, ctx);
+
+  await test('WASD, arrows and touch share four facings with distinct animations', async () => {
+    newGame(ctx);
+    const K = CL.input.KEYMAP;
+    const mapping = {
+      KeyW:'up', KeyA:'left', KeyS:'down', KeyD:'right',
+      ArrowUp:'up', ArrowLeft:'left', ArrowDown:'down', ArrowRight:'right'
+    };
+    for (const [code, action] of Object.entries(mapping)) assert(K[code] === action, `${code} maps to ${action}`);
+    const look = { hair:'#2d2622', skin:'#d79c74', shirt:'#c75b3b', pants:'#3a4650' };
+    const idle = CL.art.character(look, 'down', 0, 'idle');
+    const walk = CL.art.character(look, 'down', 0, 'walk');
+    const run = CL.art.character(look, 'down', 0, 'run');
+    assert(idle !== walk && walk !== run, 'idle, walk and run use distinct sprite sets');
+    for (const [dir, code] of [['up','KeyW'],['left','KeyA'],['down','KeyS'],['right','KeyD']]) {
+      resetInput(CL); CL.input.down[K[code]] = true;
+      step(game, 2);
+      assert(game.player.dir === dir, `${code} faces ${dir}, got ${game.player.dir}`);
+      assert(game.player.mode === 'walk', `${code} uses walk animation, got ${game.player.mode}`);
+    }
+    resetInput(CL); step(game, 1);
+    assert(game.player.dir === 'right' && game.player.mode === 'idle', 'last facing kept when standing still');
+    const f0 = game.player.frame; step(game, 48);
+    assert(game.player.frame !== f0, 'idle breathing animation advances');
+    resetInput(CL); CL.input.down.run = true; CL.input.down.left = true; step(game, 2);
+    assert(game.player.mode === 'run' && game.player.dir === 'left', 'run animation keeps the input facing');
+    resetInput(CL);
+  }, ctx);
+
+  await test('player footprint stops at structures without falling through decor', async () => {
+    newGame(ctx);
+    const T = CL.TILE;
+    const gx = 34 * T + T / 2, gy = 26 * T + T / 2; // centro impronta O della guglia
+    assert(!game.canMove(gx, gy, game.player.w, game.player.h), 'guglia footprint blocks movement');
+    const info = game.blockedInfo(gx, gy, game.player.w, game.player.h);
+    assert(info.blocked && info.hits.some(h => h.ch === 'O'), 'blocked corner reports the guglia tile');
+    resetInput(CL); CL.input.down.up = true;
+    for (let i = 0; i < 220; i++) game.update(1/60);
+    resetInput(CL);
+    const p = game.player;
+    assert(okPos(CL, game.map, p.x, p.y, p.w, p.h), `player stays on walkable ground at ${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+    assert(p.x >= 0 && p.y >= 0 && p.x <= game.map.width && p.y <= game.map.height, 'player stays inside the map');
+  }, ctx);
+
+  await test('road surfaces stay continuous and Piazza del Gesu follows OSM axes', async () => {
+    const ids = ['napoli','costiera','vesuvio','pompei','capri','bacoli','salerno','avellino','caserta','fuorigrotta','pianura'];
+    const passage = new Set(['r','p','D','d','e','G','Y',"'"]);
+    for (const id of ids) {
+      const m = CL.maps.get(id);
+      let isolated = 0;
+      for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+        if (m.g[y][x] !== 'r') continue;
+        const neighbours = [[1,0],[-1,0],[0,1],[0,-1]]
+          .map(([dx,dy]) => CL.maps.tile(m, x+dx, y+dy));
+        if (!neighbours.some(ch => passage.has(ch))) isolated++;
+      }
+      assert(isolated === 0, `${id} has ${isolated} road tiles with no walkable continuation`);
+    }
+    const napoli = CL.maps.get('napoli');
+    for (let i = 0; i < 6; i++) {
+      assert(CL.maps.tile(napoli, 66+i, 25-i) === 'r', `Spaccanapoli ENE connector at ${66+i},${25-i}`);
+    }
+    let west = 0, east = 0;
+    for (let y = 15; y <= 38; y++) for (let x = 19; x <= 66; x++) {
+      if (!passage.has(CL.maps.tile(napoli, x, y))) continue;
+      if (x < 34) west++; else if (x > 37) east++;
+    }
+    assert(east > west, 'guglia is west of the pedestrian square centre, as in OSM');
+    assert(napoli.decors.filter(d => d.type === 'laundry_line')
+      .every(d => d.y >= 39 * T), 'laundry hangs from south facades, not across the square');
   }, ctx);
 
   const results = ctx.results;

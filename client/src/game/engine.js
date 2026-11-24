@@ -648,19 +648,11 @@
       }
       this.drawTileTransitions(c, m, x0, y0, x1, y1);
       this.drawCrosswalks(c, m);
-      // Velatura artistica: scene M1 già presenti nel runtime, a bassa opacità.
-      // I tile restano leggibili e le collisioni restano allineate alla griglia.
+      // Scene M1: non vengono più disegnate come rettangolo opaco sopra i tile.
+      // La velatura viene mascherata con un gradiente radiale: nessun bordo
+      // quadrato, tile e collisioni restano leggibili e allineati alla griglia.
       const bg = ART.backdropFor && ART.backdropFor(m.id);
-      if (bg) {
-        const W = m.w * T, H = m.h * T;
-        const scale = Math.max(W / bg.width, H / bg.height);
-        const dw = bg.width * scale, dh = bg.height * scale;
-        c.save();
-        c.globalAlpha = .16;
-        c.imageSmoothingEnabled = true;
-        c.drawImage(bg, (W - dw) / 2, (H - dh) / 2, dw, dh);
-        c.restore();
-      }
+      if (bg) this.drawScenicBackdrop(c, bg, m);
       // I prospetti edilizi sono sf architettonico: vanno disegnati prima delle
       // entità. Il sort per profondità li faceva passare sopra il giocatore quando
       // cammina sul sagrato/marciapiede, facendolo "affondare" nelle facciate.
@@ -706,8 +698,36 @@
         } else c.drawImage(ART.rock((it.tx + it.ty) % 3), it.tx * T - 2, it.ty * T - 8);
       }
       c.restore();
+      // Layer coerenti: atmosfera (buio/calore/vignetta) → luci → HUD.
+      // Le luci devono passare DOPRA la velatura scura, non essere attenuate da essa.
+      this.drawAtmosphere(c);
       this.drawLights(c);
-      this.drawOverlay(c);
+      this.drawHud(c);
+    }
+
+    drawScenicBackdrop(c, bg, m) {
+      const key = 'bg:' + m.id;
+      if (!this._backdrops) this._backdrops = {};
+      let layer = this._backdrops[key];
+      if (!layer) {
+        const W = m.w * T, H = m.h * T;
+        layer = document.createElement('canvas'); layer.width = W; layer.height = H;
+        const lx = layer.getContext('2d');
+        const scale = Math.max(W / bg.width, H / bg.height);
+        const dw = bg.width * scale, dh = bg.height * scale;
+        lx.imageSmoothingEnabled = true;
+        lx.drawImage(bg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+        // Maschera radiale: il bordo del rettangolo non è mai visibile.
+        lx.globalCompositeOperation = 'destination-in';
+        const g = lx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .12,
+          W / 2, H / 2, Math.max(W, H) * .52);
+        g.addColorStop(0, 'rgba(0,0,0,1)');
+        g.addColorStop(.6, 'rgba(0,0,0,.72)');
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        lx.fillStyle = g; lx.fillRect(0, 0, W, H);
+        this._backdrops[key] = layer;
+      }
+      c.save(); c.globalAlpha = .14; c.drawImage(layer, 0, 0); c.restore();
     }
 
     drawLights(c) {
@@ -765,7 +785,7 @@
       c.restore();
     }
 
-    drawOverlay(c) {
+    drawAtmosphere(c) {
       const st = this.state;
       const h = S.time.hour();
       const indoors = this.map && this.map.zone === 'interno';
@@ -787,6 +807,9 @@
       const gr = c.createRadialGradient(240, 135, 80, 240, 135, 290);
       gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(4,8,14,' + (indoors ? '.22' : '.34') + ')');
       c.fillStyle = gr; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
+    }
+
+    drawHud(c) {
       this.particles.draw(c);
       // nome luogo (breve)
       G.panel(c, 6, 6, Math.min(180, 20 + this.map.name.length * 5), 16, { fill: 'rgba(12,20,28,.72)', border: '#e9b84a' });

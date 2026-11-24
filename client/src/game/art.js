@@ -54,7 +54,8 @@
       return key ? this.images[key] : null;
     },
     loadAssets() {
-      if (this._imgReady) return;
+      if (this._imgReady) return this.imagesReady;
+      this.imagesLoaded = false;
       const files = {
         gesu: 'gesu-facade.png', guglia: 'guglia.png', campanile: 'campanile.png',
         palazzo_ne: 'palazzo-ne.png', palazzo_sw: 'palazzo-sw.png', palazzo_banca: 'palazzo-banca.png',
@@ -79,11 +80,30 @@
         m1_bg_bar:'m1-bar-room.png', m1_bg_church:'m1-church-hall.png',
         m1_bg_pizzeria:'m1-pz-hall.png', m1_bg_metro:'m1-mt-hall.png',
       };
-      for (const [k, f] of Object.entries(files)) {
-        const img = new Image(); img.decoding = 'async'; img.src = this.assetUrl(f);
-        img.onload = () => { this.images[k] = img; }; img.onerror = () => { /* fallback code-drawn */ };
-      }
+      let pending = Object.keys(files).length;
+      this.imagesReady = new Promise(resolve => {
+        const settled = () => {
+          if (--pending > 0) return;
+          this.imagesLoaded = true;
+          // I prospetti e i prop vengono cacheati al primo accesso. Se l'accesso
+          // avviene prima del caricamento M1, la cache conterrebbe il fallback
+          // procedurale per sempre: la si invalida quando tutti gli asset sono
+          // pronti, così la grafica finale non dipende dall'ordine dei frame.
+          for (const key of Object.keys(this.cache)) {
+            if (key.startsWith('bld:') || key.startsWith('w:p:')) delete this.cache[key];
+          }
+          resolve();
+        };
+        for (const [k, f] of Object.entries(files)) {
+          const img = new Image(); img.decoding = 'async';
+          img.onload = () => { this.images[k] = img; settled(); };
+          img.onerror = () => { settled(); }; // fallback code-drawn
+          img.src = this.assetUrl(f);
+        }
+        if (!pending) settled();
+      });
       this._imgReady = true;
+      return this.imagesReady;
     },
     /* Scala uniforme del mondo (WORLD_SCALE = 8 px/m). Il canvas originale resta
      * delle dimensioni originarie e lo sprite ridotto viene ancorato in basso
@@ -105,9 +125,10 @@
     rock(v) { return this._world('w:rock:' + v, () => this._rock(v)); },
     flower(v) { return this._world('w:flower:' + v, () => this._flower(v)); },
     fountain() { return this._world('w:fountain', () => this._fountain()); },
-    character(look, dir, frame) {
-      return this._world('w:c:' + [look.hair, look.skin, look.shirt, look.pants, dir, frame].join('|'),
-        () => this._character(look, dir, frame));
+    character(look, dir, frame, mode) {
+      const anim = mode || 'walk';
+      return this._world('w:c2:' + [look.hair, look.skin, look.shirt, look.pants, dir, frame, anim].join('|'),
+        () => this._character(look, dir, frame, anim));
     },
     creature(id, frame) { return this._world('w:cr:' + id + ':' + frame, () => this._creature(id, frame)); },
     vehicle(type, dir) { return this._world('w:v:' + type + ':' + dir, () => this._vehicle(type, dir)); },
@@ -444,8 +465,9 @@
     },
 
     /* ---------------------------------------------------------- personaggi */
-    _character(look, dir, frame) {
-      const key = ['c4', look.hair, look.skin, look.shirt, look.pants, dir, frame].join('|');
+    _character(look, dir, frame, mode) {
+      const anim = mode || 'walk';
+      const key = ['c5', look.hair, look.skin, look.shirt, look.pants, dir, frame, anim].join('|');
       if (this.cache[key]) return this.cache[key];
       const c = cv(16, 24), x = ctx(c), d = P.dark;
       const skinD = shade(look.skin, -22), skinL = shade(look.skin, 12);
@@ -453,10 +475,13 @@
       const hairD = shade(look.hair, -28), hairL = shade(look.hair, 18);
       const pantsD = shade(look.pants, -24), pantsL = shade(look.pants, 14);
       const shoe = '#4a3a32', shoeD = '#352922';
-      const f = frame % 4;
-      const bob = (f === 1 || f === 3) ? -1 : 0;
-      const legA = f === 1 ? 2 : f === 3 ? -2 : 0;
-      const armA = f === 1 ? -1 : f === 3 ? 1 : 0;
+      // Tre animazioni distinte ma con la stessa silhouette e lo stesso ancoraggio:
+      // idle respira, walk ha passo normale, run ha falcata e braceggio ampliati.
+      const f = frame % (anim === 'idle' ? 2 : 4);
+      const bob = anim === 'idle' ? (f === 1 ? -1 : 0) : (f === 1 || f === 3 ? -1 : 0);
+      const stride = anim === 'run' ? 3 : 2;
+      const legA = anim === 'idle' ? 0 : (f === 1 ? stride : f === 3 ? -stride : 0);
+      const armA = anim === 'idle' ? 0 : anim === 'run' ? (f === 1 ? -2 : f === 3 ? 2 : 0) : (f === 1 ? -1 : f === 3 ? 1 : 0);
       const isSide = dir === 'left' || dir === 'right';
       px(x, 3, 22, 10, 2, 'rgba(18,22,28,.22)');
       if (isSide) {
@@ -470,7 +495,7 @@
         px(x, 4, 21 + bob + legA, 4, 2, shoe); px(x, 9, 21 + bob - legA, 4, 2, shoe);
         px(x, 4, 22 + bob + legA, 4, 1, shoeD); px(x, 9, 22 + bob - legA, 4, 1, shoeD);
       }
-      const bx = isSide ? 5 : 4, bw = isSide ? 6 : 8;
+      const bx = isSide ? 5 + (anim === 'run' ? (dir === 'left' ? -1 : 1) : 0) : 4, bw = isSide ? 6 : 8;
       px(x, bx, 11 + bob, bw, 7, look.shirt);
       px(x, bx, 11 + bob, bw, 1, shirtD); px(x, bx, 17 + bob, bw, 1, shirtD);
       px(x, bx+1, 12 + bob, 2, 4, shirtL);
@@ -505,6 +530,9 @@
         px(x, hx+2, 7 + bob, 1, 1, '#fff'); px(x, hx+6, 7 + bob, 1, 1, '#fff');
         px(x, hx+4, 9 + bob, 1, 1, shade(look.skin, -30));
         px(x, hx+3, 10 + bob, 3, 1, 'rgba(120,60,50,.18)');
+      }
+      if (anim === 'idle' && f === 1 && !isSide) {
+        px(x, hx + 2, 7 + bob, 1, 2, look.hair); px(x, hx + 6, 7 + bob, 1, 2, look.hair);
       }
       return this.cache[key] = c;
     },

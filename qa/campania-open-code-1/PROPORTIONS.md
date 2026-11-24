@@ -37,7 +37,7 @@ revisione umana (vedi §8).
 |Gesù Nuovo — prospetto|**56 m largo × 31 m alto**|Avvenire, 12/03/2023 — https://www.avvenire.it/agora/cultura/napoli-restaurata-la-facciata-del-gesu-nuovo-e-il-suo-misterioso-bugnato-a-piramide_65918|
 |Gesù Nuovo — ingombro OSM|75,8 × 82,4 m ( complesso, non solo prospetto)|OSM way `261249895`|
 |Piazza del Gesù Nuovo — ingombro OSM|93,7 × 76,1 m|OSM way `563345000`|
-|Santa Chiara — campanile|**48 m** (height tag OSM), pianta quadrata ~14 m, tre ordini|OSM way `150562144` — https://www.openstreetmap.org/way/150562144; struttura a tre ordini: Wikipedia it, *Basilica di Santa Chiara (Napoli)* — https://it.wikipedia.org/wiki/Basilica_di_Santa_Chiara_(Napoli). I 50 m precedentemente usati erano un valore di lavoro non verificato|
+|Santa Chiara — campanile|**48 m** (height tag OSM), ingombro a terra 17,6 × 17,3 m, fusto visibile ~14 m, tre ordini|OSM way `150562144` — https://www.openstreetmap.org/way/150562144; struttura a tre ordini: Wikipedia it, *Basilica di Santa Chiara (Napoli)* — https://it.wikipedia.org/wiki/Basilica_di_Santa_Chiara_(Napoli). L'impronta di gioco e' 9x9 celle (18 m); lo sprite del fusto resta 112 px (14 m). I 50 m precedentemente usati erano un valore di lavoro non verificato|
 |Santa Chiara — basilica|~130 m lunga × ~40 m larga × 45 m alta|Wikipedia it (cita Touring Club), stessa voce|
 |Interpiano residenziale storico|3,0–3,3 m; piano terra 3,5–4 m|pratica architettonica corrente|
 |Vesuvio|1281 m s.l.m.|INGV — https://www.ingv.it/somma-vesuvio|

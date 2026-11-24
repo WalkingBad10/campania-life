@@ -83,6 +83,9 @@
     m.spawn = { x: 36 * T, y: 36 * T };
     const g = m.g;
     const place = (x, y, ch) => { if (g[y] && ['D', 'd', 'e'].includes(g[y][x])) setTile(g, x, y, ch); };
+    // Estende la pavimentazione pedonale solo dove non ci sono masse edilizie,
+    // portali o corsie: le nuove superfici non cancellano mai la viabilità.
+    const pave = (x, y, ch) => { if (g[y] && ['p', 'D', 'd', 'e'].includes(g[y][x])) setTile(g, x, y, ch); };
 
     // ---- 1) Graybox: masse edilizie continue sui quattro lati ----
     // Palazzi nobiliari occidentali (Pandola / Pignatelli di Monteleone).
@@ -112,11 +115,14 @@
     rect(g, 43, 12, 2, 2, 'Y'); rect(g, 36, 13, 18, 1, 'p');
 
     // Santa Chiara: fronte est compatto e campanile innestato nella massa, non isolato.
-    rect(g, 55, 16, 10, 12, '#');
-    for (let y = 17; y < 27; y++) for (let x = 56; x < 64; x++) {
-      setTile(g, x, y, (y === 18 || y === 21 || y === 24) ? ((x % 3 === 0) ? 'L' : '#') : '#');
+    // OSM way 261250167: il complesso e' a ESE della guglia, non a NNE.
+    // La massa viene estesa a sud (fino alla riga 33) mantenendo l'ingresso storico.
+    rect(g, 55, 16, 10, 18, '#');
+    for (let y = 17; y < 33; y++) for (let x = 56; x < 64; x++) {
+      setTile(g, x, y, (y === 18 || y === 21 || y === 24 || y === 28 || y === 31) ? ((x % 3 === 0) ? 'L' : '#') : '#');
     }
-    rect(g, 59, 12, 3, 8, '#');
+    // Campanile: 17,6 x 17,3 m (OSM way 150562144) = 9x9 celle, non 3x8.
+    rect(g, 58, 16, 9, 9, '#');
     setTile(g, 60, 14, 'L'); setTile(g, 60, 17, 'L');
     rect(g, 59, 26, 2, 2, 'Y');
 
@@ -139,13 +145,23 @@
     hline(g, 0, 15, 31, 'r', 2); hline(g, 0, 15, 30, 'p'); hline(g, 0, 15, 33, 'p');
     vline(g, 58, 34, 47, 'r', 2); vline(g, 57, 34, 47, 'p'); vline(g, 60, 34, 47, 'p');
     vline(g, 12, 39, 47, 'r', 2); vline(g, 11, 39, 47, 'p'); vline(g, 14, 39, 47, 'p');
+    // Spaccanapoli/Decumano Inferiore esce dalla piazza ENE (66,4°), non a sud.
+    for (let i = 0; i < 6; i++) {
+      const cx = 66 + i, cy = 25 - i;
+      pave(cx, cy, 'r'); pave(cx, cy + 1, 'p'); pave(cx + 1, cy, 'p');
+    }
 
     // ---- 2) Pavimentazione logica: basolato, sagrato, assi pedonali ----
-    rect(g, 16, 16, 38, 22, 'D');           // spiazzale continuo
+    rect(g, 16, 16, 38, 22, 'D');           // spiazzale continuo storico
+    // OSM way 563345000: 93,8 x 76,4 m, asse 29,7°. La piazza reale e' molto
+    // piu' estesa a est della guglia, che risulta decentrata verso ovest.
+    // Le lastre e gli assi di basolato gia' presenti non vengono riscritti.
+    for (let y = 15; y <= 38; y++) for (let x = 19; x <= 66; x++) if (g[y][x] === 'p') setTile(g, x, y, 'D');
+    for (let y = 39; y <= 44; y++) for (let x = 54; x <= 66; x++) if (g[y][x] === 'p') setTile(g, x, y, 'D');
     rect(g, 16, 15, 38, 1, 'p');            // marciapiede nord
     rect(g, 16, 38, 38, 1, 'p');            // marciapiede sud
     rect(g, 16, 15, 16, 4, 'd');            // sagrato davanti al portale del Gesù
-    rect(g, 32, 23, 9, 7, 'd');             // area lapidea attorno all'obelisco
+    rect(g, 33, 24, 8, 8, 'd');             // area lapidea attorno all'obelisco (16 m)
     rect(g, 18, 18, 17, 3, 'e');            // asse Gesù -> obelisco
     rect(g, 18, 22, 17, 3, 'e');            // asse trasversale di accesso
     rect(g, 35, 28, 3, 8, 'e');             // asse obelisco -> spawn / fronte sud
@@ -181,7 +197,7 @@
     decor(m, 55, 16, 'palazzo_e', { h: 5 * T, oy: 0 });
     // 48 m = 384 px (altezza OSM way 150562144). La base resta sul bordo sud
     // della massa di Santa Chiara (riga 28, y=448): oy = 448 - 192 - 384.
-    decor(m, 59, 12, 'campanile', { h: 384, oy: -128 });
+    decor(m, 58, 16, 'campanile', { h: 384, oy: -240 });
     decor(m, 38, 34, 'edicola', { h: 48 });
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
     decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });
@@ -196,8 +212,9 @@
     [[16,17],[16,25],[52,22],[52,35],[27,29],[36,29]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
 
     // Cornicioni e balconi sono già parte dell'asset M1: nessun decor duplicato.
-    decor(m, 22, 38, 'laundry_line', { x2: 30 * T, y2: 38 * T, sag: 9 });
-    decor(m, 45, 38, 'laundry_line', { x2: 53 * T, y2: 38 * T, sag: 7, colors: ['#f0e6d2', '#5f8fa8', '#d2a24a'] });
+    // I panni pendono dai balconi del fronte sud (riga 39), non attraverso la piazza.
+    decor(m, 22, 40 * T, 'laundry_line', { x2: 30 * T, y2: 40 * T, sag: 9 });
+    decor(m, 45, 40 * T, 'laundry_line', { x2: 53 * T, y2: 40 * T, sag: 7, colors: ['#f0e6d2', '#5f8fa8', '#d2a24a'] });
 
     // Portali interni / servizi: ancoraggi invariati.
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 14 * T, y: 18 * T + 8 }, 'Ingresso Gesù Nuovo');

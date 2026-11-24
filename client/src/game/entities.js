@@ -29,6 +29,7 @@
       this.stepT = 0; this.speed = 82;
       this.vehicle = null;
       this.look = null;
+      this.mode = 'idle'; this.idleT = 0;
     }
     refreshLook() {
       const p = CL.state.profile; this.look = Object.assign({}, p.look);
@@ -52,19 +53,30 @@
         if (game.canMove(nx, this.y, this.w, this.h)) { this.x = nx; moved = true; } else if (ax.x) blocked.push('x');
         if (game.canMove(this.x, ny, this.w, this.h)) { this.y = ny; moved = true; } else if (ax.y) blocked.push('y');
         if (game.dbg) game.dbg.blocked = moved ? '' : ('collision:' + blocked.join(','));
+        // Corsa e camminata hanno animazioni diverse; la direzione resta
+        // sempre quella dell'ultimo input, anche se il movimento è bloccato.
+        this.mode = CL.input.isDown('run') ? 'run' : 'walk';
         this.anim += dt * (sp / 22);
         this.frame = Math.floor(this.anim) % 4;
+        this.idleT = 0;
         this.stepT -= dt;
-        if (this.stepT <= 0) { CL.audio.sfx('step'); this.stepT = .34; }
+        if (this.stepT <= 0) { CL.audio.sfx('step'); this.stepT = this.mode === 'run' ? .24 : .34; }
         CL.state.stats.steps += dt * sp / 16;
         game.checkPortals(this);
-      } else { this.frame = 0; this.anim = 0; if (game.dbg && game.dbg.blocked !== 'modal') game.dbg.blocked = ''; }
+      } else {
+        // Inattività: respiro a due fotogrammi, ultima direzione conservata.
+        this.mode = 'idle';
+        this.idleT += dt;
+        this.frame = Math.floor(this.idleT * 1.5) % 2;
+        this.anim = 0;
+        if (game.dbg && game.dbg.blocked !== 'modal') game.dbg.blocked = '';
+      }
     }
     draw(ctx) {
       if (this.vehicle) return;
       ctx.fillStyle = 'rgba(0,0,0,.22)';
       ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
-      const img = ART.character(this.look, this.dir, this.frame);
+      const img = ART.character(this.look, this.dir, this.frame, this.mode);
       ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
       if (CL.systems.time.isNight()) {
         ctx.fillStyle = 'rgba(10,18,36,.20)';

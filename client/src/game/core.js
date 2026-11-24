@@ -68,6 +68,7 @@
   };
   const INPUT = CL.input = {
     down: {}, pressed: {}, released: {}, listeners: [], enabled: true,
+    KEYMAP, // esposta per i test delle quattro direzioni WASD e delle frecce
     init() {
       w.addEventListener('keydown', e => {
         const a = KEYMAP[e.code];

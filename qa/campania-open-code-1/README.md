@@ -81,6 +81,24 @@ Correzioni applicate:
 
 I due workflow falliti notificati (`45510849895`, 24 s, e `45511020367`, 26 s) avevano la stessa annotazione sullo step `Install Playwright Chromium`: exit code 1. L'analisi degli artifact/run ha mostrato che il download/installazione del browser nella CI era l'unico passo in errore: build Vite e test locale erano già verdi. Non è stato disabilitato il test: è stata rimossa l'installazione esplicita di Chromium e `mobile-start.mjs` usa il Chromium bundlato quando presente, con fallback al Chrome di sistema dell'runner GitHub. Il run finale `45511188531` ha completato build e deploy con successo.
 
+## Revisione strutturale CAMPANIA OPEN CODE 1
+
+Eseguita a partire dal checkpoint `checkpoint/pre-structural-review` (`51a22c0`). Nessuna mappa o salvataggio è stato rimosso.
+
+**Geometria da OSM/Overpass** — dati verificati: piazza `way 563345000` 93,8 × 76,4 m con asse 29,7°; guglia `way 261256738` 15,7 × 15,6 m decentrata 12,6 m a ovest del centro; Gesù `way 261249895` con prospetto documentato 56 m; Santa Chiara `way 261250167` a ESE della guglia; campanile `way 150562144` 17,6 × 17,3 m; Spaccanapoli/Croce `way 27179692` esce a 66,4° ENE; superficie `surface=sett` (basolato) nella piazza e `paving_stones` solo nei connettori. Di conseguenza:
+
+- la pavimentazione pedonale è stata estesa a `x=19…66, y=15…38` più il braccio est `y=39…44`, senza cancellare masse, portali o corsie; la guglia resta ancorata a `34,25,4x3` e il POI a `36,26`;
+- Santa Chiara è stata estesa a sud fino alla riga 33, coerentemente con la posizione ESE, mantenendo l'ingresso `59,26` e il corridoio metro `56,21..28`;
+- il campanile usa un'impronta 9 × 9 celle (18 × 18 m) e la base sull'impronta, non più un rettangolo 3 × 8 celle;
+- Spaccanapoli ha un raccordo pedonale ENE da `(66,25)` a `(71,19)` invece di terminare contro il bordo sud;
+- i panni stesi pendono dai balconi del fronte sud (riga 40), non attraverso la piazza.
+
+**Motore e asset** — le immagini M1 sono caricate in modo asincrono con una barriera reale (`CL.art.imagesReady`): le cache `bld:*` e `w:p:*` vengono invalidate quando tutti gli asset sono pronti, quindi una facciata non resta più bloccata sul fallback procedurale. Il rendering è stato separato in suolo → facciate/strutture → oggetti ed entità ordinati per profondità → atmosfera → luci → HUD: le luci non sono più attenuate dalla velatura notturna. Le scene M1 degli interni non sono più rettangoli opachi: una maschera radiale elimina ogni bordo quadrato mantenendo la decorazione e l'allineamento tile/collisioni.
+
+**Personaggio** — tre set di sprite distinti per inattività (respiro a due fotogrammi), camminata (4 fotogrammi) e corsa (falcata e braceggio ampliati), per tutte e quattro le direzioni. W/A/S/D e frecce producono gli stessi assi del joystick touch; la direzione viene conservata da fermo e anche quando il movimento è bloccato da una collisione.
+
+**Gate aggiuntivi** — la regressione include ora tre test: quattro direzioni W/A/S/D + frecce + animazioni distinte, footprint di collisione ancorato all'impronta della guglia, continuità delle superfici stradali su 11 mappe e coerenza OSM della piazza.
+
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
 
@@ -97,7 +115,7 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
 - Debug player nascosto di default (`?debug=1` o `?dbg=1` per riattivarlo).
 
 ## Verifiche automatiche
-- Regressione deterministico: **31/31 PASS** (gate minimo richiesto 28/28; include scala metrica, nuove mappe, viaggi metro, ancoraggi e nuove targhe geografiche).
+- Regressione deterministico: **34/34 PASS** (gate minimo richiesto 28/28; include scala metrica, nuove mappe, viaggi metro, ancoraggi, targhe geografiche, direzioni WASD, collisioni e continuità stradale).
 - Avvio mobile touch (`npm run test:mobile-start`, Pixel 9 Pro XL emulato): **OK** su build locale e CI-like; riproduce il percorso reale «NUOVA PARTITA» → ingresso in mappa → movimento → save → «CONTINUA».
 - Build locale Vite: **OK**.
 - Build CI-like `GH_PAGES_BASE=/campania-life/`: **OK**.

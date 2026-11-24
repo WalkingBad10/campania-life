@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T23:25:42.790Z",
+  "generatedAt": "2026-11-24T23:51:23.651Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "maps": [
     {
@@ -57,8 +57,8 @@
           "dh": 384,
           "sw": 112,
           "sh": 384,
-          "minY": 64,
-          "maxY": 448
+          "minY": 16,
+          "maxY": 400
         },
         "prop:plant": {
           "count": 6,
@@ -835,8 +835,8 @@
           "dh": 16,
           "sw": 16,
           "sh": 16,
-          "minY": -30.849999999999994,
-          "maxY": 382.85
+          "minY": 0,
+          "maxY": 352
         },
         "prop:church_altar": {
           "count": 1,
@@ -1243,8 +1243,8 @@
           "dh": 16,
           "sw": 16,
           "sh": 16,
-          "minY": -30.75,
-          "maxY": 318.75
+          "minY": 0,
+          "maxY": 288
         },
         "prop:bar_shelf": {
           "count": 1,
@@ -1436,8 +1436,8 @@
           "dh": 16,
           "sw": 16,
           "sh": 16,
-          "minY": -22.86980609418282,
-          "maxY": 310.8698060941828
+          "minY": 0,
+          "maxY": 288
         },
         "prop:metro_hall": {
           "count": 1,
@@ -1528,8 +1528,8 @@
           "dh": 16,
           "sw": 16,
           "sh": 16,
-          "minY": -22.86980609418282,
-          "maxY": 310.8698060941828
+          "minY": 0,
+          "maxY": 288
         },
         "prop:metro_hall": {
           "count": 1,
@@ -1981,8 +1981,8 @@
           "dh": 384,
           "sw": 112,
           "sh": 384,
-          "minY": 64,
-          "maxY": 448
+          "minY": 16,
+          "maxY": 400
         },
         "prop:sign": {
           "count": 3,
@@ -2203,8 +2203,8 @@
           "dh": 384,
           "sw": 112,
           "sh": 384,
-          "minY": 64,
-          "maxY": 448
+          "minY": 16,
+          "maxY": 400
         },
         "prop:sign": {
           "count": 4,
@@ -2827,12 +2827,6 @@
     },
     {
       "map": "casa_nonna",
-      "kind": "unknown",
-      "minY": -31,
-      "maxY": 383
-    },
-    {
-      "map": "casa_nonna",
       "kind": "prop:church_altar",
       "minY": -38,
       "maxY": 80
@@ -2869,12 +2863,6 @@
     },
     {
       "map": "bar",
-      "kind": "unknown",
-      "minY": -31,
-      "maxY": 319
-    },
-    {
-      "map": "bar",
       "kind": "prop:home_plant",
       "minY": -30,
       "maxY": 0
@@ -2893,12 +2881,6 @@
     },
     {
       "map": "metro",
-      "kind": "unknown",
-      "minY": -23,
-      "maxY": 311
-    },
-    {
-      "map": "metro",
       "kind": "prop:metro_hall",
       "minY": -10,
       "maxY": 80
@@ -2908,12 +2890,6 @@
       "kind": "prop:home_plant",
       "minY": -30,
       "maxY": 0
-    },
-    {
-      "map": "metro2",
-      "kind": "unknown",
-      "minY": -23,
-      "maxY": 311
     },
     {
       "map": "metro2",
