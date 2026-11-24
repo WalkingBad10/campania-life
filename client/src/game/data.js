@@ -59,6 +59,16 @@
       name: 'Operaio edile', place: 'cantiere', hours: [7, 15], pay: 16, energy: 28, rep: 0,
       req: null, desc: 'Lavoro duro ma ben pagato al cantiere del centro.',
       events: ['Trovi 20 € in un muro.', 'Turno pesante: -8 energia.', 'Il capo ti elogia: +3 reputazione.']
+    },
+    vignaiolo: {
+      name: 'Vignaiolo irpino', place: 'vigneti_irpini', hours: [7, 15], pay: 17, energy: 24, rep: 5,
+      req: null, desc: 'Vendemmia tra le colline di Avellino.',
+      events: ['Un grappolo speciale: +8 €.', 'Sole intenso: -6 energia.', 'Il padrone ti offre un vino: +3 reputazione.']
+    },
+    guardia_reggia: {
+      name: 'Guardia della Reggia', place: 'reggia', hours: [9, 17], pay: 19, energy: 18, rep: 10,
+      req: null, desc: 'Passeggia tra i viali della Reggia di Caserta.',
+      events: ['Turista riconoscente: +10 €.', 'Lungo turno in piedi: -5 energia.', 'Supervisore compiaciuto: +2 reputazione.']
     }
   };
 
@@ -67,7 +77,9 @@
     monolocale: { name: 'Monolocale a Napoli', price: 4500, income: 55, interior: 'casa_giocatore', zone: 'napoli', desc: 'Piccolo, luminoso, tutto tuo. Letto, cucina e una finestra sul cortile.' },
     appartamento: { name: 'Appartamento a Chiaia', price: 12000, income: 135, interior: 'appartamento', zone: 'napoli', desc: 'Due stanze, terrazzo e vista sui tetti. Il sogno di ogni napoletano.' },
     casa_amalfi: { name: 'Casetta ad Amalfi', price: 28000, income: 260, interior: 'casa_amalfi', zone: 'costiera', desc: 'Bianca, con gerani e vista mare. Si sente il profumo di limoni.' },
-    bottega: { name: 'Bottega di famiglia', price: 19000, income: 310, interior: 'bottega', zone: 'napoli', desc: 'Un’attività commerciale tutta tua. Ogni giorno porta ricavi.' }
+    bottega: { name: 'Bottega di famiglia', price: 19000, income: 310, interior: 'bottega', zone: 'napoli', desc: 'Un’attività commerciale tutta tua. Ogni giorno porta ricavi.' },
+    villa_bacoli: { name: 'Villa a Bacoli', price: 34000, income: 290, interior: 'casa_amalfi', zone: 'bacoli', desc: 'Terrazza sul golfo di Baia, profumo di mirto.' },
+    villetta_salerno: { name: 'Villetta sul mare', price: 26000, income: 220, interior: 'casa_amalfi', zone: 'salerno', desc: 'Vista lungomare, a due passi dal centro storico.' }
   };
 
   /* ----------------------------------------------------------- fauna locale (atmosfera, no cattura) */
@@ -75,7 +87,8 @@
     gabbiano: { name: 'Gabbiano', zones: ['napoli', 'costiera'], color: '#f2efe2', accent: '#e9b84a' },
     piccione: { name: 'Piccione', zones: ['napoli', 'pompei'], color: '#9aa3ad', accent: '#7e8791' },
     gatto:    { name: 'Gatto', zones: ['napoli', 'pompei'], color: '#d7a86c', accent: '#8b6244' },
-    farfalla: { name: 'Farfalla', zones: ['costiera', 'vesuvio'], color: '#8fd8df', accent: '#f2a7c0' }
+    farfalla: { name: 'Farfalla', zones: ['costiera', 'vesuvio'], color: '#8fd8df', accent: '#f2a7c0' },
+    cicada:   { name: 'Cicala', zones: ['avellino', 'caserta'], color: '#b7c98f', accent: '#7f9a55' }
   };
   D.creatures = {}; D.creatureOrder = [];
 
@@ -84,7 +97,12 @@
     napoli: { name: 'Napoli Centro', track: 'town', weather: true, tint: '#d8e2d0', desc: 'Tra vicoli, piazze e caffè.' },
     costiera: { name: 'Costiera Amalfitana', track: 'coast', weather: true, tint: '#cfe9e6', desc: 'Mare, limoni e mulattiere.' },
     vesuvio: { name: 'Falde del Vesuvio', track: 'mountain', weather: true, tint: '#cdd8bd', desc: 'Sentieri, grotte e vigneti.' },
-    pompei: { name: 'Scavi di Pompei', track: 'town', weather: true, tint: '#e2d8bf', desc: 'Le rovine raccontano il passato.' }
+    pompei: { name: 'Scavi di Pompei', track: 'town', weather: true, tint: '#e2d8bf', desc: 'Le rovine raccontano il passato.' },
+    capri: { name: 'Capri', track: 'coast', weather: true, tint: '#d7eee7', desc: 'Faraglioni, limoni e mare cristallino.' },
+    bacoli: { name: 'Bacoli e Baia', track: 'coast', weather: true, tint: '#d4e8e0', desc: 'Terme romane e porticcioli del golfo.' },
+    salerno: { name: 'Salerno - Lungomare', track: 'town', weather: true, tint: '#dbe4e0', desc: 'Lungomare, castello e vicoli medievali.' },
+    avellino: { name: 'Avellino - Colline Irpine', track: 'mountain', weather: true, tint: '#d6dec2', desc: 'Vigneti e colline dell’Irpinia.' },
+    caserta: { name: 'Caserta - Reggia', track: 'town', weather: true, tint: '#dce3d2', desc: 'Viali reali e la maestosa Reggia.' }
   };
 
   /* --------------------------------------------------------------- PNG */
@@ -110,7 +128,11 @@
     cliente_bar1:{name:'Gennaro', look:{hair:'#5b4a3d',skin:'#d5a276',shirt:'#7a5b44',pants:'#4a4f58'}, home:'bar', x:4, y:9, role:'ambient'},
     cliente_bar2:{name:'Mirella', look:{hair:'#6b3a2a',skin:'#e3b289',shirt:'#c05858',pants:'#5a4a60'}, home:'bar', x:13, y:8, role:'ambient'},
     pizzaiolo:{name:'Gino il pizzaiolo', look:{hair:'#2b2320',skin:'#d8a178',shirt:'#efe8d8',pants:'#4a3d36'}, home:'pizzeria', x:4, y:5, role:'shop'},
-    cameriere:{name:'Luca il cameriere', look:{hair:'#3a2f2a',skin:'#dcae84',shirt:'#1f1f1f',pants:'#4b5563'}, home:'pizzeria', x:12, y:9, role:'ambient'}
+    cameriere:{name:'Luca il cameriere', look:{hair:'#3a2f2a',skin:'#dcae84',shirt:'#1f1f1f',pants:'#4b5563'}, home:'pizzeria', x:12, y:9, role:'ambient'},
+    bacoli_guide:{name:'Rosa di Baia', look:{hair:'#6b3a2a',skin:'#d9a77d',shirt:'#4f8f8a',pants:'#4a5563'}, home:'bacoli', x:10, y:14, role:'quest'},
+    salerno_barista:{name:'Enzo il salernitano', look:{hair:'#2d2622',skin:'#dda97e',shirt:'#e8e2d2',pants:'#3b4650'}, home:'salerno', x:34, y:22, role:'shop'},
+    avellino_contadino:{name:'Pasquale il vignaiolo', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:28, y:22, role:'job'},
+    caserta_guardia:{name:'Guardia della Reggia', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'caserta', x:30, y:24, role:'ambient'}
   };
 
   /* --------------------------------------------------------------- quest */

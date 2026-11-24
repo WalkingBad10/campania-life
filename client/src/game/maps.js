@@ -227,7 +227,11 @@
     // collegamenti
     portal(m, 0, 14, 1, 2, 'napoli', { x: 3 * T, y: 19 * T }, 'Torna a Napoli');
     portal(m, 36, 0, 2, 1, 'vesuvio', { x: 36 * T, y: 46 * T }, 'Vai al Vesuvio');
+    portal(m, 60, 0, 2, 1, 'bacoli', { __useTargetSpawn: true }, 'Verso Bacoli');
+    portal(m, 71, 14, 1, 2, 'salerno', { __useTargetSpawn: true }, 'Verso Salerno');
     poi(m, 0, 14, 'to_napoli', 'sign', '← Napoli', 'travel', { to: 'napoli' });
+    poi(m, 60, 1, 'to_bacoli', 'sign', '↑ Bacoli', 'travel', { to: 'bacoli' });
+    poi(m, 70, 14, 'to_salerno', 'sign', '→ Salerno', 'travel', { to: 'salerno' });
     m.spawn = { x: 4 * T, y: 18 * T };
     return m;
   }
@@ -259,7 +263,9 @@
     // collegamenti
     portal(m, 32, 47, 2, 1, 'napoli', { x: 36 * T, y: 36 * T }, 'Scendi a Napoli');
     portal(m, 63, 20, 1, 2, 'costiera', { x: 70 * T, y: 15 * T }, 'Vai in Costiera');
+    portal(m, 63, 44, 1, 2, 'caserta', { __useTargetSpawn: true }, 'Verso Caserta');
     poi(m, 32, 46, 'to_napoli', 'sign', 'Napoli ↓', 'travel', { to: 'napoli' });
+    poi(m, 62, 44, 'to_caserta', 'sign', '→ Caserta', 'travel', { to: 'caserta' });
     m.spawn = { x: 32 * T, y: 45 * T };
     return m;
   }
@@ -280,7 +286,9 @@
     building(m, 40, 20, 7, 4, 'souvenir', 'Entra nel negozio di souvenir', 'shop', { shop: 'pompei' });
     // collegamenti
     portal(m, 0, 30, 1, 2, 'napoli', { x: 60 * T, y: 31 * T }, 'Torna a Napoli');
+    portal(m, 55, 20, 1, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     poi(m, 1, 30, 'to_napoli', 'sign', '← Napoli', 'travel', { to: 'napoli' });
+    poi(m, 54, 20, 'to_avellino', 'sign', '→ Avellino', 'travel', { to: 'avellino' });
     m.spawn = { x: 5 * T, y: 30 * T };
     return m;
   }
@@ -296,6 +304,93 @@
     poi(m, 15, 19, 'barca_capri', 'service', 'Battello per Amalfi', 'boat');
     portal(m, 15, 19, 1, 2, 'costiera', { x: 4 * T, y: 18 * T }, 'Torna ad Amalfi');
     m.spawn = { x: 15 * T, y: 17 * T };
+    return m;
+  }
+
+  /* -------------------------------------------------------------- BACOLI */
+  function bacoli() {
+    const w = 48, h = 30;
+    const m = makeMap('bacoli', 'costiera', w, h, blank(w, h, '.'));
+    m.name = 'Bacoli e Baia';
+    const R = U.rng(8801), g = m.g;
+    scatter(g, ',', 60, c => c === '.', R);
+    hline(g, 0, w - 1, 10, 'r', 2); hline(g, 0, w - 1, 9, 'p'); hline(g, 0, w - 1, 12, 'p');
+    hline(g, 0, w - 1, 22, 'S', 2); hline(g, 0, w - 1, 25, '~');
+    for (let y = 26; y < h; y++) hline(g, 0, w - 1, y, 'W');
+    rect(g, 8, 4, 9, 4, 'g'); rect(g, 30, 4, 10, 5, 'g');
+    building(m, 18, 14, 6, 4, 'souvenir', 'Souvenir di Baia', 'shop', { shop: 'bacoli' });
+    building(m, 36, 14, 6, 4, 'bar', 'Bar sul porto', 'shop', { shop: 'bacoli' });
+    poi(m, 12, 7, 'terme_baia', 'landmark', 'Terme di Baia', 'flavor');
+    poi(m, 24, 23, 'porto_bacoli', 'service', 'Porto di Bacoli', 'fish');
+    portal(m, 4, 0, 2, 1, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
+    portal(m, 44, 22, 2, 2, 'napoli', { __useTargetSpawn: true }, 'Battello per Napoli');
+    m.spawn = { x: 5 * T, y: 14 * T };
+    return m;
+  }
+
+  /* ------------------------------------------------------------- SALERNO */
+  function salerno() {
+    const w = 56, h = 36;
+    const m = makeMap('salerno', 'napoli', w, h, blank(w, h, 'p'));
+    m.name = 'Salerno - Lungomare';
+    const R = U.rng(4410), g = m.g;
+    scatter(g, ',', 50, c => c === 'p', R);
+    hline(g, 0, w - 1, 18, 'r', 2); hline(g, 0, w - 1, 17, 'p'); hline(g, 0, w - 1, 20, 'p');
+    hline(g, 0, w - 1, 30, 'S', 2); hline(g, 0, w - 1, 33, '~');
+    for (let y = 34; y < h; y++) hline(g, 0, w - 1, y, 'W');
+    rect(g, 6, 4, 14, 8, '#');
+    for (let y = 5; y < 11; y++) for (let x = 7; x < 19; x++) if ((x + y) % 3 === 0) setTile(g, x, y, 'L');
+    rect(g, 30, 6, 10, 6, '#');
+    building(m, 38, 21, 6, 4, 'bar', 'Bar del lungomare', 'shop', { shop: 'salerno' });
+    building(m, 12, 21, 6, 4, 'souvenir', 'Bottega salernitana', 'shop', { shop: 'salerno' });
+    poi(m, 12, 9, 'arechi', 'landmark', 'Castello di Arechi', 'flavor');
+    poi(m, 28, 31, 'lungomare_salerno', 'landmark', 'Lungomare di Salerno', 'flavor');
+    portal(m, 54, 17, 2, 2, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
+    portal(m, 2, 18, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
+    m.spawn = { x: 4 * T, y: 19 * T };
+    return m;
+  }
+
+  /* ------------------------------------------------------------ AVELLINO */
+  function avellino() {
+    const w = 48, h = 32;
+    const m = makeMap('avellino', 'vesuvio', w, h, blank(w, h, '.'));
+    m.name = 'Avellino - Colline Irpine';
+    const R = U.rng(7712), g = m.g;
+    scatter(g, ',', 80, c => c === '.', R);
+    scatter(g, 'T', 45, c => c === '.', R);
+    hline(g, 0, w - 1, 16, 'r', 2); hline(g, 0, w - 1, 15, 'p'); hline(g, 0, w - 1, 18, 'p');
+    vline(g, 24, 0, h - 1, 'r', 2);
+    rect(g, 8, 5, 10, 5, '#'); rect(g, 32, 6, 9, 5, '#');
+    building(m, 18, 20, 6, 4, 'negozio', 'Negozio di Avellino', 'shop', { shop: 'avellino' });
+    poi(m, 13, 9, 'irpinia', 'landmark', 'Centro storico irpino', 'flavor');
+    poi(m, 36, 9, 'vigneti_irpini', 'landmark', 'Vigneti irpini', 'flavor');
+    portal(m, 0, 16, 2, 2, 'pompei', { __useTargetSpawn: true }, 'Torna a Pompei');
+    portal(m, 46, 16, 2, 2, 'salerno', { __useTargetSpawn: true }, 'Verso Salerno');
+    portal(m, 24, 30, 2, 2, 'caserta', { __useTargetSpawn: true }, 'Verso Caserta');
+    m.spawn = { x: 3 * T, y: 17 * T };
+    return m;
+  }
+
+  /* ------------------------------------------------------------- CASERTA */
+  function caserta() {
+    const w = 60, h = 40;
+    const m = makeMap('caserta', 'napoli', w, h, blank(w, h, 'p'));
+    m.name = 'Caserta - Reggia';
+    const R = U.rng(2209), g = m.g;
+    scatter(g, ',', 60, c => c === 'p', R);
+    hline(g, 0, w - 1, 32, 'r', 2); hline(g, 0, w - 1, 31, 'p'); hline(g, 0, w - 1, 34, 'p');
+    vline(g, 30, 0, h - 1, 'D', 2);
+    rect(g, 18, 4, 24, 14, '#');
+    for (let y = 5; y < 17; y++) for (let x = 19; x < 41; x++) if ((x + y) % 4 === 0) setTile(g, x, y, 'L');
+    rect(g, 28, 18, 4, 2, 'Y');
+    building(m, 8, 22, 6, 4, 'bar', 'Bar della Reggia', 'shop', { shop: 'caserta' });
+    building(m, 46, 22, 6, 4, 'souvenir', 'Souvenir della Reggia', 'shop', { shop: 'caserta' });
+    poi(m, 30, 10, 'reggia', 'landmark', 'Reggia di Caserta', 'flavor');
+    poi(m, 30, 27, 'viale_re', 'landmark', 'Viale del Re', 'flavor');
+    portal(m, 2, 32, 2, 2, 'vesuvio', { __useTargetSpawn: true }, 'Torna al Vesuvio');
+    portal(m, 56, 32, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
+    m.spawn = { x: 30 * T, y: 36 * T };
     return m;
   }
 
@@ -598,6 +693,10 @@
         case 'vesuvio': m = vesuvio(); break;
         case 'pompei': m = pompei(); break;
         case 'capri': m = capri(); break;
+        case 'bacoli': m = bacoli(); break;
+        case 'salerno': m = salerno(); break;
+        case 'avellino': m = avellino(); break;
+        case 'caserta': m = caserta(); break;
         case 'casa_nonna': m = interior(id, 'home', 16, 12); break;
         case 'casa_giocatore': m = interior(id, 'home', 16, 12); break;
         case 'appartamento': m = interior(id, 'home', 20, 14, mm => { setTile(mm.g, 10, 3, 'V'); setTile(mm.g, 15, 4, 'P'); setTile(mm.g, 4, 4, 'P'); }); break;
@@ -620,7 +719,7 @@
           return m;
       }
       m.width = m.w * T; m.height = m.h * T;
-      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', pizzeria:'Pizzeria Da Michele', metro:'Metro Toledo - Atrio', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
+      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', bacoli: 'Bacoli e Baia', salerno: 'Salerno - Lungomare', avellino: 'Avellino - Colline Irpine', caserta: 'Caserta - Reggia', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', pizzeria:'Pizzeria Da Michele', metro:'Metro Toledo - Atrio', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
       m.name = m.name || defaultNames[id] || id;
       this.cache[id] = m;
       return m;

@@ -663,6 +663,43 @@ async function main() {
     assert(ensureWalkable(game), 'player walkable after NPC simulation');
   }, ctx);
 
+  await test('regional maps: Bacoli, Salerno, Avellino, Caserta are reachable', async () => {
+    newGame(ctx);
+    const links = [
+      { id: 'bacoli', from: 'costiera' },
+      { id: 'salerno', from: 'costiera' },
+      { id: 'avellino', from: 'pompei' },
+      { id: 'caserta', from: 'vesuvio' }
+    ];
+    for (const link of links) {
+      const origin = CL.maps.get(link.from);
+      assert(origin.portals.some(p => p.to === link.id), `${link.from} has portal to ${link.id}`);
+      const m = CL.maps.get(link.id);
+      assert(m && m.id === link.id, `${link.id} map exists`);
+      assert(m.name && m.name !== link.id, `${link.id} has display name`);
+      const stx = Math.floor(m.spawn.x / T), sty = Math.floor(m.spawn.y / T);
+      assert(walkableTile(CL, m, stx, sty, 10, 8), `${link.id} spawn walkable`);
+      const back = m.portals.find(p => p.to === link.from);
+      assert(back, `${link.id} has return portal to ${link.from}`);
+      game.enterMap(link.id);
+      step(game, 75);
+      assert(game.map.id === link.id, `entered ${link.id}`);
+      assert(ensureWalkable(game), `player walkable on ${link.id}`);
+      const locals = game.entities.filter(e => e instanceof CL.NPC);
+      assert(locals.length > 0, `${link.id} has local NPCs`);
+      for (const n of locals) assert(okPos(CL, game.map, n.x, n.y, n.w, n.h), `${link.id} NPC ${n.id} walkable`);
+      game.player.x = back.x + (back.w || 16) / 2;
+      game.player.y = back.y + (back.h || 16) / 2;
+      for (let i = 0; i < 150 && game.map.id === link.id; i++) {
+        resetInput(CL);
+        if (i < 12) CL.input.down.right = true; // checkPortals viene chiamato solo con input attivo
+        game.update(1 / 60);
+      }
+      assert(game.map.id === link.from, `${link.id} returned to ${link.from}`);
+    }
+    assert(ensureWalkable(game), 'walkable after regional travel');
+  }, ctx);
+
   await test('no JS errors, no repeated recovery toast, long session', async () => {
     newGame(ctx);
     const beforeErr = ctx.errors.length;

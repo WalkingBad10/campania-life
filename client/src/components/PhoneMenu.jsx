@@ -8,7 +8,9 @@ const TABS = [
 
 const SPAWNS = {
   napoli: [62 * 16, 28 * 16], costiera: [3 * 16, 14 * 16],
-  vesuvio: [32 * 16, 45 * 16], pompei: [5 * 16, 30 * 16], capri: [15 * 16, 17 * 16]
+  vesuvio: [32 * 16, 45 * 16], pompei: [5 * 16, 30 * 16], capri: [15 * 16, 17 * 16],
+  bacoli: [5 * 16, 14 * 16], salerno: [4 * 16, 19 * 16],
+  avellino: [3 * 16, 17 * 16], caserta: [30 * 16, 36 * 16]
 };
 
 function Icon({ id }) {
@@ -128,7 +130,7 @@ export default function PhoneMenu({ tab, data, game, onTab, onClose, onToast }) 
     content = <>
       <p className="muted">Muoviti a piedi, in bicicletta o con il battello. I cartelli sulle strade portano da una zona all'altra.</p>
       <div className="grid">
-        {['napoli', 'costiera', 'vesuvio', 'pompei', 'capri'].map(id => {
+        {['napoli', 'costiera', 'vesuvio', 'pompei', 'capri', 'bacoli', 'salerno', 'avellino', 'caserta'].map(id => {
           const z = CL.data.zones[id] || { name: 'Capri', desc: 'Isola nel golfo' };
           return <div className="tile" key={id}><b>{z.name}</b><div className="sub">{z.desc || ''}</div>
             <div className="tile-actions"><button onClick={() => travel(id)}>VIAGGIA</button></div>
