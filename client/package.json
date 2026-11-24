@@ -3,18 +3,21 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "CAMPANIA LIFE — Avventure tra Mare e Montagna. Open world 2D in pixel art.",
+  "description": "CAMPANIA LIFE \u2014 Avventure tra Mare e Montagna. Open world 2D in pixel art.",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "check": "vite build --emptyOutDir"
+    "check": "vite build --emptyOutDir",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "@vitejs/plugin-react": "^4.3.4",
     "vite": "^5.4.11"
   }

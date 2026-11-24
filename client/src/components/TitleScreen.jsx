@@ -13,6 +13,7 @@ export default function TitleScreen({ hasSave, onNew, onContinue, onSettings, on
       <div className="title-card">
         <h1>CAMPANIA <span>LIFE</span></h1>
         <p className="subtitle">AVVENTURE TRA MARE E MONTAGNA</p>
+        <p className="cloud on" style={{marginTop:8, fontSize:12, letterSpacing:'.04em'}}>BETA PUBBLICA · Richiede verifica manuale su MacBook e smartphone</p>
         <div className="title-buttons">
           <button className="primary" onClick={onNew}>NUOVA PARTITA</button>
           <button onClick={onContinue} disabled={!hasSave}>CONTINUA</button>

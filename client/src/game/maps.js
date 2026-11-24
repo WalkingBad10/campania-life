@@ -10,24 +10,44 @@
   const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
 
   function blank(x, y, ch) { return Array.from({ length: y }, () => new Array(x).fill(ch)); }
+  function setTile(g, x, y, ch) { if (g[y] && g[y][x] !== undefined) g[y][x] = ch; }
   function rect(g, x, y, ww, hh, ch) {
-    for (let j = y; j < y + hh; j++) for (let i = x; i < x + ww; i++) if (g[j] && g[j][i] !== undefined) g[j][i] = ch;
+    for (let j = y; j < y + hh; j++) {
+      if (!g[j]) continue;
+      for (let i = x; i < x + ww; i++) if (g[j][i] !== undefined) setTile(g, i, j, ch);
+    }
   }
   function border(g, x, y, ww, hh, ch) {
-    for (let i = x; i < x + ww; i++) { g[y][i] = ch; g[y + hh - 1][i] = ch; }
-    for (let j = y; j < y + hh; j++) { g[j][x] = ch; g[j][x + ww - 1] = ch; }
+    for (let i = x; i < x + ww; i++) {
+      if (g[y] && g[y][i] !== undefined) setTile(g, i, y, ch);
+      const by = y + hh - 1;
+      if (g[by] && g[by][i] !== undefined) setTile(g, i, by, ch);
+    }
+    for (let j = y; j < y + hh; j++) {
+      if (!g[j]) continue;
+      if (g[j][x] !== undefined) setTile(g, x, j, ch);
+      const bx = x + ww - 1;
+      if (g[j][bx] !== undefined) setTile(g, bx, j, ch);
+    }
   }
   function hline(g, x1, x2, y, ch, th) {
-    for (let j = 0; j < (th || 1); j++) for (let i = x1; i <= x2; i++) if (g[y + j]) g[y + j][i] = ch;
+    for (let j = 0; j < (th || 1); j++) {
+      const yy = y + j;
+      if (!g[yy]) continue;
+      for (let i = x1; i <= x2; i++) if (g[yy][i] !== undefined) setTile(g, i, yy, ch);
+    }
   }
   function vline(g, x, y1, y2, ch, th) {
-    for (let j = 0; j < (th || 1); j++) for (let i = y1; i <= y2; i++) if (g[i]) g[i][x + j] = ch;
+    for (let j = 0; j < (th || 1); j++) {
+      const xx = x + j;
+      for (let i = y1; i <= y2; i++) if (g[i] && g[i][xx] !== undefined) setTile(g, xx, i, ch);
+    }
   }
   function scatter(g, ch, n, filter, rng) {
     let tries = 0;
     while (n > 0 && tries++ < 3000) {
       const x = (rng() * g[0].length) | 0, y = (rng() * g.length) | 0;
-      if (filter(g[y][x])) { g[y][x] = ch; n--; }
+      if (filter(g[y][x])) { setTile(g, x, y, ch); n--; }
     }
   }
 
@@ -44,8 +64,8 @@
   function building(m, x, y, ww, hh, to, label, action) {
     rect(m.g, x, y, ww, hh, '='); border(m.g, x, y, ww, hh, '#');
     const dx = x + (ww >> 1), dy = y + hh - 1;
-    m.g[dy][dx] = 'D';
-    portal(m, dx, dy, 1, 1, to, { x: (x + (ww >> 1)) * T, y: (y + hh - 1) * T + 20 }, label);
+    setTile(m.g, dx, dy, 'D');
+    portal(m, dx, dy, 1, 1, to, { __useTargetSpawn: true }, label);
     poi(m, dx, dy, to, 'door', label, action || 'enter', { to });
     return { x: dx, y: dy };
   }
@@ -79,7 +99,7 @@
 
     // CHIESA DEL GESÙ NUOVO (lato ovest/nord, facciata bugnata immediatamente riconoscibile)
     rect(g, 8, 2, 24, 13, '#');
-    for (let y = 3; y < 14; y++) for (let x = 9; x < 31; x++) g[y][x] = 'H';
+    for (let y = 3; y < 14; y++) for (let x = 9; x < 31; x++) setTile(g, x, y, 'H');
     // portale centrale e dettagli
     rect(g, 19, 11, 2, 4, 'Y'); rect(g, 19, 10, 2, 1, '#');
     rect(g, 13, 5, 2, 3, 'I'); rect(g, 25, 5, 2, 3, 'I');
@@ -88,41 +108,41 @@
     // Complesso/palazzi nord-est (massa storica)
     rect(g, 34, 2, 20, 12, '#');
     for (let y = 3; y < 13; y++) for (let x = 35; x < 53; x++) {
-      if (y === 5 || y === 8 || y === 11) g[y][x] = (x % 4 < 2) ? 'L' : '#';
-      else if ((x % 6 === 0) && y > 3) g[y][x] = 'F';
-      else g[y][x] = '#';
+      if (y === 5 || y === 8 || y === 11) setTile(g, x, y, (x % 4 < 2) ? 'L' : '#');
+      else if ((x % 6 === 0) && y > 3) setTile(g, x, y, 'F');
+      else setTile(g, x, y, '#');
     }
     rect(g, 43, 12, 2, 2, 'Y'); rect(g, 34, 13, 20, 1, 'p');
 
     // Palazzi lato sud di Via B. Croce (fronte continuo, accessi commerciali)
     rect(g, 10, 39, 16, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 11; x < 25; x++) { g[y][x] = (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#'; }
+    for (let y = 40; y < 45; y++) for (let x = 11; x < 25; x++) { setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#'); }
     rect(g, 17, 44, 2, 2, 'Y'); // ingresso
     rect(g, 28, 39, 10, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 29; x < 37; x++) { g[y][x] = (y === 41 || y === 43) ? ((x % 3 === 1) ? 'L' : '#') : '#'; }
+    for (let y = 40; y < 45; y++) for (let x = 29; x < 37; x++) { setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 1) ? 'L' : '#') : '#'); }
     rect(g, 31, 44, 2, 2, 'Y'); // banca ingresso
     rect(g, 40, 39, 8, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 41; x < 47; x++) { g[y][x] = (y === 41) ? ((x % 2 === 0) ? 'L' : '#') : '#'; }
+    for (let y = 40; y < 45; y++) for (let x = 41; x < 47; x++) { setTile(g, x, y, (y === 41) ? ((x % 2 === 0) ? 'L' : '#') : '#'); }
     rect(g, 43, 44, 2, 2, 'Y'); // bar ingresso
     rect(g, 50, 39, 8, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 51; x < 57; x++) { g[y][x] = (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#'; }
+    for (let y = 40; y < 45; y++) for (let x = 51; x < 57; x++) { setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#'); }
     rect(g, 53, 44, 2, 2, 'Y');
 
     // Lato est piazza - palazzi e ufficio
     rect(g, 55, 16, 10, 12, '#');
-    for (let y = 17; y < 27; y++) for (let x = 56; x < 64; x++) { g[y][x] = (y === 18 || y === 21 || y === 24) ? ((x % 3 === 0) ? 'L' : '#') : '#'; }
+    for (let y = 17; y < 27; y++) for (let x = 56; x < 64; x++) { setTile(g, x, y, (y === 18 || y === 21 || y === 24) ? ((x % 3 === 0) ? 'L' : '#') : '#'); }
     rect(g, 59, 26, 2, 2, 'Y');
 
     // Edicola/negozio piccolo sul bordo piazza
-    rect(g, 38, 34, 3, 3, 'K'); g[36][39] = 'p';
+    rect(g, 38, 34, 3, 3, 'K'); setTile(g, 39, 36, 'p');
 
     // Arredi urbani: piazza viva e proporzionata
-    [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24], [24, 28], [40, 28]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'U'; });
-    [[22, 23], [46, 23], [22, 33], [46, 33], [30, 23], [38, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') g[y][x] = 'E'; });
+    [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24], [24, 28], [40, 28]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') setTile(g, x, y, 'U'); });
+    [[22, 23], [46, 23], [22, 33], [46, 33], [30, 23], [38, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') setTile(g, x, y, 'E'); });
     // Piccoli mercatini in piazza (decorativi, passaggio libero)
     scatter(g, ',', 30, c => c === 'D', R);
     // Fioriere/confini più leggibili
-    [[13,16],[17,16],[29,16],[41,16],[47,16],[51,16],[13,37],[51,37]].forEach(([x,y])=>{ if(g[y]&&g[y][x]==='D') g[y][x]='P'; });
+    [[13,16],[17,16],[29,16],[41,16],[47,16],[51,16],[13,37],[51,37]].forEach(([x,y])=>{ if (g[y] && g[y][x] === 'D') setTile(g, x, y, 'P'); });
 
     // Overlay architettonici (sprite code-drawn, cacheati)
     decor(m, 9, 3, 'gesu_facade', { h: 12 * T });
@@ -151,18 +171,18 @@
     decor(m, 62, 33, 'ns_palazzo3', { w: 84, h: 168, oy: -152 }); // extracted historic facade
 
     // Portali interni / servizi (ID preservati)
-    portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 8 * T, y: 10 * T }, 'Ingresso Gesù Nuovo');
-    portal(m, 43, 45, 2, 1, 'bar', { x: 9 * T, y: 10 * T }, 'Caffè Vittoria');
-    portal(m, 39, 36, 1, 1, 'negozio', { x: 9 * T, y: 10 * T }, 'Edicola');
-    portal(m, 31, 45, 2, 1, 'banca', { x: 8 * T, y: 10 * T }, 'Banca');
-    portal(m, 17, 45, 2, 1, 'clinica', { x: 9 * T, y: 10 * T }, 'Clinica');
-    portal(m, 59, 27, 2, 1, 'ufficio', { x: 9 * T, y: 10 * T }, 'Ufficio');
-    portal(m, 53, 45, 2, 1, 'casa_giocatore', { x: 9 * T, y: 10 * T }, 'Agenzia', 'realtor');
+    portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 14 * T, y: 18 * T + 8 }, 'Ingresso Gesù Nuovo');
+    portal(m, 43, 45, 2, 1, 'bar', { __useTargetSpawn: true }, 'Caffè Vittoria');
+    portal(m, 39, 36, 1, 1, 'negozio', { __useTargetSpawn: true }, 'Edicola');
+    portal(m, 31, 45, 2, 1, 'banca', { __useTargetSpawn: true }, 'Banca');
+    portal(m, 17, 45, 2, 1, 'clinica', { __useTargetSpawn: true }, 'Clinica');
+    portal(m, 59, 27, 2, 1, 'ufficio', { __useTargetSpawn: true }, 'Ufficio');
+    portal(m, 53, 45, 2, 1, 'casa_giocatore', { __useTargetSpawn: true }, 'Agenzia', 'realtor');
 
     // Collegamenti zona (placeholder sicuri)
     portal(m, 71, 31, 1, 2, 'costiera', { x: 3 * T, y: 14 * T }, 'Verso la Costiera');
     portal(m, 0, 31, 1, 2, 'pompei', { x: 54 * T, y: 30 * T }, 'Verso Toledo');
-    portal(m, 12, 47, 2, 1, 'vesuvio', { x: 32 * T, y: 3 * T }, 'Verso sud');
+    portal(m, 12, 47, 2, 1, 'vesuvio', { x: 32 * T, y: 44 * T }, 'Verso sud');
 
     // POI / landmark
     poi(m, 36 * T, 26 * T, 'guglia', 'landmark', "Guglia dell'Immacolata", 'flavor');
@@ -189,14 +209,14 @@
     hline(g, 0, 71, 22, 'S', 2); hline(g, 0, 71, 25, '~');
     for (let y = 26; y < 40; y++) hline(g, 0, 71, y, 'W');
     // molo
-    rect(g, 20, 23, 4, 11, 'o'); g[33][21] = 'o'; g[33][22] = 'o';
+    rect(g, 20, 23, 4, 11, 'o'); setTile(g, 21, 33, 'o'); setTile(g, 22, 33, 'o');
     poi(m, 21, 31, 'molo', 'service', 'Molo da pesca', 'fish');
     // scogli
-    [[9, 27], [14, 30], [34, 28], [45, 31], [55, 27], [68, 30]].forEach(([x, y]) => { g[y][x] = '^'; });
+    [[9, 27], [14, 30], [34, 28], [45, 31], [55, 27], [68, 30]].forEach(([x, y]) => { setTile(g, x, y, '^'); });
     // limoneti
     for (let i = 0; i < 30; i++) {
       const x = 2 + (R() * 68 | 0), y = 2 + (R() * 10 | 0);
-      if (g[y][x] === '.') g[y][x] = 'T';
+      if (g[y] && g[y][x] === '.') setTile(g, x, y, 'T');
     }
     // edifici
     building(m, 34, 8, 7, 4, 'souvenir', 'Entra al chiosco turistico', 'shop', { shop: 'costiera' });
@@ -220,24 +240,24 @@
     // sentiero
     for (let y = 46; y >= 12; y--) {
       const x = 32 + Math.round(Math.sin(y / 6) * 5);
-      for (let i = -1; i <= 1; i++) if (g[y][x + i] && g[y][x + i] !== '^') g[y][x + i] = ',';
+      for (let i = -1; i <= 1; i++) if (g[y][x + i] && g[y][x + i] !== '^') setTile(g, x + i, y, ',');
     }
     // vetta rocciosa
     for (let y = 0; y < 12; y++) for (let x = 0; x < 64; x++) {
       const d = Math.abs(x - 32) / (2 + y * 2.1);
-      if (d < 1 && R() > .18) g[y][x] = '^';
+      if (d < 1 && R() > .18) setTile(g, x, y, '^');
     }
     // vigneti
-    for (let y = 30; y < 38; y += 2) for (let x = 42; x < 54; x += 2) g[y][x] = 'T';
+    for (let y = 30; y < 38; y += 2) for (let x = 42; x < 54; x += 2) setTile(g, x, y, 'T');
     // alberi e rocce
     scatter(g, 'T', 90, c => c === '.', R);
     scatter(g, '^', 35, c => c === '.', R);
     // grotta
-    g[10][30] = 'G';
+    setTile(g, 30, 10, 'G');
     portal(m, 30, 10, 1, 1, 'grotta', { x: 8 * T, y: 18 * T }, 'Entra nella grotta');
     poi(m, 30, 10, 'grotta', 'cave', 'Grotta del Vesuvio', 'enter', { to: 'grotta' });
     // collegamenti
-    portal(m, 32, 47, 2, 1, 'napoli', { x: 54 * T, y: 2 * T }, 'Scendi a Napoli');
+    portal(m, 32, 47, 2, 1, 'napoli', { x: 36 * T, y: 36 * T }, 'Scendi a Napoli');
     portal(m, 63, 20, 1, 2, 'costiera', { x: 70 * T, y: 15 * T }, 'Vai in Costiera');
     poi(m, 32, 46, 'to_napoli', 'sign', 'Napoli ↓', 'travel', { to: 'napoli' });
     m.spawn = { x: 32 * T, y: 45 * T };
@@ -255,11 +275,11 @@
     }
     hline(g, 8, 48, 30, 'p');
     vline(g, 12, 24, 39, 'p');
-    g[29][12] = 'G';
+    setTile(g, 12, 29, 'G');
     // negozio souvenir
     building(m, 40, 20, 7, 4, 'souvenir', 'Entra nel negozio di souvenir', 'shop', { shop: 'pompei' });
     // collegamenti
-    portal(m, 0, 30, 1, 2, 'napoli', { x: 62 * T, y: 28 * T }, 'Torna a Napoli');
+    portal(m, 0, 30, 1, 2, 'napoli', { x: 60 * T, y: 31 * T }, 'Torna a Napoli');
     poi(m, 1, 30, 'to_napoli', 'sign', '← Napoli', 'travel', { to: 'napoli' });
     m.spawn = { x: 5 * T, y: 30 * T };
     return m;
@@ -274,13 +294,13 @@
     hline(g, 0, 29, 18, 'S', 2); hline(g, 0, 29, 21, '~');
     for (let y = 22; y < 24; y++) hline(g, 0, 29, y, 'W');
     poi(m, 15, 19, 'barca_capri', 'service', 'Battello per Amalfi', 'boat');
-    portal(m, 15, 19, 1, 2, 'costiera', { x: 63 * T, y: 30 * T }, 'Torna ad Amalfi');
+    portal(m, 15, 19, 1, 2, 'costiera', { x: 4 * T, y: 18 * T }, 'Torna ad Amalfi');
     m.spawn = { x: 15 * T, y: 17 * T };
     return m;
   }
 
   /* ---------------------------------------------------------- INTERNI */
-  function place(g, x, y, ch) { if (g[y] && g[y][x] !== undefined) g[y][x] = ch; }
+  function place(g, x, y, ch) { setTile(g, x, y, ch); }
   function fillRect(g, x, y, ww, hh, ch) { rect(g, x, y, ww, hh, ch); }
 
   function churchGesu() {
@@ -289,39 +309,39 @@
     m.name = 'Chiesa del Gesù Nuovo';
     const g = m.g;
     // muri perimetrali
-    for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
-    for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
+    for (let x = 0; x < w; x++) { setTile(g, x, 0, '#'); setTile(g, x, h - 1, '#'); }
+    for (let y = 0; y < h; y++) { setTile(g, 0, y, '#'); setTile(g, w - 1, y, '#'); }
     // parete interna/abside
-    for (let x = 1; x < w - 1; x++) g[1][x] = 'j';
-    for (let x = 2; x < w - 2; x++) g[2][x] = 'j';
+    for (let x = 1; x < w - 1; x++) setTile(g, x, 1, 'j');
+    for (let x = 2; x < w - 2; x++) setTile(g, x, 2, 'j');
     // colonne navata
-    for (const yy of [6, 10, 14]) { g[yy][5] = 'l'; g[yy][9] = 'l'; g[yy][18] = 'l'; g[yy][22] = 'l'; }
+    for (const yy of [6, 10, 14]) { setTile(g, 5, yy, 'l'); setTile(g, 9, yy, 'l'); setTile(g, 18, yy, 'l'); setTile(g, 22, yy, 'l'); }
     // cappelle laterali (muri)
-    for (let y = 4; y < 18; y++) { g[y][3] = (y % 4 === 0) ? 'A' : 'j'; g[y][w - 4] = (y % 4 === 0) ? 'A' : 'j'; }
-    for (const yy of [5, 9, 13]) { g[yy][1] = '6'; g[yy][2] = '5'; g[yy][w - 2] = '6'; g[yy][w - 3] = '5'; }
+    for (let y = 4; y < 18; y++) { setTile(g, 3, y, (y % 4 === 0) ? 'A' : 'j'); setTile(g, w - 4, y, (y % 4 === 0) ? 'A' : 'j'); }
+    for (const yy of [5, 9, 13]) { setTile(g, 1, yy, '6'); setTile(g, 2, yy, '5'); setTile(g, w - 2, yy, '6'); setTile(g, w - 3, yy, '5'); }
     // navata centrale tappeto rosso (corridoio centrale continuo fino all'altare)
-    for (let y = 4; y <= 20; y++) { g[y][13] = 'R'; g[y][14] = 'R'; }
+    for (let y = 4; y <= 20; y++) { setTile(g, 13, y, 'R'); setTile(g, 14, y, 'R'); }
     // tappeto ingresso/porta: zona libera garantita (ampia, davanti alla porta)
-    for (let y = 18; y <= 20; y++) for (let x = 12; x <= 15; x++) g[y][x] = 'R';
+    for (let y = 18; y <= 20; y++) for (let x = 12; x <= 15; x++) setTile(g, x, y, 'R');
     // panche (mai sul corridoio centrale 13-14)
     for (const yy of [7, 9, 11, 13, 15]) {
-      for (let x = 6; x <= 8; x++) g[yy][x] = 'n';
-      for (let x = 19; x <= 21; x++) g[yy][x] = 'n';
-      g[yy][11] = 'n'; g[yy][12] = 'n'; g[yy][15] = 'n'; g[yy][16] = 'n';
+      for (let x = 6; x <= 8; x++) setTile(g, x, yy, 'n');
+      for (let x = 19; x <= 21; x++) setTile(g, x, yy, 'n');
+      setTile(g, 11, yy, 'n'); setTile(g, 12, yy, 'n'); setTile(g, 15, yy, 'n'); setTile(g, 16, yy, 'n');
     }
     // altare maggiore
-    for (let x = 11; x <= 16; x++) g[3][x] = 'q';
-    g[4][12] = '5'; g[4][15] = '5'; g[3][13] = '6'; g[3][14] = '6';
+    for (let x = 11; x <= 16; x++) setTile(g, x, 3, 'q');
+    setTile(g, 12, 4, '5'); setTile(g, 15, 4, '5'); setTile(g, 13, 3, '6'); setTile(g, 14, 3, '6');
     // pavimento decorato presbiterio
-    for (let y = 3; y <= 5; y++) for (let x = 10; x <= 17; x++) if (g[y][x] === 'A') g[y][x] = 'M';
+    for (let y = 3; y <= 5; y++) for (let x = 10; x <= 17; x++) if (g[y] && g[y][x] === 'A') setTile(g, x, y, 'M');
     // ingressi laterali visivi / confessionali
-    g[17][1] = '8'; g[17][w - 2] = '8';
+    setTile(g, 1, 17, '8'); setTile(g, w - 2, 17, '8');
     // candele e piante (fuori dal corridoio centrale ingresso)
-    g[18][4] = '5'; g[18][23] = '5'; g[16][6] = '9'; g[16][21] = '9';
+    setTile(g, 4, 18, '5'); setTile(g, 23, 18, '5'); setTile(g, 6, 16, '9'); setTile(g, 21, 16, '9');
     // porta uscita sulla parete sud, tappeto davanti
     const dx = 14, dy = h - 1;
-    g[dy][dx] = 'D'; g[dy][13] = '#'; g[dy][15] = '#';
-    for (let y = 18; y <= 20; y++) for (let x = 12; x <= 15; x++) g[y][x] = 'R';
+    setTile(g, dx, dy, 'D'); setTile(g, 13, dy, '#'); setTile(g, 15, dy, '#');
+    for (let y = 18; y <= 20; y++) for (let x = 12; x <= 15; x++) setTile(g, x, y, 'R');
     // Portale uscita sul tappeto, in fondo vicino alla porta (riga 20), NON sulla riga spawn.
     portal(m, 13, 20, 2, 1, 'prev', { x: 20 * T, y: 16 * T }, 'Esci in piazza');
     poi(m, dx, 20, 'exit', 'door', 'Esci dalla chiesa', 'exit');
@@ -346,6 +366,7 @@
     // Tappeto centrale: colonne 13-14 (R). Riga 18 = 2 celle sopra portale uscita riga 20, libera.
     m.spawn = { x: 14 * T, y: 18 * T + 8 }; // centro tappeto rosso (tra tile 13-14), riga 18
     m.spawnDir = 'up';
+    m.exitSpawn = { map:'napoli', x: 20 * T, y: 16 * T };
     return m;
   }
 
@@ -354,19 +375,19 @@
     const m = makeMap('bar', 'interno', w, h, blank(w, h, 'h'));
     m.name = 'Caffè Vittoria';
     const g = m.g;
-    for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
-    for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
-    for (let x = 1; x < w - 1; x++) { g[1][x] = 'j'; g[2][x] = 'j'; }
-    for (let y = 7; y <= 12; y++) for (let x = 2; x <= 17; x++) g[y][x] = 'Z';
-    for (let x = 2; x <= 10; x++) g[4][x] = 'u';
-    g[3][3] = '0'; g[3][5] = '3'; g[3][7] = 'y'; g[3][9] = '0';
-    g[5][4] = 'w'; g[5][8] = 'w';
-    g[2][2] = 's'; g[2][4] = 's'; g[2][6] = 's'; g[2][8] = 's'; g[2][10] = 's';
+    for (let x = 0; x < w; x++) { setTile(g, x, 0, '#'); setTile(g, x, h - 1, '#'); }
+    for (let y = 0; y < h; y++) { setTile(g, 0, y, '#'); setTile(g, w - 1, y, '#'); }
+    for (let x = 1; x < w - 1; x++) { setTile(g, x, 1, 'j'); setTile(g, x, 2, 'j'); }
+    for (let y = 7; y <= 12; y++) for (let x = 2; x <= 17; x++) setTile(g, x, y, 'Z');
+    for (let x = 2; x <= 10; x++) setTile(g, x, 4, 'u');
+    setTile(g, 3, 3, '0'); setTile(g, 5, 3, '3'); setTile(g, 7, 3, 'y'); setTile(g, 9, 3, '0');
+    setTile(g, 4, 5, 'w'); setTile(g, 8, 5, 'w');
+    setTile(g, 2, 2, 's'); setTile(g, 4, 2, 's'); setTile(g, 6, 2, 's'); setTile(g, 8, 2, 's'); setTile(g, 10, 2, 's');
     const tables = [[4,8],[8,8],[13,8],[15,5],[4,11],[9,11],[14,11]];
-    tables.forEach(([tx,ty]) => { g[ty][tx] = 'v'; if (g[ty-1]) g[ty-1][tx] = 'w'; if (g[ty+1]) g[ty+1][tx] = 'w'; if (g[ty][tx-1]) g[ty][tx-1] = 'w'; if (g[ty][tx+1]) g[ty][tx+1] = 'w'; });
-    g[1][14] = '7'; g[1][16] = '7'; g[2][17] = '9'; g[11][17] = '9'; g[11][2] = '9';
+    tables.forEach(([tx,ty]) => { setTile(g, tx, ty, 'v'); if (g[ty-1]) setTile(g, tx, ty-1, 'w'); if (g[ty+1]) setTile(g, tx, ty+1, 'w'); if (g[ty][tx-1]) setTile(g, tx-1, ty, 'w'); if (g[ty][tx+1]) setTile(g, tx+1, ty, 'w'); });
+    setTile(g, 14, 1, '7'); setTile(g, 16, 1, '7'); setTile(g, 17, 2, '9'); setTile(g, 17, 11, '9'); setTile(g, 2, 11, '9');
     const dx = 10, dy = h - 1;
-    g[dy][dx] = 'D';
+    setTile(g, dx, dy, 'D');
     portal(m, dx, dy, 1, 1, 'prev', { x: 44 * T, y: 46 * T }, 'Esci');
     poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
     poi(m, 6, 5, 'bar_counter', 'service', 'Bancone — ordina', 'shop', { shop: 'bar' });
@@ -380,8 +401,10 @@
     decor(m, 15, 6, 'warm_light', { r: 24, color: 'rgba(255,190,120,.14)' });
     decor(m, 10, 10, 'warm_light', { r: 24, color: 'rgba(255,190,120,.12)' });
     decor(m, 6, 3, 'window_light', { w: 12, h: 8, color: 'rgba(255,220,160,.10)' });
+    for(let yy=h-5;yy<=h-2;yy++) for(let xx=dx-1;xx<=dx+1;xx++) setTile(g, xx, yy, 'Z');
     m.spawn = { x: dx * T, y: (h - 3) * T };
     m.spawnDir = 'up';
+    m.exitSpawn = { map:'napoli', x: 44 * T, y: 46 * T };
     return m;
   }
 
@@ -390,23 +413,23 @@
     const m = makeMap('pizzeria', 'interno', w, h, blank(w, h, 'h'));
     m.name = 'Pizzeria Da Michele';
     const g = m.g;
-    for (let x=0;x<w;x++){ g[0][x]='#'; g[h-1][x]='#'; }
-    for (let y=0;y<h;y++){ g[y][0]='#'; g[y][w-1]='#'; }
-    for (let x=1;x<w-1;x++){ g[1][x]='j'; g[2][x]='j'; }
+    for (let x=0;x<w;x++){ setTile(g, x, 0, '#'); setTile(g, x, h-1, '#'); }
+    for (let y=0;y<h;y++){ setTile(g, 0, y, '#'); setTile(g, w-1, y, '#'); }
+    for (let x=1;x<w-1;x++){ setTile(g, x, 1, 'j'); setTile(g, x, 2, 'j'); }
     // sala clienti
-    for (let y=8;y<=13;y++) for (let x=2;x<=20;x++) g[y][x]='Z';
+    for (let y=8;y<=13;y++) for (let x=2;x<=20;x++) setTile(g, x, y, 'Z');
     // cucina separata
-    for (let y=3;y<=6;y++) for (let x=2;x<=9;x++) g[y][x]='h';
-    for (let y=3;y<=6;y++) g[y][10]='#'; // parete divisoria
-    g[6][10]='M'; // passaggio cucina
+    for (let y=3;y<=6;y++) for (let x=2;x<=9;x++) setTile(g, x, y, 'h');
+    for (let y=3;y<=6;y++) setTile(g, 10, y, '#'); // parete divisoria
+    setTile(g, 10, 6, 'M'); // passaggio cucina
     // forno / bancone cucina
-    for (let x=2;x<=8;x++) g[4][x]='u';
-    g[3][3]='0'; g[3][5]='y'; g[3][7]='0';
+    for (let x=2;x<=8;x++) setTile(g, x, 4, 'u');
+    setTile(g, 3, 3, '0'); setTile(g, 5, 3, 'y'); setTile(g, 7, 3, '0');
     // tavoli sala
-    [[4,10],[8,10],[13,10],[17,10],[6,12],[12,12],[17,12]].forEach(([tx,ty])=>{ g[ty][tx]='v'; if(g[ty-1]) g[ty-1][tx]='w'; if(g[ty+1]) g[ty+1][tx]='w'; if(g[ty][tx-1]) g[ty][tx-1]='w'; if(g[ty][tx+1]) g[ty][tx+1]='w'; });
-    g[1][16]='7'; g[1][18]='7'; g[2][20]='9';
-    const dx=11, dy=h-1; g[dy][dx]='D';
-    portal(m, dx, dy, 1, 1, 'prev', { x: 38 * T, y: 50 * T }, 'Esci');
+    [[4,10],[8,10],[13,10],[17,10],[6,12],[12,12],[17,12]].forEach(([tx,ty])=>{ setTile(g, tx, ty, 'v'); if(g[ty-1]) setTile(g, tx, ty-1, 'w'); if(g[ty+1]) setTile(g, tx, ty+1, 'w'); if(g[ty][tx-1]) setTile(g, tx-1, ty, 'w'); if(g[ty][tx+1]) setTile(g, tx+1, ty, 'w'); });
+    setTile(g, 16, 1, '7'); setTile(g, 18, 1, '7'); setTile(g, 20, 2, '9');
+    const dx=11, dy=h-1; setTile(g, dx, dy, 'D');
+    portal(m, dx, dy, 1, 1, 'prev', { x: 38 * T, y: 47 * T }, 'Esci');
     poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
     poi(m, 5, 5, 'pizza_counter', 'service', 'Bancone pizzeria — ordina', 'order_pizza');
     poi(m, 7, 5, 'pizza_shop', 'service', 'Menu pizzeria', 'shop', { shop: 'pizzeria' });
@@ -417,7 +440,9 @@
     decor(m, 13, 10, 'pizzeria_table', { w: 60, h: 34, oy: -18 }); decor(m, 17, 10, 'pizzeria_table', { w: 60, h: 34, oy: -18 });
     decor(m, 4, 3, 'warm_light', { r: 32, color:'rgba(255,180,110,.16)' });
     decor(m, 15, 9, 'warm_light', { r: 28, color:'rgba(255,180,110,.12)' });
+    for(let yy=h-5;yy<=h-2;yy++) for(let xx=dx-1;xx<=dx+1;xx++) setTile(g, xx, yy, 'Z');
     m.spawn = { x: dx*T, y:(h-3)*T }; m.spawnDir='up';
+    m.exitSpawn = { map:'napoli', x: 38 * T, y: 47 * T };
     return m;
   }
 
@@ -426,20 +451,20 @@
     const m=makeMap('metro','interno',w,h,blank(w,h,'M'));
     m.name='Metro Toledo - Atrio';
     const g=m.g;
-    for(let x=0;x<w;x++){g[0][x]='#'; g[h-1][x]='#';}
-    for(let y=0;y<h;y++){g[y][0]='#'; g[y][w-1]='#';}
-    for(let x=1;x<w-1;x++){g[1][x]='j'; g[2][x]='j';}
-    for(let y=3;y<=13;y++) for(let x=1;x<=22;x++) g[y][x]='M';
+    for(let x=0;x<w;x++){setTile(g, x, 0, '#'); setTile(g, x, h-1, '#');}
+    for(let y=0;y<h;y++){setTile(g, 0, y, '#'); setTile(g, w-1, y, '#');}
+    for(let x=1;x<w-1;x++){setTile(g, x, 1, 'j'); setTile(g, x, 2, 'j');}
+    for(let y=3;y<=13;y++) for(let x=1;x<=22;x++) setTile(g, x, y, 'M');
     // biglietteria / tornelli / corridoio / banchina
-    for(let x=3;x<=7;x++) g[4][x]='u';
-    g[5][4]='w'; g[5][6]='w';
-    for(let x=6;x<=17;x++) g[7][x]=(x===9||x===12||x===15)?'M':'u'; // tornelli
-    for(let y=8;y<=11;y++){ g[y][11]='M'; g[y][12]='M'; }
-    for(let x=2;x<=21;x++) g[13][x]='h'; // banchina
-    for(let x=2;x<=21;x++) g[12][x]='M';
-    g[1][6]='7'; g[1][17]='7';
-    const dx=12, dy=h-1; g[dy][dx]='D';
-    portal(m,dx,dy,1,1,'prev',{x:56*T,y:22*T},'Esci');
+    for(let x=3;x<=7;x++) setTile(g, x, 4, 'u');
+    setTile(g, 4, 5, 'w'); setTile(g, 6, 5, 'w');
+    for(let x=6;x<=17;x++) setTile(g, x, 7, (x===9||x===12||x===15)?'M':'u'); // tornelli
+    for(let y=8;y<=11;y++){ setTile(g, 11, y, 'M'); setTile(g, 12, y, 'M'); }
+    for(let x=2;x<=21;x++) setTile(g, x, 13, 'h'); // banchina
+    for(let x=2;x<=21;x++) setTile(g, x, 12, 'M');
+    setTile(g, 6, 1, '7'); setTile(g, 17, 1, '7');
+    const dx=12, dy=h-1; setTile(g, dx, dy, 'D');
+    portal(m,dx,dy,1,1,'prev',{x:56*T,y:29*T},'Esci');
     poi(m,dx,dy,'exit','door','Esci dalla metro','exit');
     poi(m,5,5,'metro_ticket','service','Biglietteria — compra biglietto','metro_ticket');
     poi(m,12,8,'metro_gate','service','Tornelli — viaggia','metro_travel',{to:'metro2'});
@@ -449,6 +474,7 @@
     decor(m,2,13,'metro_platform',{w:320,h:44,oy:-28});
     decor(m,12,4,'window_light',{w:14,h:10,color:'rgba(180,220,255,.12)'});
     m.spawn={x:dx*T,y:(h-3)*T}; m.spawnDir='up';
+    m.exitSpawn = { map:'napoli', x: 56 * T, y: 29 * T };
     return m;
   }
 
@@ -457,16 +483,16 @@
     const m=makeMap('metro2','interno',w,h,blank(w,h,'M'));
     m.name='Metro Dante - Banchina';
     const g=m.g;
-    for(let x=0;x<w;x++){g[0][x]='#'; g[h-1][x]='#';}
-    for(let y=0;y<h;y++){g[y][0]='#'; g[y][w-1]='#';}
-    for(let x=1;x<w-1;x++){g[1][x]='j'; g[2][x]='j';}
-    for(let y=3;y<=13;y++) for(let x=1;x<=22;x++) g[y][x]='M';
-    for(let x=3;x<=7;x++) g[4][x]='u';
-    for(let x=6;x<=17;x++) g[7][x]=(x===9||x===12||x===15)?'M':'u';
-    for(let y=8;y<=11;y++){ g[y][11]='M'; g[y][12]='M'; }
-    for(let x=2;x<=21;x++) g[13][x]='h';
-    for(let x=2;x<=21;x++) g[12][x]='M';
-    const dx=12, dy=h-1; g[dy][dx]='D';
+    for(let x=0;x<w;x++){setTile(g, x, 0, '#'); setTile(g, x, h-1, '#');}
+    for(let y=0;y<h;y++){setTile(g, 0, y, '#'); setTile(g, w-1, y, '#');}
+    for(let x=1;x<w-1;x++){setTile(g, x, 1, 'j'); setTile(g, x, 2, 'j');}
+    for(let y=3;y<=13;y++) for(let x=1;x<=22;x++) setTile(g, x, y, 'M');
+    for(let x=3;x<=7;x++) setTile(g, x, 4, 'u');
+    for(let x=6;x<=17;x++) setTile(g, x, 7, (x===9||x===12||x===15)?'M':'u');
+    for(let y=8;y<=11;y++){ setTile(g, 11, y, 'M'); setTile(g, 12, y, 'M'); }
+    for(let x=2;x<=21;x++) setTile(g, x, 13, 'h');
+    for(let x=2;x<=21;x++) setTile(g, x, 12, 'M');
+    const dx=12, dy=h-1; setTile(g, dx, dy, 'D');
     portal(m,dx,dy,1,1,'napoli',{x:40*T,y:30*T},'Esci in superficie');
     poi(m,dx,dy,'exit','door','Esci dalla metro','exit');
     poi(m,5,5,'metro_ticket2','service','Biglietteria','metro_ticket');
@@ -476,6 +502,7 @@
     decor(m,5,8,'metro_gate',{w:150,h:48,oy:-32});
     decor(m,2,13,'metro_platform',{w:320,h:44,oy:-28});
     m.spawn={x:dx*T,y:(h-3)*T}; m.spawnDir='up';
+    m.exitSpawn = { map:'napoli', x: 40 * T, y: 30 * T };
     return m;
   }
 
@@ -486,22 +513,22 @@
     if (id === 'metro') return metroInterior();
     const m = makeMap(id, 'interno', w, h, blank(w, h, kind === 'cave' ? 'k' : 'h'));
     const g = m.g;
-    for (let x = 0; x < w; x++) { g[0][x] = '#'; g[h - 1][x] = '#'; }
-    for (let y = 0; y < h; y++) { g[y][0] = '#'; g[y][w - 1] = '#'; }
-    for (let x = 1; x < w - 1; x++) { g[1][x] = 'j'; g[2][x] = kind === 'cave' ? 'k' : 'j'; }
+    for (let x = 0; x < w; x++) { setTile(g, x, 0, '#'); setTile(g, x, h - 1, '#'); }
+    for (let y = 0; y < h; y++) { setTile(g, 0, y, '#'); setTile(g, w - 1, y, '#'); }
+    for (let x = 1; x < w - 1; x++) { setTile(g, x, 1, 'j'); setTile(g, x, 2, kind === 'cave' ? 'k' : 'j'); }
     const dx = w >> 1, dy = h - 1;
-    g[dy][dx] = 'D';
+    setTile(g, dx, dy, 'D');
     portal(m, dx, dy, 1, 1, 'prev', { x: dx * T, y: (h - 2) * T }, 'Esci');
     poi(m, dx, dy, 'exit', 'door', 'Esci', 'exit');
     if (decorate) decorate(m, g);
     switch (kind) {
       case 'home':
-        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'h');
         rect(g, 2, 3, 4, 2, 'x'); rect(g, 2, 6, 2, 2, '4');
         rect(g, w - 5, 3, 3, 2, 'y'); rect(g, w - 4, 6, 2, 1, 'z');
-        rect(g, 3, h - 5, 3, 2, 'v'); g[h - 6][4] = 'w'; g[h - 3][4] = 'w';
-        rect(g, w - 6, h - 5, 3, 1, '1'); g[h - 6][w - 5] = '2'; g[h - 4][w - 5] = 'w';
-        g[1][3] = '7'; g[1][w - 4] = '7'; g[3][w - 2] = '9';
+        rect(g, 3, h - 5, 3, 2, 'v'); setTile(g, 4, h - 6, 'w'); setTile(g, 4, h - 3, 'w');
+        rect(g, w - 6, h - 5, 3, 1, '1'); setTile(g, w - 5, h - 6, '2'); setTile(g, w - 5, h - 4, 'w');
+        setTile(g, 3, 1, '7'); setTile(g, w - 4, 1, '7'); setTile(g, w - 2, 3, '9');
         poi(m, 3, 4, 'bed', 'furniture', 'Letto — dormi', 'sleep');
         poi(m, w - 4, 4, 'stove', 'furniture', 'Cucina — prepara qualcosa', 'cook');
         poi(m, w - 5, h - 5, 'pc', 'furniture', 'Computer — cerca lavoro', 'jobs');
@@ -510,34 +537,34 @@
         decor(m, w - 4, 4, 'warm_light', { r: 22, color: 'rgba(255,210,150,.12)' });
         break;
       case 'shop':
-        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
-        for (let x = 2; x < w - 2; x += 3) { g[3][x] = 's'; g[6][x] = 's'; }
-        rect(g, 2, h - 5, w - 4, 1, 'u'); g[h - 6][dx] = '3';
-        g[1][3] = '7'; g[1][w - 4] = '7';
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'h');
+        for (let x = 2; x < w - 2; x += 3) { setTile(g, x, 3, 's'); setTile(g, x, 6, 's'); }
+        rect(g, 2, h - 5, w - 4, 1, 'u'); setTile(g, dx, h - 6, '3');
+        setTile(g, 3, 1, '7'); setTile(g, w - 4, 1, '7');
         poi(m, dx, h - 5, 'counter', 'service', 'Bancone — acquista', 'shop', { shop: id === 'souvenir' ? 'pompei' : id });
         decor(m, dx, 5, 'warm_light', { r: 30, color: 'rgba(255,210,150,.12)' });
         break;
       case 'office':
-        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
-        rect(g, 3, 4, 4, 1, '1'); g[3][4] = '2'; g[5][4] = 'w';
-        rect(g, w - 8, 4, 4, 1, '1'); g[3][w - 7] = '2'; g[5][w - 7] = 'w';
-        rect(g, 3, 8, 4, 1, '1'); g[7][4] = '2'; g[9][4] = 'w';
-        g[3][w - 3] = '4'; g[7][w - 3] = '4'; g[1][4] = '7'; g[1][w - 5] = '7';
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'h');
+        rect(g, 3, 4, 4, 1, '1'); setTile(g, 4, 3, '2'); setTile(g, 4, 5, 'w');
+        rect(g, w - 8, 4, 4, 1, '1'); setTile(g, w - 7, 3, '2'); setTile(g, w - 7, 5, 'w');
+        rect(g, 3, 8, 4, 1, '1'); setTile(g, 4, 7, '2'); setTile(g, 4, 9, 'w');
+        setTile(g, w - 3, 3, '4'); setTile(g, w - 3, 7, '4'); setTile(g, 4, 1, '7'); setTile(g, w - 5, 1, '7');
         poi(m, 5, 5, 'desk', 'service', 'Sportello — lavori', 'jobs');
         decor(m, 8, 5, 'warm_light', { r: 34, color: 'rgba(255,220,170,.10)' });
         break;
       case 'bank':
-        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'M';
-        rect(g, 2, h - 5, w - 4, 1, 'u'); g[h - 6][dx] = '3';
-        g[4][3] = '1'; g[3][3] = '2'; g[4][w - 4] = '1'; g[3][w - 4] = '2';
-        g[1][4] = '7'; g[1][w - 5] = '7';
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'M');
+        rect(g, 2, h - 5, w - 4, 1, 'u'); setTile(g, dx, h - 6, '3');
+        setTile(g, 3, 4, '1'); setTile(g, 3, 3, '2'); setTile(g, w - 4, 4, '1'); setTile(g, w - 4, 3, '2');
+        setTile(g, 4, 1, '7'); setTile(g, w - 5, 1, '7');
         poi(m, dx, h - 5, 'bank_counter', 'service', 'Sportello bancario', 'bank', { mode: 'menu' });
         decor(m, dx, 5, 'warm_light', { r: 30, color: 'rgba(255,225,180,.10)' });
         break;
       case 'clinic':
-        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) g[y][x] = 'h';
+        for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'h');
         rect(g, 2, 3, 4, 2, 'x'); rect(g, w - 6, 3, 4, 2, 'x'); rect(g, 2, h - 5, w - 4, 1, 'u');
-        g[6][3] = '4'; g[6][w - 4] = '4'; g[1][5] = '7'; g[1][w - 6] = '7';
+        setTile(g, 3, 6, '4'); setTile(g, w - 4, 6, '4'); setTile(g, 5, 1, '7'); setTile(g, w - 6, 1, '7');
         poi(m, 4, 5, 'clinic_bed', 'service', 'Visita medica', 'heal');
         decor(m, 8, 5, 'warm_light', { r: 34, color: 'rgba(235,245,255,.10)' });
         break;
@@ -547,7 +574,15 @@
         poi(m, 4, 6, 'lava', 'scenery', 'Roccia incandescente', 'flavor');
         break;
     }
+    for(let yy=h-4;yy<=h-2;yy++) for(let xx=dx-1;xx<=dx+1;xx++) setTile(g, xx, yy, kind==='cave'?'k':'h');
     m.spawn = { x: dx * T, y: (h - 3) * T };
+    const exitSpawns = {
+      negozio:{map:'napoli',x:39*T,y:38*T}, banca:{map:'napoli',x:31*T,y:47*T}, clinica:{map:'napoli',x:17*T,y:47*T},
+      ufficio:{map:'napoli',x:59*T,y:29*T}, casa_giocatore:{map:'napoli',x:53*T,y:47*T},
+      appartamento:{map:'napoli',x:53*T,y:47*T}, casa_amalfi:{map:'costiera',x:9*T,y:14*T},
+      bottega:{map:'napoli',x:39*T,y:38*T}, souvenir:null, grotta:{map:'vesuvio',x:30*T,y:12*T}
+    };
+    if (exitSpawns[id]) m.exitSpawn = exitSpawns[id];
     return m;
   }
 
@@ -565,8 +600,8 @@
         case 'capri': m = capri(); break;
         case 'casa_nonna': m = interior(id, 'home', 16, 12); break;
         case 'casa_giocatore': m = interior(id, 'home', 16, 12); break;
-        case 'appartamento': m = interior(id, 'home', 20, 14, mm => { mm.g[3][10] = 'V'; mm.g[4][15] = 'P'; mm.g[4][4] = 'P'; }); break;
-        case 'casa_amalfi': m = interior(id, 'home', 18, 13, mm => { mm.g[3][3] = 'P'; mm.g[3][14] = 'P'; }); break;
+        case 'appartamento': m = interior(id, 'home', 20, 14, mm => { setTile(mm.g, 10, 3, 'V'); setTile(mm.g, 15, 4, 'P'); setTile(mm.g, 4, 4, 'P'); }); break;
+        case 'casa_amalfi': m = interior(id, 'home', 18, 13, mm => { setTile(mm.g, 3, 3, 'P'); setTile(mm.g, 14, 3, 'P'); }); break;
         case 'bottega': m = interior(id, 'shop', 18, 12); break;
         case 'souvenir': m = interior(id, 'shop', 16, 11); break;
         case 'bar': m = barInterior(); break;

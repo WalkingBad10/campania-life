@@ -255,11 +255,23 @@
         const targetMap = MAPS.get(target.map) || MAPS.get('napoli');
         const isInterior = targetMap.zone === 'interno';
         const ownedInteriors = ['casa_giocatore', 'appartamento', 'casa_amalfi', 'bottega'];
-        if (ownedInteriors.indexOf(target.map) >= 0 && !S.property.owns(target.map)) {
-          CL.ui.toast('Questo immobile non è ancora tuo.', 'bad'); CL.audio.sfx('fail'); return;
+        if (ownedInteriors.indexOf(target.map) >= 0) {
+          const propId = Object.keys(D.properties || {}).find(k => (D.properties[k].interior || k) === target.map) || target.map;
+          if (!S.property.owns(propId) && !S.property.owns(target.map)) {
+            CL.ui.toast('Questo immobile non è ancora tuo.', 'bad'); CL.audio.sfx('fail'); return;
+          }
         }
         if (!silent && isInterior && (!this.map || MAPS.get(this.map.id).zone !== 'interno')) {
-          this.state.pos.prev = { map: this.map ? this.map.id : 'napoli', x: prev.x, y: prev.y };
+          let px = prev.x, py = prev.y;
+          const pm = this.map;
+          if (pm) {
+            const ok = (ax,ay)=>!MAPS.solidAt(pm,ax-5,ay-4)&&!MAPS.solidAt(pm,ax+5,ay-4)&&!MAPS.solidAt(pm,ax-5,ay+4)&&!MAPS.solidAt(pm,ax+5,ay+4);
+            if (!ok(px,py)) {
+              const pts=[[0,0],[0,8],[0,-8],[8,0],[-8,0],[0,16],[0,-16],[16,0],[-16,0]];
+              outer: for(let r=1;r<=12;r++) for(const [dx,dy] of pts){ const nx=px+dx*r,ny=py+dy*r; if(ok(nx,ny)){px=nx;py=ny;break outer;} }
+            }
+          }
+          this.state.pos.prev = { map: this.map ? this.map.id : 'napoli', x: px, y: py };
         }
         try { CL.ui.closeAll && CL.ui.closeAll(); } catch (e) {}
         this.particles.clear();
@@ -323,25 +335,45 @@
         CL.ui.refresh();
       } catch (err) {
         console.error('[CL] enterMap failed', id, err);
-        CL.ui.toast('Cambio zona recuperato. Riprova.', 'bad');
-        if (!this.map) {
-          this.map = MAPS.get('napoli');
-          const s = this.map.spawn;
-          if (!this.player) this.player = new CL.Player(this, s.x, s.y);
+        const now = performance.now ? performance.now() : Date.now();
+        const sameErr = this._lastEnterErr && this._lastEnterErr.id === id && (now - this._lastEnterErr.at) < 2500;
+        this._lastEnterErr = { id, at: now };
+        if (!sameErr) CL.ui.toast('Cambio zona recuperato. Riprova.', 'bad');
+        // Recover to a safe playable state without hiding the root cause in logs.
+        try {
+          if (!this.map) this.map = MAPS.get(this.state.pos.map || 'napoli');
+          if (!this.player) this.player = new CL.Player(this, this.map.spawn.x, this.map.spawn.y);
+          if (this.entities.indexOf(this.player) < 0) this.entities = [this.player, ...this.entities.filter(e => e !== this.player)];
+          this.unstuckPlayer(true);
+          this.portalGrace = Math.max(this.portalGrace || 0, .6);
+        } catch (recoverErr) {
+          console.error('[CL] enterMap recovery failed', recoverErr);
+          const fallback = MAPS.get('napoli');
+          this.map = fallback;
+          const s = fallback.spawn;
+          this.player = new CL.Player(this, s.x, s.y);
           this.entities = [this.player];
+          this.state.pos.map = 'napoli'; this.state.pos.x = s.x; this.state.pos.y = s.y;
+          this.portalGrace = .6;
         }
       }
+    }
+
+    safePoint(map, x, y, wid=10, hei=8, maxR=14) {
+      const ok = (px,py)=>!MAPS.solidAt(map,px-wid/2,py-hei/2)&&!MAPS.solidAt(map,px+wid/2,py-hei/2)&&!MAPS.solidAt(map,px-wid/2,py+hei/2)&&!MAPS.solidAt(map,px+wid/2,py+hei/2);
+      if (ok(x,y)) return { x, y };
+      const dirs=[[0,0],[0,8],[0,-8],[8,0],[-8,0],[8,8],[-8,8],[8,-8],[-8,-8],[0,16],[0,-16],[16,0],[-16,0]];
+      for(let r=1;r<=maxR;r++) for(const [dx,dy] of dirs){ const nx=x+dx*r, ny=y+dy*r; if(ok(nx,ny)) return {x:nx,y:ny}; }
+      if (ok(map.spawn.x,map.spawn.y)) return {x:map.spawn.x,y:map.spawn.y};
+      return {x:map.spawn.x,y:map.spawn.y};
     }
 
     unstuckPlayer(silent) {
       const p = this.player; if (!p || !this.map) return false;
       if (this.canMove(p.x, p.y, p.w, p.h)) return false;
-      const dirs = [[0,0],[0,-8],[0,8],[-8,0],[8,0],[-16,0],[16,0],[0,-16],[0,16],[-8,-8],[8,-8],[-8,8],[8,8]];
-      for (let r=1;r<=6;r++) for (const [dx,dy] of dirs) {
-        const nx=p.x+dx*r, ny=p.y+dy*r;
-        if (this.canMove(nx, ny, p.w, p.h)) { p.x=nx; p.y=ny; if(!silent) CL.ui.toast('Posizione corretta automaticamente.', 'info'); this.dbg.blocked='unstuck'; return true; }
-      }
-      const s = this.map.spawn; p.x=s.x; p.y=s.y; this.dbg.blocked='spawn-reset'; return true;
+      const s = this.safePoint(this.map, p.x, p.y, p.w, p.h);
+      if (s.x !== p.x || s.y !== p.y) { p.x=s.x; p.y=s.y; if(!silent) CL.ui.toast('Posizione corretta automaticamente.', 'info'); this.dbg.blocked='unstuck'; return true; }
+      return false;
     }
 
     spawnCreatures() { /* disabilitato: simulatore vita reale */ }
@@ -358,10 +390,36 @@
           const moved = U.dist(ent.x, ent.y, this.entryPos.x, this.entryPos.y);
           if (moved < 20) return; // evita uscita immediata allo spawn/ingresso
         }
-        let to = p.to, x = p.spawn.x, y = p.spawn.y;
+        let to = p.to, x = p.spawn && p.spawn.x, y = p.spawn && p.spawn.y;
         if (to === 'prev') {
-          const prev = this.state.pos.prev || { map: 'napoli', x: 31 * T, y: 35 * T };
-          to = prev.map; x = prev.x; y = prev.y;
+          const prev = this.state.pos.prev;
+          const cur = this.map && this.map.exitSpawn;
+          if (prev && prev.map) { to = prev.map; x = prev.x; y = prev.y; }
+          else if (cur && cur.map) { to = cur.map; x = cur.x; y = cur.y; }
+          else { to = 'napoli'; const tm = MAPS.get('napoli'); x = tm.spawn.x; y = tm.spawn.y; }
+          // If the recorded prev position is blocked (old save / map change), prefer exitSpawn
+          let tmPrev = MAPS.get(to);
+          const okPt = (m,px,py)=>m&&!MAPS.solidAt(m,px-5,py-4)&&!MAPS.solidAt(m,px+5,py-4)&&!MAPS.solidAt(m,px-5,py+4)&&!MAPS.solidAt(m,px+5,py+4);
+          if (!okPt(tmPrev,x,y) && cur && cur.map) { to = cur.map; x = cur.x; y = cur.y; tmPrev = MAPS.get(to); }
+          if (!okPt(tmPrev,x,y) && tmPrev) { const sp=this.safePoint(tmPrev,tmPrev.spawn.x,tmPrev.spawn.y); x=sp.x; y=sp.y; }
+          // Final guard: never keep a blocked destination.
+          const tmFinal = MAPS.get(to);
+          if (!okPt(tmFinal,x,y) && tmFinal) { const sp=this.safePoint(tmFinal,tmFinal.spawn.x,tmFinal.spawn.y); x=sp.x; y=sp.y; }
+        } else if (p.spawn && p.spawn.__useTargetSpawn) {
+          const tm = MAPS.get(to);
+          x = tm.spawn.x; y = tm.spawn.y;
+        }
+        const tm = MAPS.get(to);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) { x = tm.spawn.x; y = tm.spawn.y; }
+        // Ensure destination is walkable; find nearest safe tile if needed.
+        if (tm) {
+          const ok = (px,py)=>!MAPS.solidAt(tm,px-5,py-4)&&!MAPS.solidAt(tm,px+5,py-4)&&!MAPS.solidAt(tm,px-5,py+4)&&!MAPS.solidAt(tm,px+5,py+4);
+          if (!ok(x,y)) {
+            const pts=[[0,0],[0,8],[0,-8],[8,0],[-8,0],[0,16],[0,-16],[16,0],[-16,0],[8,8],[-8,8],[8,-8],[-8,-8]];
+            let found=false;
+            for(let r=1;r<=12&&!found;r++) for(const [dx,dy] of pts){ const nx=x+dx*r, ny=y+dy*r; if(ok(nx,ny)){x=nx;y=ny;found=true;break;} }
+            if(!found){ x=tm.spawn.x; y=tm.spawn.y; }
+          }
         }
         this.enterMap(to, x, y);
       } catch (e) { console.error('[CL] checkPortals', e); }

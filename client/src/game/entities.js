@@ -88,23 +88,60 @@
       this.anim += dt * 1.4;
       this.bob += dt;
       this.offsetY = Math.sin(this.bob * 1.6) * .8;
+      this._stuckT = this._stuckT || 0;
+      this._lastPos = this._lastPos || { x: this.x, y: this.y };
       // piccolo pantalone: si muove in un'area ristretta durante il giorno
       if (!CL.systems.time.isNight() && this.role !== 'family') {
         this.wanderT -= dt;
         if (this.wanderT <= 0) {
           this.wanderT = U.rand(3.5, 8);
-          const nx = this.homeX + U.randInt(-2, 2) * T;
-          const ny = this.homeY + U.randInt(-1, 1) * T;
-          if (this.game.canMove(nx, ny, this.w, this.h)) { this.tx = nx; this.ty = ny; }
+          for (let i = 0; i < 8; i++) {
+            const nx = this.homeX + U.randInt(-2, 2) * T;
+            const ny = this.homeY + U.randInt(-1, 1) * T;
+            if (this.game.canMove(nx, ny, this.w, this.h)) { this.tx = nx; this.ty = ny; break; }
+          }
         }
       } else { this.tx = this.homeX; this.ty = this.homeY; }
       if (U.dist(this.x, this.y, this.tx, this.ty) > 2) {
         const a = Math.atan2(this.ty - this.y, this.tx - this.x);
-        const nx = this.x + Math.cos(a) * 16 * dt, ny = this.y + Math.sin(a) * 16 * dt;
-        if (this.game.canMove(nx, ny, this.w, this.h)) { this.x = nx; this.y = ny; }
-        this.dir = Math.abs(Math.cos(a)) > Math.abs(Math.sin(a)) ? (Math.cos(a) < 0 ? 'left' : 'right') : (Math.sin(a) < 0 ? 'up' : 'down');
-        this.frame = Math.floor(this.anim * 2) % 4;
-      } else this.frame = 0;
+        const sp = 16;
+        const stepX = Math.cos(a) * sp * dt, stepY = Math.sin(a) * sp * dt;
+        let moved = false;
+        const nearPortal = (x,y) => {
+          const ps = (this.game.map && this.game.map.portals) || [];
+          for (const p of ps) { if (x > p.x - 8 && x < p.x + p.w + 8 && y > p.y - 8 && y < p.y + p.h + 8) return true; }
+          return false;
+        };
+        const tryMove = (nx, ny) => {
+          if (!this.game.canMove(nx, ny, this.w, this.h)) return false;
+          // avoid overlapping player tightly and blocking doors
+          const pl = this.game.player;
+          if (pl && U.dist(nx, ny, pl.x, pl.y) < 14) return false;
+          if (nearPortal(nx, ny) && !(nearPortal(this.x, this.y))) return false;
+          this.x = nx; this.y = ny; return true;
+        };
+        if (tryMove(this.x + stepX, this.y + stepY)) moved = true;
+        else if (tryMove(this.x + stepX, this.y)) moved = true;
+        else if (tryMove(this.x, this.y + stepY)) moved = true;
+        else {
+          // simple detour: perpendicular nudge
+          const pa = a + Math.PI / 2 * (Math.random() < .5 ? 1 : -1);
+          moved = tryMove(this.x + Math.cos(pa) * sp * dt, this.y + Math.sin(pa) * sp * dt);
+        }
+        if (moved) {
+          this.dir = Math.abs(Math.cos(a)) > Math.abs(Math.sin(a)) ? (Math.cos(a) < 0 ? 'left' : 'right') : (Math.sin(a) < 0 ? 'up' : 'down');
+          this.frame = Math.floor(this.anim * 2) % 4;
+        } else {
+          this.frame = 0;
+          this._stuckT += dt;
+          if (this._stuckT > 1.2) {
+            // pick a nearby walkable point or go home
+            const cand = this.game.safePoint ? this.game.safePoint(this.game.map, this.homeX, this.homeY, this.w, this.h) : { x: this.homeX, y: this.homeY };
+            this.x = cand.x; this.y = cand.y; this.tx = this.homeX; this.ty = this.homeY; this._stuckT = 0;
+          }
+        }
+      } else { this.frame = 0; this._stuckT = 0; }
+      if (U.dist(this.x, this.y, this._lastPos.x, this._lastPos.y) > 0.5) { this._stuckT = 0; this._lastPos.x = this.x; this._lastPos.y = this.y; }
     }
     draw(ctx) {
       ctx.fillStyle = 'rgba(0,0,0,.18)';

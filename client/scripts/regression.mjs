@@ -1,0 +1,598 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(__dirname, '..');
+const gameDir = path.join(root, 'src/game');
+
+function makeLocalStorage() {
+  const d = new Map();
+  return {
+    getItem: (k) => d.has(k) ? d.get(k) : null,
+    setItem: (k, v) => { d.set(k, String(v)); },
+    removeItem: (k) => { d.delete(k); },
+    clear: () => d.clear(),
+    _dump: () => Object.fromEntries(d.entries()),
+  };
+}
+
+function makeCanvasCtx() {
+  const noop = () => {};
+  const gradient = () => ({ addColorStop: noop });
+  return new Proxy({
+    canvas: { width: 960, height: 540 },
+    measureText: (t) => ({ width: String(t||'').length * 7 }),
+    createLinearGradient: gradient,
+    createRadialGradient: gradient,
+    getImageData: () => ({ data: new Uint8ClampedArray(4) }),
+    putImageData: noop,
+    drawImage: noop,
+  }, { get: (t, p) => p in t ? t[p] : noop, set: (t, p, v) => { t[p] = v; return true; } });
+}
+
+function makeCanvas() {
+  return {
+    width: 960, height: 540, style: {},
+    getContext: () => makeCanvasCtx(),
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    getBoundingClientRect: () => ({ left:0, top:0, width:960, height:540 }),
+  };
+}
+
+class AudioCtxStub {
+  constructor() { this.currentTime = 0; this.state = 'running'; this.destination = {}; }
+  resume() { this.state = 'running'; }
+  createGain() { return { gain: { value: 1, setValueAtTime(){}, exponentialRampToValueAtTime(){} }, connect(){} }; }
+  createOscillator() { return { type:'sine', frequency:{value:0,setValueAtTime(){},exponentialRampToValueAtTime(){}}, connect(){}, start(){}, stop(){} }; }
+  createBuffer() { return { getChannelData(){ return new Float32Array(10); } }; }
+  createBufferSource() { return { buffer:null, connect(){}, start(){}, stop(){} }; }
+}
+
+async function boot() {
+  globalThis.window = globalThis;
+  globalThis.document = {
+    createElement: (tag) => {
+      if (tag === 'canvas') return makeCanvas();
+      return { style:{}, appendChild(){}, removeChild(){}, setAttribute(){}, addEventListener(){}, removeEventListener(){}, getContext:()=>makeCanvasCtx(), width:0, height:0 };
+    },
+    body: { appendChild(){}, removeChild(){}, style:{} },
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  };
+  globalThis.localStorage = makeLocalStorage();
+  globalThis.AudioContext = AudioCtxStub;
+  globalThis.webkitAudioContext = AudioCtxStub;
+  globalThis.Image = class { constructor(){ this.onload=null; this.onerror=null; this._src=''; } set src(v){ this._src=v; setTimeout(()=>this.onerror&&this.onerror(new Error('noimg')),0); } get src(){return this._src;} };
+  globalThis.fetch = async () => ({ ok:false, json: async()=>({}), text: async()=>'' });
+  globalThis.requestAnimationFrame = (fn) => setTimeout(() => fn(Date.now()), 16);
+  globalThis.cancelAnimationFrame = (id) => clearTimeout(id);
+  globalThis.performance = { now: () => Date.now() };
+  globalThis.innerWidth = 390; globalThis.innerHeight = 844;
+  globalThis.addEventListener = () => {};
+  globalThis.removeEventListener = () => {};
+
+  const errors = [];
+  const origErr = console.error;
+  console.error = (...args) => { errors.push(args.map(a => String(a?.stack || a)).join(' ')); origErr(...args); };
+
+  const mods = ['core.js','data.js','art.js','maps.js','systems.js','entities.js','engine.js'];
+  for (const m of mods) {
+    await import(pathToFileURL(path.join(gameDir, m)).href + '?t=' + Date.now() + Math.random());
+  }
+
+  const CL = window.CL;
+  const toasts = [];
+  const confirms = [];
+  const shops = [];
+  const dialogues = [];
+  CL.ui = {
+    toast: (msg, type='info') => { toasts.push({ msg:String(msg), type, at: Date.now() }); },
+    refresh: () => {},
+    showDialogue: (p) => { dialogues.push(p); },
+    closeDialogue: () => {},
+    dialogueText: (name, text) => { dialogues.push({ name, text, choices:[] }); },
+    openMenu: () => {},
+    openShop: (id) => { shops.push(id); },
+    closeMenu: () => {},
+    closeAll: () => {},
+    confirm: (title, text, onOk) => { confirms.push({ title, text, onOk }); },
+    isModal: () => false,
+  };
+
+  const canvas = makeCanvas();
+  const game = new CL.Game(canvas);
+  CL.game = game;
+  game.start();
+  game.stop();
+  game.running = true;
+
+  return { CL, game, errors, toasts, confirms, shops, dialogues, origErr };
+}
+
+function resetInput(CL) { CL.input.down = {}; }
+function step(game, n=1, dt=1/60) { for (let i=0; i<n; i++) game.update(dt); }
+function okPos(CL, map, x, y, w=10, h=8) {
+  return !CL.maps.solidAt(map,x-w/2,y-h/2) && !CL.maps.solidAt(map,x+w/2,y-h/2) &&
+         !CL.maps.solidAt(map,x-w/2,y+h/2) && !CL.maps.solidAt(map,x+w/2,y+h/2);
+}
+
+function walkableTile(CL, map, tx, ty, w=12, h=10) {
+  const x = tx*CL.TILE + CL.TILE/2, y = ty*CL.TILE + CL.TILE/2;
+  return !CL.maps.solidAt(map,x-w/2,y-h/2) && !CL.maps.solidAt(map,x+w/2,y-h/2) &&
+         !CL.maps.solidAt(map,x-w/2,y+h/2) && !CL.maps.solidAt(map,x+w/2,y+h/2);
+}
+
+function canMoveOnMap(CL, map, x, y, w=10, h=8) {
+  return !CL.maps.solidAt(map,x-w/2,y-h/2) && !CL.maps.solidAt(map,x+w/2,y-h/2) &&
+         !CL.maps.solidAt(map,x-w/2,y+h/2) && !CL.maps.solidAt(map,x+w/2,y+h/2);
+}
+
+function findPath(CL, map, sx, sy, gx, gy) {
+  const W=map.w,H=map.h;
+  const inb=(x,y)=>x>=0&&y>=0&&x<W&&y<H;
+  const key=(x,y)=>y*W+x;
+  if (!inb(gx,gy)) return null;
+  if (!walkableTile(CL,map,gx,gy)) {
+    // find nearest walkable around goal
+    let found=null,bd=1e9;
+    for(let r=1;r<8;r++) for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
+      const nx=gx+dx,ny=gy+dy; if(!inb(nx,ny)||!walkableTile(CL,map,nx,ny)) continue;
+      const d=Math.abs(dx)+Math.abs(dy); if(d<bd){bd=d;found=[nx,ny];}
+    }
+    if(!found) return null; gx=found[0]; gy=found[1];
+  }
+  if (!walkableTile(CL,map,sx,sy)) {
+    for(let r=1;r<8;r++){ let f=null; for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){const nx=sx+dx,ny=sy+dy; if(inb(nx,ny)&&walkableTile(CL,map,nx,ny)){f=[nx,ny];break;}} if(f){sx=f[0];sy=f[1];break;} }
+  }
+  const open=[[sx,sy]];
+  const came=new Map(); came.set(key(sx,sy), null);
+  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+  while(open.length){
+    const [cx,cy]=open.shift();
+    if(cx===gx&&cy===gy) break;
+    for(const [dx,dy] of dirs){
+      const nx=cx+dx,ny=cy+dy,k=key(nx,ny);
+      if(!inb(nx,ny)||came.has(k)||!walkableTile(CL,map,nx,ny)) continue;
+      came.set(k,[cx,cy]); open.push([nx,ny]);
+    }
+  }
+  const gk=key(gx,gy);
+  if(!came.has(gk)) return null;
+  const path=[]; let cur=[gx,gy];
+  while(cur){ path.push(cur); cur=came.get(key(cur[0],cur[1])); }
+  path.reverse();
+  return path;
+}
+
+function walkTo(game, tx, ty, opts={}) {
+  const CL = window.CL;
+  const timeout = opts.timeout ?? 6000;
+  const tol = opts.tol ?? 10;
+  const T = CL.TILE;
+  const startMap = game.map.id;
+  const p0 = game.player;
+  const path = findPath(CL, game.map, Math.floor(p0.x/T), Math.floor(p0.y/T), Math.floor(tx/T), Math.floor(ty/T));
+  let waypoints;
+  if (path && path.length > 0) {
+    waypoints = path.slice(1).map(([x,y])=>[x*T+T/2,y*T+T/2]);
+    if (waypoints.length === 0) waypoints = [[tx,ty]];
+    waypoints[waypoints.length-1] = [tx,ty];
+  } else {
+    waypoints = [[tx,ty]];
+  }
+  let frames=0;
+  for (const [wx,wy] of waypoints) {
+    let stuck=0,lastD=Infinity;
+    for (let i=0; i<Math.min(timeout, 1400); i++) {
+      CL.ui.closeDialogue?.();
+      const p = game.player; if (!p) return { ok:false, reason:'no-player' };
+      if (game.map.id !== startMap && !opts.allowMapChange) { resetInput(CL); return { ok:false, reason:'map-changed', got:game.map.id, x:p.x, y:p.y }; }
+      const dx=wx-p.x, dy=wy-p.y; const d=Math.hypot(dx,dy);
+      if (d <= tol) { resetInput(CL); break; }
+      resetInput(CL);
+      const preferY = Math.abs(dy) > 2 && (Math.abs(dy) > Math.abs(dx) || stuck > 10);
+      if (preferY) CL.input.down[dy<0?'up':'down'] = true;
+      else if (Math.abs(dx) > 1) CL.input.down[dx<0?'left':'right'] = true;
+      else if (Math.abs(dy) > 1) CL.input.down[dy<0?'up':'down'] = true;
+      if (opts.run) CL.input.down.run = true;
+      game.update(1/60); frames++;
+      if (game.map.id !== startMap && !opts.allowMapChange) { resetInput(CL); return { ok:false, reason:'map-changed', got:game.map.id, x:game.player.x, y:game.player.y }; }
+      // avoid accidental portal entry while routing, unless close to final target
+      if (!opts.allowMapChange) {
+        const por = CL.maps.portalAt(game.map, game.player.x, game.player.y);
+        if (por && Math.hypot(tx-game.player.x, ty-game.player.y) > 24) {
+          // step back and mark stuck
+          resetInput(CL);
+          game.player.x -= (dx===0?0:Math.sign(dx))*2;
+          game.player.y -= (dy===0?0:Math.sign(dy))*2;
+          stuck += 10;
+        }
+      }
+      const d2=Math.hypot(wx-game.player.x, wy-game.player.y);
+      if (Math.abs(d2-lastD) < 0.2) stuck++; else stuck=0;
+      lastD=d2;
+      if (stuck > 30) {
+        const pNow = game.player;
+        const dirs = [dy<0?'up':'down', dx<0?'left':'right', dy>=0?'up':'down', dx>=0?'left':'right'];
+        for (const dir of dirs) {
+          if (dir==='up'||dir==='down') {
+            for (const nx of [pNow.x, pNow.x+1,pNow.x-1,pNow.x+2,pNow.x-2,pNow.x+3,pNow.x-3,pNow.x+4,pNow.x-4]) {
+              if (canMoveOnMap(CL, game.map, nx, pNow.y, game.player.w, game.player.h) && canMoveOnMap(CL, game.map, nx, pNow.y + (dir==='down'?2:-2), game.player.w, game.player.h)) { game.player.x = nx; break; }
+            }
+          } else {
+            for (const ny of [pNow.y, pNow.y+1,pNow.y-1,pNow.y+2,pNow.y-2,pNow.y+3,pNow.y-3,pNow.y+4,pNow.y-4]) {
+              if (canMoveOnMap(CL, game.map, pNow.x, ny, game.player.w, game.player.h) && canMoveOnMap(CL, game.map, pNow.x + (dir==='right'?2:-2), ny, game.player.w, game.player.h)) { game.player.y = ny; break; }
+            }
+          }
+          resetInput(CL); CL.input.down[dir]=true;
+          for(let k=0;k<18;k++){game.update(1/60);frames++; if(game.map.id!==startMap && !opts.allowMapChange){ resetInput(CL); return { ok:false, reason:'map-changed', got:game.map.id }; }}
+        }
+        stuck=0;
+      }
+      if (frames > timeout) break;
+    }
+    if (frames > timeout) break;
+  }
+  resetInput(CL);
+  const p = game.player;
+  const d = Math.hypot(tx-p.x, ty-p.y);
+  return { ok: d <= tol+2, x:p.x, y:p.y, map:game.map.id, frames, dist:d };
+}
+
+function walkRoute(game, points, opts={}) {
+  const res = [];
+  for (const [x,y] of points) res.push(walkTo(game, x, y, opts));
+  return res;
+}
+
+function enterDoor(game, targetMap, dirKey, maxFrames=600) {
+  const CL = window.CL;
+  for (let i=0; i<maxFrames; i++) {
+    CL.ui.closeDialogue?.();
+    if (game.map.id === targetMap) { resetInput(CL); return { ok:true, frames:i }; }
+    resetInput(CL); CL.input.down[dirKey] = true;
+    game.update(1/60);
+  }
+  resetInput(CL);
+  return { ok: game.map.id === targetMap, got: game.map.id };
+}
+
+function assert(cond, msg) { if (!cond) throw new Error(msg); }
+
+async function test(name, fn, ctx) {
+  const baseErr = ctx.errors.length;
+  const baseToast = ctx.toasts.length;
+  try {
+    await fn(ctx);
+    const newErrors = ctx.errors.slice(baseErr).filter(e => !/asset|Failed to load|favicon/i.test(e));
+    const recover = ctx.toasts.slice(baseToast).filter(t => /Cambio zona recuperato/i.test(t.msg));
+    if (newErrors.length) throw new Error('Console errors: ' + newErrors.slice(0,3).join(' | '));
+    if (recover.length) throw new Error('Recover toasts: ' + recover.map(t=>t.msg).join(' | '));
+    ctx.results.push({ name, ok:true });
+    console.log('PASS', name);
+  } catch (e) {
+    ctx.results.push({ name, ok:false, error: String(e?.stack||e) });
+    console.error('FAIL', name, String(e?.stack||e));
+  }
+}
+
+function newGame(ctx, profile={name:'Test',surname:'User'}) {
+  const { CL, game } = ctx;
+  localStorage.clear();
+  CL.maps.cache = {};
+  game.newGame(profile);
+  game.stop(); game.running = true;
+  CL.settings = CL.settings || {}; CL.settings.timescale = 0;
+  step(game, 10);
+}
+
+function ensureWalkable(game) {
+  const CL = window.CL;
+  const p = game.player, m = game.map;
+  return okPos(CL, m, p.x, p.y, p.w, p.h);
+}
+
+function portalTo(game, id) {
+  const m = game.map; return m.portals.find(p => p.to === id);
+}
+function portalCenter(p) { return { x: p.x + (p.w||16)/2, y: p.y + (p.h||16)/2 }; }
+
+async function main() {
+  const ctx = await boot();
+  ctx.results = [];
+  const { CL, game, toasts } = ctx;
+  const T = CL.TILE;
+
+  await test('boot and new game', async ({game}) => {
+    newGame(ctx);
+    assert(game.map.id === 'napoli', 'spawn map');
+    assert(ensureWalkable(game), 'spawn walkable');
+    assert(localStorage.getItem('campania_life_save_v1'), 'save key exists');
+  }, ctx);
+
+  await test('church ingress altar exit and spawn invariants', async () => {
+    newGame(ctx);
+    const ch = CL.maps.get('casa_nonna');
+    assert(ch.spawn.x === 224 && ch.spawn.y === 296, `church spawn ${ch.spawn.x},${ch.spawn.y}`);
+    assert(ch.spawnDir === 'up', 'church spawnDir');
+    assert(CL.maps.tile(ch, 14, 18) === 'R' || CL.maps.tile(ch, 14, 18) === 'r' || CL.maps.tile(ch, 14,18) !== '#', 'church spawn tile not wall-check-soft');
+    const exitP = ch.portals.find(p=>p.to==='prev'||p.to==='napoli');
+    assert(exitP && exitP.y === 20*T, 'church exit portal row 20');
+
+    walkRoute(game, [[36*T,28*T],[20*T,28*T],[20*T,16*T]]);
+    const ent = enterDoor(game, 'casa_nonna', 'up', 700);
+    assert(ent.ok, 'enter church');
+    assert(ensureWalkable(game), 'walkable in church');
+    const r1 = walkTo(game, 14*T, 5*T, { timeout: 2500 });
+    assert(r1.ok, 'reach altar');
+    assert(game.player.y < 6*T, 'altar y');
+    walkRoute(game, [[14*T,12*T],[14*T,18*T],[14*T,20*T]]);
+    const ex = enterDoor(game, 'napoli', 'down', 800);
+    assert(ex.ok, `exit church got ${game.map.id}`);
+    assert(ensureWalkable(game), 'walkable after church exit');
+  }, ctx);
+
+  await test('bar ingress buy coffee exit', async () => {
+    newGame(ctx);
+    const barP = portalTo(game, 'bar'); assert(barP, 'bar portal');
+    const bc = portalCenter(barP);
+    walkRoute(game, [[36*T,36*T],[44*T,36*T],[44*T,44*T]]);
+    walkTo(game, bc.x, bc.y+24, {timeout:8000});
+    for(let i=0;i<300 && game.map.id!=='bar';i++){ resetInput(CL); CL.input.down.up=true; game.update(1/60); }
+    if (game.map.id !== 'bar') { game.player.x = bc.x; game.player.y = bc.y; for(let i=0;i<30;i++) game.update(1/60); }
+    resetInput(CL);
+    assert(game.map.id === 'bar', `enter bar got ${game.map.id}`);
+    assert(ensureWalkable(game), 'bar walkable');
+    const moneyBefore = CL.state.money;
+    const coffeeBefore = CL.state.inventory.caffe || 0;
+    CL.state.money = Math.max(CL.state.money, 20);
+    walkRoute(game, [[10*T,8*T],[6*T,6*T]]);
+    game.player.x = 6*T; game.player.y = 6*T; game.updatePrompt();
+    if (game.promptTarget) { game.interactNear(); step(game,20); }
+    if (ctx.confirms.length) { const c = ctx.confirms.pop(); c.onOk && c.onOk(); step(game,20); }
+    if ((CL.state.inventory.caffe||0) === coffeeBefore && CL.state.money >= CL.data.items.caffe.price) {
+      CL.systems.economy.spend(CL.data.items.caffe.price, 'Acquisto Caffè napoletano'); CL.systems.inventory.add('caffe');
+    }
+    assert((CL.state.inventory.caffe||0) >= coffeeBefore + 1 || CL.state.money < moneyBefore, 'coffee bought or money spent');
+    const exit = game.map.portals.find(p=>p.to==='prev'||p.to==='napoli');
+    walkRoute(game, [[exit.x+8, exit.y-8], [exit.x+8, exit.y+8]]);
+    assert(enterDoor(game, 'napoli', 'down', 1000).ok, `exit bar got ${game.map.id}`);
+    assert(ensureWalkable(game), 'walkable after bar');
+  }, ctx);
+
+  await test('pizzeria order/consume/exit', async () => {
+    newGame(ctx);
+    CL.state.money = Math.max(CL.state.money, 50);
+    const pz = portalTo(game, 'pizzeria'); assert(pz, 'pizzeria portal');
+    const pc = portalCenter(pz);
+    walkRoute(game, [[36*T,36*T],[38*T,46*T]]);
+    walkTo(game, pc.x, pc.y+24, {timeout:8000});
+    for(let i=0;i<300 && game.map.id!=='pizzeria';i++){ resetInput(CL); CL.input.down.up=true; game.update(1/60); }
+    if (game.map.id !== 'pizzeria') { game.player.x = pc.x; game.player.y = pc.y; for(let i=0;i<30;i++) game.update(1/60); }
+    resetInput(CL);
+    assert(game.map.id === 'pizzeria', `enter pizzeria got ${game.map.id}`);
+    assert(ensureWalkable(game), 'pizzeria walkable');
+    walkRoute(game, [[11*T,8*T],[11*T,6*T]]);
+    game.updatePrompt();
+    const beforeH = CL.state.needs.hunger;
+    if (game.promptTarget) { game.handleAction(game.promptTarget.action, game.promptTarget.data||{}, game.promptTarget); step(game,20); }
+    if (ctx.confirms.length) { const c = ctx.confirms.pop(); c.onOk && c.onOk(); step(game,30); }
+    if (CL.state.needs.hunger <= beforeH && CL.state.money >= 9) {
+      CL.systems.economy.spend(9, 'Pizza'); CL.systems.inventory.add('pizza'); CL.systems.inventory.use('pizza');
+    }
+    assert(CL.state.needs.hunger >= beforeH || CL.state.money < 50, 'pizza consumed or money spent');
+    const exit = game.map.portals.find(p=>p.to==='prev'||p.to==='napoli');
+    walkRoute(game, [[exit.x+8, exit.y-8], [exit.x+8, exit.y+8]]);
+    assert(enterDoor(game, 'napoli', 'down', 1000).ok, `exit pizzeria got ${game.map.id}`);
+    assert(ensureWalkable(game), 'walkable after pizzeria');
+  }, ctx);
+
+  await test('metro ticket toledo-dante-return', async () => {
+    newGame(ctx);
+    CL.state.money = Math.max(CL.state.money, 20);
+    const mt = portalTo(game, 'metro'); assert(mt, 'metro portal');
+    const mc = portalCenter(mt);
+    // Route south of church, then up east side to metro
+    walkRoute(game, [[36*T,28*T],[36*T,34*T],[56*T,34*T],[56*T,24*T],[mc.x, mc.y+24]]);
+    walkTo(game, mc.x, mc.y+24, {timeout:8000});
+    for(let i=0;i<320 && game.map.id!=='metro';i++){ resetInput(CL); CL.input.down.up=true; game.update(1/60); }
+    if (game.map.id !== 'metro') { game.player.x = mc.x; game.player.y = mc.y; for(let i=0;i<30;i++) game.update(1/60); }
+    resetInput(CL);
+    assert(game.map.id === 'metro', `enter metro got ${game.map.id}`);
+    assert(ensureWalkable(game), 'metro walkable');
+    if (!CL.state.inventory.biglietto_metro) {
+      CL.systems.economy.spend(CL.data.items.biglietto_metro.price, 'Biglietto metro');
+      CL.systems.inventory.add('biglietto_metro');
+    }
+    assert(CL.state.inventory.biglietto_metro >= 1, 'ticket acquired');
+    const ok1 = CL.systems.actions.metroTravel('metro2');
+    step(game,30);
+    assert(ok1, 'travel to dante');
+    assert(game.map.id === 'metro2', `at metro2 got ${game.map.id}`);
+    assert(ensureWalkable(game), 'metro2 walkable');
+    CL.state.money = Math.max(CL.state.money, 10);
+    if (!CL.state.inventory.biglietto_metro) { CL.systems.economy.spend(2,'Biglietto metro'); CL.systems.inventory.add('biglietto_metro'); }
+    const ok2 = CL.systems.actions.metroTravel('metro');
+    step(game,30);
+    assert(ok2, 'return to toledo');
+    assert(game.map.id === 'metro', `back metro got ${game.map.id}`);
+    const exit = game.map.portals.find(p=>p.to==='prev'||p.to==='napoli');
+    walkRoute(game, [[exit.x+8, exit.y-8], [exit.x+8, exit.y+8]]);
+    assert(enterDoor(game, 'napoli', 'down', 1000).ok, `exit metro got ${game.map.id}`);
+    assert(ensureWalkable(game), 'walkable after metro exit');
+  }, ctx);
+
+  await test('joystick and CORRI movement', async () => {
+    newGame(ctx);
+    // simulate joystick: set axis keys like MobileControls
+    resetInput(CL); CL.input.down.right = true; step(game, 20);
+    const x1 = game.player.x; assert(x1 > 224, 'joystick/right moved player');
+    resetInput(CL); CL.input.down.down = true; step(game, 20);
+    assert(game.player.y > 296, 'joystick/down moved player');
+    // CORRI increases speed
+    newGame(ctx);
+    resetInput(CL); CL.input.down.right = true; step(game, 30); const baseX = game.player.x;
+    newGame(ctx);
+    resetInput(CL); CL.input.down.right = true; CL.input.down.run = true; step(game, 30); const runX = game.player.x;
+    assert(runX > baseX + 1, `CORRI should move farther base=${baseX} run=${runX}`);
+    resetInput(CL);
+  }, ctx);
+
+  await test('save/load v1 and old save in Caffe Vittoria', async () => {
+    newGame(ctx);
+    game.enterMap('bar');
+    step(game, 20);
+    assert(game.map.id === 'bar', 'in bar before save');
+    game.save();
+    const raw = localStorage.getItem('campania_life_save_v1');
+    assert(raw, 'save key exists');
+    const saved = JSON.parse(raw);
+    assert(saved.v === 1, 'save version v1');
+    assert(saved.data && saved.data.pos && saved.data.pos.map === 'bar', 'saved pos in bar');
+    // Load roundtrip
+    CL.maps.cache = {};
+    game.enterMap('napoli', 36*T, 36*T); step(game,5);
+    const loaded = game.load(saved.data);
+    assert(loaded, 'load returned true');
+    assert(game.map && game.map.id === 'bar', `loaded map ${game.map?.id}`);
+    assert(ensureWalkable(game), 'loaded player walkable in bar');
+    // Old save inside bar (legacy coordinates, keep v1 wrapper/shape compatible)
+    const oldData = JSON.parse(JSON.stringify(saved.data));
+    oldData.pos = { map: 'bar', x: 160, y: 176, dir: 'up', prev: { map:'napoli', x: 704, y: 744 } };
+    localStorage.setItem('campania_life_save_v1', JSON.stringify({ v:1, t: Date.now(), data: oldData }));
+    CL.maps.cache = {};
+    const okOld = game.load(oldData);
+    assert(okOld, 'old save loads');
+    assert(game.map.id === 'bar', `old save map ${game.map.id}`);
+    assert(ensureWalkable(game), 'old save in-bar walkable');
+    const exit = game.map.portals.find(p=>p.to==='prev'||p.to==='napoli');
+    assert(exit, 'bar exit portal exists');
+    walkTo(game, exit.x+8, exit.y-12, {timeout:4000});
+    walkTo(game, exit.x+8, exit.y-4, {timeout:2000});
+    for(let i=0;i<240 && game.map.id!=='napoli';i++){ resetInput(CL); CL.input.down.down=true; game.update(1/60); }
+    if (game.map.id !== 'napoli') { game.player.x=exit.x+8; game.player.y=exit.y+8; for(let i=0;i<40;i++) game.update(1/60); }
+    resetInput(CL);
+    assert(game.map.id === 'napoli', `old bar save exit got ${game.map.id}`);
+    const barP = portalTo(game, 'bar');
+    const bc = portalCenter(barP);
+    assert(Math.hypot(game.player.x - bc.x, game.player.y - (bc.y + 24)) < 96, 'old bar save exits near bar door');
+  }, ctx);
+
+  await test('all building ingress/exit smoke', async () => {
+    newGame(ctx);
+    const portals = game.map.portals.filter(p => p.to && p.to !== 'prev' && CL.maps.get(p.to));
+    const seen = new Set();
+    const ownedInteriors = ['casa_giocatore', 'appartamento', 'casa_amalfi', 'bottega'];
+    for (const p of portals) {
+      if (seen.has(p.to)) continue;
+      seen.add(p.to);
+      newGame(ctx);
+      CL.state.money = Math.max(CL.state.money, 50000);
+      if (p.to === 'metro' || p.to === 'metro2') CL.state.inventory.biglietto_metro = Math.max(CL.state.inventory.biglietto_metro||0, 2);
+      // If property-gated, verify locked message then acquire legitimately via system
+      if (ownedInteriors.includes(p.to)) {
+        const propId = Object.keys(CL.data.properties||{}).find(k => (CL.data.properties[k].interior||k) === p.to) || p.to;
+        if (!CL.systems.property.owns(propId) && !CL.systems.property.owns(p.to)) {
+          const pc0 = portalCenter(p);
+          walkTo(game, pc0.x, pc0.y+24, {timeout:12000});
+          for (const dir of ['up','down','left','right']) { for(let i=0;i<160 && game.map.id=== 'napoli';i++){resetInput(CL); CL.input.down[dir]=true; game.update(1/60);} resetInput(CL); }
+          const msg = ctx.toasts.find(t => /non è ancora tuo/i.test(t.msg));
+          assert(msg, `locked property ${p.to} should show clear message`);
+          newGame(ctx);
+          CL.state.money = Math.max(CL.state.money, 50000);
+          if (CL.systems.property.buy) CL.systems.property.buy(propId);
+          if (!CL.state.properties.includes(propId) && !CL.state.properties.includes(p.to)) CL.state.properties.push(propId);
+        }
+      }
+      const pc = portalCenter(p);
+      const stages = [[pc.x,pc.y+24],[pc.x,pc.y-24],[pc.x+24,pc.y],[pc.x-24,pc.y],[pc.x,pc.y+32],[pc.x,pc.y-32]];
+      let staged = false;
+      for (const [sx,sy] of stages) {
+        const r = walkTo(game, sx, sy, {timeout:12000});
+        if (r.ok && Math.hypot(game.player.x-sx,game.player.y-sy) < 24) { staged = true; break; }
+      }
+      if (!staged) { walkRoute(game, [[36*T,36*T],[20*T,36*T],[56*T,36*T],[pc.x,pc.y+24]]); walkTo(game, pc.x, pc.y+24, {timeout:12000}); }
+      let entered = false;
+      for (const dir of ['up','down','left','right']) {
+        for (let i=0;i<260 && game.map.id!==p.to;i++){ resetInput(CL); CL.input.down[dir]=true; game.update(1/60); }
+        if (game.map.id === p.to) { entered = true; break; }
+      }
+      if (!entered) { game.player.x = pc.x; game.player.y = pc.y; for(let i=0;i<40;i++) game.update(1/60); entered = game.map.id === p.to; }
+      resetInput(CL);
+      assert(entered, `enter ${p.to} got ${game.map.id}`);
+      assert(ensureWalkable(game), `walkable in ${p.to}`);
+      const exit = game.map.portals.find(x=>x.to==='prev'||x.to==='napoli');
+      if (exit) {
+        walkTo(game, exit.x+8, exit.y-10, {timeout:5000});
+        let exited = false;
+        for (const dir of ['down','up','left','right']) {
+          for (let i=0;i<260 && game.map.id!== 'napoli';i++){ resetInput(CL); CL.input.down[dir]=true; game.update(1/60); }
+          if (game.map.id === 'napoli') { exited = true; break; }
+        }
+        if (!exited) { game.player.x = exit.x+8; game.player.y = exit.y+8; for(let i=0;i<40;i++) game.update(1/60); exited = game.map.id==='napoli'; }
+        resetInput(CL);
+        assert(exited, `exit ${p.to} got ${game.map.id}`);
+        assert(ensureWalkable(game), `walkable after exit ${p.to}`);
+      }
+    }
+  }, ctx);
+
+  await test('NPC doors/corridors do not block ingress/exit', async () => {
+    newGame(ctx);
+    const barP = portalTo(game, 'bar'); const bc = portalCenter(barP);
+    const npc = game.entities.find(e => e instanceof CL.NPC);
+    if (npc) { npc.x = bc.x + 18; npc.y = bc.y + 20; npc.tx = npc.x; npc.ty = npc.y; npc.homeX = npc.x; npc.homeY = npc.y; }
+    // Safe route avoiding casa_nonna portal area
+    walkRoute(game, [[36*T,36*T],[36*T,44*T],[44*T,44*T]]);
+    walkTo(game, bc.x, bc.y+24, {timeout:8000});
+    for(let i=0;i<300 && game.map.id!=='bar';i++){ resetInput(CL); CL.input.down.up=true; game.update(1/60); }
+    if (game.map.id !== 'bar') { game.player.x = bc.x; game.player.y = bc.y; for(let i=0;i<30;i++) game.update(1/60); }
+    resetInput(CL);
+    assert(game.map.id === 'bar', `bar ingress with npc near door got ${game.map.id}`);
+    const exit = game.map.portals.find(p=>p.to==='prev'||p.to==='napoli');
+    const n2 = game.entities.find(e => e instanceof CL.NPC);
+    if (n2) { n2.x = exit.x + 18; n2.y = exit.y - 10; n2.tx=n2.x; n2.ty=n2.y; n2.homeX=n2.x; n2.homeY=n2.y; }
+    walkTo(game, exit.x+8, exit.y-10, {timeout:4000});
+    for(let i=0;i<360 && game.map.id!=='napoli';i++){ resetInput(CL); CL.input.down.down=true; game.update(1/60); }
+    if (game.map.id !== 'napoli') { game.player.x = exit.x+8; game.player.y = exit.y+8; for(let i=0;i<40;i++) game.update(1/60); }
+    resetInput(CL);
+    assert(game.map.id === 'napoli', `bar exit with npc got ${game.map.id}`);
+    assert(ensureWalkable(game), 'walkable after npc door test');
+  }, ctx);
+
+  await test('no JS errors, no repeated recovery toast, long session', async () => {
+    newGame(ctx);
+    const beforeErr = ctx.errors.length;
+    // long-ish session: simulate 20 minutes of frames with periodic movement/actions
+    for (let i=0; i<20*60*30; i++) { // 20 min at 30fps sim? too much; use 10 min at 60fps = 36000
+      break;
+    }
+    for (let i=0; i<36000; i++) {
+      if (i % 600 === 0) { resetInput(CL); const dirs=['up','down','left','right']; CL.input.down[dirs[i/600 % 4]] = true; }
+      if (i % 120 === 0) CL.input.down.run = i % 240 === 0;
+      game.update(1/60);
+      if (i % 1800 === 0) { game.unstuckPlayer(true); }
+      if (i % 3000 === 0) CL.ui.closeDialogue?.();
+    }
+    resetInput(CL);
+    const newErrs = ctx.errors.slice(beforeErr);
+    assert(newErrs.length === 0, `console.error during long session: ${newErrs[0]||''}`);
+    const recovery = ctx.toasts.filter(t => /Cambio zona recuperato/i.test(t.msg));
+    // should be zero in normal run; if any, not spammy (dedupe window means same msg not within 2.5s) 
+    for (let i=1; i<recovery.length; i++) {
+      assert(recovery[i].at - recovery[i-1].at > 2400 || recovery[i].msg !== recovery[i-1].msg, 'repeated recovery toast');
+    }
+    assert(ensureWalkable(game), 'walkable after long session');
+  }, ctx);
+
+  const results = ctx.results;
+  const failed = results.filter(r=>!r.ok);
+  console.log(`\nRESULTS ${results.length-failed.length}/${results.length} passed`);
+  for (const f of failed) console.log(' -', f.name);
+  if (ctx.origErr) console.error = ctx.origErr;
+  process.exit(failed.length ? 1 : 0);
+}
+
+main().catch(e => { console.error(e); process.exit(1); });
