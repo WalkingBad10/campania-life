@@ -312,6 +312,17 @@ async function main() {
     assert(localStorage.getItem('campania_life_save_v1'), 'save key exists');
   }, ctx);
 
+  await test('compact HUD preference persists in settings', async () => {
+    const key = 'campania_life_settings';
+    const prev = localStorage.getItem(key);
+    assert(typeof CL.settings.compactHud === 'boolean', 'compact HUD setting exists');
+    CL.settings.compactHud = true; CL.storeSettings();
+    assert(JSON.parse(localStorage.getItem(key)).compactHud === true, 'compact HUD saved on');
+    CL.settings.compactHud = false; CL.storeSettings();
+    assert(JSON.parse(localStorage.getItem(key)).compactHud === false, 'compact HUD saved off');
+    if (prev === null) localStorage.removeItem(key); else localStorage.setItem(key, prev);
+  }, ctx);
+
   await test('new game discards previous session position', async () => {
     newGame(ctx);
     game.enterMap('bar'); step(game, 5);

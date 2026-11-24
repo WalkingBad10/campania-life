@@ -97,6 +97,12 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
 .hud-help{position:absolute;bottom:1vmin;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 1.4vmin;pointer-events:none}
 .hud-help span{color:#9fb0b4;font-size:.85em;background:rgba(8,14,20,.5);padding:2px 6px}
 .hud-help button{pointer-events:auto;font-size:.85em;padding:4px 10px}
+.hud-help-actions{display:flex;gap:.6vmin;align-items:center;pointer-events:auto}
+.hud-compact-btn{background:rgba(12,20,28,.78);color:var(--cream);border-color:#e9b84a88;box-shadow:none;min-width:34px}
+.hud.compact .hud-needs,.hud.compact .hud-hotbar,.hud.compact .hq-text,.hud.compact .hq-prog,
+.hud.compact .hud-help span:not(.hud-debug){display:none}
+.hud.compact .hud-quest{padding:.3vmin .7vmin}
+.hud.compact .hud-top>div{background:rgba(12,20,28,.64)}
 
 /* --------------------------------------------------------- DIALOGUE */
 #dialogue{position:absolute;left:4%;right:4%;bottom:3%;min-height:19%;display:flex;gap:1.2vmin;padding:1.2vmin 1.6vmin;
@@ -169,7 +175,18 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
 @media(max-width:640px){
   .create-grid,.settings-grid{grid-template-columns:1fr}
   .hud-help span{display:none}
-  .hud-quest{width:40vw}
+  .hud-quest{width:40vw;top:8vmin}
+  .hud-clock{min-width:64px}
+  .hud-needs{gap:2px;padding:.4vmin}
+  .need-bar{width:44px;height:5px}
+  .hud-hotbar .slot{width:28px;height:28px}
+  .hud-hotbar .slot img{width:20px;height:20px}
+  .mc-joy{width:104px;height:104px}
+  .mc-knob{width:44px;height:44px;margin:-22px 0 0 -22px}
+  .mc-btn{width:54px;height:54px;font-size:12px}
+  .mc-run{width:62px;height:62px;font-size:10px}
+  .mc-a{width:64px;height:64px}
+  .mc-m{width:50px;height:50px}
 }
 
 /* Mobile controls */

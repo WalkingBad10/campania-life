@@ -278,12 +278,17 @@
   };
 
   /* ------------------------------------------------------------- settings */
-  CL.settings = { music: .55, sfx: .75, timescale: 3, pixelPerfect: true, shake: true };
+  CL.settings = { music: .55, sfx: .75, timescale: 3, pixelPerfect: true, shake: true, compactHud: false };
   CL.loadSettings = function () {
+    let saved = null;
     try {
-      const s = LS && JSON.parse(LS.getItem('campania_life_settings') || 'null');
-      if (s) Object.assign(CL.settings, s);
+      saved = LS && JSON.parse(LS.getItem('campania_life_settings') || 'null');
+      if (saved) Object.assign(CL.settings, saved);
     } catch (e) {}
+    // Su touch il HUD compatto è il default; l'utente può sempre cambiarlo dalle impostazioni/HUD.
+    if (!saved || typeof saved.compactHud !== 'boolean') {
+      try { CL.settings.compactHud = !!(w.matchMedia && w.matchMedia('(pointer:coarse)').matches); } catch (e) {}
+    }
     A.volMusic = CL.settings.music; A.volSfx = CL.settings.sfx;
   };
   CL.storeSettings = function () {

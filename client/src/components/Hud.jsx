@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 /* CL è il namespace globale popolato dai moduli del motore */
 
 const NEEDS = [
@@ -10,11 +10,18 @@ const NEEDS = [
 ];
 
 export default function Hud({ snap, onMenu }) {
+  const [compact, setCompact] = useState(!!CL.settings.compactHud);
   if (!snap) return null;
   const st = CL.state;
   const foods = CL.data.foodOrder.filter(id => snap.inventory[id] > 0).slice(0, 5);
+  const toggleCompact = () => {
+    const next = !compact;
+    setCompact(next);
+    CL.settings.compactHud = next;
+    CL.storeSettings();
+  };
   return (
-    <div className="hud layer">
+    <div className={'hud layer' + (compact ? ' compact' : '')}>
       <div className="hud-top">
         <div className="hud-place">
           <span className="pin">📍</span> {snap.location}
@@ -63,7 +70,11 @@ export default function Hud({ snap, onMenu }) {
       <div className="hud-help">
         <span>Frecce/WASD muovi · E interagisci · Q cattura · Tab telefono</span>
         {snap.debug ? <span className="hud-debug">DBG {snap.location} | in:{snap.debug.keys||'-'} | ax:{(snap.debug.axis?.x||0).toFixed(1)},{(snap.debug.axis?.y||0).toFixed(1)} | blk:{snap.debug.blocked||'ok'} | modal:{snap.debug.modal?'1':'0'}</span> : null}
-        <button onClick={() => onMenu('phone')}>☰ MENU</button>
+        <div className="hud-help-actions">
+          <button className="hud-compact-btn" onClick={toggleCompact}
+            title={compact ? 'Mostra tutti i dettagli del HUD' : 'Compatta il HUD'}>{compact ? '▣' : '▢'}</button>
+          <button onClick={() => onMenu('phone')}>☰ MENU</button>
+        </div>
       </div>
     </div>
   );
