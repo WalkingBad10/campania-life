@@ -1,5 +1,7 @@
 # CAMPANIA LIFE — Roadmap
 
+> Stato operativo e ripresa dopo lo spegnimento del 25 novembre 2026: vedere `ROADMAP.md` alla radice del repository. Questa pagina conserva la roadmap di prodotto storica.
+
 ## Release 1.0 — “Il primo giorno” ✅
 
 - [x] Motore Canvas: loop a timestep variabile, camera, collisioni, depth sorting, particelle

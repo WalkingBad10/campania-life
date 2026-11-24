@@ -195,8 +195,8 @@
     decor(m, 40, 39, 'palazzo_bar', { h: 8 * T, oy: -16 });
     decor(m, 50, 39, 'palazzo_se', { h: 8 * T, oy: -16 });
     decor(m, 55, 16, 'palazzo_e', { h: 5 * T, oy: 0 });
-    // 48 m = 384 px (altezza OSM way 150562144). La base resta sul bordo sud
-    // della massa di Santa Chiara (riga 28, y=448): oy = 448 - 192 - 384.
+    // 48 m = 384 px (altezza OSM way 150562144). La base resta dentro
+    // l'impronta 9x9 (riga 25, y=400): oy = 400 - 16*16 - 384 = -240.
     decor(m, 58, 16, 'campanile', { h: 384, oy: -240 });
     decor(m, 38, 34, 'edicola', { h: 48 });
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
