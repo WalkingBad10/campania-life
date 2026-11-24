@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T23:11:17.843Z",
+  "generatedAt": "2026-11-24T23:25:42.790Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "maps": [
     {
@@ -412,6 +412,15 @@
           "minY": -18,
           "maxY": 4
         },
+        "prop:sign": {
+          "count": 1,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 122,
+          "maxY": 156
+        },
         "vehicle": {
           "count": 1,
           "dw": 30,
@@ -764,6 +773,15 @@
           "minY": 320,
           "maxY": 624
         },
+        "prop:sign": {
+          "count": 4,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 234,
+          "maxY": 444
+        },
         "character": {
           "count": 3,
           "dw": 16,
@@ -772,15 +790,6 @@
           "sh": 24,
           "minY": 326,
           "maxY": 484
-        },
-        "prop:sign": {
-          "count": 1,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 330,
-          "maxY": 364
         },
         "prop:plant": {
           "count": 1,
@@ -1975,6 +1984,15 @@
           "minY": 64,
           "maxY": 448
         },
+        "prop:sign": {
+          "count": 3,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 202,
+          "maxY": 604
+        },
         "prop:plant": {
           "count": 6,
           "dw": 18,
@@ -2001,15 +2019,6 @@
           "sh": 240,
           "minY": 208,
           "maxY": 448
-        },
-        "prop:sign": {
-          "count": 2,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 426,
-          "maxY": 604
         },
         "vehicle": {
           "count": 3,
@@ -2197,6 +2206,15 @@
           "minY": 64,
           "maxY": 448
         },
+        "prop:sign": {
+          "count": 4,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 202,
+          "maxY": 604
+        },
         "character": {
           "count": 13,
           "dw": 16,
@@ -2223,15 +2241,6 @@
           "sh": 240,
           "minY": 208,
           "maxY": 448
-        },
-        "prop:sign": {
-          "count": 2,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 426,
-          "maxY": 604
         },
         "vehicle": {
           "count": 3,
@@ -2482,6 +2491,99 @@
       "view": "fuorigrotta-teatro"
     },
     {
+      "map": "fuorigrotta",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 620,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 352,
+          "maxY": 672
+        },
+        "building:fuorigrotta_torre": {
+          "count": 2,
+          "dw": 160,
+          "dh": 240,
+          "sw": 160,
+          "sh": 240,
+          "minY": 208,
+          "maxY": 720
+        },
+        "building:fuorigrotta_stadio": {
+          "count": 1,
+          "dw": 208,
+          "dh": 160,
+          "sw": 208,
+          "sh": 160,
+          "minY": 336,
+          "maxY": 496
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 298,
+          "maxY": 590
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 282,
+          "maxY": 524
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 390,
+          "maxY": 508
+        },
+        "tree": {
+          "count": 4,
+          "dw": 32,
+          "dh": 40,
+          "sw": 32,
+          "sh": 40,
+          "minY": 520,
+          "maxY": 560
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "fuorigrotta-stadio"
+    },
+    {
       "map": "pianura",
       "mapH": 640,
       "draws": {
@@ -2521,6 +2623,15 @@
           "minY": 80,
           "maxY": 640
         },
+        "prop:sign": {
+          "count": 4,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 234,
+          "maxY": 444
+        },
         "character": {
           "count": 3,
           "dw": 16,
@@ -2529,15 +2640,6 @@
           "sh": 24,
           "minY": 324,
           "maxY": 430
-        },
-        "prop:sign": {
-          "count": 1,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 330,
-          "maxY": 364
         },
         "prop:plant": {
           "count": 2,
@@ -2622,6 +2724,15 @@
           "sh": 22,
           "minY": -18,
           "maxY": 4
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 122,
+          "maxY": 188
         },
         "vehicle": {
           "count": 1,
@@ -2872,6 +2983,12 @@
     },
     {
       "map": "fuorigrotta-teatro",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "fuorigrotta-stadio",
       "kind": "prop:plant",
       "minY": -18,
       "maxY": 4

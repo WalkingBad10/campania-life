@@ -10,7 +10,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "check": "vite build --emptyOutDir",
     "test": "playwright test",
-    "test:headed": "playwright test --headed"
+    "test:headed": "playwright test --headed",
+    "test:mobile-start": "node scripts/mobile-start.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

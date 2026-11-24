@@ -180,6 +180,7 @@ derivate da OSM:
 |Fuorigrotta|Teatro Mediterraneo|99 × 79 m|560 × 280 px (volume parziale)|
 |Fuorigrotta|Isolato razionalista|24 × 18 m, 4-5 piani|192 × 144 px|
 |Fuorigrotta|Torre Viale Augusto|20 × 30 m|160 × 240 px|
+|Fuorigrotta|Stadio Maradona|232 × 287 m reali; 26 × 20 m logici (macro-griglia anamorfica)|208 × 160 px|
 |Pianura|San Giorgio Martire|40 × 31 m|320 × 248 px|
 |Pianura|Municipio|39 × 25 m|312 × 200 px|
 |Pianura|Casa del borgo|20 × 14 m|160 × 112 px|

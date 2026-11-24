@@ -150,6 +150,12 @@
     rect(g, 18, 22, 17, 3, 'e');            // asse trasversale di accesso
     rect(g, 35, 28, 3, 8, 'e');             // asse obelisco -> spawn / fronte sud
     rect(g, 20, 31, 32, 3, 'e');            // passeggiata est-ovest
+    // Basolato a gradoni: l'asse di Spaccanapoli e' inclinato di ~66° nella
+    // realta; la serie regolare di bande suggestive, non un distacco casuale.
+    for (let step = 0; step < 4; step++) {
+      for (let x = 22 + step * 5; x < 28 + step * 5; x++) place(x, 34 + step, 'e');
+      for (let x = 40 + step * 3; x < 45 + step * 3; x++) place(x, 35 + step, 'e');
+    }
 
     // Guglia dell'Immacolata: basamento 4x3, solido, ancoraggio storico invariato.
     rect(g, 34, 25, 4, 3, 'O');
@@ -213,6 +219,12 @@
     poi(m, 39, 35, 'edicola_poi', 'service', 'Edicola', 'shop', { shop: 'negozio' });
     poi(m, 32, 44, 'banca_poi', 'service', 'Banca', 'bank');
     poi(m, 62, 42, 'cantiere_job', 'service', 'Cantiere', 'job', { job: 'operaio' });
+    // Cartellonistica d'asse: Spaccanapoli/Decumano Inferiore verso est e
+    // Via dei Tribunali/Decumano Maggiore a nord, fuori dalla finestra 144x96 m.
+    poi(m, 69, 31, 'spaccanapoli', 'landmark', 'Spaccanapoli · Decumano Inferiore', 'flavor');
+    poi(m, 66, 31, 'tribunali_est', 'landmark', '↑ Via dei Tribunali · Decumano Maggiore', 'flavor');
+    poi(m, 54, 14, 'tribunali_nord', 'landmark', '↑ Via dei Tribunali / San Gennaro', 'flavor');
+    decor(m, 69, 31, 'sign', { h: 20 }); decor(m, 54, 14, 'sign', { h: 20 });
 
     building(m, 38, 43, 2, 4, 'pizzeria', 'Entra in pizzeria', 'door');
     building(m, 54, 17, 5, 4, 'metro', 'Entra in metro', 'door');
@@ -368,6 +380,14 @@
     const R = U.rng(8801), g = m.g;
     scatter(g, ',', 46, c => c === '.', R);
 
+    // Il Golfo di Baia e' a NORD di Via Ortensio (spiaggia OSM way 1093307389):
+    // due righe d'acqua incorniciano il pontile del portale storico (4,0).
+    for (let x = 0; x < w; x++) {
+      if (x < 4 || x > 5) { setTile(g, x, 0, 'W'); setTile(g, x, 1, 'W'); }
+    }
+    for (let y = 0; y < 4; y++) { setTile(g, 4, y, 'e'); setTile(g, 5, y, 'e'); }
+    setTile(g, 4, 0, 'Y'); setTile(g, 5, 0, 'Y'); // ancoraggio del portale invariato
+
     // Pendio di tufo: roccia solida e terrazzamenti, non alberi sparsi.
     for (let x = 0; x < w; x++) if (g[2][x] === '.' && R() > .35) setTile(g, x, 2, '^');
     rect(g, 3, 3, 12, 7, 'g'); rect(g, 17, 3, 8, 7, 'g'); rect(g, 28, 3, 11, 7, 'g');
@@ -391,8 +411,18 @@
     decor(m, 26, 14, 'metric_facade', { type: 'bacoli_casa', h: 96, oy: 0 });
     building(m, 18, 14, 6, 4, 'souvenir', 'Souvenir di Baia', 'shop', { shop: 'bacoli' });
     building(m, 36, 14, 6, 4, 'bar', 'Bar sul porto', 'shop', { shop: 'bacoli' });
+    // Via Spiaggia (OSM way 249546668): asse breve e quasi perfettamente N-S,
+    // qui 1 cella = 2 m, che scende dal borgo al porto senza tagliare il lungomare.
+    for (let y = 11; y <= 23; y++) {
+      if (g[y] && (g[y][24] === '.' || g[y][24] === 'p' || g[y][24] === 'S')) setTile(g, 24, y, 'e');
+    }
     poi(m, 12, 7, 'terme_baia', 'landmark', 'Terme di Baia', 'flavor');
     poi(m, 24, 23, 'porto_bacoli', 'service', 'Porto di Bacoli', 'fish');
+    poi(m, 24, 12, 'via_spiaggia', 'landmark', 'Via Spiaggia', 'flavor');
+    poi(m, 34, 8, 'cento_passi', 'landmark', 'Belvedere I Cento Passi', 'flavor');
+    poi(m, 44, 11, 'castello_baia', 'landmark', 'Castello Aragonese di Baia', 'flavor');
+    decor(m, 34, 9, 'sign', { h: 20 });
+    decor(m, 44, 11, 'sign', { h: 20 });
     decor(m, 18, 18, 'laundry_line', { x2: 24 * T, y2: 18 * T, sag: 6 });
     decor(m, 11, 8, 'plant', { h: 12 }); decor(m, 38, 8, 'plant', { h: 12 });
     decor(m, 6, 20, 'fishing_net', { w: 24, h: 20, oy: 0 });
@@ -535,6 +565,32 @@
       rect(g, x, y, bw, bh, '#');
       decor(m, x, y, 'metric_facade', { type, h: hh, oy });
     }
+
+    // Piazzale Vincenzo Tecchio (OSM way 226082932): lastrico pedonale tra
+    // gli isolati e lo stadio. La grande ellisse a est e' lo stadio Maradona
+    // (OSM way 22790881, campo 105x68 m): la macro-scala e' anamorfica, ma
+    // l'impianto resta leggibile come unico volume ellittico del quartiere.
+    rect(g, 49, 21, 6, 10, 'D');
+    rect(g, 48, 31, 23, 1, 'e');
+    setTile(g, 55, 31, 'r'); setTile(g, 56, 31, 'r'); // non interrompere l'asse nord-sud
+    rect(g, 58, 21, 13, 10, '=');
+    decor(m, 58, 21, 'metric_facade', { type: 'fuorigrotta_stadio', h: 160, oy: 0 });
+    poi(m, 52, 26, 'piazzale_tecchio', 'landmark', 'Piazzale Vincenzo Tecchio', 'flavor');
+    poi(m, 50, 24, 'cumana_mostra', 'service', 'Cumana Mostra-Stadio Maradona', 'flavor');
+    poi(m, 53, 24, 'metro_mostra_l6', 'service', 'Metro L6 Mostra', 'flavor');
+    poi(m, 64, 31, 'stadio_maradona', 'landmark', 'Stadio Diego Armando Maradona', 'flavor');
+    // Viale Augusto (asse ENE-WSW) e i tre nodi ferroviari reali: L6 Mostra,
+    // Cumana Mostra-Stadio Maradona, L6 Augusto, Cumana Fuorigrotta EAV e FS.
+    poi(m, 60, 32, 'viale_augusto', 'landmark', 'Viale Augusto', 'flavor');
+    poi(m, 69, 32, 'metro_augusto', 'service', 'Metro L6 Augusto', 'flavor');
+    poi(m, 70, 18, 'cumana_fuorigrotta', 'service', 'Cumana Fuorigrotta (EAV)', 'flavor');
+    poi(m, 63, 44, 'fs_campi_flegrei', 'service', 'Napoli Campi Flegrei (FS)', 'flavor');
+    poi(m, 5, 18, 'arena_flegrea', 'landmark', 'Arena Flegrea', 'flavor');
+    poi(m, 12, 18, 'palacongressi', 'landmark', 'Palacongressi della Mostra', 'flavor');
+    poi(m, 40, 18, 'viale_kennedy', 'landmark', 'Viale John Fitzgerald Kennedy', 'flavor');
+    poi(m, 55, 18, 'piazzale_colombo', 'landmark', 'Piazzale Cristoforo Colombo', 'flavor');
+    decor(m, 64, 32, 'sign', { h: 20 });
+
     // Panchine e lampioni solo sugli assi, secondo la griglia.
     for (let x = 5; x < 70; x += 11) { if (g[36] && g[36][x] === 'p') setTile(g, x, 36, 'E'); }
     for (let x = 9; x < 70; x += 13) { if (g[30] && g[30][x] === 'p') setTile(g, x, 30, 'U'); }
@@ -547,12 +603,22 @@
   /* ------------------------------------------------------------ PIANURA */
   function pianura() {
     // Antico borgo agricolo attorno a Piazza San Giorgio (OSM way 580193824):
-    // piazza 85x94 m, chiesa 40x31 m, municipio 39x25 m, borgo 2-4 piani in
-    // piperno e tufo, orlo verde di Camaldoli a est. 1 cella = 2 m.
+    // piazza 85x93 m, chiesa 40x31 m, municipio 39x25 m, borgo 2-4 piani in
+    // piperno e tufo, orlo verde di Camaldoli a est. 1 cella = 2 m. In questa
+    // griglia l'alto corrisponde a SUD: chiesa e municipio restano dove sono
+    // ancorati, ma la lettura geografica segue OSM (vedi report QA).
     const w = 64, h = 40;
     const m = makeMap('pianura', 'pianura', w, h, blank(w, h, 'p'));
     m.name = 'Pianura - Piazza San Giorgio';
     const g = m.g;
+    // Formatta le direttrici reali senza riscrivere le masse edilizie: agisce solo
+    // sui tile di suolo attraversabili (p, ., d, e).
+    const pave = (x, y, ch) => {
+      if (g[y] && ['.', 'p', 'd', 'e'].includes(g[y][x])) setTile(g, x, y, ch);
+    };
+    const paveRect = (x0, y0, ww, hh, ch) => {
+      for (let y = y0; y < y0 + hh; y++) for (let x = x0; x < x0 + ww; x++) pave(x, y, ch);
+    };
 
     // Versante di Camaldoli: verde e roccia, non alberi sparsi nella piazza.
     rect(g, 56, 0, 8, h, 'T');
@@ -571,6 +637,21 @@
     rect(g, 12, 17, 42, 14, 'd');
     rect(g, 20, 17, 22, 3, 'e'); rect(g, 30, 20, 3, 11, 'e');
     rect(g, 13, 24, 18, 2, 'e'); rect(g, 36, 29, 16, 2, 'e');
+    // Orientamento documentato: in alto e' SUD, a sinistra OVEST. La piazza
+    // reale e' 85x93 m, quindi qui e' un'asse-area compressa (42x14 celle)
+    // con la stessa area lastricata; le direttrici restano leggibili ai bordi.
+    paveRect(0, 17, 12, 3, 'e');                 // Via Simeoli / Corso Duca d'Aosta
+    paveRect(0, 27, 12, 4, 'e');                 // Via dell'Avvenire
+    paveRect(46, 17, 10, 14, 'e');               // Via Luigi Santamaria / Napoli
+    paveRect(12, 31, 42, 1, 'd');                // soglia sud della piazza
+    poi(m, 1, 18, 'via_simeoli', 'landmark', 'Via Don Vincenzo Simeoli', 'flavor');
+    poi(m, 1, 29, 'corso_duca_aosta', 'landmark', 'Corso Duca d’Aosta', 'flavor');
+    poi(m, 52, 24, 'via_santamaria', 'landmark', 'Via Luigi Santamaria', 'flavor');
+    // Etoile e' a 1,82 km a WSW: non viene inventata dentro la piazza, ma
+    // segnalata sul bordo ovest come direzione reale (Via Montagna Spaccata 449).
+    poi(m, 1, 27, 'bar_etoile', 'service', 'Bar Etoile · Via Montagna Spaccata 449', 'flavor');
+    decor(m, 1, 27, 'sign', { h: 20 });
+    decor(m, 52, 24, 'sign', { h: 20 });
 
     // Case del borgo: 20x14 m, 2-4 piani, basamento in piperno.
     const houses = [[2, 20], [13, 32], [46, 5], [46, 33], [54, 21]];
@@ -590,6 +671,12 @@
     }
     decor(m, 15, 22, 'sign', { h: 20 }); decor(m, 40, 22, 'plant', { h: 12 });
     decor(m, 5, 30, 'plant', { h: 12 });
+    // Piazza Municipio e il Milite Ignoto sono citati dalle fonti storiche del
+    // borgo; il Milite non e' georeferenziato in OSM, quindi resta una targa
+    // qualitativa e non una pretesa posizione documentata.
+    poi(m, 1, 16, 'piazza_municipio', 'landmark', 'Piazza Municipio', 'flavor');
+    poi(m, 14, 27, 'milite_ignoto', 'landmark', 'Milite Ignoto · targa storica', 'flavor');
+    decor(m, 1, 16, 'sign', { h: 20 }); decor(m, 14, 27, 'sign', { h: 20 });
     m.spawn = { x: 10 * T, y: 30 * T };
     return m;
   }

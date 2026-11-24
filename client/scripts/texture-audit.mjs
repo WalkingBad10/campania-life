@@ -20,6 +20,7 @@ const EXPECTED = {
   palazzo_e: [160, 80],
   fuorigrotta_blocco: [192, 144], fuorigrotta_torre: [160, 240],
   fuorigrotta_teatro: [560, 280], fuorigrotta_mostra: [320, 160],
+  fuorigrotta_stadio: [208, 160],
   pianura_chiesa: [320, 248], pianura_borgo: [160, 112],
   pianura_municipio: [312, 200],
   bacoli_terme: [312, 144], bacoli_castello: [288, 176],

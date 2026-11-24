@@ -25,6 +25,12 @@ ROWS = [
      'FOTO · Piazza del Gesu', REF / 'piazza_del_gesu.jpg'),
     ('GIOCO · Santa Chiara e campanile (50,22)', QA / 'macbook-napoli-campanile.png',
      'ORTOFOTO · Guglia (OSM way 261256738)', REF / 'satellite-guglia-crop.png'),
+    ('GIOCO · Stadio Maradona (64,31)', QA / 'macbook-fuorigrotta-stadio.png',
+     'FOTO · Stadio Diego Armando Maradona', REF / 'fuorigrotta-stadio.jpg'),
+    ('GIOCO · Golfo di Baia a nord (5,2)', QA / 'macbook-bacoli-golfo-nord.png',
+     'FOTO · Castello di Baia dalla spiaggia', REF / 'bacoli-castello.jpg'),
+    ('GIOCO · San Giorgio e borgo', QA / 'macbook-pianura.png',
+     'FOTO · Chiesa di San Giorgio Martire', REF / 'pianura-san-giorgio.jpg'),
 ]
 
 

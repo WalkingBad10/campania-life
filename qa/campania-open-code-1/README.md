@@ -17,6 +17,12 @@ Prima del pass di consolidamento sono stati creati:
 
 `1b59ff8` è la baseline pubblicata prima del consolidamento (deploy verificato, workflow run `45498783501`, bundle `index-CNw081DB.js`).
 
+Prima del pass artistico/geografico è stato creato:
+
+- tag `checkpoint/pre-art-pass`, branch `backup/pre-art-pass` → `b71b3a8`
+
+Il commit `3927e50` contiene il riordino delle texture distribuite; il pass sulle quattro zone prioritarie prosegue da quel checkpoint senza aggiungere mappe. Il suo deploy è stato verificato: workflow run `45507995565` `success`, bundle remoto `index-DEQAp2ru.js`, marker beta e chiave save `campania_life_save_v1` presenti nel bundle pubblicato.
+
 ## Fonti usate (studio, non copia negli asset di gioco)
 - OpenStreetMap API:
   - piazza: way `563345000`, centro `40.8470181, 14.2517696`, bbox `40.8466809..40.8473692`, `14.2512228..14.2523350`.
@@ -54,10 +60,29 @@ Correzioni applicate:
 7. **Metro** — `metroTravel(to)` ora accetta `fuorigrotta` e `pianura` oltre al toggle storico Toledo ↔ Dante; biglietto, tempo, quest progress e autosave invariati. I tornelli nuovi sono nelle due stazioni e nelle nuove zone, con spawn metrici fissi.
 8. **Bacoli** — parco archeologico, tre templi documentati (Diana, Mercurio, Venere), castello aragonese e case in tufo; portali e POI storici invariati.
 
+## Pass artistico/geografico (26 mappe, nessuna nuova mappa)
+
+1. **Texture, non solo Piazza del Gesù** — controllo generale di nomi, dimensioni, duplicati e mapping: le facciate M1 non lasciano più bande laterali vuote ma vengono ricomposte specchiando le campate dei fianchi, senza stirare l'asset. 50 PNG distribuiti = 50 PNG referenziati; i 1.570 fogli estratti e gli sprite M1 non usati sono fuori dalla cartella distribuita.
+2. **Piazza del Gesù / centro storico** — basolato a gradoni regolari verso est, targhe per Spaccanapoli/Decumano Inferiore e per Via dei Tribunali/Decumano Maggiore (che non è Spaccanapoli). La distanza reale Guglia → campanile (129 m a 65°) resta coerente con gli ancoraggi `(36,26) → (60,16)`.
+3. **Fuorigrotta** — aggiunti il lastrico di Piazzale Tecchio e l'ellisse dello Stadio Maradona (facciata metrica generata a runtime `fuorigrotta_stadio`, 208 × 160 px), con POI di L6 Mostra, Cumana Mostra-Stadio Maradona, L6 Augusto, Cumana Fuorigrotta EAV e FS Campi Flegrei. La macro-griglia resta dichiaratamente anamorfica: 144 × 96 m non possono contenere il solo stadio (232 × 287 m).
+4. **Bacoli** — il Golfo di Baia è stato portato a nord del borgo, con pontile che conserva esattamente il portale `(4,0)`; Via Spiaggia scende N-S al porto; aggiunti i cartelli del Castello Aragonese e del Belvedere I Cento Passi.
+5. **Pianura** — la griglia è letta con l'alto a sud (coerentemente con OSM), mantenendo chiesa, municipio, spawn `(10,30)` e metro `(11,36)` invariati; direttrici reali (Via Simeoli, Corso Duca d'Aosta, Via Santamaria), Piazza Municipio e Milite Ignoto come targhe. **Bar Etoile è a 1,82 km**, quindi non è stato inventato in piazza: è una targa direzionale sul bordo ovest verso Via Montagna Spaccata 449.
+6. **Verifica visiva preparata** — `visual-explore.mjs` produce ora anche le inquadrazioni dedicate `fuorigrotta-stadio`, `fuorigrotta-tecchio`, `bacoli-golfo-nord` e `pianura-bar-etoile`, oltre alle quattro storiche del Gesù.
+
+## Bug critico: «Nuova partita» su touch
+
+**Riproduzione sulla versione pubblicata** (`index-DEQAp2ru.js`, Pixel 9 Pro XL emulato con `hasTouch: true`): il tap su «NUOVA PARTITA» non cambiava schermata; il click con mouse sulla stessa pagina funzionava. Nessun errore JS, nessun asset mancante e nessuna chiamata API in fase di avvio.
+
+**Causa effettiva** — `MobileControls` registrava listener globali `touchmove`/`touchend` anche quando i controlli non erano visibili (titolo e creazione personaggio) e chiamava `e.preventDefault()` su ogni `touchend`. Il browser non sintetizzava quindi l'evento `click` dei pulsanti React. Il log confermava `window.touchend defaultPrevented=true` sul pulsante «NUOVA PARTITA». Inoltre alcuni `preventDefault()` dentro handler React touch, passivi per impostazione predefinita, producevano il messaggio «Unable to preventDefault inside passive event listener invocation».
+
+**Correzione** — i listener globali sono attivi solo con i controlli di gioco visibili; il `preventDefault()` non viene più usato fuori dal joystick attivo; la gestione dello scorrimento è lasciata a `touch-action: none/manipulation` nel CSS. Nessuna mappa, proporzione, texture, collisione, salvataggio o POI è stato rimosso.
+
+`client/scripts/mobile-start.mjs` (`npm run test:mobile-start`) usa veri tap e un trascinamento touch del joystick, poi verifica: ingresso effettivo in `napoli`, HUD e giocatore presenti, movimento delle coordinate, save `v1` con posizione aggiornata, «CONTINUA» dopo reload e backend opzionale offline. Il test è eseguito anche nella workflow Pages sulla build pubblicata.
+
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
 
-Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-free`) ha raggiunto il limite gratuito e il modello corrente non legge immagini. Il confronto è quindi stato fatto con OSM/satellite, misure documentate e analisi programmatica dei canvas: `confronto-visivo.jpg` affianca quattro inquadrature di gioco (guglia davanti/dietro, prospetto del Gesù, campanile) alle foto reali e all'ortofoto. **La revisione estetica finale resta umana**.
+Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-free`) ha raggiunto il limite gratuito e il modello corrente non legge immagini. Il confronto è quindi stato fatto con OSM/satellite, misure documentate e analisi programmatica dei canvas: `confronto-visivo.jpg` affianca sette inquadrature di gioco (guglia davanti/dietro, prospetto del Gesù, campanile, stadio Maradona, golfo di Baia e San Giorgio) alle foto reali e all'ortofoto. **La revisione estetica finale resta umana**.
 
 ## Invarianti preservate
 - Save key `campania_life_save_v1`, forma `{ v:1, t, data }`, nessun nuovo campo top-level.
@@ -69,7 +94,8 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
 - Debug player nascosto di default (`?debug=1` o `?dbg=1` per riattivarlo).
 
 ## Verifiche automatiche
-- Regressione deterministico: **31/31 PASS** (gate minimo richiesto 28/28; include scala metrica, nuove mappe, viaggi metro e anchoring).
+- Regressione deterministico: **31/31 PASS** (gate minimo richiesto 28/28; include scala metrica, nuove mappe, viaggi metro, ancoraggi e nuove targhe geografiche).
+- Avvio mobile touch (`npm run test:mobile-start`, Pixel 9 Pro XL emulato): **OK** su build locale e CI-like; riproduce il percorso reale «NUOVA PARTITA» → ingresso in mappa → movimento → save → «CONTINUA».
 - Build locale Vite: **OK**.
 - Build CI-like `GH_PAGES_BASE=/campania-life/`: **OK**.
 - `client/scripts/visual-explore.mjs` con Playwright/Chromium:
@@ -79,9 +105,9 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
   - profondità naturale davanti/dietro la guglia: **0 fallimenti**;
   - geometria metrica della guglia: **0 fallimenti**;
   - pannelli debug visibili: **0**;
-  - screenshot complete in questa cartella (`macbook-*.png`, `pixel9proxl-*.png`), incluse le 4 inquadrature di confronto per dispositivo.
-- `client/scripts/render-audit.mjs`: dimensioni **effettivamente disegnate** dal motore — Guglia 126 × 240, campanile 112 × 384, Gesù 448 × 248, palazzo NE 288 × 160, facciate metriche delle nuove zone — **0 errori**. I 38 anchor volutamente fuori bounds (arredi a muro, riempimento viewport, gronda del Gesù) sono documentati in `render-audit.json` e non sono architetture tagliate.
-- `client/scripts/texture-audit.mjs`: **50/50 PNG distribuiti referenziati**, 0 file inutilizzati, **17/17 facciate** alla dimensione metrica corretta e senza campate laterali vuote. I fogli estratti e gli asset M1 non usati sono stati spostati in `_source-sheets/` (esclusi dal build e da Git), non più nella cartella distribuita.
+  - screenshot complete in questa cartella (`macbook-*.png`, `pixel9proxl-*.png`), incluse le 8 inquadrature dedicate per dispositivo (4 storiche del Gesù + stadio, Tecchio, golfo nord di Baia, targa Etoile).
+- `client/scripts/render-audit.mjs`: dimensioni **effettivamente disegnate** dal motore — Guglia 126 × 240, campanile 112 × 384, Gesù 448 × 248, palazzo NE 288 × 160, facciate metriche delle nuove zone e stadio 208 × 160 — **0 errori**. I 39 anchor volutamente fuori bounds (arredi a muro, riempimento viewport, gronda del Gesù) sono documentati in `render-audit.json` e non sono architetture tagliate.
+- `client/scripts/texture-audit.mjs`: **50/50 PNG distribuiti referenziati**, 0 file inutilizzati, **18/18 facciate** alla dimensione metrica corretta e senza campate laterali vuote. I fogli estratti e gli asset M1 non usati sono stati spostati in `_source-sheets/` (esclusi dal build e da Git), non più nella cartella distribuita.
 
 ## Limiti dichiarati
 - Le schermate e le metriche sono **emulazione Playwright/Chromium**, non test su dispositivi fisici.

@@ -34,6 +34,21 @@ jobs:
         run: npm run build
       - name: SPA fallback
         run: cp client/dist/index.html client/dist/404.html
+      - name: Install Playwright Chromium
+        working-directory: client
+        run: npx playwright install --with-deps chromium
+      - name: Mobile start smoke (touch)
+        working-directory: client
+        env:
+          GH_PAGES_BASE: /${{ github.event.repository.name }}/
+          CL_BASE_URL: http://127.0.0.1:4173/${{ github.event.repository.name }}/
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 > preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf "$CL_BASE_URL" >/dev/null && break
+            sleep 1
+          done
+          npm run test:mobile-start
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

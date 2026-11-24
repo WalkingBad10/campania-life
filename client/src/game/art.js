@@ -644,6 +644,8 @@
         fuorigrotta_torre:{ w:160, h:240, wall:'#d9d7cc', trim:'#ada99d', roof:'#9d9a91', proc:'torre' },
         fuorigrotta_teatro:{ w:560, h:280, wall:'#d5d3c9', trim:'#a7a89f', roof:'#8e9696', proc:'teatro' },
         fuorigrotta_mostra:{ w:320, h:160, wall:'#dedbd0', trim:'#b2b0a4', roof:'#9aa09d', proc:'mostra' },
+        // Stadio Diego Armando Maradona: ellisse 26x20 m nella griglia logica.
+        fuorigrotta_stadio:{ w:208, h:160, wall:'#d3d4cd', trim:'#a6a79f', roof:'#818981', proc:'stadio' },
         pianura_chiesa:{ w:320, h:248, wall:'#d8c9ad', trim:'#b6a488', roof:'#9a8262', proc:'chiesa' },
         pianura_borgo:{ w:160, h:112, wall:'#d2c1a0', trim:'#8e7c62', roof:'#9b6b4b', proc:'borgo' },
         pianura_municipio:{ w:312, h:200, wall:'#ddd5c2', trim:'#9b9384', roof:'#7f7668', proc:'municipio' },
@@ -828,6 +830,44 @@
           px(x, 186, 40, 188, 3, 'rgba(255,255,255,.24)');
           cornice(216, 5, '#c1c0b5'); door(260, 221, 40, 51, '#5d6b70');
           px(x, 236, H - 8, 88, 8, '#a9a79c');
+          break;
+        }
+        case 'fuorigrotta_stadio': {
+          // Stadio Maradona: ellisse di cemento, corsia in mattone e prato
+          // rettangolare. La vista dall'alto è coerente con la camera del gioco
+          // e con la pianta ellittica documentata da OSM way 22790881.
+          ell(x, W / 2, H / 2 + 4, 101, 71, '#8e948e');
+          ell(x, W / 2, H / 2 + 2, 98, 68, '#d4d5cd');
+          ell(x, W / 2, H / 2 + 2, 88, 59, '#b56d55');
+          ell(x, W / 2, H / 2 + 2, 82, 53, '#7d9b6d');
+          const fx = W / 2, fy = H / 2 + 1;
+          px(x, fx - 54, fy - 23, 108, 46, '#e7e5d6');
+          px(x, fx - 51, fy - 20, 102, 40, '#628d54');
+          px(x, fx - 51, fy - 20, 102, 3, '#77a365');
+          px(x, fx - 1, fy - 20, 2, 40, '#e9e8d8');
+          ell(x, fx, fy, 9, 9, 'rgba(233,232,216,.85)');
+          for (let a = 0; a < 360; a += 15) {
+            const rad = a * Math.PI / 180;
+            px(x, fx + Math.round(Math.cos(rad) * 93), fy + 2 + Math.round(Math.sin(rad) * 63), 2, 2, '#a8aaa1');
+          }
+          for (const ex of [44, 96, 148]) {
+            px(x, ex, H - 18, 16, 18, '#8f9490');
+            px(x, ex + 2, H - 14, 12, 14, '#5f6663');
+            px(x, ex + 6, H - 14, 4, 14, '#404745');
+          }
+          // Ali laterali: gradoni e servizi leggibili anche ai margini, non
+          // semplici bande piatte create dall'aspect-fit.
+          for (let sy = 12; sy < H - 12; sy += 10) {
+            px(x, 0, sy, 18, 2, '#aeb2aa'); px(x, W - 18, sy, 18, 2, '#aeb2aa');
+            px(x, 0, sy + 5, 12, 1, '#c4c7bd'); px(x, W - 12, sy + 5, 12, 1, '#c4c7bd');
+            px(x, 4, sy + 2, 1, 4, '#8d938d'); px(x, W - 5, sy + 2, 1, 4, '#8d938d');
+          }
+          for (let sx = 0; sx < 18; sx += 4) {
+            px(x, sx, 8, 2, H - 16, '#767e78');
+            px(x, W - 2 - sx, 8, 2, H - 16, '#767e78');
+          }
+          px(x, 0, 0, W, 4, S.roof); px(x, 0, H - 4, W, 4, S.roof);
+          px(x, 0, 0, 3, H, S.roof); px(x, W - 3, 0, 3, H, S.roof);
           break;
         }
         case 'fuorigrotta_mostra': {

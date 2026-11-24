@@ -44,7 +44,9 @@ export default function MobileControls({ visible }) {
   };
   const onJoyMove = e => {
     if (!active.current) return;
-    if (e.cancelable) e.preventDefault();
+    // Il CSS `.mc-joy{touch-action:none}` blocca scroll/zoom: qui non serve
+    // preventDefault, che nei listener React touch e' passivo e genererebbe
+    // un errore console su Android.
     const t = e.touches ? e.touches[0] : e;
     const dx = t.clientX - origin.current.x;
     const dy = t.clientY - origin.current.y;
@@ -55,14 +57,19 @@ export default function MobileControls({ visible }) {
     if (knobRef.current) knobRef.current.style.transform = `translate(${nx}px, ${ny}px)`;
     applyAxis(nx, ny);
   };
-  const onJoyEnd = e => {
-    if (e && e.cancelable) e.preventDefault();
+  const onJoyEnd = () => {
+    // Nessun preventDefault: un touchend globale consumato bloccherebbe la
+    // sintesi del click su qualsiasi pulsante (titolo, creazione, dialoghi).
+    if (!active.current) return;
     active.current = false;
     if (knobRef.current) knobRef.current.style.transform = 'translate(0px,0px)';
     clearAxis();
   };
 
   useEffect(() => {
+    // I listener globali servono solo quando i controlli touch sono in gioco:
+    // sui menu iniziali non devono toccare i touchend dei pulsanti React.
+    if (!visible) return;
     const move = e => onJoyMove(e);
     const up = e => onJoyEnd(e);
     window.addEventListener('mousemove', move);
@@ -75,7 +82,7 @@ export default function MobileControls({ visible }) {
       window.removeEventListener('touchmove', move);
       window.removeEventListener('touchend', up);
     };
-  }, []);
+  }, [visible]);
 
   if (!visible) return null;
   return (
@@ -91,22 +98,22 @@ export default function MobileControls({ visible }) {
       </div>
       <div className="mc-actions">
         <button className={`mc-btn mc-run ${runOn ? 'on' : ''}`}
-          onTouchStart={e => { e.preventDefault(); setRunOn(true); setKey('run', true); }}
-          onTouchEnd={e => { e.preventDefault(); setRunOn(false); setKey('run', false); }}
-          onTouchCancel={e => { e.preventDefault(); setRunOn(false); setKey('run', false); }}
+          onTouchStart={() => { setRunOn(true); setKey('run', true); }}
+          onTouchEnd={() => { setRunOn(false); setKey('run', false); }}
+          onTouchCancel={() => { setRunOn(false); setKey('run', false); }}
           onMouseDown={e => { e.preventDefault(); setRunOn(true); setKey('run', true); }}
           onMouseUp={e => { e.preventDefault(); setRunOn(false); setKey('run', false); }}
           onMouseLeave={e => { if (runOn) { setRunOn(false); setKey('run', false); } }}
         >CORRI</button>
         <button className="mc-btn mc-a"
-          onTouchStart={e => { e.preventDefault(); setKey('interact', true); }}
-          onTouchEnd={e => { e.preventDefault(); setKey('interact', false); }}
+          onTouchStart={() => setKey('interact', true)}
+          onTouchEnd={() => setKey('interact', false)}
           onMouseDown={e => { e.preventDefault(); setKey('interact', true); }}
           onMouseUp={e => { e.preventDefault(); setKey('interact', false); }}
         >E</button>
         <button className="mc-btn mc-m"
-          onTouchStart={e => { e.preventDefault(); setKey('menu', true); }}
-          onTouchEnd={e => { e.preventDefault(); setKey('menu', false); }}
+          onTouchStart={() => setKey('menu', true)}
+          onTouchEnd={() => setKey('menu', false)}
           onMouseDown={e => { e.preventDefault(); setKey('menu', true); }}
           onMouseUp={e => { e.preventDefault(); setKey('menu', false); }}
         >TEL</button>

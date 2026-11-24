@@ -155,6 +155,19 @@
       "pass": true
     },
     {
+      "kind": "fuorigrotta_stadio",
+      "width": 208,
+      "height": 160,
+      "expected": [
+        208,
+        160
+      ],
+      "leftQuietPx": 1,
+      "rightQuietPx": 2,
+      "maxQuietPx": 25,
+      "pass": true
+    },
+    {
       "kind": "pianura_chiesa",
       "width": 320,
       "height": 248,

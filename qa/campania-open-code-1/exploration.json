@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T23:11:57.561Z",
+  "generatedAt": "2026-11-24T23:26:22.392Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "scope": "EMULAZIONE Playwright/Chromium. Non sostituisce test su MacBook e Pixel 9 Pro XL fisici.",
   "devices": [
@@ -9,10 +9,10 @@
       "debugPanels": 0,
       "metrics": {
         "napoli": {
-          "palette": 1497,
+          "palette": 1505,
           "edgeDensity": 0.151,
-          "contrast": 230,
-          "luminance": 131.2,
+          "contrast": 225,
+          "luminance": 131.8,
           "map": {
             "w": 72,
             "h": 48,
@@ -74,10 +74,10 @@
           "vehicles": 0
         },
         "bacoli": {
-          "palette": 802,
-          "edgeDensity": 0.144,
+          "palette": 851,
+          "edgeDensity": 0.142,
           "contrast": 228,
-          "luminance": 130.8,
+          "luminance": 130.6,
           "map": {
             "w": 48,
             "h": 30,
@@ -126,10 +126,10 @@
           "vehicles": 1
         },
         "fuorigrotta": {
-          "palette": 528,
+          "palette": 607,
           "edgeDensity": 0.128,
           "contrast": 229,
-          "luminance": 143.3,
+          "luminance": 143.1,
           "map": {
             "w": 72,
             "h": 48,
@@ -139,10 +139,10 @@
           "vehicles": 2
         },
         "pianura": {
-          "palette": 511,
-          "edgeDensity": 0.15,
-          "contrast": 235,
-          "luminance": 143.7,
+          "palette": 572,
+          "edgeDensity": 0.154,
+          "contrast": 222,
+          "luminance": 142.1,
           "map": {
             "w": 64,
             "h": 40,
@@ -378,7 +378,7 @@
             18,
             38
           ],
-          "visiblePixels": 126,
+          "visiblePixels": 128,
           "expectOccluded": false,
           "pass": true
         },
@@ -398,7 +398,7 @@
             44,
             15
           ],
-          "visiblePixels": 213,
+          "visiblePixels": 219,
           "expectOccluded": false,
           "pass": true
         },
@@ -408,7 +408,7 @@
             15,
             17
           ],
-          "visiblePixels": 130,
+          "visiblePixels": 131,
           "expectOccluded": false,
           "pass": true
         },
@@ -418,7 +418,7 @@
             36,
             24
           ],
-          "visiblePixels": 11,
+          "visiblePixels": 12,
           "expectOccluded": true,
           "pass": true
         },
@@ -428,7 +428,7 @@
             36,
             30
           ],
-          "visiblePixels": 128,
+          "visiblePixels": 130,
           "expectOccluded": false,
           "pass": true
         },
@@ -438,7 +438,7 @@
             11,
             26
           ],
-          "visiblePixels": 152,
+          "visiblePixels": 151,
           "expectOccluded": false,
           "pass": true
         },
@@ -448,7 +448,7 @@
             22,
             25
           ],
-          "visiblePixels": 97,
+          "visiblePixels": 96,
           "expectOccluded": false,
           "pass": true
         },
@@ -458,7 +458,7 @@
             50,
             25
           ],
-          "visiblePixels": 91,
+          "visiblePixels": 96,
           "expectOccluded": false,
           "pass": true
         },
@@ -468,7 +468,7 @@
             10,
             30
           ],
-          "visiblePixels": 226,
+          "visiblePixels": 233,
           "expectOccluded": false,
           "pass": true
         },
@@ -488,7 +488,7 @@
             42,
             26
           ],
-          "visiblePixels": 58,
+          "visiblePixels": 60,
           "expectOccluded": false,
           "pass": true
         },
@@ -498,7 +498,7 @@
             5,
             14
           ],
-          "visiblePixels": 118,
+          "visiblePixels": 117,
           "expectOccluded": false,
           "pass": true
         },
@@ -564,8 +564,8 @@
         }
       ],
       "depthOrder": {
-        "behind": 11,
-        "front": 128,
+        "behind": 12,
+        "front": 130,
         "pass": true
       }
     },
@@ -575,10 +575,10 @@
       "debugPanels": 0,
       "metrics": {
         "napoli": {
-          "palette": 1497,
+          "palette": 1505,
           "edgeDensity": 0.151,
-          "contrast": 230,
-          "luminance": 131.2,
+          "contrast": 225,
+          "luminance": 131.8,
           "map": {
             "w": 72,
             "h": 48,
@@ -640,10 +640,10 @@
           "vehicles": 0
         },
         "bacoli": {
-          "palette": 802,
-          "edgeDensity": 0.144,
+          "palette": 851,
+          "edgeDensity": 0.142,
           "contrast": 228,
-          "luminance": 130.8,
+          "luminance": 130.6,
           "map": {
             "w": 48,
             "h": 30,
@@ -692,10 +692,10 @@
           "vehicles": 1
         },
         "fuorigrotta": {
-          "palette": 528,
+          "palette": 607,
           "edgeDensity": 0.128,
           "contrast": 229,
-          "luminance": 143.3,
+          "luminance": 143.1,
           "map": {
             "w": 72,
             "h": 48,
@@ -705,10 +705,10 @@
           "vehicles": 2
         },
         "pianura": {
-          "palette": 511,
-          "edgeDensity": 0.15,
-          "contrast": 235,
-          "luminance": 143.7,
+          "palette": 572,
+          "edgeDensity": 0.154,
+          "contrast": 222,
+          "luminance": 142.1,
           "map": {
             "w": 64,
             "h": 40,
@@ -944,7 +944,7 @@
             18,
             38
           ],
-          "visiblePixels": 126,
+          "visiblePixels": 128,
           "expectOccluded": false,
           "pass": true
         },
@@ -964,7 +964,7 @@
             44,
             15
           ],
-          "visiblePixels": 213,
+          "visiblePixels": 219,
           "expectOccluded": false,
           "pass": true
         },
@@ -974,7 +974,7 @@
             15,
             17
           ],
-          "visiblePixels": 130,
+          "visiblePixels": 131,
           "expectOccluded": false,
           "pass": true
         },
@@ -984,7 +984,7 @@
             36,
             24
           ],
-          "visiblePixels": 11,
+          "visiblePixels": 12,
           "expectOccluded": true,
           "pass": true
         },
@@ -994,7 +994,7 @@
             36,
             30
           ],
-          "visiblePixels": 128,
+          "visiblePixels": 130,
           "expectOccluded": false,
           "pass": true
         },
@@ -1004,7 +1004,7 @@
             11,
             26
           ],
-          "visiblePixels": 152,
+          "visiblePixels": 151,
           "expectOccluded": false,
           "pass": true
         },
@@ -1014,7 +1014,7 @@
             22,
             25
           ],
-          "visiblePixels": 97,
+          "visiblePixels": 96,
           "expectOccluded": false,
           "pass": true
         },
@@ -1024,7 +1024,7 @@
             50,
             25
           ],
-          "visiblePixels": 91,
+          "visiblePixels": 96,
           "expectOccluded": false,
           "pass": true
         },
@@ -1034,7 +1034,7 @@
             10,
             30
           ],
-          "visiblePixels": 226,
+          "visiblePixels": 233,
           "expectOccluded": false,
           "pass": true
         },
@@ -1054,7 +1054,7 @@
             42,
             26
           ],
-          "visiblePixels": 58,
+          "visiblePixels": 60,
           "expectOccluded": false,
           "pass": true
         },
@@ -1064,7 +1064,7 @@
             5,
             14
           ],
-          "visiblePixels": 118,
+          "visiblePixels": 117,
           "expectOccluded": false,
           "pass": true
         },
@@ -1130,8 +1130,8 @@
         }
       ],
       "depthOrder": {
-        "behind": 11,
-        "front": 128,
+        "behind": 12,
+        "front": 130,
         "pass": true
       }
     }

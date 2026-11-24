@@ -187,13 +187,17 @@ async function runDevice(browser, device) {
   // Inquadrature dedicate al confronto con fotografie reali: la persona e'
   // vicina al monumento, quindi il rapporto adulto/monumento e' leggibile.
   const VIEWPOINTS = [
-    ['napoli-guglia-davanti', 36, 30],
-    ['napoli-guglia-dietro', 36, 24],
-    ['napoli-gesu-prospetto', 20, 18],
-    ['napoli-campanile', 50, 22]
+    ['napoli-guglia-davanti', 'napoli', 36, 30],
+    ['napoli-guglia-dietro', 'napoli', 36, 24],
+    ['napoli-gesu-prospetto', 'napoli', 20, 18],
+    ['napoli-campanile', 'napoli', 50, 22],
+    ['fuorigrotta-stadio', 'fuorigrotta', 64, 31],
+    ['fuorigrotta-tecchio', 'fuorigrotta', 52, 27],
+    ['bacoli-golfo-nord', 'bacoli', 5, 2],
+    ['pianura-bar-etoile', 'pianura', 2, 27]
   ];
-  for (const [name, tx, ty] of VIEWPOINTS) {
-    await enterMap(page, 'napoli', tx, ty);
+  for (const [name, id, tx, ty] of VIEWPOINTS) {
+    await enterMap(page, id, tx, ty);
     await page.locator('canvas').screenshot({ path: resolve(OUT, `${device.id}-${name}.png`), animations: 'disabled' });
   }
 

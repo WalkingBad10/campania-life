@@ -1032,6 +1032,7 @@ async function main() {
     const facades = {
       fuorigrotta_teatro: [560, 280], fuorigrotta_blocco: [192, 144],
       fuorigrotta_torre: [160, 240], fuorigrotta_mostra: [320, 160],
+      fuorigrotta_stadio: [208, 160],
       pianura_chiesa: [320, 248], pianura_municipio: [312, 200], pianura_borgo: [160, 112],
       bacoli_castello: [288, 176], bacoli_casa: [128, 96], bacoli_terme: [312, 144]
     };
@@ -1065,10 +1066,17 @@ async function main() {
     }
     const furnace = CL.maps.get('fuorigrotta');
     assert(furnace.pois.some(p => p.id === 'teatro_mediterraneo'), 'Teatro Mediterraneo anchored');
+    assert(furnace.pois.some(p => p.id === 'stadio_maradona'), 'Stadio Maradona anchored');
+    assert(furnace.pois.some(p => p.id === 'piazzale_tecchio'), 'Piazzale Tecchio anchored');
+    assert(furnace.decors.some(d => d.data && d.data.type === 'fuorigrotta_stadio'), 'stadium sprite is drawn');
     const hill = CL.maps.get('pianura');
     assert(hill.pois.some(p => p.id === 'san_giorgio'), 'San Giorgio Martire anchored');
+    assert(hill.pois.some(p => p.id === 'bar_etoile'), 'Etoile is a real directional landmark outside the square');
     const borgo = CL.maps.get('bacoli');
     assert(borgo.decors.filter(d => d.type === 'ruin_column').length >= 9, 'Baia has documented temple columns');
+    assert(borgo.pois.some(p => p.id === 'via_spiaggia'), 'Via Spiaggia descent is anchored');
+    assert(CL.maps.tile(borgo, 0, 0) === 'W' && CL.maps.tile(borgo, 4, 0) === 'Y',
+      'Baia gulf is north and the old portal stays walkable');
   }, ctx);
 
   await test('architectural audit fixes align sprites, props and routes', async () => {

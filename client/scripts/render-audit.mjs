@@ -118,6 +118,7 @@ async function main() {
   for (const [id, tx, ty, label] of [
     ['fuorigrotta', 22, 25, 'fuorigrotta-facciate'],
     ['fuorigrotta', 19, 19, 'fuorigrotta-teatro'],
+    ['fuorigrotta', 64, 31, 'fuorigrotta-stadio'],
     ['pianura', 25, 21, 'pianura-facciate'],
     ['bacoli', 24, 11, 'bacoli-templi']
   ]) {
@@ -174,6 +175,7 @@ async function main() {
     ['fuorigrotta-facciate', 'building:fuorigrotta_blocco', 192, 144],
     ['fuorigrotta-facciate', 'building:fuorigrotta_torre', 160, 240],
     ['fuorigrotta-teatro', 'building:fuorigrotta_teatro', 560, 280],
+    ['fuorigrotta-stadio', 'building:fuorigrotta_stadio', 208, 160],
     ['pianura-facciate', 'building:pianura_chiesa', 320, 248],
     ['bacoli-templi', 'building:bacoli_castello', 288, 176]
   ]) {
