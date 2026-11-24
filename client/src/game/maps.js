@@ -372,7 +372,7 @@
     for (let x = 0; x < w; x++) if (g[2][x] === '.' && R() > .35) setTile(g, x, 2, '^');
     rect(g, 3, 3, 12, 7, 'g'); rect(g, 17, 3, 8, 7, 'g'); rect(g, 28, 3, 11, 7, 'g');
     rect(g, 5, 5, 7, 3, 'd'); rect(g, 18, 5, 5, 3, 'd'); rect(g, 30, 5, 7, 3, 'd');
-    // Tre templi documentati: Diana, Mercurio, Venere (impronteRelative ~39x30,
+    // Tre templi documentati: Diana, Mercurio, Venere (impronte relative ~39x30,
     // 22x22, 34x33 m, qui 14x7, 8x7, 11x7 celle per la finestra disponibile).
     for (const [x, y, n] of [[5, 4, 4], [18, 4, 3], [30, 4, 4]]) {
       for (let i = 0; i < n; i++) decor(m, x + i * 3, y, 'ruin_column', { h: 18, oy: 0 });
