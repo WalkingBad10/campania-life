@@ -312,14 +312,17 @@ async function main() {
     assert(localStorage.getItem('campania_life_save_v1'), 'save key exists');
   }, ctx);
 
-  await test('compact HUD preference persists in settings', async () => {
+  await test('compact HUD and low-power preferences persist', async () => {
     const key = 'campania_life_settings';
     const prev = localStorage.getItem(key);
     assert(typeof CL.settings.compactHud === 'boolean', 'compact HUD setting exists');
-    CL.settings.compactHud = true; CL.storeSettings();
-    assert(JSON.parse(localStorage.getItem(key)).compactHud === true, 'compact HUD saved on');
-    CL.settings.compactHud = false; CL.storeSettings();
-    assert(JSON.parse(localStorage.getItem(key)).compactHud === false, 'compact HUD saved off');
+    assert(typeof CL.settings.lowPower === 'boolean', 'low power setting exists');
+    CL.settings.compactHud = true; CL.settings.lowPower = true; CL.storeSettings();
+    let saved = JSON.parse(localStorage.getItem(key));
+    assert(saved.compactHud === true && saved.lowPower === true, 'display and power settings saved on');
+    CL.settings.compactHud = false; CL.settings.lowPower = false; CL.storeSettings();
+    saved = JSON.parse(localStorage.getItem(key));
+    assert(saved.compactHud === false && saved.lowPower === false, 'display and power settings saved off');
     if (prev === null) localStorage.removeItem(key); else localStorage.setItem(key, prev);
   }, ctx);
 

@@ -5,6 +5,7 @@ export default function SettingsPanel({ onBack, onToast }) {
   const [sfx, setSfx] = useState(Math.round(CL.settings.sfx * 100));
   const [speed, setSpeed] = useState(CL.settings.timescale);
   const [shake, setShake] = useState(CL.settings.shake);
+  const [lowPower, setLowPower] = useState(CL.settings.lowPower);
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [name, setName] = useState('');
@@ -55,6 +56,7 @@ export default function SettingsPanel({ onBack, onToast }) {
             <label className="slider">Velocità tempo <input type="range" min="1" max="8" value={speed}
               onChange={e => { setSpeed(+e.target.value); change('timescale', +e.target.value); }} /> <b>×{speed}</b></label>
             <label className="check"><input type="checkbox" checked={shake} onChange={e => { setShake(e.target.checked); change('shake', e.target.checked); }} /> Effetti schermo</label>
+            <label className="check"><input type="checkbox" checked={lowPower} onChange={e => { setLowPower(e.target.checked); change('lowPower', e.target.checked); }} /> Risparmio batteria (render 30 fps)</label>
             <h3>Controlli</h3>
             <p className="muted">Frecce / WASD: movimento · E: interagisci · Space: conferma · Tab: telefono · I: zaino · M: mappa · J: missioni · Esc: menu</p>
           </div>

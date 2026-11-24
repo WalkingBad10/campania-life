@@ -38,7 +38,7 @@
       this.canvas = canvas;
       this.ctx = canvas.getContext('2d');
       this.ctx.imageSmoothingEnabled = false;
-      this.running = false; this.last = 0; this.acc = 0;
+      this.running = false; this.last = 0; this.lastRender = 0; this.acc = 0;
       this.entities = []; this.particles = new CL.Particles();
       this.map = null; this.player = null; this.prompt = null; this.promptTarget = null;
       this.refreshT = 0; this.fadeT = 0; this.rainT = 0; this.weatherT = 0;
@@ -141,7 +141,11 @@
         let dt = Math.min(.05, (now - this.last) / 1000); this.last = now;
         try {
           this.update(dt);
-          this.render();
+          // In risparmio energetico il mondo continua a 60 Hz ma il disegno resta a ~30 fps.
+          if (!CL.settings.lowPower || now - this.lastRender >= 32) {
+            this.render();
+            this.lastRender = now;
+          }
         } catch (err) {
           console.error('[CL] frame error', err);
           // Mai tornare al menu: mostra errore e continua al frame successivo.

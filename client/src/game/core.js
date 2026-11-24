@@ -278,16 +278,19 @@
   };
 
   /* ------------------------------------------------------------- settings */
-  CL.settings = { music: .55, sfx: .75, timescale: 3, pixelPerfect: true, shake: true, compactHud: false };
+  CL.settings = { music: .55, sfx: .75, timescale: 3, pixelPerfect: true, shake: true, compactHud: false, lowPower: false };
   CL.loadSettings = function () {
     let saved = null;
     try {
       saved = LS && JSON.parse(LS.getItem('campania_life_settings') || 'null');
       if (saved) Object.assign(CL.settings, saved);
     } catch (e) {}
-    // Su touch il HUD compatto è il default; l'utente può sempre cambiarlo dalle impostazioni/HUD.
-    if (!saved || typeof saved.compactHud !== 'boolean') {
-      try { CL.settings.compactHud = !!(w.matchMedia && w.matchMedia('(pointer:coarse)').matches); } catch (e) {}
+    // Su touch HUD compatto e render a 30 fps sono i default; l'utente può cambiarli dalle impostazioni.
+    if (!saved || typeof saved.compactHud !== 'boolean' || typeof saved.lowPower !== 'boolean') {
+      let coarse = false;
+      try { coarse = !!(w.matchMedia && w.matchMedia('(pointer:coarse)').matches); } catch (e) {}
+      if (!saved || typeof saved.compactHud !== 'boolean') CL.settings.compactHud = coarse;
+      if (!saved || typeof saved.lowPower !== 'boolean') CL.settings.lowPower = coarse;
     }
     A.volMusic = CL.settings.music; A.volSfx = CL.settings.sfx;
   };
