@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T22:53:29.007Z",
+  "generatedAt": "2026-11-24T22:59:23.496Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "scope": "EMULAZIONE Playwright/Chromium. Non sostituisce test su MacBook e Pixel 9 Pro XL fisici.",
   "devices": [
@@ -133,7 +133,7 @@
           "map": {
             "w": 72,
             "h": 48,
-            "zone": "napoli"
+            "zone": "fuorigrotta"
           },
           "npcs": 2,
           "vehicles": 2
@@ -146,7 +146,7 @@
           "map": {
             "w": 64,
             "h": 40,
-            "zone": "napoli"
+            "zone": "pianura"
           },
           "npcs": 2,
           "vehicles": 1
@@ -699,7 +699,7 @@
           "map": {
             "w": 72,
             "h": 48,
-            "zone": "napoli"
+            "zone": "fuorigrotta"
           },
           "npcs": 2,
           "vehicles": 2
@@ -712,7 +712,7 @@
           "map": {
             "w": 64,
             "h": 40,
-            "zone": "napoli"
+            "zone": "pianura"
           },
           "npcs": 2,
           "vehicles": 1

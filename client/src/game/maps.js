@@ -489,7 +489,7 @@
     // Teatro Mediterraneo 99x79 m, isolati razionalisti 4-6 piani (14-21 m),
     // filari di palme e marciapiedi in porfido. 1 cella = 2 m.
     const w = 72, h = 48;
-    const m = makeMap('fuorigrotta', 'napoli', w, h, blank(w, h, 'p'));
+    const m = makeMap('fuorigrotta', 'fuorigrotta', w, h, blank(w, h, 'p'));
     m.name = 'Fuorigrotta - Viale Augusto';
     const g = m.g;
 
@@ -550,7 +550,7 @@
     // piazza 85x94 m, chiesa 40x31 m, municipio 39x25 m, borgo 2-4 piani in
     // piperno e tufo, orlo verde di Camaldoli a est. 1 cella = 2 m.
     const w = 64, h = 40;
-    const m = makeMap('pianura', 'napoli', w, h, blank(w, h, 'p'));
+    const m = makeMap('pianura', 'pianura', w, h, blank(w, h, 'p'));
     m.name = 'Pianura - Piazza San Giorgio';
     const g = m.g;
 

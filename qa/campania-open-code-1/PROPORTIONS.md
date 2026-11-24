@@ -201,7 +201,7 @@ ai loro cache di sprite. I tile di suolo restano 16 × 16 px.
 
 ## 8. Verifica prima della pubblicazione
 
-1. `regression.mjs` con nuovi assert metrici (gate minimo 28/28).
+1. `regression.mjs` con nuovi assert metrici: **31/31 PASS** (gate minimo 28/28).
 2. `visual-explore.mjs` su 2 dispositivi × 26 mappe, 0 errori, 0 occlusioni.
 3. `render-audit.mjs`: dimensioni **disegnate** dal motore, non solo sorgente.
 4. Build locale Vite e build CI-like `GH_PAGES_BASE=/campania-life/`.
