@@ -76,6 +76,7 @@
         CL.save.backup('pre_load');
         this.state = data; CL.state = data;
         this.state.inventory = this.state.inventory || {};
+        this.state.properties = this.state.properties || [];
         this.state.flags = this.state.flags || {};
         this.state.stats = this.state.stats || {};
         this.state.quests = this.state.quests || {};
@@ -278,6 +279,7 @@
         try { CL.ui.closeAll && CL.ui.closeAll(); } catch (e) {}
         this.particles.clear();
         this.map = targetMap;
+        this.applyFurniture(this.map);
         CL.camera.setBounds(this.map.width, this.map.height);
         this.entities = []; this.creatures = [];
         const tx = Number.isFinite(target.x) ? target.x : this.map.spawn.x;
@@ -380,6 +382,32 @@
 
     spawnCreatures() { /* disabilitato: simulatore vita reale */ }
     removeEntity(e) { const i = this.entities.indexOf(e); if (i >= 0) this.entities.splice(i, 1); e.alive = false; }
+
+    applyFurniture(map) {
+      if (!map || !S.furniture) return;
+      const items = [];
+      for (const prop of S.furniture.propsFor(map.id)) {
+        for (const id of S.furniture.owned(prop)) if (items.indexOf(id) < 0) items.push(id);
+      }
+      const sig = items.join('|');
+      if (map._furnitureSig === sig) return;
+      map.decors = (map.decors || []).filter(d => !d.fromFurniture);
+      for (const id of items) {
+        const def = D.furniture && D.furniture[id]; if (!def) continue;
+        const spots = (def.spots && (def.spots[map.id] || def.spots.default)) || [];
+        for (const [tx, ty] of spots) {
+          map.decors.push({
+            x: tx * T, y: ty * T, type: def.decor,
+            data: { w: def.w, h: def.h, oy: def.oy }, fromFurniture: true
+          });
+          if (id === 'lampada') map.decors.push({
+            x: tx * T + 8, y: ty * T - 8, type: 'warm_light',
+            data: { r: 26, color: 'rgba(255,190,120,.15)' }, fromFurniture: true
+          });
+        }
+      }
+      map._furnitureSig = sig;
+    }
 
     checkPortals(ent) {
       try {
@@ -718,7 +746,8 @@
         case 'bar_counter': case 'bar_shelf': case 'bar_table': case 'bar_detail': case 'piazza_strip':
         case 'ns_palazzo1': case 'ns_palazzo2': case 'ns_palazzo3':
         case 'pizzeria_oven': case 'pizzeria_counter': case 'pizzeria_table':
-        case 'metro_hall': case 'metro_platform': case 'metro_gate': {
+        case 'metro_hall': case 'metro_platform': case 'metro_gate':
+        case 'home_rug': case 'home_books': case 'home_lamp': case 'home_plant': case 'home_painting': {
           const img = ART.propSprite(d.type);
           if (img) {
             const dw = d.data.w || img.width;

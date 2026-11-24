@@ -347,6 +347,49 @@ async function main() {
     assert(F.mealReady().ok && F.meal(), 'meal available next day');
   }, ctx);
 
+  await test('furniture decorates owned homes, persists and adds sleep comfort', async () => {
+    newGame(ctx);
+    const F = CL.systems.furniture;
+    assert(F.list('monolocale').length >= 5, 'furniture catalog available');
+    CL.state.money = 5000;
+    assert(CL.systems.property.buy('monolocale'), 'buy home before furnishing');
+    assert(F.buy('monolocale', 'tappeto'), 'buy rug');
+    assert(!F.buy('monolocale', 'tappeto'), 'duplicate purchase blocked');
+    assert(F.owned('monolocale').indexOf('tappeto') >= 0, 'rug owned');
+    assert(F.comfort('monolocale').mood === 3, 'rug comfort');
+    assert(!F.buy('appartamento', 'libreria'), 'cannot furnish unowned property');
+
+    game.enterMap('casa_giocatore'); step(game, 5);
+    assert(game.map.id === 'casa_giocatore', 'entered owned home');
+    assert(game.map.decors.some(d => d.fromFurniture && d.type === 'home_rug'), 'rug decor applied');
+    assert(F.currentComfort().mood === 3, 'comfort active in current home');
+
+    const raw = localStorage.getItem('campania_life_save_v1');
+    const saved = JSON.parse(raw);
+    assert(saved.v === 1 && saved.data.flags.furniture.monolocale.indexOf('tappeto') >= 0, 'furniture in v1 save');
+    CL.maps.cache = {};
+    assert(game.load(saved.data), 'load save with furniture');
+    assert(F.owned('monolocale').indexOf('tappeto') >= 0, 'furniture survives load');
+
+    const legacy = JSON.parse(raw).data;
+    delete legacy.flags.furniture;
+    assert(game.load(legacy), 'load legacy save without furniture flags');
+    assert(F.owned('monolocale').length === 0, 'legacy furniture defaults empty');
+
+    newGame(ctx);
+    CL.state.needs.mood = 30;
+    CL.systems.actions.sleep();
+    const plainMood = CL.state.needs.mood;
+    newGame(ctx);
+    CL.state.money = 5000;
+    CL.systems.property.buy('monolocale');
+    F.buy('monolocale', 'tappeto');
+    game.enterMap('casa_giocatore'); step(game, 5);
+    CL.state.needs.mood = 30;
+    CL.systems.actions.sleep();
+    assert(CL.state.needs.mood > plainMood, `furnished sleep ${CL.state.needs.mood} > plain ${plainMood}`);
+  }, ctx);
+
   await test('church ingress altar exit and spawn invariants', async () => {
     newGame(ctx);
     const ch = CL.maps.get('casa_nonna');

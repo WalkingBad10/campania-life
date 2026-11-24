@@ -705,6 +705,11 @@
       else if(kind==='sign'){ c=cv(28,34); x=ctx(c); px(x,12,14,4,18,'#65432e'); px(x,2,2,24,14,'#f0e4cf'); px(x,2,2,24,2,'#7a5637'); px(x,4,6,20,2,'#b44a3a'); px(x,6,10,16,2,'#5a7a8f'); }
       else if(kind==='table_out'){ c=cv(28,20); x=ctx(c); px(x,2,8,24,4,'#8b6244'); px(x,3,6,22,3,'#a07050'); px(x,4,12,3,6,'#65432e'); px(x,21,12,3,6,'#65432e'); px(x,12,4,4,3,'#f0e4cf'); }
       else if(kind==='chair_out'){ c=cv(14,18); x=ctx(c); px(x,3,2,8,6,'#7a5637'); px(x,3,8,8,3,'#986d48'); px(x,3,11,2,5,'#65432e'); px(x,9,11,2,5,'#65432e'); }
+      else if(kind==='home_rug'){ c=cv(56,24); x=ctx(c); px(x,0,0,56,24,'#7a2f38'); px(x,3,3,50,18,'#b8444a'); px(x,6,6,44,12,'#2f6070'); px(x,9,9,38,6,'#d8a94f'); for(let i=12;i<44;i+=8){ px(x,i,9,2,6,'#8e3340'); px(x,i+2,11,4,2,'#e8d7a8'); } px(x,0,0,56,2,'#e0b95e'); px(x,0,22,56,2,'#e0b95e'); }
+      else if(kind==='home_books'){ c=cv(42,52); x=ctx(c); px(x,0,0,42,52,'#6b4b33'); px(x,2,2,38,48,'#8b6244'); const cols=['#c9564a','#4a87b8','#e9b84a','#7a9a5a','#f0e4cf','#8a6fa8']; for(let s=0;s<3;s++){ const by=5+s*15; px(x,4,by+11,34,3,'#5e4028'); for(let i=0;i<7;i++){ px(x,5+i*5,by+2+(i%2),4,9,cols[(i+s)%cols.length]); px(x,5+i*5,by+2+(i%2),4,1,'#f3efe6'); } } px(x,0,0,42,3,'#9b7349'); }
+      else if(kind==='home_lamp'){ c=cv(22,52); x=ctx(c); x.fillStyle='rgba(255,220,150,.15)'; x.beginPath(); x.arc(11,15,15,0,Math.PI*2); x.fill(); px(x,9,20,4,24,'#8b7048'); px(x,6,44,10,4,'#5e4a30'); px(x,3,6,16,15,'#d8a94f'); px(x,5,4,12,4,'#f0d58a'); px(x,3,19,16,3,'#a87c3c'); px(x,6,9,10,7,'#fff0b8'); }
+      else if(kind==='home_plant'){ c=cv(24,30); x=ctx(c); px(x,7,20,10,9,'#a05f3f'); px(x,6,18,12,3,'#c07a52'); px(x,9,27,6,3,'#7a4930'); x.fillStyle='#4f8a4c'; x.beginPath(); x.arc(12,12,8,0,Math.PI*2); x.fill(); x.fillStyle='#6faa5c'; x.beginPath(); x.arc(8,10,4,0,Math.PI*2); x.fill(); x.fillStyle='#8fbe70'; x.beginPath(); x.arc(16,9,4,0,Math.PI*2); x.fill(); px(x,11,8,2,8,'#3f6f3b'); }
+      else if(kind==='home_painting'){ c=cv(34,26); x=ctx(c); px(x,0,0,34,26,'#8b6244'); px(x,2,2,30,22,'#d8b86a'); px(x,4,4,26,18,'#8fc3d8'); px(x,4,15,26,7,'#6f9a5c'); px(x,12,8,10,10,'#f0e4cf'); px(x,14,6,6,5,'#c9564a'); px(x,0,0,34,2,'#b08a45'); px(x,0,24,34,2,'#b08a45'); }
       else { c=cv(16,16); x=ctx(c); px(x,0,0,16,16,'#d44d9a'); }
       return this.cache[key]=c;
     },

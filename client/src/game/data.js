@@ -82,6 +82,37 @@
     villetta_salerno: { name: 'Villetta sul mare', price: 26000, income: 220, interior: 'casa_amalfi', zone: 'salerno', desc: 'Vista lungomare, a due passi dal centro storico.' }
   };
 
+  /* ------------------------------------------------------------- arredamento */
+  // I pezzi sono visuali e danno un piccolo comfort quando si dorme nella casa che li contiene.
+  // Nessun nuovo campo nel salvataggio: gli acquisti vivono in state.flags.furniture.
+  D.furniture = {
+    tappeto: {
+      name: 'Tappeto persiano', price: 180, decor: 'home_rug', comfort: { mood: 3 },
+      w: 56, h: 24, oy: -10, desc: 'Morbido sotto i piedi, scalda la stanza.',
+      spots: { casa_giocatore: [[6,7]], appartamento: [[9,7]], casa_amalfi: [[8,6]], bottega: [[5,9]] }
+    },
+    libreria: {
+      name: 'Libreria', price: 320, decor: 'home_books', comfort: { mood: 4 },
+      w: 42, h: 52, oy: -36, desc: 'Storie, ricordi e un po’ di polvere napoletana.',
+      spots: { casa_giocatore: [[12,7]], appartamento: [[16,6]], casa_amalfi: [[14,6]], bottega: [[14,4]] }
+    },
+    lampada: {
+      name: 'Lampada da tavolo', price: 140, decor: 'home_lamp', comfort: { mood: 2 },
+      w: 22, h: 52, oy: -36, desc: 'Luce calda per le sere lente.',
+      spots: { casa_giocatore: [[2,8]], appartamento: [[3,11]], casa_amalfi: [[3,10]], bottega: [[3,9]] }
+    },
+    pianta: {
+      name: 'Pianta in vaso', price: 90, decor: 'home_plant', comfort: { mood: 2 },
+      w: 24, h: 30, oy: -18, desc: 'Verde che profuma di casa.',
+      spots: { casa_giocatore: [[13,9]], appartamento: [[17,10]], casa_amalfi: [[15,10]], bottega: [[15,9]] }
+    },
+    quadro: {
+      name: 'Quadro di famiglia', price: 220, decor: 'home_painting', comfort: { mood: 3 },
+      w: 34, h: 26, oy: -22, desc: 'Un volto noto che ti aspetta sulla parete.',
+      spots: { casa_giocatore: [[6,2]], appartamento: [[10,2]], casa_amalfi: [[9,2]], bottega: [[9,2]] }
+    }
+  };
+
   /* ------------------------------------------------------------- vita familiare */
   D.family = {
     meal: {

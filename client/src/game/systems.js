@@ -376,6 +376,69 @@
     }
   };
 
+  /* ------------------------------------------------------------- arredamento */
+  function furnitureFlags() {
+    const st = CL.state;
+    if (!st) return {};
+    st.flags = st.flags || {};
+    if (!st.flags.furniture || typeof st.flags.furniture !== 'object') st.flags.furniture = {};
+    return st.flags.furniture;
+  }
+
+  S.furniture = {
+    propsFor(mapId) {
+      return Object.keys(D.properties || {}).filter(id => (D.properties[id].interior || id) === mapId);
+    },
+    owned(propId) {
+      const all = furnitureFlags();
+      return Array.isArray(all[propId]) ? all[propId] : [];
+    },
+    has(propId, itemId) { return this.owned(propId).indexOf(itemId) >= 0; },
+    list(propId) {
+      return Object.keys(D.furniture || {}).map(id => ({
+        id, ...D.furniture[id], owned: this.has(propId, id)
+      }));
+    },
+    buy(propId, itemId) {
+      const st = CL.state, def = D.furniture && D.furniture[itemId], prop = D.properties && D.properties[propId];
+      if (!st || !def || !prop) return false;
+      if (!S.property.owns(propId)) {
+        toast('Questo immobile non è ancora tuo.', 'bad'); return false;
+      }
+      if (this.has(propId, itemId)) { toast('Hai già questo arredo.', 'info'); return false; }
+      if (!S.economy.spend(def.price, 'Arredo ' + def.name)) return false;
+      const all = furnitureFlags();
+      if (!Array.isArray(all[propId])) all[propId] = [];
+      all[propId].push(itemId);
+      // La mappa è in cache: la ricostruiamo al prossimo ingresso per mostrare il nuovo arredo.
+      if (CL.maps && CL.maps.cache && prop.interior) CL.maps.cache[prop.interior] = null;
+      toast('Arredo acquistato: ' + def.name + '.', 'good');
+      sfx('confirm'); refresh(); autosave(); return true;
+    },
+    comfort(propId) {
+      const total = { mood: 0, energy: 0 };
+      for (const id of this.owned(propId)) {
+        const bonus = (D.furniture[id] || {}).comfort || {};
+        total.mood += bonus.mood || 0;
+        total.energy += bonus.energy || 0;
+      }
+      return total;
+    },
+    mapComfort(mapId) {
+      const total = { mood: 0, energy: 0 };
+      for (const prop of this.propsFor(mapId)) {
+        const c = this.comfort(prop);
+        total.mood += c.mood; total.energy += c.energy;
+      }
+      return total;
+    },
+    currentComfort() {
+      const game = CL.game;
+      const mapId = game && game.map ? game.map.id : (CL.state && CL.state.pos ? CL.state.pos.map : null);
+      return mapId ? this.mapComfort(mapId) : { mood: 0, energy: 0 };
+    }
+  };
+
   /* -------------------------------------------------------------- immobili */
   S.property = {
     owns(id) { return CL.state.properties.indexOf(id) >= 0; },
@@ -444,11 +507,13 @@
       const st = CL.state;
       if (S.time.hour() >= 22 || S.time.hour() < 6) { toast('È troppo presto per andare a letto.', 'info'); return false; }
       sfx('sleep');
+      const comfort = S.furniture ? S.furniture.currentComfort() : { mood: 0 };
       S.time.addMinutes((24 - S.time.hour()) * 60 - S.time.minute() + 7 * 60);
-      st.needs.energy = 100; st.needs.mood = U.clamp(st.needs.mood + 18, 0, 100);
+      st.needs.energy = 100;
+      st.needs.mood = U.clamp(st.needs.mood + 18 + (comfort.mood || 0), 0, 100);
       st.stats.slept++;
       S.quests.progress('sleephome');
-      toast('Buongiorno! Sei riposato.', 'good');
+      toast('Buongiorno! Sei riposato.' + (comfort.mood ? ' La casa arredata ti ha disteso.' : ''), 'good');
       S.achievements.check(); refresh(); autosave(); return true;
     },
     fish() {

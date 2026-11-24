@@ -118,6 +118,17 @@ export default function PhoneMenu({ tab, data, game, onTab, onClose, onToast }) 
         <div><b>{p.name}</b> <span className="tag">{p.income} €/giorno</span>
           <div className="sub">{p.desc}</div>
           <div className="sub">Prezzo: {p.price.toLocaleString('it-IT')} € · {p.zone}</div>
+          {p.owned && <details>
+            <summary>Arredamento ({S.furniture.list(p.id).filter(f => f.owned).length}/{S.furniture.list(p.id).length})</summary>
+            <div className="grid">
+              {S.furniture.list(p.id).map(f => <div className="tile" key={f.id}>
+                <b>{f.name}</b><div className="sub">{f.desc}</div>
+                <button disabled={f.owned} onClick={() => { S.furniture.buy(p.id, f.id); refresh(); }}>
+                  {f.owned ? '✓ Posseduto' : f.price.toLocaleString('it-IT') + ' €'}
+                </button>
+              </div>)}
+            </div>
+          </details>}
         </div>
         {p.owned
           ? <button onClick={() => { go(p.interior); onClose(); }}>ENTRA</button>
