@@ -61,8 +61,10 @@
       this.state = CL.createState(profile);
       CL.state = this.state;
       this.state.flags.visited = { napoli: true };
-      S.quests.start('primo_giorno');
+      // Crea il player sulla mappa iniziale PRIMA di qualsiasi autosave:
+      // quests.start() può salvare, e un player vecchio riscriverebbe state.pos.
       this.enterMap('napoli', this.state.pos.x, this.state.pos.y, true);
+      S.quests.start('primo_giorno');
       this.save();
       CL.audio.setTrack('town');
       return this.state;

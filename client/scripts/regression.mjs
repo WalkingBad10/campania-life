@@ -169,7 +169,7 @@ function findPath(CL, map, sx, sy, gx, gy) {
 function walkTo(game, tx, ty, opts={}) {
   const CL = window.CL;
   const timeout = opts.timeout ?? 6000;
-  const tol = opts.tol ?? 10;
+  const tol = opts.tol ?? 6;
   const T = CL.TILE;
   const startMap = game.map.id;
   const p0 = game.player;
@@ -312,6 +312,22 @@ async function main() {
     assert(localStorage.getItem('campania_life_save_v1'), 'save key exists');
   }, ctx);
 
+  await test('new game discards previous session position', async () => {
+    newGame(ctx);
+    game.enterMap('bar'); step(game, 5);
+    game.player.x = 96; game.player.y = 112; game.save();
+    const dirty = JSON.parse(localStorage.getItem('campania_life_save_v1'));
+    assert(dirty.data.pos.map === 'bar', 'dirty save written in bar');
+    newGame(ctx);
+    assert(game.map.id === 'napoli', `fresh map ${game.map.id}`);
+    assert(Math.abs(game.player.x - 240) < 1 && Math.abs(game.player.y - 272) < 1,
+      `fresh spawn ${game.player.x},${game.player.y}`);
+    const clean = JSON.parse(localStorage.getItem('campania_life_save_v1'));
+    assert(clean.data.pos.map === 'napoli' && Math.abs(clean.data.pos.x - 240) < 1,
+      `fresh save pos ${JSON.stringify(clean.data.pos)}`);
+    assert(ensureWalkable(game), 'fresh spawn walkable');
+  }, ctx);
+
   await test('church ingress altar exit and spawn invariants', async () => {
     newGame(ctx);
     const ch = CL.maps.get('casa_nonna');
@@ -425,18 +441,18 @@ async function main() {
   }, ctx);
 
   await test('joystick and CORRI movement', async () => {
-    newGame(ctx);
+    resetInput(CL); newGame(ctx);
     // simulate joystick: set axis keys like MobileControls
     resetInput(CL); CL.input.down.right = true; step(game, 20);
     const x1 = game.player.x; assert(x1 > 224, 'joystick/right moved player');
     resetInput(CL); CL.input.down.down = true; step(game, 20);
     assert(game.player.y > 296, 'joystick/down moved player');
-    // CORRI increases speed
-    newGame(ctx);
-    resetInput(CL); CL.input.down.right = true; step(game, 30); const baseX = game.player.x;
-    newGame(ctx);
-    resetInput(CL); CL.input.down.right = true; CL.input.down.run = true; step(game, 30); const runX = game.player.x;
-    assert(runX > baseX + 1, `CORRI should move farther base=${baseX} run=${runX}`);
+    // CORRI increases speed (verso sud: corridoio libero, nessun arredo laterale)
+    resetInput(CL); newGame(ctx);
+    resetInput(CL); CL.input.down.down = true; step(game, 30); const baseY = game.player.y;
+    resetInput(CL); newGame(ctx);
+    resetInput(CL); CL.input.down.down = true; CL.input.down.run = true; step(game, 30); const runY = game.player.y;
+    assert(runY > baseY + 1, `CORRI should move farther base=${baseY} run=${runY}`);
     resetInput(CL);
   }, ctx);
 
@@ -496,7 +512,7 @@ async function main() {
         const propId = Object.keys(CL.data.properties||{}).find(k => (CL.data.properties[k].interior||k) === p.to) || p.to;
         if (!CL.systems.property.owns(propId) && !CL.systems.property.owns(p.to)) {
           const pc0 = portalCenter(p);
-          walkTo(game, pc0.x, pc0.y+24, {timeout:12000});
+          walkTo(game, pc0.x, pc0.y+24, {timeout:12000, tol:4});
           for (const dir of ['up','down','left','right']) { for(let i=0;i<160 && game.map.id=== 'napoli';i++){resetInput(CL); CL.input.down[dir]=true; game.update(1/60);} resetInput(CL); }
           const msg = ctx.toasts.find(t => /non è ancora tuo/i.test(t.msg));
           assert(msg, `locked property ${p.to} should show clear message`);
@@ -661,6 +677,31 @@ async function main() {
     assert(!portalHit, 'NPC never entered a portal');
     assert(Array.isArray(npc.path), 'NPC has path array');
     assert(ensureWalkable(game), 'player walkable after NPC simulation');
+  }, ctx);
+
+  await test('collisions match visual props without blocking doors/portals', async () => {
+    const napoli = CL.maps.get('napoli');
+    const lamps = [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24], [24, 28], [40, 28]];
+    const benches = [[22, 23], [46, 23], [22, 33], [46, 33], [30, 23], [38, 33]];
+    for (const [x, y] of lamps) {
+      assert(napoli.g[y][x] === 'U', `lamp tile at ${x},${y}`);
+      assert(CL.maps.solidChar(napoli.g[y][x]), `lamp at ${x},${y} blocks movement`);
+    }
+    for (const [x, y] of benches) {
+      assert(napoli.g[y][x] === 'E', `bench tile at ${x},${y}`);
+      assert(CL.maps.solidChar(napoli.g[y][x]), `bench at ${x},${y} blocks movement`);
+    }
+    assert(CL.maps.solidChar('T'), 'trees block movement');
+    assert(CL.maps.solidChar('#'), 'walls block movement');
+    assert(!CL.maps.solidChar('D'), 'paving is walkable');
+    assert(!CL.maps.solidChar('Y'), 'doors stay walkable for ingress');
+    assert(!CL.maps.solidChar('G'), 'gates stay walkable for portals');
+    assert(!CL.maps.solidChar("'"), 'ground accents stay walkable');
+    const grotta = CL.maps.get('vesuvio');
+    assert(grotta.g[10][30] === 'G' && !CL.maps.solidChar(grotta.g[10][30]), 'cave portal tile walkable');
+    newGame(ctx);
+    step(game, 30);
+    assert(ensureWalkable(game), 'player still walkable after prop collisions');
   }, ctx);
 
   await test('regional maps: Bacoli, Salerno, Avellino, Caserta are reachable', async () => {

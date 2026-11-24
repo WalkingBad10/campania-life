@@ -6,8 +6,9 @@
   'use strict';
   const CL = w.CL, U = CL.util, T = CL.TILE;
 
-  // Floor tiles A,M,R,h,Z,k are walkable; walls/furniture/props remain solid.
-  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
+  // Floor tiles A,M,R,h,Z,k,' and gate/door tiles G,Y stay walkable (portals use them).
+  // Walls, furniture and street props are solid: U = lampione, E = panchina.
+  const SOLID = { T: 1, W: 1, '~': 1, '#': 1, '=': 1, c: 1, o: 1, X: 1, B: 1, '^': 1, P: 1, C: 1, V: 1, O: 1, H: 1, L: 1, F: 1, K: 1, Q: 1, I: 1, J: 1, U: 1, E: 1, j: 1, l: 1, n: 1, q: 1, s: 1, u: 1, v: 1, w: 1, x: 1, y: 1, z: 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1 };
 
   function blank(x, y, ch) { return Array.from({ length: y }, () => new Array(x).fill(ch)); }
   function setTile(g, x, y, ch) { if (g[y] && g[y][x] !== undefined) g[y][x] = ch; }
