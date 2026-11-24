@@ -1,0 +1,875 @@
+{
+  "generatedAt": "2026-11-24T21:28:26.190Z",
+  "baseUrl": "http://127.0.0.1:3000/",
+  "scope": "EMULAZIONE Playwright/Chromium. Non sostituisce test su MacBook e Pixel 9 Pro XL fisici.",
+  "devices": [
+    {
+      "device": "MacBook Pro 14\" (emulato)",
+      "errors": [],
+      "debugPanels": 0,
+      "metrics": {
+        "napoli": {
+          "palette": 1414,
+          "edgeDensity": 0.135,
+          "contrast": 246,
+          "luminance": 133.1,
+          "map": {
+            "w": 72,
+            "h": 48,
+            "zone": "napoli"
+          },
+          "npcs": 12,
+          "vehicles": 3
+        },
+        "costiera": {
+          "palette": 672,
+          "edgeDensity": 0.132,
+          "contrast": 230,
+          "luminance": 128.6,
+          "map": {
+            "w": 72,
+            "h": 40,
+            "zone": "costiera"
+          },
+          "npcs": 3,
+          "vehicles": 2
+        },
+        "vesuvio": {
+          "palette": 433,
+          "edgeDensity": 0.134,
+          "contrast": 244,
+          "luminance": 116.4,
+          "map": {
+            "w": 64,
+            "h": 48,
+            "zone": "vesuvio"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "pompei": {
+          "palette": 280,
+          "edgeDensity": 0.097,
+          "contrast": 245,
+          "luminance": 148.1,
+          "map": {
+            "w": 56,
+            "h": 40,
+            "zone": "pompei"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "capri": {
+          "palette": 517,
+          "edgeDensity": 0.131,
+          "contrast": 244,
+          "luminance": 129.9,
+          "map": {
+            "w": 30,
+            "h": 24,
+            "zone": "costiera"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "bacoli": {
+          "palette": 635,
+          "edgeDensity": 0.142,
+          "contrast": 245,
+          "luminance": 127.8,
+          "map": {
+            "w": 48,
+            "h": 30,
+            "zone": "costiera"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "salerno": {
+          "palette": 406,
+          "edgeDensity": 0.14,
+          "contrast": 225,
+          "luminance": 135.7,
+          "map": {
+            "w": 56,
+            "h": 36,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "avellino": {
+          "palette": 533,
+          "edgeDensity": 0.158,
+          "contrast": 224,
+          "luminance": 119.2,
+          "map": {
+            "w": 48,
+            "h": 32,
+            "zone": "vesuvio"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "caserta": {
+          "palette": 327,
+          "edgeDensity": 0.124,
+          "contrast": 244,
+          "luminance": 139.5,
+          "map": {
+            "w": 60,
+            "h": 40,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "casa_nonna": {
+          "palette": 2565,
+          "edgeDensity": 0.129,
+          "contrast": 223,
+          "luminance": 139.2,
+          "map": {
+            "w": 28,
+            "h": 22,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "casa_giocatore": {
+          "palette": 498,
+          "edgeDensity": 0.152,
+          "contrast": 236,
+          "luminance": 153.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "appartamento": {
+          "palette": 522,
+          "edgeDensity": 0.155,
+          "contrast": 236,
+          "luminance": 152.4,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "casa_amalfi": {
+          "palette": 528,
+          "edgeDensity": 0.154,
+          "contrast": 236,
+          "luminance": 152.5,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bottega": {
+          "palette": 450,
+          "edgeDensity": 0.151,
+          "contrast": 235,
+          "luminance": 152,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "souvenir": {
+          "palette": 435,
+          "edgeDensity": 0.147,
+          "contrast": 235,
+          "luminance": 152.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bar": {
+          "palette": 2982,
+          "edgeDensity": 0.14,
+          "contrast": 225,
+          "luminance": 129.7,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 5,
+          "vehicles": 0
+        },
+        "pizzeria": {
+          "palette": 2476,
+          "edgeDensity": 0.139,
+          "contrast": 225,
+          "luminance": 129.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 4,
+          "vehicles": 0
+        },
+        "metro": {
+          "palette": 1683,
+          "edgeDensity": 0.158,
+          "contrast": 238,
+          "luminance": 139.8,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "metro2": {
+          "palette": 1653,
+          "edgeDensity": 0.157,
+          "contrast": 237,
+          "luminance": 139.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "negozio": {
+          "palette": 429,
+          "edgeDensity": 0.15,
+          "contrast": 235,
+          "luminance": 152,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "banca": {
+          "palette": 428,
+          "edgeDensity": 0.162,
+          "contrast": 235,
+          "luminance": 156.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "clinica": {
+          "palette": 445,
+          "edgeDensity": 0.15,
+          "contrast": 235,
+          "luminance": 152,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "ufficio": {
+          "palette": 432,
+          "edgeDensity": 0.148,
+          "contrast": 235,
+          "luminance": 153.7,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "grotta": {
+          "palette": 245,
+          "edgeDensity": 0.064,
+          "contrast": 222,
+          "luminance": 67.5,
+          "map": {
+            "w": 30,
+            "h": 20,
+            "zone": "interno"
+          },
+          "npcs": 0,
+          "vehicles": 0
+        }
+      },
+      "visibility": [
+        {
+          "map": "napoli",
+          "tile": [
+            20,
+            13
+          ],
+          "visiblePixels": 240,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            18,
+            38
+          ],
+          "visiblePixels": 249,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            58,
+            28
+          ],
+          "visiblePixels": 139,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            44,
+            15
+          ],
+          "visiblePixels": 336,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            15,
+            17
+          ],
+          "visiblePixels": 254,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            36,
+            24
+          ],
+          "visiblePixels": 203,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            36,
+            30
+          ],
+          "visiblePixels": 252,
+          "pass": true
+        },
+        {
+          "map": "bar",
+          "tile": [
+            10,
+            10
+          ],
+          "visiblePixels": 238,
+          "pass": true
+        },
+        {
+          "map": "pizzeria",
+          "tile": [
+            15,
+            11
+          ],
+          "visiblePixels": 241,
+          "pass": true
+        },
+        {
+          "map": "casa_nonna",
+          "tile": [
+            12,
+            8
+          ],
+          "visiblePixels": 241,
+          "pass": true
+        },
+        {
+          "map": "negozio",
+          "tile": [
+            12,
+            10
+          ],
+          "visiblePixels": 239,
+          "pass": true
+        },
+        {
+          "map": "banca",
+          "tile": [
+            12,
+            10
+          ],
+          "visiblePixels": 238,
+          "pass": true
+        }
+      ],
+      "depthOrder": {
+        "behind": 203,
+        "front": 252,
+        "pass": true
+      }
+    },
+    {
+      "device": "Google Pixel 9 Pro XL (emulato — 448x997 @3x)",
+      "errors": [],
+      "debugPanels": 0,
+      "metrics": {
+        "napoli": {
+          "palette": 1414,
+          "edgeDensity": 0.135,
+          "contrast": 246,
+          "luminance": 133.1,
+          "map": {
+            "w": 72,
+            "h": 48,
+            "zone": "napoli"
+          },
+          "npcs": 12,
+          "vehicles": 3
+        },
+        "costiera": {
+          "palette": 672,
+          "edgeDensity": 0.132,
+          "contrast": 230,
+          "luminance": 128.6,
+          "map": {
+            "w": 72,
+            "h": 40,
+            "zone": "costiera"
+          },
+          "npcs": 3,
+          "vehicles": 2
+        },
+        "vesuvio": {
+          "palette": 433,
+          "edgeDensity": 0.134,
+          "contrast": 244,
+          "luminance": 116.4,
+          "map": {
+            "w": 64,
+            "h": 48,
+            "zone": "vesuvio"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "pompei": {
+          "palette": 280,
+          "edgeDensity": 0.097,
+          "contrast": 245,
+          "luminance": 148.1,
+          "map": {
+            "w": 56,
+            "h": 40,
+            "zone": "pompei"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "capri": {
+          "palette": 517,
+          "edgeDensity": 0.131,
+          "contrast": 244,
+          "luminance": 129.9,
+          "map": {
+            "w": 30,
+            "h": 24,
+            "zone": "costiera"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "bacoli": {
+          "palette": 635,
+          "edgeDensity": 0.142,
+          "contrast": 245,
+          "luminance": 127.8,
+          "map": {
+            "w": 48,
+            "h": 30,
+            "zone": "costiera"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "salerno": {
+          "palette": 406,
+          "edgeDensity": 0.14,
+          "contrast": 225,
+          "luminance": 135.7,
+          "map": {
+            "w": 56,
+            "h": 36,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "avellino": {
+          "palette": 533,
+          "edgeDensity": 0.158,
+          "contrast": 224,
+          "luminance": 119.2,
+          "map": {
+            "w": 48,
+            "h": 32,
+            "zone": "vesuvio"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "caserta": {
+          "palette": 327,
+          "edgeDensity": 0.124,
+          "contrast": 244,
+          "luminance": 139.5,
+          "map": {
+            "w": 60,
+            "h": 40,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "casa_nonna": {
+          "palette": 2565,
+          "edgeDensity": 0.129,
+          "contrast": 223,
+          "luminance": 139.2,
+          "map": {
+            "w": 28,
+            "h": 22,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "casa_giocatore": {
+          "palette": 498,
+          "edgeDensity": 0.152,
+          "contrast": 236,
+          "luminance": 153.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "appartamento": {
+          "palette": 522,
+          "edgeDensity": 0.155,
+          "contrast": 236,
+          "luminance": 152.4,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "casa_amalfi": {
+          "palette": 528,
+          "edgeDensity": 0.154,
+          "contrast": 236,
+          "luminance": 152.5,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bottega": {
+          "palette": 450,
+          "edgeDensity": 0.151,
+          "contrast": 235,
+          "luminance": 152,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "souvenir": {
+          "palette": 435,
+          "edgeDensity": 0.147,
+          "contrast": 235,
+          "luminance": 152.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bar": {
+          "palette": 2982,
+          "edgeDensity": 0.14,
+          "contrast": 225,
+          "luminance": 129.7,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 5,
+          "vehicles": 0
+        },
+        "pizzeria": {
+          "palette": 2476,
+          "edgeDensity": 0.139,
+          "contrast": 225,
+          "luminance": 129.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 4,
+          "vehicles": 0
+        },
+        "metro": {
+          "palette": 1683,
+          "edgeDensity": 0.158,
+          "contrast": 238,
+          "luminance": 139.8,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "metro2": {
+          "palette": 1653,
+          "edgeDensity": 0.157,
+          "contrast": 237,
+          "luminance": 139.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "negozio": {
+          "palette": 429,
+          "edgeDensity": 0.15,
+          "contrast": 235,
+          "luminance": 152,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "banca": {
+          "palette": 428,
+          "edgeDensity": 0.162,
+          "contrast": 235,
+          "luminance": 156.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "clinica": {
+          "palette": 445,
+          "edgeDensity": 0.15,
+          "contrast": 235,
+          "luminance": 152,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "ufficio": {
+          "palette": 432,
+          "edgeDensity": 0.148,
+          "contrast": 235,
+          "luminance": 153.7,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "grotta": {
+          "palette": 245,
+          "edgeDensity": 0.064,
+          "contrast": 222,
+          "luminance": 67.5,
+          "map": {
+            "w": 30,
+            "h": 20,
+            "zone": "interno"
+          },
+          "npcs": 0,
+          "vehicles": 0
+        }
+      },
+      "visibility": [
+        {
+          "map": "napoli",
+          "tile": [
+            20,
+            13
+          ],
+          "visiblePixels": 240,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            18,
+            38
+          ],
+          "visiblePixels": 249,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            58,
+            28
+          ],
+          "visiblePixels": 139,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            44,
+            15
+          ],
+          "visiblePixels": 336,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            15,
+            17
+          ],
+          "visiblePixels": 254,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            36,
+            24
+          ],
+          "visiblePixels": 203,
+          "pass": true
+        },
+        {
+          "map": "napoli",
+          "tile": [
+            36,
+            30
+          ],
+          "visiblePixels": 252,
+          "pass": true
+        },
+        {
+          "map": "bar",
+          "tile": [
+            10,
+            10
+          ],
+          "visiblePixels": 238,
+          "pass": true
+        },
+        {
+          "map": "pizzeria",
+          "tile": [
+            15,
+            11
+          ],
+          "visiblePixels": 241,
+          "pass": true
+        },
+        {
+          "map": "casa_nonna",
+          "tile": [
+            12,
+            8
+          ],
+          "visiblePixels": 241,
+          "pass": true
+        },
+        {
+          "map": "negozio",
+          "tile": [
+            12,
+            10
+          ],
+          "visiblePixels": 239,
+          "pass": true
+        },
+        {
+          "map": "banca",
+          "tile": [
+            12,
+            10
+          ],
+          "visiblePixels": 238,
+          "pass": true
+        }
+      ],
+      "depthOrder": {
+        "behind": 203,
+        "front": 252,
+        "pass": true
+      }
+    }
+  ]
+}

@@ -89,11 +89,13 @@
 
     /* --------------------------------------------------------- tiles 16x16 */
     buildTiles() {
-      for (const ch of ".TD,rpSW~#=fcoXBo^gkPCVZOH'LFKQYIUENJAMRZhjlnqstuvwxyz1234567890") this.tiles[ch] = this.tile(ch);
+      for (const ch of ".TDderpSW~#=fcoXBo^gkPCVZOH'LFKQYIUENJAMRZhjlnqstuvwxyz1234567890") this.tiles[ch] = this.tile(ch);
       // Varianti deterministiche: la griglia resta invariata, cambia solo il disegno.
       for (let v = 0; v < 4; v++) {
         this.tiles['D' + v] = this.variantTile('D', v);
         this.tiles['p' + v] = this.variantTile('p', v);
+        this.tiles['d' + v] = this.variantTile('d', v);
+        this.tiles['e' + v] = this.variantTile('e', v);
       }
       for (let v = 0; v < 2; v++) {
         this.tiles['r_h' + v] = this.variantTile('r', v, 'h');
@@ -121,6 +123,16 @@
         }
         px(x, (variant * 4 + 1) % 16, 0, 1, 16, 'rgba(78,72,64,.22)');
         px(x, 0, (variant * 3 + 2) % 16, 16, 1, 'rgba(78,72,64,.18)');
+      } else if (ch === 'd') {
+        // Sagrato: lastre chiare e giunti in piperno, non basolato ripetuto.
+        px(x, 0, variant % 2, 16, 1, 'rgba(74,74,72,.35)');
+        px(x, variant * 3, 0, 1, 16, 'rgba(74,74,72,.25)');
+        px(x, 1, 1 + variant, 6, 5, 'rgba(255,255,255,.10)');
+      } else if (ch === 'e') {
+        // Asse pedonale: basolato compatto con corsia di marcia leggibile.
+        px(x, 0, variant * 2, 16, 1, 'rgba(74,74,72,.22)');
+        px(x, variant * 4, 0, 1, 16, 'rgba(74,74,72,.16)');
+        for (let i = 0; i < 3; i++) px(x, (i * 5 + variant) % 16, 6 + i * 2, 3, 1, 'rgba(255,255,255,.12)');
       } else if (ch === 'r') {
         if (orient === 'v') {
           // La stessa griglia 'r' viene orientata in base ai vicini: nessun nuovo tile solido.
@@ -135,7 +147,7 @@
       return c;
     },
     tileFor(ch, tx, ty, map) {
-      if ((ch === 'D' || ch === 'p') && this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)]) {
+      if ((ch === 'D' || ch === 'p' || ch === 'd' || ch === 'e') && this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)]) {
         return this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)];
       }
       if (ch === 'r' && map && CL.maps && CL.maps.tile) {
@@ -161,6 +173,23 @@
             px(x, xx, yy, 3, 1, 'rgba(255,255,255,.06)');
           }
           dot('#6f6a62', 4); break;
+        case 'd': // sagrato / piazzetta: lastre di tufa chiara e giunti scuri
+          px(x, 0, 0, 16, 16, '#d8cdb8');
+          for (let yy = 0; yy < 16; yy += 8) for (let xx = 0; xx < 16; xx += 8) {
+            px(x, xx, yy, 8, 8, (xx + yy) % 16 === 0 ? '#e3dac6' : '#d1c5ae');
+            px(x, xx, yy, 8, 1, 'rgba(74,74,72,.42)');
+            px(x, xx, yy, 1, 8, 'rgba(74,74,72,.34)');
+            px(x, xx + 1, yy + 1, 5, 1, 'rgba(255,255,255,.12)');
+          }
+          dot('#b6a98f', 3); break;
+        case 'e': // asse pedonale principale: basolato compatto, direzione leggibile
+          px(x, 0, 0, 16, 16, '#969187');
+          for (let yy = 0; yy < 16; yy += 4) for (let xx = (yy % 8 === 0 ? 0 : 2); xx < 16; xx += 4) {
+            px(x, xx, yy, 3, 3, (xx + yy) % 8 === 0 ? '#858078' : '#a19b90');
+            px(x, xx, yy, 3, 1, 'rgba(255,255,255,.09)');
+          }
+          px(x, 7, 0, 2, 16, 'rgba(74,74,72,.18)');
+          dot('#6f6a62', 3); break;
         case ',': px(x, 0, 0, 16, 16, '#a58b62'); dot('#8f764f', 16); dot('#bba272', 8); break;
         case 'r':
           px(x, 0, 0, 16, 16, P.road); px(x, 0, 0, 16, 1, P.roadL);
@@ -566,148 +595,66 @@
     // professionale disegnato a mano, ma coerenti, cacheati e sostituibili.
     _stamp(c, fn) { const x = ctx(c); fn(x, c.width, c.height); return c; },
     buildingSprite(kind) {
-      // Le facciate devono passare dal compositore: le PNG M1 restano come overlay,
-      // così le bande trasparenti non mostrano il basolato sottostante.
-      const composed = ['gesu', 'palazzo_ne', 'palazzo_sw', 'palazzo_banca', 'palazzo_bar', 'palazzo_se', 'palazzo_e'];
-      if (this.images[kind] && !composed.includes(kind)) return this.images[kind];
+      // Una sola facciata autorevole per ogni masse: l'asset M1 estratto.
+      // Il vecchio livello procedurale con finestre/portoni generici è stato rimosso,
+      // perché si sovrapponeva alle aperture dell'asset e creava duplicazioni.
       const key = 'bld:' + kind; if (this.cache[key]) return this.cache[key];
       const S = {
-        gesu:      { w: 352, h: 208, wall:'#6a6f74', trim:'#8f9499', roof:'#5a4a3a' },
-        palazzo_ne:{ w: 320, h: 192, wall:'#dccba8', trim:'#8a6540', roof:'#8b4a3a', shutters:'#5e7a4a' },
-        palazzo_sw:{ w: 256, h: 128, wall:'#e2d3b4', trim:'#7a5a38', roof:'#9a5540', shutters:'#6f8650' },
-        palazzo_banca:{ w:160,h:128, wall:'#ddd0bc', trim:'#657a8e', roof:'#7a5842', shutters:'#708090' },
-        palazzo_bar:{ w:128, h:128, wall:'#e4d5bd', trim:'#7a4a32', roof:'#8b4a3a', shutters:'#6b7a46' },
-        palazzo_se:{ w:128, h:128, wall:'#daceb6', trim:'#7a6245', roof:'#8a5240', shutters:'#607848' },
-        palazzo_e: { w:160, h:192, clipH:80, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c', shutters:'#648050' },
+        gesu:      { w: 384, h: 208, wall:'#6a6f74', trim:'#8f9499', roof:'#5a4a3a' },
+        palazzo_ne:{ w: 320, h: 192, wall:'#dccba8', trim:'#8a6540', roof:'#8b4a3a' },
+        palazzo_sw:{ w: 224, h: 128, wall:'#e2d3b4', trim:'#7a5a38', roof:'#9a5540' },
+        palazzo_banca:{ w:160,h:128, wall:'#ddd0bc', trim:'#657a8e', roof:'#7a5842' },
+        palazzo_bar:{ w:128, h:128, wall:'#e4d5bd', trim:'#7a4a32', roof:'#8b4a3a' },
+        palazzo_se:{ w:128, h:128, wall:'#daceb6', trim:'#7a6245', roof:'#8a5240' },
+        palazzo_e: { w:160, h:192, clipH:80, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c' },
       }[kind];
       if (!S) return null;
-      const H = S.clipH || S.h;
-      const c = cv(S.w, H), x = ctx(c), R = U.rng(U.hash(kind));
-      const W=S.w;
-      // shadow
-      px(x,4,H-4,W-4,4,'rgba(20,16,12,.12)');
-      // wall base
-      px(x,0,8,W,H-8,S.wall);
-      // subtle plaster texture
-      for (let i=0;i<Math.floor(W*H/18);i++){ const pxl=(R()*W)|0, pyl=8+((R()*(H-8))|0); px(x,pxl,pyl,1,1, R()>.5?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)'); }
-      // roof/cornice
-      px(x,-2,0,W+4,10,S.roof); px(x,-1,8,W+2,3,shade(S.roof,18)); px(x,0,10,W,2,shade(S.roof,-20));
-      // base trim
-      px(x,0,H-8,W,8,shade(S.trim,-10)); px(x,0,H-8,W,1,shade(S.trim,20));
-      // M1 extracted facade reference: use as visual overlay when available, keep procedural fallback
+      const H = S.clipH || S.h, W = S.w;
+      const c = cv(W, H), x = ctx(c), R = U.rng(U.hash('facade-grade:' + kind));
+      // Fondo opaco neutro: riempie le bande dell'aspect-fit senza generare finestre finte.
+      px(x, 0, 0, W, H, S.wall);
+      for (let i = 0; i < Math.floor(W * H / 22); i++) {
+        px(x, (R() * W) | 0, (R() * H) | 0, 1, 1,
+          R() > .5 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.035)');
+      }
       const m1Facade = {
         gesu:'m1_gesu_ref',
         palazzo_ne:'m1_piazza_a', palazzo_sw:'m1_piazza_b', palazzo_e:'m1_piazza_c',
         palazzo_se:'m1_piazza_d', palazzo_bar:'m1_piazza_e', palazzo_banca:'m1_piazza_f'
       };
-      if (kind === 'gesu') this._drawGesuFacade(x, W, H);
-      else this._drawPalazzoFacade(x, W, H, S, kind, R);
-      const m1Key = m1Facade[kind];
-      if (m1Key && this.images[m1Key]) {
-        const img = this.images[m1Key];
-        // Fit preserving aspect ratio, anchored to bottom. Il fallback procedurale
-        // resta visibile nelle bande scoperte: niente buchi sul basolato sottostante.
-        const scale = Math.min(W / img.width, H / img.height);
-        const dw = Math.round(img.width * scale), dh = Math.round(img.height * scale);
-        const dx = Math.floor((W - dw) / 2), dy = H - dh;
-        x.drawImage(img, dx, dy, dw, dh);
-      }
-      return this.cache[key] = c;
-    },
-    _drawGesuFacade(x,W,H) {
-      // Bugnato a punta di diamante - caratteristico
-      for (let yy=10; yy<H-8; yy+=10) for (let xx=0; xx<W; xx+=10) {
-        const dark = ((xx/10 + yy/10) % 2 === 0);
-        const base = dark ? '#4f555b' : '#70767d';
-        const face = dark ? '#5a6067' : '#7f868d';
-        px(x,xx,yy,10,10,base);
-        // diamond
-        x.fillStyle = face;
-        x.beginPath();
-        x.moveTo(xx+5,yy+1); x.lineTo(xx+9,yy+5); x.lineTo(xx+5,yy+9); x.lineTo(xx+1,yy+5); x.closePath(); x.fill();
-        px(x,xx+4,yy+2,2,1,'rgba(255,255,255,.10)');
-        px(x,xx+2,yy+5,1,2,'rgba(0,0,0,.08)');
-      }
-      // cornice sommitale
-      px(x,0,6,W,6,'#8d9399'); px(x,0,12,W,2,'#61676d');
-      // portale monumentale
-      const cx=W/2, py=H-8;
-      px(x,cx-34,py-96,68,96,'#3f3125');
-      px(x,cx-30,py-92,60,92,'#5f472f');
-      px(x,cx-28,py-90,26,90,'#6f5338'); px(x,cx+2,py-90,26,90,'#6f5338');
-      px(x,cx-1,py-90,2,90,'#3d2c1f');
-      // pannelli porte
-      for (const sx of [-22,8]) { px(x,cx+sx,py-78,14,28,'#7d6042'); px(x,cx+sx,py-44,14,28,'#7d6042'); px(x,cx+sx+1,py-77,12,1,'#93744f'); }
-      px(x,cx-10,py-30,4,4,'#c9a44a'); px(x,cx+6,py-30,4,4,'#c9a44a');
-      // architrave/tympan
-      px(x,cx-40,py-104,80,10,'#858b91'); px(x,cx-36,py-102,72,3,'#9aa0a6');
-      px(x,cx-44,py-110,88,8,'#747a80');
-      // colonne/pilastri laterali portale
-      px(x,cx-38,py-96,6,96,'#7f858b'); px(x,cx+32,py-96,6,96,'#7f858b');
-      px(x,cx-37,py-96,2,96,'#989ea4');
-      // finestre superiori
-      [[cx-90,50],[cx+70,50]].forEach(([wx,wy])=>{
-        px(x,wx,wy,24,34,'#40464c'); px(x,wx+2,wy+2,20,30,'#6f93ad');
-        px(x,wx+11,wy+2,2,30,'#566067'); px(x,wx+2,wy+16,20,2,'#566067');
-        px(x,wx+2,wy+2,20,4,'rgba(255,255,255,.15)');
-        px(x,wx-2,wy+32,28,4,'#6a7076');
-      });
-      // rosoncino/oculo sopra portale
-      px(x,cx-10,36,20,20,'#4a5056'); x.fillStyle='#7fa1b8'; x.beginPath(); x.arc(cx,46,8,0,Math.PI*2); x.fill();
-      px(x,cx-1,38,2,16,'#596067'); px(x,cx-8,45,16,2,'#596067');
-    },
-    _drawPalazzoFacade(x,W,H,S,kind,R) {
-      const wall=S.wall, trim=S.trim, shut=S.shutters||'#647a4a', win=S.win||'#86aec2';
-      // cornice piani
-      const floors = kind==='palazzo_ne'||kind==='palazzo_e' ? 3 : 2;
-      const fh = Math.floor((H-28)/floors);
-      for (let f=0; f<floors; f++) {
-        const fy = 14 + f*fh;
-        px(x,0,fy+fh-2,W,2,shade(trim,10));
-        // finestre
-        const cols = Math.max(2, Math.floor(W/44));
-        const margin = Math.floor((W - cols*28)/(cols+1));
-        for (let i=0;i<cols;i++) {
-          const wx = margin + i*(28+margin);
-          const wy = fy + 8;
-          // cornice finestra
-          px(x,wx-3,wy-3,34,28,'#6b5540');
-          px(x,wx-2,wy-2,32,26,shade(wall,-8));
-          // vetro
-          px(x,wx,wy,28,22,win);
-          px(x,wx,wy,28,4,'rgba(255,255,255,.20)');
-          px(x,wx+13,wy,2,22,shade(trim,5)); px(x,wx,wy+10,28,2,shade(trim,5));
-          // persiane
-          px(x,wx-5,wy-1,5,24,shut); px(x,wx+28,wy-1,5,24,shut);
-          px(x,wx-4,wy+2,3,1,shade(shut,20)); px(x,wx-4,wy+6,3,1,shade(shut,20)); px(x,wx-4,wy+10,3,1,shade(shut,20));
-          px(x,wx+29,wy+2,3,1,shade(shut,20)); px(x,wx+29,wy+6,3,1,shade(shut,20)); px(x,wx+29,wy+10,3,1,shade(shut,20));
-          // balcone al secondo piano
-          if (f < floors-1 && (i%2===0 || kind.includes('banca'))) {
-            px(x,wx-8,wy+20,44,3,'#505962');
-            px(x,wx-8,wy+23,44,5,'#434b53');
-            for(let bx=wx-6;bx<wx+36;bx+=4) px(x,bx,wy+23,1,5,'#5f6872');
-            px(x,wx-6,wy+18,40,3,'#6f7d54'); // piante
-          }
-        }
-      }
-      // portone/insegna
-      const dx = Math.floor(W/2)-14;
-      if (kind === 'palazzo_bar') {
-        px(x,dx-2,H-34,32,34,'#4a3524'); px(x,dx,H-32,28,32,'#6b4a30');
-        px(x,dx+12,H-32,2,32,'#3f2c1f'); px(x,dx+20,H-18,3,3,'#c9a44a');
-        // insegna
-        px(x,dx-18,H-56,64,14,'#f0e4cf'); px(x,dx-18,H-56,64,2,'#7a4a32');
-        px(x,dx-8,H-53,44,8,'#b44a3a');
-      } else if (kind === 'palazzo_banca') {
-        px(x,dx-4,H-34,36,34,'#4a5560'); px(x,dx-2,H-32,32,32,'#607080');
-        px(x,dx+13,H-32,2,32,'#455260'); px(x,dx+24,H-18,3,3,'#c9a44a');
-        px(x,dx-14,H-54,56,12,'#e8edf2'); px(x,dx-6,H-51,40,6,'#4a6f8e');
+      const img = this.images[m1Facade[kind]];
+      if (img && img.width && img.height) {
+        // Rasterizzazione a 2 px per uploaded M1: risoluzione e pixel art uniformi.
+        const PIX = 2;
+        const low = cv(Math.ceil(W / PIX), Math.ceil(H / PIX));
+        const lx = ctx(low); lx.imageSmoothingEnabled = true;
+        const scale = Math.min(low.width / img.width, low.height / img.height);
+        const dw = Math.max(1, Math.round(img.width * scale));
+        const dh = Math.max(1, Math.round(img.height * scale));
+        const dx = Math.floor((low.width - dw) / 2), dy = low.height - dh;
+        lx.drawImage(img, dx, dy, dw, dh);
+        x.imageSmoothingEnabled = false;
+        x.drawImage(low, 0, 0, W, H);
       } else {
-        px(x,dx,H-32,28,32,'#5a4028'); px(x,dx+1,H-31,26,31,'#775738');
-        px(x,dx+13,H-31,2,31,'#4a331f'); px(x,dx+20,H-16,3,3,'#c9a44a');
+        // Fallback senza duplicazioni: solo portone in scala, nessuna finestra generated.
+        const dx = Math.floor(W / 2) - 9;
+        px(x, dx, H - 40, 18, 40, '#5a4028');
+        px(x, dx + 8, H - 39, 2, 39, '#3f2c1f');
       }
-      // dettagli intonaco
-      px(x,2,14,2,H-22,'rgba(0,0,0,.05)'); px(x,W-4,14,2,H-22,'rgba(255,255,255,.04)');
+      // Finiture comuni: cornice, basamento in piperno e luce da sinistra/alto.
+      px(x, -2, 0, W + 4, 8, S.roof); px(x, -1, 8, W + 2, 2, shade(S.roof, 16));
+      px(x, 0, H - 10, W, 10, '#4a4a48'); px(x, 0, H - 10, W, 2, '#6a6c68');
+      px(x, 0, H - 2, W, 2, '#2f3130');
+      const light = x.createLinearGradient(0, 0, W, 0);
+      light.addColorStop(0, 'rgba(255,244,214,.10)');
+      light.addColorStop(.55, 'rgba(255,244,214,0)');
+      light.addColorStop(1, 'rgba(18,22,28,.16)');
+      x.fillStyle = light; x.fillRect(0, 0, W, H);
+      const falloff = x.createLinearGradient(0, 0, 0, H);
+      falloff.addColorStop(0, 'rgba(255,255,255,.03)');
+      falloff.addColorStop(1, 'rgba(0,0,0,.08)');
+      x.fillStyle = falloff; x.fillRect(0, 0, W, H);
+      return this.cache[key] = c;
     },
     gugliaSprite() {
       if (this.images.guglia) return this.images.guglia;
@@ -738,6 +685,30 @@
       px(x,cx-6,by-128,12,14,'#c9a44a'); px(x,cx-4,by-126,8,10,'#f0d06a');
       px(x,cx-2,by-146,4,20,'#d4b04f'); px(x,cx-8,by-140,16,3,'#d4b04f');
       px(x,cx-2,by-145,4,3,'#fff2a0');
+      return this.cache[key] = c;
+    },
+    campanileSprite() {
+      // Campanile di Santa Chiara: laterizio, pietra chiara e cuspide maiolicata.
+      const key = 'bld:campanile'; if (this.cache[key]) return this.cache[key];
+      const W=40, H=112, c=cv(W,H), x=ctx(c), cx=W/2;
+      x.fillStyle='rgba(0,0,0,.14)'; x.beginPath(); x.ellipse(cx,H-4,18,4,0,0,Math.PI*2); x.fill();
+      px(x,4,H-12,32,12,'#7f6550'); px(x,5,H-12,30,3,'#a08469');
+      px(x,7,40,26,H-52,'#a85b46');
+      for (let yy=44; yy<H-14; yy+=7) { px(x,7,yy,26,1,'#8d4938'); for(let xx=7+(yy%14?0:4);xx<33;xx+=8) px(x,xx,yy+1,1,6,'#8d4938'); }
+      px(x,5,34,30,8,'#d6cbb7'); px(x,6,36,28,4,'#eee5d3');
+      px(x,8,40,24,5,'#5b4b40');
+      // cella campanaria con archi
+      px(x,7,14,26,26,'#c4b7a0'); px(x,9,16,22,22,'#d8cdb8');
+      for (const ax of [11,20]) {
+        px(x,ax,20,7,15,'#3d4147');
+        x.fillStyle='#3d4147'; x.beginPath(); x.arc(ax+3,20,3,Math.PI,0); x.fill();
+        px(x,ax+2,22,3,13,'#e7dfcf');
+      }
+      px(x,6,12,28,4,'#6b5540'); px(x,8,8,24,4,'#d6cbb7');
+      // cuspide con maioliche verde/blu/giallo
+      x.fillStyle='#8b4a3a'; x.beginPath(); x.moveTo(4,8); x.lineTo(cx,0); x.lineTo(36,8); x.closePath(); x.fill();
+      px(x,11,5,4,2,'#2fa6a3'); px(x,18,3,4,2,'#e7b32b'); px(x,25,5,4,2,'#2e6f9e');
+      px(x,cx-1,-4,2,8,'#c9a44a');
       return this.cache[key] = c;
     },
     propSprite(kind) {

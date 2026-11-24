@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1152" height="768" viewBox="0 0 1152 768">
+  <defs>
+    <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#d7d0c4" stroke-width="0.5" opacity="0.7"/>
+    </pattern>
+    <pattern id="piazza" width="32" height="32" patternUnits="userSpaceOnUse">
+      <rect width="32" height="32" fill="#d8d2c6"/>
+      <rect x="1" y="1" width="14" height="14" fill="#cdc6b8"/>
+      <rect x="17" y="1" width="14" height="14" fill="#ded8cc"/>
+      <rect x="1" y="17" width="14" height="14" fill="#ded8cc"/>
+      <rect x="17" y="17" width="14" height="14" fill="#cdc6b8"/>
+    </pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#2f6f8f"/>
+    </marker>
+  </defs>
+  <rect width="1152" height="768" fill="#f5f1e8"/>
+  <rect width="1152" height="768" fill="url(#grid)"/>
+
+  <!-- Piazza pedonale: spazio aperto continuo, non un collage -->
+  <rect x="256" y="256" width="608" height="368" fill="url(#piazza)" stroke="#6e675c" stroke-width="2"/>
+  <text x="272" y="278" font-family="sans-serif" font-size="14" fill="#5c554b">PIAZZA DEL GESÙ NUOVO — basolato / spazio aperto</text>
+
+  <!-- Edifici: masse continue sui quattro lati -->
+  <g stroke="#4d4841" stroke-width="2">
+    <rect x="0" y="256" width="224" height="224" fill="#c6b391"/>
+    <rect x="128" y="32" width="384" height="208" fill="#8f9599"/>
+    <rect x="544" y="32" width="320" height="176" fill="#cbb68e"/>
+    <rect x="880" y="256" width="160" height="176" fill="#d2c09c"/>
+    <rect x="160" y="624" width="256" height="96" fill="#cbb897"/>
+    <rect x="448" y="624" width="160" height="96" fill="#bcc8cf"/>
+    <rect x="640" y="624" width="128" height="96" fill="#c7a17a"/>
+    <rect x="800" y="624" width="128" height="96" fill="#c9b693"/>
+    <rect x="608" y="688" width="32" height="48" fill="#b58a63"/>
+  </g>
+  <g font-family="sans-serif" font-size="13" fill="#3f3a33">
+    <text x="16" y="276">PALZZI NOBILIARI / OVEST</text>
+    <text x="144" y="52">GESÙ NUOVO — facciata bugnata</text>
+    <text x="560" y="52">PALAZZO DELLE CONGREGAZIONI</text>
+    <text x="892" y="276">SANTA CHIARA / CAMPANILE</text>
+    <text x="176" y="644">CLINICA + FRONTE COMMERCIALE</text>
+    <text x="456" y="644">BANCA</text>
+    <text x="648" y="644">CAFFÈ</text>
+    <text x="808" y="644">NEGOZI / AGENZIA</text>
+    <text x="612" y="716" font-size="10">PIZZERIA</text>
+  </g>
+
+  <!-- Assi di percorrenza pedonale -->
+  <g fill="#9fb8c4" opacity="0.78" stroke="#2f6f8f" stroke-width="1" stroke-dasharray="5 4">
+    <rect x="288" y="240" width="48" height="144"/>
+    <rect x="288" y="352" width="272" height="48"/>
+    <rect x="528" y="464" width="64" height="112"/>
+    <rect x="320" y="496" width="512" height="48"/>
+  </g>
+  <g fill="none" stroke="#2f6f8f" stroke-width="2" marker-end="url(#arrow)" opacity="0.9">
+    <path d="M312 384 L312 376 L544 376"/>
+    <path d="M576 376 L576 440"/>
+    <path d="M576 480 L576 560"/>
+  </g>
+
+  <!-- Sagrato e basamento dell'obelisco -->
+  <rect x="256" y="240" width="256" height="64" fill="#e8dfcc" opacity="0.65" stroke="#8b806f"/>
+  <rect x="512" y="368" width="128" height="96" fill="#e8dfcc" opacity="0.75" stroke="#8b806f"/>
+  <rect x="544" y="400" width="64" height="48" fill="#ece6d8" stroke="#5f584d" stroke-width="2"/>
+  <circle cx="576" cy="424" r="18" fill="#f6f3ec" stroke="#5f584d" stroke-width="2"/>
+  <text x="552" y="424" font-family="sans-serif" font-size="12" fill="#4a443c">GUGLIA</text>
+
+  <!-- Portali esistenti: ancoraggi inviolati -->
+  <g fill="#2f6f8f" stroke="#1f4d63" stroke-width="1">
+    <rect x="300" y="220" width="12" height="12"/><rect x="684" y="716" width="12" height="12"/>
+    <rect x="620" y="572" width="12" height="12"/><rect x="492" y="716" width="12" height="12"/>
+    <rect x="268" y="716" width="12" height="12"/><rect x="940" y="428" width="12" height="12"/>
+    <rect x="844" y="716" width="12" height="12"/><rect x="1132" y="492" width="12" height="12"/>
+    <rect x="-4" y="492" width="12" height="12"/><rect x="188" y="748" width="12" height="12"/>
+    <rect x="620" y="732" width="12" height="12"/><rect x="892" y="428" width="12" height="12"/>
+  </g>
+
+  <!-- Punti di interesse -->
+  <g fill="#b14b3f" stroke="#7d342b" stroke-width="1">
+    <path d="M496 410 l8 8 -8 8 -8 -8 Z"/>
+    <path d="M328 140 l8 8 -8 8 -8 -8 Z"/>
+    <path d="M1016 508 l8 8 -8 8 -8 -8 Z"/>
+    <path d="M712 700 l8 8 -8 8 -8 -8 Z"/>
+    <path d="M632 556 l8 8 -8 8 -8 -8 Z"/>
+    <path d="M520 700 l8 8 -8 8 -8 -8 Z"/>
+    <path d="M1000 668 l8 8 -8 8 -8 -8 Z"/>
+  </g>
+
+  <!-- Arredo urbano: ai bordi, non al centro -->
+  <g fill="#6f8a5a" stroke="#4d6a3d" stroke-width="1">
+    <circle cx="264" cy="328" r="6"/><circle cx="264" cy="392" r="6"/><circle cx="264" cy="456" r="6"/>
+    <circle cx="840" cy="296" r="6"/><circle cx="840" cy="360" r="6"/><circle cx="840" cy="552" r="6"/>
+    <circle cx="336" cy="592" r="6"/><circle cx="712" cy="592" r="6"/>
+  </g>
+  <g fill="#7a5637">
+    <rect x="360" y="464" width="28" height="8"/><rect x="632" y="464" width="28" height="8"/>
+    <rect x="360" y="552" width="28" height="8"/><rect x="632" y="552" width="28" height="8"/>
+    <rect x="752" y="496" width="28" height="8"/>
+  </g>
+  <g fill="#3d444b">
+    <rect x="272" y="304" width="6" height="24"/><rect x="352" y="400" width="6" height="24"/>
+    <rect x="560" y="368" width="6" height="24"/><rect x="816" y="400" width="6" height="24"/>
+    <rect x="272" y="544" width="6" height="24"/><rect x="816" y="544" width="6" height="24"/>
+  </g>
+
+  <!-- Flussi NPC: affidati agli assi, non sparsi -->
+  <g fill="#c08b3c" stroke="#7d5a22" stroke-width="1">
+    <circle cx="328" cy="328" r="6"/><circle cx="368" cy="480" r="6"/><circle cx="496" cy="392" r="6"/>
+    <circle cx="640" cy="496" r="6"/><circle cx="784" cy="464" r="6"/><circle cx="432" cy="560" r="6"/>
+  </g>
+
+  <!-- Scala e legenda -->
+  <g transform="translate(24,600)" font-family="sans-serif" font-size="12" fill="#443f38">
+    <rect x="0" y="0" width="300" height="150" fill="#fffaf0" stroke="#7a7266" opacity="0.95"/>
+    <text x="12" y="20" font-weight="bold">GRAYBOX — pianta logica (non asset finali)</text>
+    <rect x="12" y="32" width="16" height="12" fill="#8f9599"/><text x="36" y="42">Gesù Nuovo (nord)</text>
+    <rect x="12" y="50" width="16" height="12" fill="#cbb68e"/><text x="36" y="60">palazzi storici</text>
+    <rect x="12" y="68" width="16" height="12" fill="#9fb8c4"/><text x="36" y="78">assi pedonali</text>
+    <rect x="12" y="86" width="16" height="12" fill="#ece6d8"/><text x="36" y="96">obelisco / sagrato</text>
+    <rect x="12" y="104" width="16" height="12" fill="#2f6f8f"/><text x="36" y="114">portali esistenti</text>
+    <rect x="12" y="122" width="16" height="12" fill="#b14b3f"/><text x="36" y="132">POI / landmark</text>
+  </g>
+  <text x="24" y="588" font-family="sans-serif" font-size="12" fill="#5f584d">1 cella = 16 px · 72 × 48 celle · spawn e portali invariati</text>
+</svg>

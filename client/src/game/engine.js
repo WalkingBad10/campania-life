@@ -44,7 +44,10 @@
       this.refreshT = 0; this.fadeT = 0; this.rainT = 0; this.weatherT = 0;
       this.animT = 0;
       this.state = null;
-      this.debug = true;
+      // I pannelli diagnostici non sono parte dell'esperienza giocatore:
+      // riattivabili solo con ?debug=1 per QA e regressioni.
+      const params = (typeof location !== 'undefined' && location.search) ? new URLSearchParams(location.search) : null;
+      this.debug = !!(params && (params.has('debug') || params.get('dbg') === '1'));
       this.enterCooldown = 0;
       this.portalGrace = 0;
       this.entryPos = null;
@@ -653,6 +656,18 @@
         c.drawImage(bg, (W - dw) / 2, (H - dh) / 2, dw, dh);
         c.restore();
       }
+      // I prospetti edilizi sono sf architettonico: vanno disegnati prima delle
+      // entità. Il sort per profondità li faceva passare sopra il giocatore quando
+      // cammina sul sagrato/marciapiede, facendolo "affondare" nelle facciate.
+      const structureTypes = {
+        gesu_facade: 1, palazzo_ne: 1, palazzo_sw: 1, palazzo_banca: 1,
+        palazzo_bar: 1, palazzo_se: 1, palazzo_e: 1, campanile: 1
+      };
+      for (const d of (m.decors || [])) {
+        if (!structureTypes[d.type]) continue;
+        if (d.x > CL.camera.x - 160 && d.x < CL.camera.x + CL.VIEW_W + 160 &&
+            d.y > CL.camera.y - 260 && d.y < CL.camera.y + CL.VIEW_H + 120) this.drawDecor(c, d);
+      }
       // oggetti alti + entità, ordinati per profondità
       const items = [];
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
@@ -665,6 +680,7 @@
         }
       }
       for (const d of (m.decors || [])) {
+        if (structureTypes[d.type]) continue; // già disegnati come sfondo
         const dy = this.decorSortY(d);
         if (d.x > CL.camera.x - 160 && d.x < CL.camera.x + CL.VIEW_W + 160 && d.y > CL.camera.y - 200 && d.y < CL.camera.y + CL.VIEW_H + 160) {
           items.push({ y: dy, decor: d });
@@ -869,6 +885,10 @@
         }
         case 'guglia_overlay': {
           this.drawGuglia(c, x, y);
+          break;
+        }
+        case 'campanile': {
+          const img = ART.campanileSprite(); if (img) c.drawImage(img, x, y);
           break;
         }
         case 'edicola': {

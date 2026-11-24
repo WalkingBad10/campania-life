@@ -310,6 +310,7 @@ async function main() {
     assert(game.map.id === 'napoli', 'spawn map');
     assert(ensureWalkable(game), 'spawn walkable');
     assert(localStorage.getItem('campania_life_save_v1'), 'save key exists');
+    assert(game.debug === false, 'player build hides debug panels by default');
   }, ctx);
 
   await test('compact HUD and low-power preferences persist', async () => {
@@ -600,16 +601,19 @@ async function main() {
       }
       const pc = portalCenter(p);
       const stages = [[pc.x,pc.y+24],[pc.x,pc.y-24],[pc.x+24,pc.y],[pc.x-24,pc.y],[pc.x,pc.y+32],[pc.x,pc.y-32]];
-      let staged = false;
+      let staged = false, entered = false;
       for (const [sx,sy] of stages) {
         const r = walkTo(game, sx, sy, {timeout:12000});
+        // Un avvicinamento può attraversare il portale: è già un ingresso riuscito.
+        if (r.reason === 'map-changed' && game.map.id === p.to) { entered = true; staged = true; break; }
         if (r.ok && Math.hypot(game.player.x-sx,game.player.y-sy) < 24) { staged = true; break; }
       }
       if (!staged) { walkRoute(game, [[36*T,36*T],[20*T,36*T],[56*T,36*T],[pc.x,pc.y+24]]); walkTo(game, pc.x, pc.y+24, {timeout:12000}); }
-      let entered = false;
-      for (const dir of ['up','down','left','right']) {
-        for (let i=0;i<260 && game.map.id!==p.to;i++){ resetInput(CL); CL.input.down[dir]=true; game.update(1/60); }
-        if (game.map.id === p.to) { entered = true; break; }
+      if (!entered) {
+        for (const dir of ['up','down','left','right']) {
+          for (let i=0;i<260 && game.map.id!==p.to;i++){ resetInput(CL); CL.input.down[dir]=true; game.update(1/60); }
+          if (game.map.id === p.to) { entered = true; break; }
+        }
       }
       if (!entered) { game.player.x = pc.x; game.player.y = pc.y; for(let i=0;i<40;i++) game.update(1/60); entered = game.map.id === p.to; }
       resetInput(CL);
@@ -757,8 +761,10 @@ async function main() {
 
   await test('collisions match visual props without blocking doors/portals', async () => {
     const napoli = CL.maps.get('napoli');
-    const lamps = [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24], [24, 28], [40, 28]];
-    const benches = [[22, 23], [46, 23], [22, 33], [46, 33], [30, 23], [38, 33]];
+    // Il nuovo arredo segue i filari ai bordi della piazza: stesse invarianti (solido),
+    // coordinate aggiornate alla pianta ricostruita da OSM.
+    const lamps = [[21, 20], [36, 23], [50, 24], [17, 33], [52, 33]];
+    const benches = [[22, 27], [39, 27], [22, 35], [42, 35], [46, 29]];
     for (const [x, y] of lamps) {
       assert(napoli.g[y][x] === 'U', `lamp tile at ${x},${y}`);
       assert(CL.maps.solidChar(napoli.g[y][x]), `lamp at ${x},${y} blocks movement`);
@@ -906,7 +912,7 @@ async function main() {
   await test('architectural overlays stay anchored and regional hubs stay alive', async () => {
     newGame(ctx);
     const expected = {
-      napoli: ['facade_cornice', 'facade_balcony', 'laundry_line'],
+      napoli: ['laundry_line'],
       costiera: ['fishing_net', 'laundry_line'], pompei: ['ruin_column'],
       bacoli: ['laundry_line'], salerno: ['laundry_line']
     };
@@ -927,7 +933,7 @@ async function main() {
     }
     const napoli = CL.maps.get('napoli');
     const facadeWidths = {
-      gesu_facade: 352, palazzo_ne: 320, palazzo_sw: 256,
+      gesu_facade: 384, palazzo_ne: 320, palazzo_sw: 224,
       palazzo_banca: 160, palazzo_bar: 128, palazzo_se: 128, palazzo_e: 160
     };
     const facades = napoli.decors.filter(d => facadeWidths[d.type]).map(f => ({
@@ -935,10 +941,9 @@ async function main() {
       x0: f.x, x1: f.x + facadeWidths[f.type],
       y0: f.y + (f.data.oy || 0), y1: f.y + (f.data.oy || 0) + (f.data.h || 0)
     }));
-    for (const d of napoli.decors.filter(x => x.type === 'facade_cornice' || x.type === 'facade_balcony')) {
-      assert(facades.some(f => d.x >= f.x0 - 8 && d.x <= f.x1 + 8 && d.y >= f.y0 - 8 && d.y <= f.y1 + 8),
-        `${d.type} anchored inside a facade box`);
-    }
+    // Ogni facciata M1 è autorevole: nessun cornice/balcone procedurale duplicato.
+    assert(!napoli.decors.some(d => d.type === 'facade_cornice' || d.type === 'facade_balcony'),
+      'duplicate procedural facade details removed');
     for (const id of Object.keys(CL.maps.cache)) {
       const m = CL.maps.get(id);
       for (const d of (m.decors || []).filter(x => x.type === 'laundry_line')) {

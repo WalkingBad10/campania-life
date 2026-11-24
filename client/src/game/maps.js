@@ -73,39 +73,34 @@
 
   /* ------------------------------------------------------------- NAPOLI */
   function napoli() {
-    // Area prioritaria fedele (scala gameplay): Piazza del Gesù Nuovo + inizio Via Benedetto Croce/Spaccanapoli.
-    // Riferimenti: Chiesa del Gesù Nuovo sul lato ovest/nord della piazza, Guglia dell'Immacolata al centro,
-    // Palazzo Pignatelli di Monteleone/Complesso a nord-est, palazzi storici e accesso a Spaccanapoli a sud-est.
+    // Ricostruzione urbanistica da OSM + fotografie pubbliche (vedi qa/campania-open-code-1).
+    // Scala gameplay: 1 cella = 16 px. La piazza è una "stanza urbana" continua:
+    // palazzi nobiliari a ovest, Gesù Nuovo a nord, Congregazioni a nord-est,
+    // Santa Chiara/campanile a est, fronte commerciale a sud, obelisco nell'area aperta.
+    // Spawn, portali e POI di servizio restano ancorati; cambiano solo tessuto, arredo e flussi.
     const m = makeMap('napoli', 'napoli', 72, 48, blank(72, 48, 'p'));
     m.name = 'Piazza del Gesù Nuovo';
     m.spawn = { x: 36 * T, y: 36 * T };
-    const R = U.rng(7717), g = m.g;
+    const g = m.g;
+    const place = (x, y, ch) => { if (g[y] && ['D', 'd', 'e'].includes(g[y][x])) setTile(g, x, y, ch); };
 
-    // Pavimentazione: basolato piazza, marciapiedi, sagrato
-    rect(g, 10, 16, 44, 22, 'D'); // piazza principale
-    rect(g, 14, 12, 18, 4, 'D');  // sagrato davanti Gesù Nuovo
-    rect(g, 8, 15, 2, 24, 'p'); rect(g, 54, 15, 2, 24, 'p');
-    rect(g, 10, 14, 44, 2, 'p'); rect(g, 10, 38, 44, 2, 'p');
+    // ---- 1) Graybox: masse edilizie continue sui quattro lati ----
+    // Palazzi nobiliari occidentali (Pandola / Pignatelli di Monteleone).
+    // L'ultima colonna resta marciapiede: qui è ancorato lo spawn storico (15,17).
+    rect(g, 0, 16, 14, 14, '#');
+    for (let y = 17; y < 29; y++) for (let x = 1; x < 13; x++) {
+      setTile(g, x, y, (y === 19 || y === 22 || y === 25 || y === 28) ? ((x % 4 === 1) ? 'L' : '#') : '#');
+    }
+    rect(g, 7, 29, 2, 1, 'Y');
 
-    // Via Benedetto Croce / Spaccanapoli (est) e Calata Trinità Maggiore (ovest)
-    hline(g, 54, 71, 31, 'r', 2); hline(g, 54, 71, 30, 'p'); hline(g, 54, 71, 33, 'p');
-    hline(g, 0, 10, 31, 'r', 2);  hline(g, 0, 10, 30, 'p');  hline(g, 0, 10, 33, 'p');
-    // Via San Sebastiano / connessione nord-sud laterale
-    vline(g, 58, 34, 47, 'r', 2); vline(g, 57, 34, 47, 'p'); vline(g, 60, 34, 47, 'p');
-    vline(g, 12, 39, 47, 'r', 2); vline(g, 11, 39, 47, 'p'); vline(g, 14, 39, 47, 'p');
-
-    // Guglia dell'Immacolata: base solida 4x3, nessuna tasca camminabile.
-    rect(g, 34, 25, 4, 3, 'O');
-
-    // CHIESA DEL GESÙ NUOVO (lato ovest/nord, facciata bugnata immediatamente riconoscibile)
+    // Chiesa del Gesù Nuovo: bugnato a punta di diamante, portale centrale.
     rect(g, 8, 2, 24, 13, '#');
     for (let y = 3; y < 14; y++) for (let x = 9; x < 31; x++) setTile(g, x, y, 'H');
-    // portale centrale e dettagli
     rect(g, 19, 11, 2, 4, 'Y'); rect(g, 19, 10, 2, 1, '#');
     rect(g, 13, 5, 2, 3, 'I'); rect(g, 25, 5, 2, 3, 'I');
     rect(g, 9, 2, 22, 1, '='); rect(g, 8, 14, 24, 1, 'p');
 
-    // Complesso/palazzi nord-est (massa storica)
+    // Palazzo delle Congregazioni / istituti scolastici, a nord-est.
     rect(g, 34, 2, 20, 12, '#');
     for (let y = 3; y < 13; y++) for (let x = 35; x < 53; x++) {
       if (y === 5 || y === 8 || y === 11) setTile(g, x, y, (x % 4 < 2) ? 'L' : '#');
@@ -114,77 +109,86 @@
     }
     rect(g, 43, 12, 2, 2, 'Y'); rect(g, 34, 13, 20, 1, 'p');
 
-    // Palazzi lato sud di Via B. Croce (fronte continuo, accessi commerciali)
-    rect(g, 10, 39, 16, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 11; x < 25; x++) { setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#'); }
-    rect(g, 17, 44, 2, 2, 'Y'); // ingresso
-    rect(g, 28, 39, 10, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 29; x < 37; x++) { setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 1) ? 'L' : '#') : '#'); }
-    rect(g, 31, 44, 2, 2, 'Y'); // banca ingresso
-    rect(g, 40, 39, 8, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 41; x < 47; x++) { setTile(g, x, y, (y === 41) ? ((x % 2 === 0) ? 'L' : '#') : '#'); }
-    rect(g, 43, 44, 2, 2, 'Y'); // bar ingresso
-    rect(g, 50, 39, 8, 7, '#');
-    for (let y = 40; y < 45; y++) for (let x = 51; x < 57; x++) { setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#'); }
-    rect(g, 53, 44, 2, 2, 'Y');
-
-    // Lato est piazza - palazzi e ufficio
+    // Santa Chiara: fronte est compatto e campanile innestato nella massa, non isolato.
     rect(g, 55, 16, 10, 12, '#');
-    for (let y = 17; y < 27; y++) for (let x = 56; x < 64; x++) { setTile(g, x, y, (y === 18 || y === 21 || y === 24) ? ((x % 3 === 0) ? 'L' : '#') : '#'); }
+    for (let y = 17; y < 27; y++) for (let x = 56; x < 64; x++) {
+      setTile(g, x, y, (y === 18 || y === 21 || y === 24) ? ((x % 3 === 0) ? 'L' : '#') : '#');
+    }
+    rect(g, 59, 12, 3, 8, '#');
+    setTile(g, 60, 14, 'L'); setTile(g, 60, 17, 'L');
     rect(g, 59, 26, 2, 2, 'Y');
 
-    // Edicola/negozio piccolo sul bordo piazza
+    // Fronte sud di Via Benedetto Croce: accessi commerciali allineati.
+    rect(g, 10, 39, 16, 7, '#');
+    for (let y = 40; y < 45; y++) for (let x = 11; x < 25; x++) setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#');
+    rect(g, 17, 44, 2, 2, 'Y');
+    rect(g, 28, 39, 10, 7, '#');
+    for (let y = 40; y < 45; y++) for (let x = 29; x < 37; x++) setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 1) ? 'L' : '#') : '#');
+    rect(g, 31, 44, 2, 2, 'Y');
+    rect(g, 40, 39, 8, 7, '#');
+    for (let y = 40; y < 45; y++) for (let x = 41; x < 47; x++) setTile(g, x, y, (y === 41) ? ((x % 2 === 0) ? 'L' : '#') : '#');
+    rect(g, 43, 44, 2, 2, 'Y');
+    rect(g, 50, 39, 8, 7, '#');
+    for (let y = 40; y < 45; y++) for (let x = 51; x < 57; x++) setTile(g, x, y, (y === 41 || y === 43) ? ((x % 3 === 0) ? 'L' : '#') : '#');
+    rect(g, 53, 44, 2, 2, 'Y');
+
+    // Strade: Spaccanapoli a est, Toledo a ovest, collegamenti nord-sud.
+    hline(g, 54, 71, 31, 'r', 2); hline(g, 54, 71, 30, 'p'); hline(g, 54, 71, 33, 'p');
+    hline(g, 0, 15, 31, 'r', 2); hline(g, 0, 15, 30, 'p'); hline(g, 0, 15, 33, 'p');
+    vline(g, 58, 34, 47, 'r', 2); vline(g, 57, 34, 47, 'p'); vline(g, 60, 34, 47, 'p');
+    vline(g, 12, 39, 47, 'r', 2); vline(g, 11, 39, 47, 'p'); vline(g, 14, 39, 47, 'p');
+
+    // ---- 2) Pavimentazione logica: basolato, sagrato, assi pedonali ----
+    rect(g, 16, 16, 38, 22, 'D');           // spiazzale continuo
+    rect(g, 16, 15, 38, 1, 'p');            // marciapiede nord
+    rect(g, 16, 38, 38, 1, 'p');            // marciapiede sud
+    rect(g, 16, 15, 16, 4, 'd');            // sagrato davanti al portale del Gesù
+    rect(g, 32, 23, 9, 7, 'd');             // area lapidea attorno all'obelisco
+    rect(g, 18, 18, 17, 3, 'e');            // asse Gesù -> obelisco
+    rect(g, 18, 22, 17, 3, 'e');            // asse trasversale di accesso
+    rect(g, 35, 28, 3, 8, 'e');             // asse obelisco -> spawn / fronte sud
+    rect(g, 20, 31, 32, 3, 'e');            // passeggiata est-ovest
+
+    // Guglia dell'Immacolata: basamento 4x3, solido, ancoraggio storico invariato.
+    rect(g, 34, 25, 4, 3, 'O');
+
+    // Edicola incassata nel bordo, non isolata al centro della piazza.
     rect(g, 38, 34, 3, 3, 'K'); setTile(g, 39, 36, 'p');
 
-    // Arredi urbani: piazza viva e proporzionata
-    [[16, 19], [28, 19], [44, 19], [16, 36], [48, 36], [52, 24], [24, 28], [40, 28]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') setTile(g, x, y, 'U'); });
-    [[22, 23], [46, 23], [22, 33], [46, 33], [30, 23], [38, 33]].forEach(([x, y]) => { if (g[y] && g[y][x] === 'D') setTile(g, x, y, 'E'); });
-    // Piccoli mercatini in piazza (decorativi, passaggio libero)
-    scatter(g, ',', 30, c => c === 'D', R);
-    // Fioriere/confini più leggibili
-    [[13,16],[17,16],[29,16],[41,16],[47,16],[51,16],[13,37],[51,37]].forEach(([x,y])=>{ if (g[y] && g[y][x] === 'D') setTile(g, x, y, 'P'); });
+    // ---- 3) Arredo urbano: filari ai bordi e ai lati degli assi ----
+    [[16,17],[16,21],[16,25],[16,29],[16,35],[52,18],[52,22],[52,27],[52,35],
+     [22,37],[46,37],[31,25],[41,25],[31,29],[41,29]].forEach(([x,y]) => place(x,y,'P'));
+    [[21,20],[36,23],[50,24],[17,33],[52,33]].forEach(([x,y]) => place(x,y,'U'));
+    [[22,27],[39,27],[22,35],[42,35],[46,29]].forEach(([x,y]) => place(x,y,'E'));
 
-    // Overlay architettonici (sprite code-drawn, cacheati)
-    decor(m, 9, 3, 'gesu_facade', { h: 13 * T, oy: -16 });
+    // ---- 4) Architettura e dettagli ancorati ----
+    decor(m, 8, 2, 'gesu_facade', { h: 13 * T, oy: 0 });
     decor(m, 34, 2, 'palazzo_ne', { h: 12 * T, oy: 0 });
+    decor(m, 0, 16, 'palazzo_sw', { h: 14 * T, oy: 0 }); // fronte continuo dei palazzi nobiliari a ovest
     decor(m, 10, 39, 'palazzo_sw', { h: 8 * T, oy: -16 });
     decor(m, 28, 39, 'palazzo_banca', { h: 8 * T, oy: -16 });
     decor(m, 40, 39, 'palazzo_bar', { h: 8 * T, oy: -16 });
     decor(m, 50, 39, 'palazzo_se', { h: 8 * T, oy: -16 });
     decor(m, 55, 16, 'palazzo_e', { h: 5 * T, oy: 0 });
+    decor(m, 59, 12, 'campanile', { h: 112, oy: 0 });
     decor(m, 38, 34, 'edicola', { h: 48 });
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
     decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });
-    [[18,16],[26,16],[42,16],[48,16],[18,37],[50,37],[13,16],[51,16],[13,37],[51,37],[21,37],[47,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
-    decor(m, 25, 35, 'cart', { h: 20 });
-    decor(m, 47, 36, 'table_out', { h: 12 }); decor(m, 45, 36, 'chair_out', { h: 10 }); decor(m, 49, 36, 'chair_out', { h: 10 });
+
+    // Unico banco di fiori coerente con la fioraia; nessun mercato casuale al centro.
+    decor(m, 25, 36, 'cart', { h: 20 });
+    // Terrazza del caffè sul lato sud-est, non al centro della piazza.
+    decor(m, 48, 36, 'table_out', { h: 12 });
+    decor(m, 46, 36, 'chair_out', { h: 10 }); decor(m, 50, 36, 'chair_out', { h: 10 });
     decor(m, 33, 37, 'sign', { h: 20 });
-    decor(m, 40, 46, 'sign', { h: 20 });
     decor(m, 58, 28, 'sign', { h: 20 });
-    [[18,18],[42,18],[26,37],[36,37]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
-    // Bancarelle mercato
-    decor(m, 24, 30, 'awning', { w: 48, color: '#c95a3a', h: 12 });
-    decor(m, 36, 30, 'awning', { w: 48, color: '#3f7a4a', h: 12 });
-    decor(m, 25, 30, 'cart', { h: 20 }); decor(m, 39, 30, 'cart', { h: 20 });
-    // Cornicioni e balconi ancorati ai prospetti: nessun nuovo tile solido.
-    decor(m, 9, 2, 'facade_cornice', { w: 352, oy: 6, color: '#9aa0a6' });
-    decor(m, 34, 2, 'facade_cornice', { w: 320, oy: 6, color: '#b79c72' });
-    decor(m, 10, 38, 'facade_cornice', { w: 256, oy: 6, color: '#c2a77e' });
-    decor(m, 28, 38, 'facade_cornice', { w: 160, oy: 6, color: '#9aa9b5' });
-    decor(m, 40, 38, 'facade_cornice', { w: 128, oy: 6, color: '#b58b62' });
-    decor(m, 50, 38, 'facade_cornice', { w: 128, oy: 6, color: '#b49a72' });
-    decor(m, 55, 16, 'facade_cornice', { w: 160, oy: 6, color: '#bfa27a' });
-    decor(m, 36, 4, 'facade_balcony', { w: 44, oy: 0 });
-    decor(m, 38, 8, 'facade_balcony', { w: 44, oy: 0, pots: false });
-    decor(m, 12, 6, 'facade_balcony', { w: 48, oy: 0 });
-    decor(m, 24, 6, 'facade_balcony', { w: 48, oy: 0 });
-    decor(m, 42, 10, 'facade_balcony', { w: 40, oy: 0 });
-    decor(m, 30, 41, 'facade_balcony', { w: 44, oy: 0 });
-    // Panni stesi tra gli edifici, sospesi sulle strade pedonali.
+    [[16,17],[16,25],[52,22],[52,35],[27,29],[36,29]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
+
+    // Cornicioni e balconi sono già parte dell'asset M1: nessun decor duplicato.
     decor(m, 22, 38, 'laundry_line', { x2: 30 * T, y2: 38 * T, sag: 9 });
     decor(m, 45, 38, 'laundry_line', { x2: 53 * T, y2: 38 * T, sag: 7, colors: ['#f0e6d2', '#5f8fa8', '#d2a24a'] });
 
-    // Portali interni / servizi (ID preservati)
+    // Portali interni / servizi: ancoraggi invariati.
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 14 * T, y: 18 * T + 8 }, 'Ingresso Gesù Nuovo');
     portal(m, 43, 45, 2, 1, 'bar', { __useTargetSpawn: true }, 'Caffè Vittoria');
     portal(m, 39, 36, 1, 1, 'negozio', { __useTargetSpawn: true }, 'Edicola');
@@ -192,13 +196,11 @@
     portal(m, 17, 45, 2, 1, 'clinica', { __useTargetSpawn: true }, 'Clinica');
     portal(m, 59, 27, 2, 1, 'ufficio', { __useTargetSpawn: true }, 'Ufficio');
     portal(m, 53, 45, 2, 1, 'casa_giocatore', { __useTargetSpawn: true }, 'Agenzia', 'realtor');
-
-    // Collegamenti zona (placeholder sicuri)
     portal(m, 71, 31, 1, 2, 'costiera', { x: 3 * T, y: 14 * T }, 'Verso la Costiera');
     portal(m, 0, 31, 1, 2, 'pompei', { x: 54 * T, y: 30 * T }, 'Verso Toledo');
     portal(m, 12, 47, 2, 1, 'vesuvio', { x: 32 * T, y: 44 * T }, 'Verso sud');
 
-    // POI / landmark
+    // POI: monumento e servizi distribuiti secondo gli assi reali.
     poi(m, 36, 26, 'guglia', 'landmark', "Guglia dell'Immacolata", 'flavor');
     poi(m, 20, 9, 'gesu', 'landmark', 'Chiesa del Gesù Nuovo', 'flavor');
     poi(m, 63, 32, 'croce', 'landmark', 'Via Benedetto Croce', 'flavor');
@@ -206,11 +208,9 @@
     poi(m, 39, 35, 'edicola_poi', 'service', 'Edicola', 'shop', { shop: 'negozio' });
     poi(m, 32, 44, 'banca_poi', 'service', 'Banca', 'bank');
     poi(m, 62, 42, 'cantiere_job', 'service', 'Cantiere', 'job', { job: 'operaio' });
-    // Nuovi interni M1 (struttura base, accessibili)
-    // Pizzeria: varco tra banca e bar, porta alla riga 46 con avvicinamento dalla 47.
+
     building(m, 38, 43, 2, 4, 'pizzeria', 'Entra in pizzeria', 'door');
     building(m, 54, 17, 5, 4, 'metro', 'Entra in metro', 'door');
-    // Corridoio pedonale che collega la metro alla piazza senza attraversare muri.
     rect(g, 56, 21, 1, 7, 'p');
     setTile(g, 56, 28, 'p');
 
@@ -242,6 +242,8 @@
     building(m, 34, 8, 7, 4, 'souvenir', 'Entra al chiosco turistico', 'shop', { shop: 'costiera' });
     building(m, 57, 8, 6, 4, 'bar', 'Entra al bar sul mare', 'shop', { shop: 'costiera' });
     building(m, 7, 8, 6, 4, 'casa_amalfi', 'Casetta con vista mare', 'realtor');
+    // Piazzette pedonali fra le case e la strada: superficie continua, non caselle isolate.
+    rect(g, 13, 10, 20, 3, 'e'); rect(g, 41, 10, 15, 3, 'e');
     // barca
     poi(m, 63, 30, 'barca', 'service', 'Battello per Capri', 'boat');
     // collegamenti
@@ -256,6 +258,7 @@
     decor(m, 20, 25, 'fishing_net', { w: 24, h: 20, oy: 0 });
     decor(m, 22, 29, 'fishing_net', { w: 20, h: 18, oy: 0 });
     decor(m, 36, 12, 'laundry_line', { x2: 43 * T, y2: 12 * T, sag: 6 });
+    [[15, 12], [31, 12], [45, 12]].forEach(([x, y]) => decor(m, x, y, 'plant', { h: 12 }));
     m.spawn = { x: 4 * T, y: 18 * T };
     return m;
   }
@@ -270,10 +273,14 @@
       const x = 32 + Math.round(Math.sin(y / 6) * 5);
       for (let i = -1; i <= 1; i++) if (g[y][x + i] && g[y][x + i] !== '^') setTile(g, x + i, y, ',');
     }
-    // vetta rocciosa
+    // vetta rocciosa con cratere centrale aperto e anello di roccia integro.
     for (let y = 0; y < 12; y++) for (let x = 0; x < 64; x++) {
       const d = Math.abs(x - 32) / (2 + y * 2.1);
       if (d < 1 && R() > .18) setTile(g, x, y, '^');
+    }
+    for (let y = 1; y <= 8; y++) {
+      const half = 1 + Math.floor(y / 2);
+      for (let x = 32 - half; x <= 32 + half; x++) if (g[y][x] === '^') setTile(g, x, y, ',');
     }
     // vigneti
     for (let y = 30; y < 38; y += 2) for (let x = 42; x < 54; x += 2) setTile(g, x, y, 'T');
@@ -285,6 +292,7 @@
     for (const [x, y] of [[30, 11], [30, 12], [31, 12], [32, 12]]) setTile(g, x, y, ',');
     portal(m, 30, 10, 1, 1, 'grotta', { x: 8 * T, y: 18 * T }, 'Entra nella grotta');
     poi(m, 30, 10, 'grotta', 'cave', 'Grotta del Vesuvio', 'enter', { to: 'grotta' });
+    decor(m, 32, 13, 'sign', { h: 20 });
     // collegamenti
     portal(m, 32, 47, 2, 1, 'napoli', { x: 36 * T, y: 36 * T }, 'Scendi a Napoli');
     portal(m, 63, 20, 1, 2, 'costiera', { x: 70 * T, y: 15 * T }, 'Vai in Costiera');
@@ -315,7 +323,13 @@
     poi(m, 1, 30, 'to_napoli', 'sign', '← Napoli', 'travel', { to: 'napoli' });
     poi(m, 54, 20, 'to_avellino', 'sign', '→ Avellino', 'travel', { to: 'avellino' });
     // Colonne scandite sui muri delle rovine: la collisione resta sui tile già solidi.
-    [[9, 24], [10, 24], [18, 24], [19, 24]].forEach(([x, y]) => decor(m, x, y, 'ruin_column', { h: 18, oy: 0 }));
+    const ruinAnchors = [[9, 24], [10, 24], [18, 24], [19, 24]];
+    for (let y = 5; y < 28 && ruinAnchors.length < 14; y++) {
+      for (let x = 7; x < 50 && ruinAnchors.length < 14; x++) {
+        if (g[y][x] === '#' && (x + y * 3) % 11 === 0 && !ruinAnchors.some(([ax, ay]) => ax === x && ay === y)) ruinAnchors.push([x, y]);
+      }
+    }
+    ruinAnchors.forEach(([x, y]) => decor(m, x, y, 'ruin_column', { h: 18, oy: 0 }));
     m.spawn = { x: 5 * T, y: 30 * T };
     return m;
   }
@@ -328,8 +342,10 @@
     scatter(g, 'T', 18, c => c === '.', R);
     hline(g, 0, 29, 18, 'S', 2); hline(g, 0, 29, 21, '~');
     for (let y = 22; y < 24; y++) hline(g, 0, 29, y, 'W');
+    rect(g, 14, 16, 3, 2, 'e'); // piazzetta di imbarco, collegata allo spawn
     poi(m, 15, 19, 'barca_capri', 'service', 'Battello per Amalfi', 'boat');
     portal(m, 15, 19, 1, 2, 'costiera', { x: 4 * T, y: 18 * T }, 'Torna ad Amalfi');
+    decor(m, 12, 17, 'sign', { h: 20 }); decor(m, 18, 17, 'plant', { h: 12 });
     m.spawn = { x: 15 * T, y: 17 * T };
     return m;
   }
@@ -345,11 +361,13 @@
     hline(g, 0, w - 1, 22, 'S', 2); hline(g, 0, w - 1, 25, '~');
     for (let y = 26; y < h; y++) hline(g, 0, w - 1, y, 'W');
     rect(g, 8, 4, 9, 4, 'g'); rect(g, 30, 4, 10, 5, 'g');
+    rect(g, 10, 5, 5, 2, 'd'); rect(g, 32, 5, 6, 2, 'd'); // pavimenti delle terme romane
     building(m, 18, 14, 6, 4, 'souvenir', 'Souvenir di Baia', 'shop', { shop: 'bacoli' });
     building(m, 36, 14, 6, 4, 'bar', 'Bar sul porto', 'shop', { shop: 'bacoli' });
     poi(m, 12, 7, 'terme_baia', 'landmark', 'Terme di Baia', 'flavor');
     poi(m, 24, 23, 'porto_bacoli', 'service', 'Porto di Bacoli', 'fish');
     decor(m, 18, 18, 'laundry_line', { x2: 24 * T, y2: 18 * T, sag: 6 });
+    decor(m, 11, 8, 'plant', { h: 12 }); decor(m, 38, 8, 'plant', { h: 12 });
     portal(m, 4, 0, 2, 1, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
     portal(m, 44, 22, 2, 2, 'napoli', { __useTargetSpawn: true }, 'Battello per Napoli');
     m.spawn = { x: 5 * T, y: 14 * T };
@@ -367,13 +385,18 @@
     hline(g, 0, w - 1, 30, 'S', 2); hline(g, 0, w - 1, 33, '~');
     for (let y = 34; y < h; y++) hline(g, 0, w - 1, y, 'W');
     rect(g, 6, 4, 14, 8, '#');
-    for (let y = 5; y < 11; y++) for (let x = 7; x < 19; x++) if ((x + y) % 3 === 0) setTile(g, x, y, 'L');
+    for (let y = 5; y < 11; y++) for (let x = 7; x < 19; x++) {
+      if ((x + y) % 3 === 0) setTile(g, x, y, 'L');
+      else if ((x + y) % 5 === 0) setTile(g, x, y, '^'); // roccia del castello, resta solido
+    }
+    rect(g, 0, 29, w - 1, 1, 'e'); // passeggiata continua del lungomare
     rect(g, 30, 6, 10, 6, '#');
     building(m, 38, 21, 6, 4, 'bar', 'Bar del lungomare', 'shop', { shop: 'salerno' });
     building(m, 12, 21, 6, 4, 'souvenir', 'Bottega salernitana', 'shop', { shop: 'salerno' });
     poi(m, 12, 9, 'arechi', 'landmark', 'Castello di Arechi', 'flavor');
     poi(m, 28, 31, 'lungomare_salerno', 'landmark', 'Lungomare di Salerno', 'flavor');
     decor(m, 18, 12, 'laundry_line', { x2: 30 * T, y2: 12 * T, sag: 7, colors: ['#f0e6d2', '#b76570', '#6f93ad'] });
+    decor(m, 10, 29, 'plant', { h: 12 }); decor(m, 42, 29, 'plant', { h: 12 });
     portal(m, 54, 17, 2, 2, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
     portal(m, 2, 18, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     m.spawn = { x: 4 * T, y: 19 * T };
@@ -391,9 +414,11 @@
     hline(g, 0, w - 1, 16, 'r', 2); hline(g, 0, w - 1, 15, 'p'); hline(g, 0, w - 1, 18, 'p');
     vline(g, 24, 0, h - 1, 'r', 2);
     rect(g, 8, 5, 10, 5, '#'); rect(g, 32, 6, 9, 5, '#');
+    rect(g, 18, 7, 6, 3, 'e'); rect(g, 26, 7, 6, 3, 'e'); // terrazzamenti pedonali fra i vigneti
     building(m, 18, 20, 6, 4, 'negozio', 'Negozio di Avellino', 'shop', { shop: 'avellino' });
     poi(m, 13, 9, 'irpinia', 'landmark', 'Centro storico irpino', 'flavor');
     poi(m, 36, 9, 'vigneti_irpini', 'landmark', 'Vigneti irpini', 'flavor');
+    decor(m, 21, 12, 'sign', { h: 20 }); decor(m, 28, 12, 'plant', { h: 12 });
     portal(m, 0, 16, 2, 2, 'pompei', { __useTargetSpawn: true }, 'Torna a Pompei');
     portal(m, 46, 16, 2, 2, 'salerno', { __useTargetSpawn: true }, 'Verso Salerno');
     portal(m, 24, 30, 2, 2, 'caserta', { __useTargetSpawn: true }, 'Verso Caserta');
@@ -411,12 +436,17 @@
     hline(g, 0, w - 1, 32, 'r', 2); hline(g, 0, w - 1, 31, 'p'); hline(g, 0, w - 1, 34, 'p');
     vline(g, 30, 0, h - 1, 'D', 2);
     rect(g, 18, 4, 24, 14, '#');
-    for (let y = 5; y < 17; y++) for (let x = 19; x < 41; x++) if ((x + y) % 4 === 0) setTile(g, x, y, 'L');
+    for (let y = 5; y < 17; y++) for (let x = 19; x < 41; x++) {
+      if ((x + y) % 4 === 0) setTile(g, x, y, 'L');
+      else if ((x + y) % 7 === 0) setTile(g, x, y, 'F'); // balconi della Reggia, resta solido
+    }
     rect(g, 28, 18, 4, 2, 'Y');
+    hline(g, 20, 40, 20, 'D'); // asse prospettico del Viale del Re
     building(m, 8, 22, 6, 4, 'bar', 'Bar della Reggia', 'shop', { shop: 'caserta' });
     building(m, 46, 22, 6, 4, 'souvenir', 'Souvenir della Reggia', 'shop', { shop: 'caserta' });
     poi(m, 30, 10, 'reggia', 'landmark', 'Reggia di Caserta', 'flavor', { decorative: true });
     poi(m, 30, 27, 'viale_re', 'landmark', 'Viale del Re', 'flavor');
+    [[24, 21], [36, 21], [26, 27], [34, 27]].forEach(([x, y]) => decor(m, x, y, 'plant', { h: 12 }));
     portal(m, 2, 32, 2, 2, 'vesuvio', { __useTargetSpawn: true }, 'Torna al Vesuvio');
     portal(m, 56, 32, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     m.spawn = { x: 30 * T, y: 36 * T };
@@ -436,8 +466,8 @@
     for (let x = 0; x < w; x++) { setTile(g, x, 0, '#'); setTile(g, x, h - 1, '#'); }
     for (let y = 0; y < h; y++) { setTile(g, 0, y, '#'); setTile(g, w - 1, y, '#'); }
     // parete interna/abside
-    for (let x = 1; x < w - 1; x++) setTile(g, x, 1, 'j');
-    for (let x = 2; x < w - 2; x++) setTile(g, x, 2, 'j');
+    for (let x = 1; x < w - 1; x++) setTile(g, x, 1, 'H'); // bugnato del Gesù, solido come 'j'
+    for (let x = 2; x < w - 2; x++) setTile(g, x, 2, 'H');
     // colonne navata
     for (const yy of [6, 10, 14]) { setTile(g, 5, yy, 'l'); setTile(g, 9, yy, 'l'); setTile(g, 18, yy, 'l'); setTile(g, 22, yy, 'l'); }
     // cappelle laterali (muri)
@@ -482,6 +512,8 @@
     decor(m, 1, 9, 'church_statue', { w: 28, h: 78, oy: -62 }); decor(m, 25, 9, 'church_statue', { w: 28, h: 78, oy: -62 });
     decor(m, 3, 5, 'church_painting1', { w: 56, h: 40, oy: -24 }); decor(m, 22, 5, 'church_painting1', { w: 56, h: 40, oy: -24 });
     decor(m, 7, 5, 'church_candle', { w: 12, h: 26, oy: -10 }); decor(m, 20, 5, 'church_candle', { w: 12, h: 26, oy: -10 });
+    decor(m, 6, 6, 'church_statue', { w: 28, h: 78, oy: -62 });
+    decor(m, 21, 6, 'church_painting1', { w: 56, h: 40, oy: -24 });
     // luci calde
     decor(m, 7, 4, 'candle_glow', { h: 8 }); decor(m, 20, 4, 'candle_glow', { h: 8 });
     decor(m, 4, 9, 'candle_glow', { h: 8 }); decor(m, 23, 9, 'candle_glow', { h: 8 });
@@ -691,6 +723,13 @@
     }
     decor(m, ow + 2, 3, 'warm_light', { r: 24, color: 'rgba(255,205,150,.12)' });
     decor(m, 8, oh + 2, 'warm_light', { r: 22, color: 'rgba(255,205,150,.10)' });
+    // Finitura uniforme delle ali esterne: stesso vocabolario visivo in tutti gli interni.
+    if (m.id === 'grotta') {
+      decor(m, targetW - 4, targetH - 4, 'warm_light', { r: 26, color: 'rgba(255,150,70,.15)' });
+    } else {
+      decor(m, targetW - 4, targetH - 4, 'home_plant', { h: 30 });
+      decor(m, 3, targetH - 4, 'home_lamp', { h: 52 });
+    }
     poi(m, ow + 3, 5, 'wing_detail', 'scenery', 'Un angolo del locale', 'flavor');
     m.g = g; m.w = targetW; m.h = targetH;
     return m;
