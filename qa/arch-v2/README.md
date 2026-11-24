@@ -7,6 +7,7 @@ Ciclo autonomo successivo a `living-world-v1`. Obiettivo: collisioni effettive, 
 - Regressione deterministica: **28/28 PASS**.
 - Build locale Vite: **index-Bz_GEfx8.js**; build equivalente CI con `GH_PAGES_BASE=/campania-life/`: **index-CWDVnPpH.js**.
 - Browser in-app Chromium: **0 errori console**.
+- Deploy GitHub Pages: workflow **#45407374336** completato su `ceeb987`; bundle remoto `index-CWDVnPpH.js` con SHA-256 identico al build CI-like locale.
 - Metriche canvas su 24 mappe in `metrics.json`, confrontate con `qa/living-world-v1/metrics.json`.
 - Nessuna mappa scende sotto la baseline di oltre `0.01` di `edgeDensity`; scostamento peggiore `-0.010` su `metro2`, `-0.008` su `bar` e `pizzeria`.
 - Rendering medio su 120 frame in Chromium: Napoli `1.069 ms`, Costiera `0.654 ms`, bar `0.434 ms`, pizzeria `0.427 ms`. Non sono misure su dispositivi reali.

@@ -4,6 +4,13 @@
   "regression": "28/28 PASS",
   "build": "index-Bz_GEfx8.js",
   "ciBuild": "index-CWDVnPpH.js",
+  "pagesVerification": {
+    "commit": "ceeb987cb6aa3958959e5f45c6063b5a9c948868",
+    "workflow": "Deploy Campania Life to GitHub Pages #45407374336 — success",
+    "remoteBundle": "assets/index-CWDVnPpH.js",
+    "sha256": "e428b73d2f5d6834a4e85ade30819cc897cf0e4c",
+    "checkedStrings": ["BETA PUBBLICA · Richiede verifica manuale su MacBook e smartphone", "campania_life_save_v1", "facade_cornice", "facade_balcony", "Gennaro il barcaiolo"]
+  },
   "browser": "http://127.0.0.1:3000/?qa=arch-v2",
   "consoleErrors": 0,
   "note": "Stesse condizioni di qa/living-world-v1/metrics.json: canvas 480x270, mezzogiorno, animT=0, input azzerato, quattro immobili posseduti. Palette su 5 bit per canale; edgeDensity su confronto luminanza tra pixel adiacenti. Le misure di rendering sono medie su 120 render() in Chromium desktop, non su MacBook o Pixel reali.",
