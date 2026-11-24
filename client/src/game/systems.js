@@ -543,15 +543,23 @@
     },
     metroTravel(to) {
       const st = CL.state;
-      const dest = to || 'metro2';
       const here = st.pos.map;
-      if (here !== 'metro' && here !== 'metro2') { toast('Devi essere in una stazione metro.', 'bad'); return false; }
+      if (here !== 'metro' && here !== 'metro2' && here !== 'fuorigrotta' && here !== 'pianura') { toast('Devi essere in una stazione metro.', 'bad'); return false; }
       if (!S.inventory.has('biglietto_metro')) { toast('Serve un biglietto metro (2 € in biglietteria).', 'bad'); return false; }
       S.inventory.remove('biglietto_metro', 1);
       S.time.skip(.2);
-      const target = here === 'metro' ? 'metro2' : 'metro';
-      const spawn = target === 'metro' ? { x: 12 * CL.TILE, y: 13 * CL.TILE } : { x: 12 * CL.TILE, y: 13 * CL.TILE };
-      toast('Il treno parte... prossima fermata!', 'info');
+      const allowed = ['metro', 'metro2', 'fuorigrotta', 'pianura'];
+      const fallback = here === 'metro2' ? 'metro' : 'metro2';
+      const target = allowed.indexOf(to) >= 0 && to !== here ? to : fallback;
+      const spawns = {
+        metro: { x: 12 * CL.TILE, y: 13 * CL.TILE },
+        metro2: { x: 12 * CL.TILE, y: 13 * CL.TILE },
+        fuorigrotta: { x: 11 * CL.TILE, y: 26 * CL.TILE },
+        pianura: { x: 10 * CL.TILE, y: 30 * CL.TILE }
+      };
+      const spawn = spawns[target];
+      const names = { metro: 'Metro Toledo', metro2: 'Campi Flegrei', fuorigrotta: 'Mostra', pianura: 'Pianura' };
+      toast('Il treno parte... prossima fermata: ' + names[target] + '!', 'info');
       sfx('confirm');
       if (CL.game) CL.game.enterMap(target, spawn.x, spawn.y);
       S.quests.progress('visit', target);

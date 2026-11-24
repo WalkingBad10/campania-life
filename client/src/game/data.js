@@ -142,7 +142,9 @@
     bacoli: { name: 'Bacoli e Baia', track: 'coast', weather: true, tint: '#d4e8e0', desc: 'Terme romane e porticcioli del golfo.' },
     salerno: { name: 'Salerno - Lungomare', track: 'town', weather: true, tint: '#dbe4e0', desc: 'Lungomare, castello e vicoli medievali.' },
     avellino: { name: 'Avellino - Colline Irpine', track: 'mountain', weather: true, tint: '#d6dec2', desc: 'Vigneti e colline dell’Irpinia.' },
-    caserta: { name: 'Caserta - Reggia', track: 'town', weather: true, tint: '#dce3d2', desc: 'Viali reali e la maestosa Reggia.' }
+    caserta: { name: 'Caserta - Reggia', track: 'town', weather: true, tint: '#dce3d2', desc: 'Viali reali e la maestosa Reggia.' },
+    fuorigrotta: { name: 'Fuorigrotta', track: 'town', weather: true, tint: '#d9e3d8', desc: 'Viali razionalisti, palme e la Mostra.' },
+    pianura: { name: 'Pianura', track: 'mountain', weather: true, tint: '#d3ddc4', desc: 'Borgo antico in piperno sui colli di Camaldoli.' }
   };
 
   /* --------------------------------------------------------------- PNG */
@@ -173,6 +175,10 @@
     salerno_barista:{name:'Enzo il salernitano', look:{hair:'#2d2622',skin:'#dda97e',shirt:'#e8e2d2',pants:'#3b4650'}, home:'salerno', x:34, y:22, role:'shop'},
     avellino_contadino:{name:'Pasquale il vignaiolo', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:28, y:22, role:'job'},
     caserta_guardia:{name:'Guardia della Reggia', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'caserta', x:30, y:24, role:'ambient'},
+    fuorigrotta_studente:{name:'Studente della Mostra', look:{hair:'#2f2723',skin:'#dbaa80',shirt:'#4a76ac',pants:'#3d4550'}, home:'fuorigrotta', x:50, y:25, role:'ambient'},
+    fuorigrotta_tecnico:{name:'Tecnico del Teatro', look:{hair:'#585048',skin:'#c78d62',shirt:'#d8a13c',pants:'#424a4e'}, home:'fuorigrotta', x:22, y:25, role:'ambient'},
+    pianura_residente:{name:'Residente del borgo', look:{hair:'#7a4a32',skin:'#dcaa80',shirt:'#8a9a62',pants:'#4d4a42'}, home:'pianura', x:25, y:21, role:'ambient'},
+    pianura_fornaio:{name:'Fornaio di Piazza San Giorgio', look:{hair:'#c4b49a',skin:'#d7a074',shirt:'#efe6d2',pants:'#5b5048'}, home:'pianura', x:42, y:26, role:'ambient'},
     cliente_bar3:{name:'Pasquale', look:{hair:'#3a2b22',skin:'#d7a078',shirt:'#8a6b4a',pants:'#414a52'}, home:'bar', x:16, y:12, role:'ambient'},
     cliente_bar4:{name:'Assunta', look:{hair:'#8d8579',skin:'#e0b18b',shirt:'#a45f74',pants:'#514658'}, home:'bar', x:7, y:11, role:'ambient'},
     cliente_pizza1:{name:'Marco', look:{hair:'#342a24',skin:'#dba77f',shirt:'#5b8fa8',pants:'#404b55'}, home:'pizzeria', x:9, y:12, role:'ambient'},

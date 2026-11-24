@@ -173,10 +173,9 @@
     decor(m, 40, 39, 'palazzo_bar', { h: 8 * T, oy: -16 });
     decor(m, 50, 39, 'palazzo_se', { h: 8 * T, oy: -16 });
     decor(m, 55, 16, 'palazzo_e', { h: 5 * T, oy: 0 });
-    // 50 m = 400 px. La base va sul bordo sud della massa di Santa Chiara
-    // (riga 28, y=448): ancorandola alla vecchia gronda (y=304) la cuspide
-    // finiva a y=-96, cioè fuori mappa e mai inquadrabile.
-    decor(m, 59, 12, 'campanile', { h: 400, oy: -144 });
+    // 48 m = 384 px (altezza OSM way 150562144). La base resta sul bordo sud
+    // della massa di Santa Chiara (riga 28, y=448): oy = 448 - 192 - 384.
+    decor(m, 59, 12, 'campanile', { h: 384, oy: -128 });
     decor(m, 38, 34, 'edicola', { h: 48 });
     decor(m, 43, 44, 'awning', { w: 32, color: '#b94a3a', h: 12 });
     decor(m, 31, 44, 'awning', { w: 32, color: '#3f6f95', h: 12 });
@@ -358,22 +357,46 @@
 
   /* -------------------------------------------------------------- BACOLI */
   function bacoli() {
+    // Baia: parco archeologico su pendio craterico, templi romani, castello
+    // aragonese sul promontorio di tufo, spiaggia e porto. OSM way 124092891
+    // (parco 235x390 m) e way 144917231 (castello 153x231 m): qui compressi
+    // moderatamente nella finestra 96x60 m; le proporzioni dei singoli
+    // edifici restano metriche. Spawn, portali e POI storici invariati.
     const w = 48, h = 30;
     const m = makeMap('bacoli', 'costiera', w, h, blank(w, h, '.'));
     m.name = 'Bacoli e Baia';
     const R = U.rng(8801), g = m.g;
-    scatter(g, ',', 60, c => c === '.', R);
+    scatter(g, ',', 46, c => c === '.', R);
+
+    // Pendio di tufo: roccia solida e terrazzamenti, non alberi sparsi.
+    for (let x = 0; x < w; x++) if (g[2][x] === '.' && R() > .35) setTile(g, x, 2, '^');
+    rect(g, 3, 3, 12, 7, 'g'); rect(g, 17, 3, 8, 7, 'g'); rect(g, 28, 3, 11, 7, 'g');
+    rect(g, 5, 5, 7, 3, 'd'); rect(g, 18, 5, 5, 3, 'd'); rect(g, 30, 5, 7, 3, 'd');
+    // Tre templi documentati: Diana, Mercurio, Venere (impronteRelative ~39x30,
+    // 22x22, 34x33 m, qui 14x7, 8x7, 11x7 celle per la finestra disponibile).
+    for (const [x, y, n] of [[5, 4, 4], [18, 4, 3], [30, 4, 4]]) {
+      for (let i = 0; i < n; i++) decor(m, x + i * 3, y, 'ruin_column', { h: 18, oy: 0 });
+    }
+    // Castello Aragonese sul promontorio est: massa di tufo e merli.
+    rect(g, 40, 3, 8, 8, '#');
+    decor(m, 40, 3, 'metric_facade', { type: 'bacoli_castello', h: 176, oy: -48 });
+
     hline(g, 0, w - 1, 10, 'r', 2); hline(g, 0, w - 1, 9, 'p'); hline(g, 0, w - 1, 12, 'p');
     hline(g, 0, w - 1, 22, 'S', 2); hline(g, 0, w - 1, 25, '~');
     for (let y = 26; y < h; y++) hline(g, 0, w - 1, y, 'W');
-    rect(g, 8, 4, 9, 4, 'g'); rect(g, 30, 4, 10, 5, 'g');
-    rect(g, 10, 5, 5, 2, 'd'); rect(g, 32, 5, 6, 2, 'd'); // pavimenti delle terme romane
+    // Vigneti terrazzati e case basse in tufo lungo la via costiera.
+    rect(g, 1, 16, 7, 4, '#');
+    decor(m, 1, 16, 'metric_facade', { type: 'bacoli_casa', h: 96, oy: 0 });
+    rect(g, 26, 14, 7, 4, '#');
+    decor(m, 26, 14, 'metric_facade', { type: 'bacoli_casa', h: 96, oy: 0 });
     building(m, 18, 14, 6, 4, 'souvenir', 'Souvenir di Baia', 'shop', { shop: 'bacoli' });
     building(m, 36, 14, 6, 4, 'bar', 'Bar sul porto', 'shop', { shop: 'bacoli' });
     poi(m, 12, 7, 'terme_baia', 'landmark', 'Terme di Baia', 'flavor');
     poi(m, 24, 23, 'porto_bacoli', 'service', 'Porto di Bacoli', 'fish');
     decor(m, 18, 18, 'laundry_line', { x2: 24 * T, y2: 18 * T, sag: 6 });
     decor(m, 11, 8, 'plant', { h: 12 }); decor(m, 38, 8, 'plant', { h: 12 });
+    decor(m, 6, 20, 'fishing_net', { w: 24, h: 20, oy: 0 });
+    decor(m, 33, 20, 'fishing_net', { w: 20, h: 18, oy: 0 });
     portal(m, 4, 0, 2, 1, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
     portal(m, 44, 22, 2, 2, 'napoli', { __useTargetSpawn: true }, 'Battello per Napoli');
     m.spawn = { x: 5 * T, y: 14 * T };
@@ -456,6 +479,118 @@
     portal(m, 2, 32, 2, 2, 'vesuvio', { __useTargetSpawn: true }, 'Torna al Vesuvio');
     portal(m, 56, 32, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     m.spawn = { x: 30 * T, y: 36 * T };
+    return m;
+  }
+
+  /* -------------------------------------------------------- FUORIGROTTA */
+  function fuorigrotta() {
+    // Quartiere pianificato: assi ENE-WSW (Via Giulio Cesare, Viale Augusto,
+    // Via Terracina) incrociati da Vie N-S (Lepanto, G.B. Marino). Dati OSM:
+    // Teatro Mediterraneo 99x79 m, isolati razionalisti 4-6 piani (14-21 m),
+    // filari di palme e marciapiedi in porfido. 1 cella = 2 m.
+    const w = 72, h = 48;
+    const m = makeMap('fuorigrotta', 'napoli', w, h, blank(w, h, 'p'));
+    m.name = 'Fuorigrotta - Viale Augusto';
+    const g = m.g;
+
+    // Teatro Mediterraneo: 70x36 m (560x288 px), volume modernista a nord.
+    rect(g, 2, 0, 35, 18, '#');
+    decor(m, 2, 0, 'metric_facade', { type: 'fuorigrotta_teatro', h: 280, oy: 0 });
+    poi(m, 19, 18, 'teatro_mediterraneo', 'landmark', 'Teatro Mediterraneo', 'flavor');
+
+    // Giardini della Mostra: verde recintato, non vegetazione sparsa a caso.
+    rect(g, 40, 1, 30, 16, 'T');
+    rect(g, 43, 7, 24, 1, 'e'); rect(g, 54, 2, 1, 14, 'e');
+    decor(m, 52, 4, 'metric_facade', { type: 'fuorigrotta_mostra', h: 160, oy: -32 });
+    rect(g, 45, 3, 20, 7, '#');
+
+    // Assi principali, con la banchina alberata di Viale Augusto.
+    hline(g, 0, w - 1, 18, 'r', 2); hline(g, 0, w - 1, 17, 'p'); hline(g, 0, w - 1, 20, 'p');
+    hline(g, 0, w - 1, 32, 'r', 2); hline(g, 0, w - 1, 31, 'p');
+    hline(g, 0, w - 1, 34, 'p');
+    hline(g, 0, w - 1, 35, 'r', 2); hline(g, 0, w - 1, 37, 'p');
+    hline(g, 0, w - 1, 44, 'r', 2); hline(g, 0, w - 1, 43, 'p'); hline(g, 0, w - 1, 46, 'p');
+    vline(g, 20, 18, h - 1, 'r', 2); vline(g, 19, 18, h - 1, 'p'); vline(g, 22, 18, h - 1, 'p');
+    vline(g, 55, 18, h - 1, 'r', 2); vline(g, 54, 18, h - 1, 'p'); vline(g, 57, 18, h - 1, 'p');
+    // Filare di palme Washingtonia sulla banchina centrale (dato Comune di Napoli).
+    for (let x = 3; x < w; x += 7) setTile(g, x, 34, 'T');
+
+    // Piazzetta della stazione Mostra: lo spawn metro e' (11,26).
+    rect(g, 6, 23, 10, 5, 'D');
+    rect(g, 8, 21, 6, 2, '#'); setTile(g, 11, 22, 'Y');
+    decor(m, 8, 21, 'metric_facade', { type: 'fuorigrotta_mostra', h: 160, oy: -64 });
+    poi(m, 11, 22, 'metro_mostra', 'service', 'Tornelli — metro per Toledo', 'metro_travel', { to: 'metro2' });
+    poi(m, 11, 26, 'mostra_ingresso', 'landmark', 'Ingresso Mostra d’Oltremare', 'flavor');
+
+    // Isolati razionalisti: blocchi 24x18 m e torre 20x30 m. Le impronte
+    // restano dentro le maglie stradali (righe 21-30 e 38-43): le facciate
+    // possono aggettare sul marciapiede come sfondo, ma non chiudono le vie.
+    const blocks = [
+      [23, 21, 'fuorigrotta_blocco', 144, -32, 12, 10],
+      [36, 21, 'fuorigrotta_torre', 240, -128, 12, 10],
+      [23, 38, 'fuorigrotta_blocco', 144, -32, 12, 6],
+      [36, 38, 'fuorigrotta_torre', 240, -128, 12, 6]
+    ];
+    for (const [x, y, type, hh, oy, bw, bh] of blocks) {
+      rect(g, x, y, bw, bh, '#');
+      decor(m, x, y, 'metric_facade', { type, h: hh, oy });
+    }
+    // Panchine e lampioni solo sugli assi, secondo la griglia.
+    for (let x = 5; x < 70; x += 11) { if (g[36] && g[36][x] === 'p') setTile(g, x, 36, 'E'); }
+    for (let x = 9; x < 70; x += 13) { if (g[30] && g[30][x] === 'p') setTile(g, x, 30, 'U'); }
+    decor(m, 4, 39, 'sign', { h: 20 }); decor(m, 60, 19, 'sign', { h: 20 });
+    decor(m, 24, 34, 'plant', { h: 12 }); decor(m, 48, 34, 'plant', { h: 12 });
+    m.spawn = { x: 11 * T, y: 26 * T };
+    return m;
+  }
+
+  /* ------------------------------------------------------------ PIANURA */
+  function pianura() {
+    // Antico borgo agricolo attorno a Piazza San Giorgio (OSM way 580193824):
+    // piazza 85x94 m, chiesa 40x31 m, municipio 39x25 m, borgo 2-4 piani in
+    // piperno e tufo, orlo verde di Camaldoli a est. 1 cella = 2 m.
+    const w = 64, h = 40;
+    const m = makeMap('pianura', 'napoli', w, h, blank(w, h, 'p'));
+    m.name = 'Pianura - Piazza San Giorgio';
+    const g = m.g;
+
+    // Versante di Camaldoli: verde e roccia, non alberi sparsi nella piazza.
+    rect(g, 56, 0, 8, h, 'T');
+    for (const [x, y] of [[58, 6], [60, 13], [57, 21], [61, 29], [58, 35]]) setTile(g, x, y, '^');
+
+    // Chiesa di San Giorgio Martire: 40x31 m, volume dominante a nord.
+    rect(g, 22, 1, 20, 16, '#');
+    decor(m, 22, 1, 'metric_facade', { type: 'pianura_chiesa', h: 248, oy: 8 });
+    poi(m, 32, 17, 'san_giorgio', 'landmark', 'Chiesa di San Giorgio Martire', 'flavor');
+
+    // Municipio: 39x25 m, lato ovest della piazza.
+    rect(g, 2, 3, 20, 13, '#');
+    decor(m, 2, 3, 'metric_facade', { type: 'pianura_municipio', h: 200, oy: 8 });
+
+    // Piazza San Giorgio: lastrico in tufo,asse pedonali radiali.
+    rect(g, 12, 17, 42, 14, 'd');
+    rect(g, 20, 17, 22, 3, 'e'); rect(g, 30, 20, 3, 11, 'e');
+    rect(g, 13, 24, 18, 2, 'e'); rect(g, 36, 29, 16, 2, 'e');
+
+    // Case del borgo: 20x14 m, 2-4 piani, basamento in piperno.
+    const houses = [[2, 20], [13, 32], [46, 5], [46, 33], [54, 21]];
+    for (const [x, y] of houses) {
+      rect(g, x, y, 10, 7, '#');
+      decor(m, x, y, 'metric_facade', { type: 'pianura_borgo', h: 112, oy: 0 });
+    }
+
+    // Stazione Circumflegrea: lo spawn metro e' (10,30).
+    rect(g, 6, 32, 10, 4, 'D');
+    rect(g, 8, 36, 6, 2, '#'); setTile(g, 11, 36, 'Y');
+    poi(m, 11, 36, 'metro_pianura', 'service', 'Tornelli — metro per Pianura', 'metro_travel', { to: 'metro2' });
+    hline(g, 6, 61, 38, 'r', 2); hline(g, 6, 61, 37, 'p');
+
+    for (const [x, y] of [[13, 19], [51, 19], [17, 30], [45, 31]]) {
+      if (g[y] && ['d', 'e'].includes(g[y][x])) setTile(g, x, y, 'P');
+    }
+    decor(m, 15, 22, 'sign', { h: 20 }); decor(m, 40, 22, 'plant', { h: 12 });
+    decor(m, 5, 30, 'plant', { h: 12 });
+    m.spawn = { x: 10 * T, y: 30 * T };
     return m;
   }
 
@@ -630,6 +765,8 @@
     poi(m,dx,dy,'exit','door','Esci dalla metro','exit');
     poi(m,5,5,'metro_ticket','service','Biglietteria — compra biglietto','metro_ticket');
     poi(m,12,8,'metro_gate','service','Tornelli — viaggia','metro_travel',{to:'metro2'});
+    poi(m,9,8,'metro_gate_fuorigrotta','service','Tornelli — Mostra / Campi Flegrei','metro_travel',{to:'fuorigrotta'});
+    poi(m,15,8,'metro_gate_pianura','service','Tornelli — Pianura','metro_travel',{to:'pianura'});
     poi(m,12,13,'metro_platform','service','Banchina linea 1','flavor');
     decor(m,2,4,'metro_hall',{w:180,h:90,oy:-74});
     decor(m,5,8,'metro_gate',{w:150,h:48,oy:-32});
@@ -659,6 +796,8 @@
     poi(m,dx,dy,'exit','door','Esci dalla metro','exit');
     poi(m,5,5,'metro_ticket2','service','Biglietteria','metro_ticket');
     poi(m,12,8,'metro_gate2','service','Tornelli — torna a Toledo','metro_travel',{to:'metro'});
+    poi(m,9,8,'metro_gate2_fuorigrotta','service','Tornelli — Mostra / Campi Flegrei','metro_travel',{to:'fuorigrotta'});
+    poi(m,15,8,'metro_gate2_pianura','service','Tornelli — Pianura','metro_travel',{to:'pianura'});
     poi(m,12,13,'metro_platform2','service','Banchina linea 1','flavor');
     decor(m,2,4,'metro_hall',{w:180,h:90,oy:-74});
     decor(m,5,8,'metro_gate',{w:150,h:48,oy:-32});
@@ -837,6 +976,8 @@
         case 'salerno': m = salerno(); break;
         case 'avellino': m = avellino(); break;
         case 'caserta': m = caserta(); break;
+        case 'fuorigrotta': m = fuorigrotta(); break;
+        case 'pianura': m = pianura(); break;
         case 'casa_nonna': m = interior(id, 'home', 16, 12); break;
         case 'casa_giocatore': m = interior(id, 'home', 16, 12); break;
         case 'appartamento': m = interior(id, 'home', 20, 14, mm => { setTile(mm.g, 10, 3, 'V'); setTile(mm.g, 15, 4, 'P'); setTile(mm.g, 4, 4, 'P'); }); break;
@@ -860,7 +1001,7 @@
       }
       if (m.zone === 'interno') expandInterior(m);
       m.width = m.w * T; m.height = m.h * T;
-      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', bacoli: 'Bacoli e Baia', salerno: 'Salerno - Lungomare', avellino: 'Avellino - Colline Irpine', caserta: 'Caserta - Reggia', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', pizzeria:'Pizzeria Da Michele', metro:'Metro Toledo - Atrio', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
+      const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', bacoli: 'Bacoli e Baia', salerno: 'Salerno - Lungomare', avellino: 'Avellino - Colline Irpine', caserta: 'Caserta - Reggia', fuorigrotta: 'Fuorigrotta - Viale Augusto', pianura: 'Pianura - Piazza San Giorgio', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', pizzeria:'Pizzeria Da Michele', metro:'Metro Toledo - Atrio', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
       m.name = m.name || defaultNames[id] || id;
       this.cache[id] = m;
       return m;

@@ -36,6 +36,7 @@ const DEVICES = [
 
 const MAPS = [
   'napoli', 'costiera', 'vesuvio', 'pompei', 'capri', 'bacoli', 'salerno', 'avellino', 'caserta',
+  'fuorigrotta', 'pianura',
   'casa_nonna', 'casa_giocatore', 'appartamento', 'casa_amalfi', 'bottega', 'souvenir',
   'bar', 'pizzeria', 'metro', 'metro2', 'negozio', 'banca', 'clinica', 'ufficio', 'grotta'
 ];
@@ -44,6 +45,9 @@ const MAPS = [
 // 36,24 e' dietro la Guglia: li' l'occlusione e' il comportamento atteso.
 const PROBES = {
   napoli: [[20, 13], [18, 38], [58, 28], [44, 15], [15, 17], [36, 24], [36, 30]],
+  fuorigrotta: [[11, 26], [22, 25], [50, 25]],
+  pianura: [[10, 30], [25, 21], [42, 26]],
+  bacoli: [[5, 14], [24, 11]],
   bar: [[10, 10]],
   pizzeria: [[15, 11]],
   casa_nonna: [[12, 8]],
@@ -165,8 +169,9 @@ async function runDevice(browser, device) {
     await page.locator('canvas').screenshot({ path: resolve(OUT, `${device.id}-${id}.png`), animations: 'disabled' });
   }
 
-  // Geometria metrica della Guglia: l'asset M1 a dimensione naturale deve
-  // corrispondere ai 22 m documentati e alla base dell'impronta solida O.
+  // Geometria metrica della Guglia: il monumento completo e' ~30 m (22 m e'
+  // il solo obelisco). L'asset M1 ricostruito e' 126x240 px, ancorato alla
+  // base dell'impronta solida O.
   const gugliaGeometry = await page.evaluate(() => {
     const CL = window.CL, T = CL.TILE;
     const img = CL.art.gugliaSprite();
@@ -230,8 +235,9 @@ async function main() {
   const debugFailures = results.filter(r => r.debugPanels > 0).map(r => `${r.device}: ${r.debugPanels} pannelli debug visibili`);
   const metricFailures = results.filter(r => {
     const g = r.gugliaGeometry;
-    // 126 px e' il fallback metrico, 128 px l'asset M1 effettivo (15,7~16 m).
-    return (g.width !== 126 && g.width !== 128) || g.height !== 176 || Math.abs(g.ratioToAdult - 22 / 1.7) > .1;
+    // 126x240 px = 15,7 x 30 m (monumento completo); il rapporto con l'adulto
+    // deve essere 30/1,70. L'obelisco da solo (22 m) non e' il monumento.
+    return g.width !== 126 || g.height !== 240 || Math.abs(g.ratioToAdult - 30 / 1.7) > .1;
   }).map(r => `${r.device}: geometria guglia ${JSON.stringify(r.gugliaGeometry)}`);
   console.log(`Visual exploration: ${results.length} devices, ${MAPS.length} maps each`);
   console.log(`Console/page errors: ${errors.length}`);

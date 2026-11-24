@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T22:11:31.937Z",
+  "generatedAt": "2026-11-24T22:53:29.007Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "scope": "EMULAZIONE Playwright/Chromium. Non sostituisce test su MacBook e Pixel 9 Pro XL fisici.",
   "devices": [
@@ -74,10 +74,10 @@
           "vehicles": 0
         },
         "bacoli": {
-          "palette": 674,
-          "edgeDensity": 0.141,
+          "palette": 802,
+          "edgeDensity": 0.144,
           "contrast": 228,
-          "luminance": 127.9,
+          "luminance": 130.8,
           "map": {
             "w": 48,
             "h": 30,
@@ -119,6 +119,32 @@
           "luminance": 139.7,
           "map": {
             "w": 60,
+            "h": 40,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "fuorigrotta": {
+          "palette": 528,
+          "edgeDensity": 0.128,
+          "contrast": 229,
+          "luminance": 143.3,
+          "map": {
+            "w": 72,
+            "h": 48,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 2
+        },
+        "pianura": {
+          "palette": 511,
+          "edgeDensity": 0.15,
+          "contrast": 235,
+          "luminance": 143.7,
+          "map": {
+            "w": 64,
             "h": 40,
             "zone": "napoli"
           },
@@ -230,7 +256,7 @@
           "vehicles": 0
         },
         "metro": {
-          "palette": 1353,
+          "palette": 1356,
           "edgeDensity": 0.134,
           "contrast": 235,
           "luminance": 146.1,
@@ -243,7 +269,7 @@
           "vehicles": 0
         },
         "metro2": {
-          "palette": 1319,
+          "palette": 1322,
           "edgeDensity": 0.133,
           "contrast": 236,
           "luminance": 146.2,
@@ -322,8 +348,8 @@
         }
       },
       "gugliaGeometry": {
-        "width": 128,
-        "height": 176,
+        "width": 126,
+        "height": 240,
         "footprint": [
           544,
           400,
@@ -331,9 +357,9 @@
           48
         ],
         "baseY": 448,
-        "topY": 272,
+        "topY": 208,
         "adultPx": 14,
-        "ratioToAdult": 12.94
+        "ratioToAdult": 17.65
       },
       "visibility": [
         {
@@ -403,6 +429,86 @@
             30
           ],
           "visiblePixels": 128,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "fuorigrotta",
+          "tile": [
+            11,
+            26
+          ],
+          "visiblePixels": 152,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "fuorigrotta",
+          "tile": [
+            22,
+            25
+          ],
+          "visiblePixels": 97,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "fuorigrotta",
+          "tile": [
+            50,
+            25
+          ],
+          "visiblePixels": 91,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "pianura",
+          "tile": [
+            10,
+            30
+          ],
+          "visiblePixels": 226,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "pianura",
+          "tile": [
+            25,
+            21
+          ],
+          "visiblePixels": 58,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "pianura",
+          "tile": [
+            42,
+            26
+          ],
+          "visiblePixels": 58,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "bacoli",
+          "tile": [
+            5,
+            14
+          ],
+          "visiblePixels": 118,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "bacoli",
+          "tile": [
+            24,
+            11
+          ],
+          "visiblePixels": 116,
           "expectOccluded": false,
           "pass": true
         },
@@ -534,10 +640,10 @@
           "vehicles": 0
         },
         "bacoli": {
-          "palette": 674,
-          "edgeDensity": 0.141,
+          "palette": 802,
+          "edgeDensity": 0.144,
           "contrast": 228,
-          "luminance": 127.9,
+          "luminance": 130.8,
           "map": {
             "w": 48,
             "h": 30,
@@ -579,6 +685,32 @@
           "luminance": 139.7,
           "map": {
             "w": 60,
+            "h": 40,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 1
+        },
+        "fuorigrotta": {
+          "palette": 528,
+          "edgeDensity": 0.128,
+          "contrast": 229,
+          "luminance": 143.3,
+          "map": {
+            "w": 72,
+            "h": 48,
+            "zone": "napoli"
+          },
+          "npcs": 2,
+          "vehicles": 2
+        },
+        "pianura": {
+          "palette": 511,
+          "edgeDensity": 0.15,
+          "contrast": 235,
+          "luminance": 143.7,
+          "map": {
+            "w": 64,
             "h": 40,
             "zone": "napoli"
           },
@@ -690,7 +822,7 @@
           "vehicles": 0
         },
         "metro": {
-          "palette": 1353,
+          "palette": 1356,
           "edgeDensity": 0.134,
           "contrast": 235,
           "luminance": 146.1,
@@ -703,7 +835,7 @@
           "vehicles": 0
         },
         "metro2": {
-          "palette": 1319,
+          "palette": 1322,
           "edgeDensity": 0.133,
           "contrast": 236,
           "luminance": 146.2,
@@ -782,8 +914,8 @@
         }
       },
       "gugliaGeometry": {
-        "width": 128,
-        "height": 176,
+        "width": 126,
+        "height": 240,
         "footprint": [
           544,
           400,
@@ -791,9 +923,9 @@
           48
         ],
         "baseY": 448,
-        "topY": 272,
+        "topY": 208,
         "adultPx": 14,
-        "ratioToAdult": 12.94
+        "ratioToAdult": 17.65
       },
       "visibility": [
         {
@@ -863,6 +995,86 @@
             30
           ],
           "visiblePixels": 128,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "fuorigrotta",
+          "tile": [
+            11,
+            26
+          ],
+          "visiblePixels": 152,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "fuorigrotta",
+          "tile": [
+            22,
+            25
+          ],
+          "visiblePixels": 97,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "fuorigrotta",
+          "tile": [
+            50,
+            25
+          ],
+          "visiblePixels": 91,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "pianura",
+          "tile": [
+            10,
+            30
+          ],
+          "visiblePixels": 226,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "pianura",
+          "tile": [
+            25,
+            21
+          ],
+          "visiblePixels": 58,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "pianura",
+          "tile": [
+            42,
+            26
+          ],
+          "visiblePixels": 58,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "bacoli",
+          "tile": [
+            5,
+            14
+          ],
+          "visiblePixels": 118,
+          "expectOccluded": false,
+          "pass": true
+        },
+        {
+          "map": "bacoli",
+          "tile": [
+            24,
+            11
+          ],
+          "visiblePixels": 116,
           "expectOccluded": false,
           "pass": true
         },

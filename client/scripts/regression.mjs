@@ -517,6 +517,36 @@ async function main() {
     assert(ensureWalkable(game), 'walkable after metro exit');
   }, ctx);
 
+  await test('metro reaches Fuorigrotta and Pianura with saved spawn anchors', async () => {
+    newGame(ctx);
+    game.enterMap('metro', undefined, undefined, true);
+    assert(ensureWalkable(game), 'metro walkable');
+    const destinations = [
+      ['fuorigrotta', 11 * T, 26 * T],
+      ['metro2', 12 * T, 13 * T],
+      ['pianura', 10 * T, 30 * T],
+      ['metro', 12 * T, 13 * T]
+    ];
+    for (const [to, sx, sy] of destinations) {
+      CL.state.money = Math.max(CL.state.money, 10);
+      if (!CL.state.inventory.biglietto_metro) {
+        CL.systems.economy.spend(CL.data.items.biglietto_metro.price, 'Biglietto metro');
+        CL.systems.inventory.add('biglietto_metro');
+      }
+      const before = CL.state.inventory.biglietto_metro;
+      assert(CL.systems.actions.metroTravel(to), `metroTravel(${to}) accepted`);
+      assert((CL.state.inventory.biglietto_metro || 0) === before - 1, `${to} consumes one ticket`);
+      assert(game.map.id === to, `arrived in ${to}, got ${game.map.id}`);
+      assert(Math.abs(game.player.x - sx) < 1 && Math.abs(game.player.y - sy) < 1, `${to} spawn anchor`);
+      assert(ensureWalkable(game), `${to} walkable after arrival`);
+    }
+    // Una destinazione sconosciuta conserva il vecchio toggle, senza nuove mappe.
+    const ticket = CL.state.inventory.biglietto_metro || 1;
+    CL.state.inventory.biglietto_metro = ticket;
+    assert(CL.systems.actions.metroTravel('inesistente'), 'unknown destination falls back');
+    assert(game.map.id === 'metro2', `fallback toggled to metro2, got ${game.map.id}`);
+  }, ctx);
+
   await test('joystick and CORRI movement', async () => {
     resetInput(CL); newGame(ctx);
     // simulate joystick: set axis keys like MobileControls
@@ -857,7 +887,7 @@ async function main() {
     assert(roadCheck(), 'traffic starts on road tiles');
     step(game, 360);
     assert(roadCheck(), 'traffic remains on road tiles after movement');
-    for (const id of ['bar', 'pizzeria', 'metro', 'metro2', 'negozio', 'banca', 'clinica', 'ufficio', 'bottega', 'souvenir', 'casa_giocatore', 'appartamento', 'casa_amalfi', 'casa_nonna', 'capri']) {
+    for (const id of ['bar', 'pizzeria', 'metro', 'metro2', 'negozio', 'banca', 'clinica', 'ufficio', 'bottega', 'souvenir', 'casa_giocatore', 'appartamento', 'casa_amalfi', 'casa_nonna', 'capri', 'fuorigrotta', 'pianura']) {
       game.enterMap(id, undefined, undefined, true);
       step(game, 2);
       const npcs = game.entities.filter(e => e instanceof CL.NPC);
@@ -882,13 +912,15 @@ async function main() {
     const crosswalks = {
       napoli: [[7,31],[60,31],[12,46],[59,38]],
       costiera: [[20,14],[50,14]], bacoli: [[18,10]], salerno: [[28,18]],
-      avellino: [[24,21]], caserta: [[28,32]]
+      avellino: [[24,21]], caserta: [[28,32]],
+      fuorigrotta: [[30,19],[50,36]], pianura: [[30,38]]
     };
     for (const [id, points] of Object.entries(crosswalks)) {
       const map = CL.maps.get(id);
       for (const [x, y] of points) assert(CL.maps.tile(map, x, y) === 'r', `${id} crosswalk ${x},${y} on road`);
     }
     const ids = ['napoli','costiera','vesuvio','pompei','capri','bacoli','salerno','avellino','caserta',
+      'fuorigrotta','pianura',
       'casa_nonna','casa_giocatore','appartamento','casa_amalfi','bottega','souvenir','bar','pizzeria',
       'metro','metro2','negozio','banca','clinica','ufficio','grotta'];
     for (const id of ids) {
@@ -970,9 +1002,9 @@ async function main() {
     assert(CL.M_PER_TILE === 2, 'one 16px tile represents 2 metres');
     assert(Math.abs(CL.WORLD_SCALE - 8 / (23 / 1.7)) < 1e-9, 'world scale derived from the 1.70m adult');
     const guglia = CL.art.gugliaSprite();
-    assert(guglia.width === 126 && guglia.height === 176, `guglia ${guglia.width}x${guglia.height} (15,7x22 m)`);
+    assert(guglia.width === 126 && guglia.height === 240, `guglia ${guglia.width}x${guglia.height} (15,7x30 m)`);
     const campanile = CL.art.campanileSprite();
-    assert(campanile.width === 112 && campanile.height === 400, `campanile ${campanile.width}x${campanile.height} (14x50 m)`);
+    assert(campanile.width === 112 && campanile.height === 384, `campanile ${campanile.width}x${campanile.height} (14x48 m)`);
     const gesu = CL.art.buildingSprite('gesu');
     assert(gesu.width === 448 && gesu.height === 248, `Gesu facade ${gesu.width}x${gesu.height} (56x31 m)`);
     const napoli = CL.maps.get('napoli');
@@ -980,7 +1012,7 @@ async function main() {
     assert(gf.y + gf.data.oy + gf.data.h === 15 * T, 'Gesu facade base stays on the 15th row cornice');
     const cd = napoli.decors.find(d => d.type === 'campanile');
     assert(cd.y + cd.data.oy + cd.data.h === 28 * T, 'campanile base sits on the south edge of Santa Chiara');
-    assert(cd.y + cd.data.oy === 3 * T, 'campanile cusp stays inside the map (row 3)');
+    assert(cd.y + cd.data.oy === 4 * T, 'campanile cusp stays inside the map (row 4)');
     // La scala non deve spostare gli ancoraggi salvati.
     for (let y = 25; y < 28; y++) for (let x = 34; x < 38; x++) {
       assert(CL.maps.tile(napoli, x, y) === 'O', `guglia footprint tile ${x},${y} unchanged`);
@@ -992,6 +1024,51 @@ async function main() {
     assert(ch.width === 16 && ch.height === 24, 'scaled character keeps original draw anchor');
     assert(CL.art.cache['w:c:' + [look.hair, look.skin, look.shirt, look.pants, 'down', 0].join('|')],
       'character sprite was uniformly scaled through the world cache');
+  }, ctx);
+
+  await test('Fuorigrotta and Pianura use real urban grids and metric architecture', async () => {
+    CL.art.init();
+    const dims = { fuorigrotta: [72, 48], pianura: [64, 40] };
+    const facades = {
+      fuorigrotta_teatro: [560, 280], fuorigrotta_blocco: [192, 144],
+      fuorigrotta_torre: [160, 240], fuorigrotta_mostra: [320, 160],
+      pianura_chiesa: [320, 248], pianura_municipio: [312, 200], pianura_borgo: [160, 112],
+      bacoli_castello: [288, 176], bacoli_casa: [128, 96], bacoli_terme: [312, 144]
+    };
+    for (const [kind, size] of Object.entries(facades)) {
+      const s = CL.art.buildingSprite(kind);
+      assert(s && s.width === size[0] && s.height === size[1], `${kind} facade ${size[0]}x${size[1]}`);
+    }
+    for (const [id, size] of Object.entries(dims)) {
+      const m = CL.maps.get(id);
+      assert(m && m.w === size[0] && m.h === size[1], `${id} is ${size[0]}x${size[1]} tiles`);
+      assert(!CL.maps.solidAt(m, m.spawn.x, m.spawn.y), `${id} spawn is walkable`);
+      const stations = m.pois.filter(p => p.action === 'metro_travel');
+      assert(stations.length >= 1, `${id} exposes a metro gate`);
+      for (const p of stations) {
+        assert(['metro', 'metro2', 'fuorigrotta', 'pianura'].indexOf(p.data.to) >= 0, `${id} metro destination valid`);
+        assert(!CL.maps.solidAt(m, p.x, p.y), `${id} metro gate walkable`);
+      }
+      const metric = m.decors.filter(d => d.type === 'metric_facade');
+      assert(metric.length >= 5, `${id} has metric architecture (${metric.length})`);
+      for (const d of metric) {
+        assert(CL.art.buildingSprite(d.data.type), `${id} facade sprite ${d.data.type} exists`);
+        assert(d.y + (d.data.oy || 0) < m.height, `${id} facade ${d.data.type} is not below the map`);
+      }
+      for (const p of m.portals) {
+        assert(CL.maps.get(p.to), `${id} portal target ${p.to} exists`);
+      }
+      for (const p of m.pois.filter(q => q.type === 'door')) {
+        const tx = Math.floor((p.x + 8) / T), ty = Math.floor((p.y + 8) / T);
+        assert(!CL.maps.solidChar(CL.maps.tile(m, tx, ty)), `${id} door ${p.id} walkable`);
+      }
+    }
+    const furnace = CL.maps.get('fuorigrotta');
+    assert(furnace.pois.some(p => p.id === 'teatro_mediterraneo'), 'Teatro Mediterraneo anchored');
+    const hill = CL.maps.get('pianura');
+    assert(hill.pois.some(p => p.id === 'san_giorgio'), 'San Giorgio Martire anchored');
+    const borgo = CL.maps.get('bacoli');
+    assert(borgo.decors.filter(d => d.type === 'ruin_column').length >= 9, 'Baia has documented temple columns');
   }, ctx);
 
   await test('architectural audit fixes align sprites, props and routes', async () => {

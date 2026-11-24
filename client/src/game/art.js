@@ -625,9 +625,10 @@
     // professionale disegnato a mano, ma coerenti, cacheati e sostituibili.
     _stamp(c, fn) { const x = ctx(c); fn(x, c.width, c.height); return c; },
     buildingSprite(kind) {
-      // Una sola facciata autorevole per ogni masse: l'asset M1 estratto.
-      // Il vecchio livello procedurale con finestre/portoni generici è stato rimosso,
-      // perché si sovrapponeva alle aperture dell'asset e creava duplicazioni.
+      // Per i palazzi di Napoli l'asset M1 estratto e' l'unica facciata autorevole:
+      // il vecchio livello procedurale generico e' stato rimosso per evitare
+      // duplicazioni sopra le aperture. I nuovi contesti, senza M1, usano
+      // facciate procedurali dedicate (_facadeProcedural).
       const key = 'bld:' + kind; if (this.cache[key]) return this.cache[key];
       const S = {
         // Dimensioni metriche (PX_PER_M = 8): 56x31 m e 36x20 m.
@@ -638,6 +639,17 @@
         palazzo_bar:{ w:128, h:128, wall:'#e4d5bd', trim:'#7a4a32', roof:'#8b4a3a' },
         palazzo_se:{ w:128, h:128, wall:'#daceb6', trim:'#7a6245', roof:'#8a5240' },
         palazzo_e: { w:160, h:160, clipH:80, wall:'#d8c9af', trim:'#80674a', roof:'#8a4f3c' },
+        // Nuovi contesti: nessun asset M1 dedicato, facciata procedurale (PX_PER_M = 8).
+        fuorigrotta_blocco:{ w:192, h:144, wall:'#d8d6cb', trim:'#b6b1a3', roof:'#a9a69c', proc:'blocco' },
+        fuorigrotta_torre:{ w:160, h:240, wall:'#d9d7cc', trim:'#ada99d', roof:'#9d9a91', proc:'torre' },
+        fuorigrotta_teatro:{ w:560, h:280, wall:'#d5d3c9', trim:'#a7a89f', roof:'#8e9696', proc:'teatro' },
+        fuorigrotta_mostra:{ w:320, h:160, wall:'#dedbd0', trim:'#b2b0a4', roof:'#9aa09d', proc:'mostra' },
+        pianura_chiesa:{ w:320, h:248, wall:'#d8c9ad', trim:'#b6a488', roof:'#9a8262', proc:'chiesa' },
+        pianura_borgo:{ w:160, h:112, wall:'#d2c1a0', trim:'#8e7c62', roof:'#9b6b4b', proc:'borgo' },
+        pianura_municipio:{ w:312, h:200, wall:'#ddd5c2', trim:'#9b9384', roof:'#7f7668', proc:'municipio' },
+        bacoli_terme:{ w:312, h:144, wall:'#b98d70', trim:'#8f6a55', roof:'#8a6450', proc:'terme' },
+        bacoli_castello:{ w:288, h:176, wall:'#c8b592', trim:'#8e7b60', roof:'#7d6a52', proc:'castello' },
+        bacoli_casa:{ w:128, h:96, wall:'#cbb895', trim:'#8d7758', roof:'#8e6b4d', proc:'casa' },
       }[kind];
       if (!S) return null;
       const H = S.clipH || S.h, W = S.w;
@@ -666,6 +678,9 @@
         lx.drawImage(img, dx, dy, dw, dh);
         x.imageSmoothingEnabled = false;
         x.drawImage(low, 0, 0, W, H);
+      } else if (S.proc) {
+        // Nuove zone senza asset M1: facciata procedurale con architettura regolare.
+        this._facadeProcedural(kind, S, x, W, H, R);
       } else {
         // Fallback senza duplicazioni: solo portone in scala, nessuna finestra generated.
         const dx = Math.floor(W / 2) - 9;
@@ -673,9 +688,12 @@
         px(x, dx + 8, H - 39, 2, 39, '#3f2c1f');
       }
       // Finiture comuni: cornice, basamento in piperno e luce da sinistra/alto.
-      px(x, -2, 0, W + 4, 8, S.roof); px(x, -1, 8, W + 2, 2, shade(S.roof, 16));
-      px(x, 0, H - 10, W, 10, '#4a4a48'); px(x, 0, H - 10, W, 2, '#6a6c68');
-      px(x, 0, H - 2, W, 2, '#2f3130');
+      // Le nuove facciate disegnano cornici e plinti propri, coerenti col materiale.
+      if (!S.proc) {
+        px(x, -2, 0, W + 4, 8, S.roof); px(x, -1, 8, W + 2, 2, shade(S.roof, 16));
+        px(x, 0, H - 10, W, 10, '#4a4a48'); px(x, 0, H - 10, W, 2, '#6a6c68');
+        px(x, 0, H - 2, W, 2, '#2f3130');
+      }
       const light = x.createLinearGradient(0, 0, W, 0);
       light.addColorStop(0, 'rgba(255,244,214,.10)');
       light.addColorStop(.55, 'rgba(255,244,214,0)');
@@ -687,89 +705,327 @@
       x.fillStyle = falloff; x.fillRect(0, 0, W, H);
       return this.cache[key] = c;
     },
+    /* Facciate dei nuovi contesti: senza asset M1 dedicati l'architettura viene
+     * ricostruita (finestre regolari, cornici, plinti, materiali) con RNG per kind. */
+    _facadeProcedural(kind, S, x, W, H, R) {
+      const poly = (pts, col) => {
+        x.fillStyle = col; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
+        x.closePath(); x.fill();
+      };
+      const noise = n => {
+        for (let i = 0; i < n; i++) px(x, (R() * W) | 0, (R() * H) | 0, 1, 1,
+          R() > .5 ? 'rgba(255,255,255,.055)' : 'rgba(0,0,0,.055)');
+      };
+      const cornice = (y, h, col) => {
+        px(x, 0, y, W, h, col); px(x, 0, y, W, 1, shade(col, 22));
+        px(x, 0, y + h - 1, W, 1, shade(col, -24));
+      };
+      const plinth = (h, col) => {
+        px(x, 0, H - h, W, h, col); px(x, 0, H - h, W, 2, shade(col, 24));
+        px(x, 0, H - 2, W, 2, shade(col, -28));
+      };
+      const win = (wx, wy, ww, wh, frame, glass, sill) => {
+        px(x, wx, wy, ww, wh, frame || '#6e6a60');
+        px(x, wx + 2, wy + 2, ww - 4, wh - 4, glass || '#7597a4');
+        px(x, wx + 2, wy + 2, ww - 4, 2, 'rgba(255,255,255,.28)');
+        px(x, wx + 2, wy + wh - 5, ww - 4, 3, 'rgba(20,28,34,.32)');
+        px(x, wx - 1, wy + wh, ww + 2, 2, sill || S.trim);
+      };
+      const grid = (cols, rows, x0, y0, sx, sy, ww, wh, fn) => {
+        for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+          const wx = x0 + c * sx, wy = y0 + r * sy;
+          if (fn) fn(wx, wy, ww, wh, r, c);
+          else win(wx, wy, ww, wh);
+        }
+      };
+      const arch = (ax, ay, aw, ah, frame, glass) => {
+        x.fillStyle = frame; x.beginPath();
+        x.arc(ax + aw / 2, ay + aw / 2, aw / 2, Math.PI, 0); x.fill();
+        px(x, ax, ay + aw / 2, aw, ah - aw / 2, frame);
+        x.fillStyle = glass; x.beginPath();
+        x.arc(ax + aw / 2, ay + aw / 2, aw / 2 - 3, Math.PI, 0); x.fill();
+        px(x, ax + 3, ay + aw / 2, aw - 6, ah - aw / 2 - 2, glass);
+      };
+      const door = (dx, dy, dw, dh, leaf) => {
+        leaf = leaf || '#6f5237';
+        px(x, dx - 3, dy - 3, dw + 6, 3, S.trim);
+        px(x, dx, dy, dw, dh, '#4a3a2c');
+        px(x, dx + 2, dy + 2, dw - 4, dh - 2, leaf);
+        px(x, dx + dw / 2 - 1, dy + 3, 2, dh - 3, shade(leaf, -26));
+        px(x, dx + dw - 5, dy + dh / 2, 2, 2, '#d4b04f');
+      };
+      noise((W * H / 26) | 0);
+      switch (kind) {
+        case 'fuorigrotta_blocco': {
+          // Blocco razionalista: 5 piani, griglia regolare, tetto piano.
+          grid(9, 5, 12, 18, 20, 24, 11, 14, (wx, wy, ww, wh, r, c) => {
+            if (r === 4 && c === 4) return;
+            win(wx, wy, ww, wh, '#7a7569', '#708c99');
+          });
+          for (const yy of [38, 62, 86, 110]) cornice(yy, 2, '#c3c0b5');
+          door(88, 114, 16, 18);
+          cornice(0, 8, S.roof);
+          plinth(12, '#8f8c82');
+          break;
+        }
+        case 'fuorigrotta_torre': {
+          // Torre razionalista: 8 piani, finestre più alte e marcapiani stretti.
+          grid(6, 8, 8, 16, 24, 27, 13, 17, (wx, wy, ww, wh, r, c) => {
+            if (r === 7 && (c === 2 || c === 3)) return;
+            win(wx, wy, ww, wh, '#78746a', '#6f8a97');
+          });
+          for (const yy of [39, 66, 93, 120, 147, 174, 201]) cornice(yy, 2, '#c1beb3');
+          door(72, 203, 16, 25);
+          cornice(0, 8, S.roof);
+          plinth(12, '#8b887f');
+          break;
+        }
+        case 'fuorigrotta_teatro': {
+          // Teatro Mediterraneo: volume basso, ali a ritmo verticale e baia vetrata.
+          cornice(0, 12, S.roof); px(x, 0, 12, W, 4, '#c6c8bf');
+          for (let wx = 18; wx < 180; wx += 22) {
+            px(x, wx, 40, 13, 168, '#9fa9a6'); px(x, wx + 2, 44, 9, 160, '#7fa7b3');
+            px(x, wx + 2, 44, 9, 3, 'rgba(255,255,255,.28)'); px(x, wx, 208, 13, 3, '#b6b5aa');
+          }
+          for (let wx = 380; wx < 545; wx += 22) {
+            px(x, wx, 40, 13, 168, '#9fa9a6'); px(x, wx + 2, 44, 9, 160, '#7fa7b3');
+            px(x, wx + 2, 44, 9, 3, 'rgba(255,255,255,.28)'); px(x, wx, 208, 13, 3, '#b6b5aa');
+          }
+          px(x, 182, 36, 196, 180, '#8d948e'); px(x, 186, 40, 188, 172, '#79a8b6');
+          for (let mx = 186; mx < 374; mx += 14) px(x, mx, 40, 2, 172, '#c3c7c0');
+          for (const my of [80, 120, 160]) px(x, 186, my, 188, 2, '#c3c7c0');
+          px(x, 186, 40, 188, 3, 'rgba(255,255,255,.24)');
+          cornice(216, 5, '#c1c0b5'); door(260, 221, 40, 51, '#5d6b70');
+          px(x, 236, H - 8, 88, 8, '#a9a79c');
+          break;
+        }
+        case 'fuorigrotta_mostra': {
+          // Padiglione espositivo: campate vetrate continue tra pilastri in cemento.
+          cornice(0, 10, S.roof); px(x, 0, 10, W, 6, '#d9d6ca');
+          px(x, 8, 20, W - 16, 108, '#8ba7ac'); px(x, 10, 22, W - 20, 104, '#a8c8d0');
+          for (let mx = 10; mx < W - 10; mx += 12) px(x, mx, 22, 2, 104, '#d7d8cf');
+          px(x, 10, 70, W - 20, 2, '#d7d8cf');
+          for (let px0 = 0; px0 <= W - 12; px0 += 40) {
+            px(x, px0, 16, 12, 120, '#dcd9cf');
+            px(x, px0, 16, 2, 120, '#f0ede2'); px(x, px0 + 10, 16, 2, 120, '#b4b0a4');
+          }
+          cornice(136, 6, '#cecabf'); plinth(12, '#9b978c');
+          door(146, 118, 28, 30, '#788a8c');
+          break;
+        }
+        case 'pianura_chiesa': {
+          // San Giorgio Martire: facciata a capanna in tufo e campanile a destra.
+          const fw = 244;
+          poly([[0, 76], [122, 14], [fw, 76]], '#9a8262');
+          poly([[6, 76], [122, 22], [fw - 6, 76]], S.wall);
+          px(x, 0, 74, fw, 6, '#b6a488'); px(x, 0, 80, fw, H - 92, S.wall);
+          for (const bx of [6, fw - 18]) px(x, bx, 82, 12, H - 94, '#c7b797');
+          ell(x, 122, 54, 10, 10, '#9a8262'); ell(x, 122, 54, 7, 7, '#3f4547');
+          ell(x, 122, 54, 5, 5, '#6f97a4');
+          arch(96, 158, 52, 78, '#8e7c62', '#4b463f'); door(104, 190, 36, 46);
+          arch(28, 120, 36, 50, '#9a8262', '#6d8f9c');
+          arch(180, 120, 36, 50, '#9a8262', '#6d8f9c');
+          plinth(12, '#8f7d61');
+          const tx = 252;
+          px(x, tx, 76, 64, H - 88, '#c7b797');
+          px(x, tx, 76, 5, H - 88, '#a08d6e'); px(x, tx + 59, 76, 5, H - 88, '#a08d6e');
+          poly([[tx - 4, 48], [tx + 32, 16], [tx + 68, 48]], '#9a8262');
+          poly([[tx + 2, 48], [tx + 32, 22], [tx + 62, 48]], '#c7b797');
+          px(x, tx - 4, 48, 72, 6, '#b6a488');
+          arch(tx + 20, 52, 24, 30, '#8e7c62', '#4b463f');
+          px(x, tx + 30, 64, 4, 12, '#d4b04f');
+          break;
+        }
+        case 'pianura_borgo': {
+          // Casa di borgo: tre piani, basamento in piperno e persiane verdi.
+          px(x, 0, 0, W, 12, '#9b6b4b');
+          for (let rx = 0; rx < W; rx += 8) px(x, rx, 2, 6, 2, '#b9815f');
+          px(x, 0, 12, W, 4, '#b39b78');
+          grid(4, 3, 12, 24, 36, 28, 14, 16, (wx, wy, ww, wh, r, c) => {
+            if (r === 2 && c === 2) return;
+            win(wx, wy, ww, wh, '#6b5540', '#5c7881');
+            px(x, wx - 4, wy + 2, 4, 12, '#4f6f5a'); px(x, wx + ww, wy + 2, 4, 12, '#4f6f5a');
+            px(x, wx - 4, wy + 2, 4, 1, '#6f8d76'); px(x, wx + ww, wy + 2, 4, 1, '#6f8d76');
+          });
+          door(70, 80, 20, 18, '#6b4b33'); plinth(16, '#414446');
+          break;
+        }
+        case 'pianura_municipio': {
+          // Municipio sobrio: sei assi di finestre e portale centrale.
+          grid(11, 6, 15, 18, 27, 27, 14, 16, (wx, wy, ww, wh, r, c) => {
+            if (r === 5 && (c === 5 || c === 6)) return;
+            win(wx, wy, ww, wh, '#8c887c', '#718994');
+          });
+          for (const yy of [40, 67, 94, 121, 148]) cornice(yy, 3, '#bdb6a6');
+          door(142, 150, 28, 36, '#6d6250');
+          cornice(0, 10, S.roof); px(x, 112, 4, 88, 6, '#e6dfcd');
+          plinth(14, '#868277');
+          break;
+        }
+        case 'bacoli_terme': {
+          // Ruderi romani: laterizio e cemento a vista, arcate e coronamento spezzato.
+          for (let yy = 20; yy < H; yy += 10) {
+            px(x, 0, yy, W, 1, 'rgba(88,58,44,.26)');
+            for (let bx = (yy / 10 % 2) * 8; bx < W; bx += 16) px(x, bx, yy, 1, 9, 'rgba(88,58,44,.20)');
+          }
+          for (let i = 0; i < 6; i++) {
+            const nx = 8 + i * 50 + ((R() * 9) | 0), ny = 16 + ((R() * 12) | 0);
+            x.clearRect(nx, ny, 12 + ((R() * 14) | 0), 12 + ((R() * 8) | 0));
+          }
+          for (let ax = 18; ax < W - 30; ax += 58) {
+            arch(ax, 62, 38, 62, '#8f6a55', '#51483f'); px(x, ax - 3, 124, 44, 3, '#a88b72');
+          }
+          for (let i = 0; i < 8; i++) {
+            const bx = (R() * (W - 40)) | 0, by = 28 + ((R() * 90) | 0);
+            px(x, bx, by, 20 + ((R() * 26) | 0), 6 + ((R() * 10) | 0), '#a8a396');
+            px(x, bx, by, 20, 1, '#c3bfb3');
+          }
+          plinth(12, '#8a7d6c');
+          break;
+        }
+        case 'bacoli_castello': {
+          // Castello aragonese: tufo bugnato, merli e monofore strette.
+          px(x, 0, 32, W, H - 44, S.wall);
+          for (let yy = 44; yy < H - 12; yy += 12) {
+            px(x, 0, yy, W, 1, 'rgba(110,92,66,.28)');
+            for (let bx = (yy / 12 % 2) * 12; bx < W; bx += 24) px(x, bx, yy, 1, 11, 'rgba(110,92,66,.18)');
+          }
+          px(x, 0, 28, W, 6, '#b6a07c');
+          for (let mx = 4; mx < W - 12; mx += 24) {
+            px(x, mx, 10, 16, 18, '#c8b592'); px(x, mx, 10, 16, 2, '#dfcfae');
+            px(x, mx, 26, 16, 2, '#8e7b60');
+          }
+          for (const tx of [0, W - 32]) {
+            px(x, tx, 22, 32, H - 34, '#c2ae8b');
+            px(x, tx, 22, 4, H - 34, '#9b8768'); px(x, tx + 28, 22, 4, H - 34, '#9b8768');
+            for (let mx = tx + 2; mx < tx + 30; mx += 14) px(x, mx, 14, 10, 8, '#c8b592');
+          }
+          for (const yy of [64, 108]) for (let wx = 44; wx < W - 40; wx += 36) {
+            px(x, wx, yy, 8, 12, '#5e5548'); px(x, wx + 1, yy + 1, 6, 10, '#3b3630');
+            px(x, wx - 1, yy + 12, 10, 2, '#a08d6e');
+          }
+          arch(132, 112, 24, 52, '#8e7b60', '#3b3630'); plinth(12, '#7d6a52');
+          break;
+        }
+        case 'bacoli_casa': {
+          // Casa di pescatori: tufo chiaro, tetto a coppi e due finestre con persiane.
+          px(x, 0, 12, W, H - 24, S.wall);
+          for (let yy = 24; yy < H - 12; yy += 9) px(x, 0, yy, W, 1, 'rgba(120,98,70,.20)');
+          px(x, 0, 0, W, 14, '#8e6b4d');
+          for (let rx = 0; rx < W; rx += 8) {
+            px(x, rx, 2, 6, 3, '#a97d59'); px(x, rx, 8, 6, 2, '#6f5237');
+          }
+          px(x, 0, 12, W, 3, '#b39b78');
+          for (const wx of [18, 94]) {
+            win(wx, 44, 16, 18, '#6b5540', '#5c7881');
+            px(x, wx - 4, 46, 4, 14, '#4f6f5a'); px(x, wx + 16, 46, 4, 14, '#4f6f5a');
+          }
+          door(54, 62, 20, 24, '#6b4b33'); plinth(12, '#7c6b54');
+          break;
+        }
+      }
+    },
     gugliaSprite() {
-      // L'asset M1 `guglia.png` e' quello autorevole: silhouette 128x176 che
-      // corrisponde ai 15,7 m di ingombro OSM e ai 22 m documentati. Viene
-      // disegnato a dimensione naturale (drawGuglia), senza stiramenti.
-      // Il fallback sotto riproduce la stessa sagoma quando il PNG non e'
-      // disponibile (es. harness di regressione senza caricamento immagini).
+      // I 22 m documentati riguardavano solo l'obelisco: l'intera Guglia
+      // dell'Immacolata (gradinata, basamento, statua e coronamento) e' ~30 m.
+      // L'asset M1 `guglia.png` resta autorevole (126x240 a 8 px/m); il fallback
+      // code-drawn riproduce le stesse proporzioni senza caricare immagini.
       if (this.images.guglia) return this.images.guglia;
       const key = 'bld:guglia'; if (this.cache[key]) return this.cache[key];
-      const W = CL.mpx(15.7), H = CL.mpx(22), c = cv(W, H), x = ctx(c), cx = W / 2;
+      const W = CL.mpx(15.7), H = CL.mpx(30), c = cv(W, H), x = ctx(c), cx = W / 2;
       const poly = (pts, col) => {
         x.fillStyle = col; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
         for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
         x.closePath(); x.fill();
       };
       x.fillStyle = 'rgba(18,22,28,.18)';
-      x.beginPath(); x.ellipse(cx, H - 6, 60, 6, 0, 0, Math.PI * 2); x.fill();
-      // Gradinata: 4 m di altezza (32 px), 15,7 m di larghezza (126 px).
-      px(x, 1, 166, 126, 8, '#b8ac98'); px(x, 1, 166, 126, 2, '#e2d9c7');
-      px(x, 1, 172, 126, 2, '#958a78');
-      px(x, 7, 158, 114, 8, '#cec3b0'); px(x, 7, 158, 114, 2, '#ece3d1');
-      px(x, 22, 150, 84, 8, '#c3b7a4'); px(x, 22, 150, 84, 2, '#ded4c2');
-      // Plinth con quattro statue: 7 m (56 px), larghezza ~10 m (80 px).
-      px(x, 23, 128, 82, 22, '#d3c9b6'); px(x, 23, 128, 82, 2, '#efe7d7');
-      for (const sx of [30, 51, 72, 93]) {
-        px(x, sx - 3, 133, 8, 3, '#b3a793');
-        px(x, sx - 2, 121, 6, 12, '#d9d0be'); px(x, sx - 2, 121, 2, 12, '#efe7d6');
-        px(x, sx - 1, 116, 4, 5, '#cfc5b2'); px(x, sx - 2, 115, 6, 1, '#b8ad99');
+      x.beginPath(); x.ellipse(cx, H - 5, 58, 5, 0, 0, Math.PI * 2); x.fill();
+      // Gradinata: 4 m (32 px), larghezza massima 15,7 m (126 px).
+      px(x, 0, 232, 126, 8, '#b8ac98'); px(x, 0, 232, 126, 2, '#e2d9c7');
+      px(x, 0, 238, 126, 2, '#958a78');
+      px(x, 6, 222, 114, 10, '#cec3b0'); px(x, 6, 222, 114, 2, '#ece3d1');
+      px(x, 12, 212, 102, 10, '#c3b7a4'); px(x, 12, 212, 102, 2, '#ded4c2');
+      px(x, 18, 208, 90, 4, '#d5ccbc'); px(x, 18, 208, 90, 2, '#efe7d7');
+      // Basamento a gradoni con quattro statue: 8 m (64 px), marmo e bardiglio.
+      px(x, 19, 196, 88, 12, '#d5ccbc'); px(x, 19, 196, 88, 2, '#e2dacc');
+      px(x, 19, 206, 88, 2, '#7c7f86');
+      px(x, 22, 184, 82, 12, '#e2dacc'); px(x, 22, 184, 82, 2, '#efe7d7');
+      for (const bx of [26, 48, 70, 92]) px(x, bx, 187, 14, 6, '#7c7f86');
+      px(x, 19, 156, 88, 28, '#d5ccbc'); px(x, 19, 156, 88, 2, '#efe7d7');
+      for (const sx of [28, 52, 76, 100]) {
+        px(x, sx - 8, 160, 16, 22, '#e2dacc'); px(x, sx - 6, 162, 12, 18, '#b8ac98');
+        px(x, sx - 3, 166, 6, 11, '#cfc5b2'); px(x, sx - 2, 163, 4, 4, '#dcd2bf');
+        px(x, sx - 7, 180, 14, 2, '#7c7f86');
       }
-      for (const rx of [26, 47, 68, 89]) {
-        px(x, rx, 130, 12, 14, '#e6ddcb'); px(x, rx + 1, 131, 10, 12, '#c6bba8');
-        px(x, rx + 5, 133, 2, 9, '#d9cfbc');
-      }
-      px(x, 26, 124, 76, 4, '#c9bda9'); px(x, 26, 124, 76, 2, '#eee5d3');
-      // Fusto dell'obelisco: 7 m (56 px), rastremato 20 -> 15 px.
-      poly([[56, 123], [72, 123], [71, 68], [57, 68]], '#cdc2ae');
-      poly([[56, 123], [57, 68], [60, 68], [59, 123]], '#e8dfcd');
-      poly([[71, 123], [72, 123], [71, 68], [69, 68]], '#ab9f8c');
-      for (const yy of [110, 92, 78]) px(x, 56, yy, 16, 2, '#a99d89');
-      for (const yy of [102, 84]) { px(x, 53, yy, 3, 6, '#c9a44a'); px(x, 72, yy, 3, 6, '#c9a44a'); }
-      // Immacolata in rame e coronamento: 5 m (40 px).
-      px(x, 56, 64, 16, 4, '#c9bda9'); px(x, 58, 62, 12, 2, '#e2d8c4');
-      poly([[57, 62], [71, 62], [69, 32], [59, 32]], '#4f9a86');
-      poly([[57, 62], [60, 62], [61, 32], [59, 32]], '#79bca7');
-      px(x, 60, 22, 8, 10, '#63ad97'); px(x, 62, 12, 4, 11, '#a9d6c4');
-      px(x, 60, 9, 8, 3, '#3f7c6b'); px(x, 56, 24, 3, 16, '#4f9a86'); px(x, 69, 24, 3, 16, '#4f9a86');
-      px(x, 62, 4, 4, 5, '#d4b04f'); px(x, 63, 0, 2, 5, '#f2d66b');
+      px(x, 13, 150, 100, 6, '#d5ccbc'); px(x, 13, 150, 100, 2, '#efe7d7');
+      px(x, 13, 154, 100, 2, '#7c7f86');
+      px(x, 35, 144, 56, 6, '#e2dacc'); px(x, 35, 144, 56, 2, '#efe7d7');
+      px(x, 35, 148, 56, 2, '#a49a88');
+      // Fusto: 13 m (104 px), rastremato 24 -> 18 px, con inserti in bardiglio.
+      poly([[51, 143], [75, 143], [72, 40], [54, 40]], '#d5ccbc');
+      poly([[51, 143], [62, 143], [61, 40], [54, 40]], '#e2dacc');
+      poly([[62, 143], [75, 143], [72, 40], [61, 40]], '#bfb4a2');
+      poly([[71, 143], [75, 143], [72, 40], [70, 40]], '#7c7f86');
+      for (const yy of [122, 92, 62]) px(x, 52, yy, 22, 2, '#7c7f86');
+      for (const yy of [108, 78]) { px(x, 49, yy, 3, 6, '#d4b04f'); px(x, 74, yy, 3, 6, '#d4b04f'); }
+      // Immacolata e coronamento in rame verde/dorato: 5 m (40 px).
+      px(x, 51, 36, 24, 4, '#d5ccbc'); px(x, 53, 36, 20, 2, '#e2dacc');
+      ell(x, 63, 10, 8, 8, '#d4b04f'); ell(x, 63, 10, 6, 6, '#e2dacc');
+      poly([[55, 36], [71, 36], [68, 16], [58, 16]], '#4f9a86');
+      poly([[55, 36], [61, 36], [60, 16], [58, 16]], '#79bca7');
+      px(x, 61, 13, 4, 4, '#63ad97'); ell(x, 63, 10, 3, 3, '#a9d6c4');
+      px(x, 57, 20, 3, 14, '#4f9a86'); px(x, 66, 20, 3, 14, '#4f9a86');
+      px(x, 62, 0, 2, 8, '#d4b04f'); px(x, 59, 2, 8, 2, '#f2d66b');
       return this.cache[key] = c;
     },
     campanileSprite() {
-      // Campanile di Santa Chiara: 50 m alto, 14 m di pianta = 400 x 112 px.
+      // Campanile di Santa Chiara: 48 m (tag OSM `height=48 m`), 14 m di pianta.
+      // A 8 px/m il fallback e' 112x384: tre ordini in laterizio, cella campanaria
+      // e cuspide in maioliche; il PNG resta prioritario quando disponibile.
       if (this.images.campanile) return this.images.campanile;
       const key = 'bld:campanile'; if (this.cache[key]) return this.cache[key];
-      const W = CL.mpx(14), H = CL.mpx(50), c = cv(W, H), x = ctx(c), cx = W / 2;
+      const W = CL.mpx(14), H = CL.mpx(48), c = cv(W, H), x = ctx(c), cx = W / 2;
       const poly = (pts, col) => {
         x.fillStyle = col; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
         for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
         x.closePath(); x.fill();
       };
-      // base scarpata (~10 m), due ordini in laterizio, cella, cuspide a maioliche
-      poly([[16, 320], [96, 320], [112, 399], [0, 399]], '#8d7259');
-      poly([[16, 320], [56, 320], [56, 399], [0, 399]], '#a08469');
-      px(x, 16, 316, 80, 4, '#d6cbb7');
-      px(x, 18, 176, 76, 140, '#a85b46'); px(x, 18, 176, 5, 140, '#8d4938'); px(x, 89, 176, 5, 140, '#8d4938');
-      for (let yy = 190; yy < 312; yy += 34) {
+      // Base scarpata: 8 m (64 px), da 112 a 80 px.
+      poly([[18, 320], [94, 320], [112, 383], [0, 383]], '#8d7259');
+      poly([[18, 320], [56, 320], [56, 383], [0, 383]], '#a08469');
+      px(x, 0, 383, 112, 1, '#6f5b48'); px(x, 16, 316, 80, 4, '#d6cbb7');
+      px(x, 16, 316, 80, 1, '#eee5d3');
+      // Primo ordine: 12 m (96 px), tre assi di monofore.
+      px(x, 18, 224, 76, 92, '#a85b46'); px(x, 18, 224, 5, 92, '#8d4938'); px(x, 89, 224, 5, 92, '#8d4938');
+      for (const yy of [236, 266, 296]) {
         px(x, 18, yy, 76, 2, '#8d4938');
-        for (const xx of [32, 56, 80]) { px(x, xx, yy + 4, 8, 17, '#3d4147'); px(x, xx + 1, yy + 5, 6, 15, '#e7dfcf'); }
+        for (const xx of [30, 52, 74]) { px(x, xx, yy + 4, 9, 16, '#3d4147'); px(x, xx + 1, yy + 5, 7, 14, '#e7dfcf'); }
       }
-      px(x, 14, 164, 84, 12, '#d6cbb7'); px(x, 16, 166, 80, 3, '#eee5d3');
-      px(x, 20, 70, 72, 93, '#a85b46'); px(x, 20, 70, 5, 93, '#8d4938'); px(x, 87, 70, 5, 93, '#8d4938');
-      for (let yy = 84; yy < 156; yy += 30) {
-        px(x, 20, yy, 72, 2, '#8d4938');
-        for (const xx of [40, 64]) { px(x, xx, yy + 4, 8, 15, '#3d4147'); px(x, xx + 1, yy + 5, 6, 13, '#e7dfcf'); }
+      // Secondo ordine: 11 m (88 px), due assi.
+      px(x, 14, 216, 84, 8, '#d6cbb7'); px(x, 16, 216, 80, 2, '#eee5d3');
+      px(x, 18, 136, 76, 80, '#a85b46'); px(x, 18, 136, 5, 80, '#8d4938'); px(x, 89, 136, 5, 80, '#8d4938');
+      for (const yy of [148, 180]) {
+        px(x, 18, yy, 76, 2, '#8d4938');
+        for (const xx of [34, 62]) { px(x, xx, yy + 4, 10, 18, '#3d4147'); px(x, xx + 1, yy + 5, 8, 16, '#e7dfcf'); }
       }
-      px(x, 16, 58, 80, 12, '#d6cbb7');
-      px(x, 18, 18, 76, 39, '#c4b7a0'); px(x, 20, 21, 72, 33, '#d8cdb8');
+      // Terzo ordine: 8 m (64 px), monofore più strette.
+      px(x, 14, 128, 84, 8, '#d6cbb7'); px(x, 16, 128, 80, 2, '#eee5d3');
+      px(x, 20, 72, 72, 56, '#a85b46'); px(x, 20, 72, 5, 56, '#8d4938'); px(x, 87, 72, 5, 56, '#8d4938');
+      for (const xx of [32, 56, 80]) { px(x, xx, 88, 8, 20, '#3d4147'); px(x, xx + 1, 89, 6, 18, '#e7dfcf'); }
+      // Cella campanaria: 6 m (48 px), tre archetti con campane in bronzo.
+      px(x, 16, 68, 80, 4, '#d6cbb7');
+      px(x, 18, 24, 76, 44, '#c4b7a0'); px(x, 20, 26, 72, 40, '#d8cdb8');
       for (const ax of [26, 50, 74]) {
-        x.fillStyle = '#3d4147'; x.beginPath(); x.arc(ax + 6, 34, 6, Math.PI, 0); x.fill();
-        px(x, ax, 34, 12, 16, '#3d4147'); px(x, ax + 4, 36, 4, 11, '#c9a44a'); px(x, ax + 2, 28, 8, 2, '#e7dfcf');
+        x.fillStyle = '#3d4147'; x.beginPath(); x.arc(ax + 6, 40, 7, Math.PI, 0); x.fill();
+        px(x, ax, 40, 12, 18, '#3d4147');
+        px(x, ax + 4, 42, 4, 14, '#c9a44a'); px(x, ax + 2, 32, 8, 2, '#e7dfcf');
       }
-      px(x, 14, 14, 84, 4, '#6b5540');
-      poly([[10, 14], [56, 0], [102, 14]], '#8b4a3a');
-      poly([[18, 14], [56, 4], [94, 14]], '#3f8f86');
-      poly([[28, 14], [56, 7], [84, 14]], '#d9b24f');
+      // Cuspide a maioliche: 3 m (24 px).
+      px(x, 14, 22, 84, 4, '#6b5540');
+      poly([[10, 22], [56, 0], [102, 22]], '#8b4a3a');
+      poly([[18, 22], [56, 4], [94, 22]], '#3f8f86');
+      poly([[30, 22], [56, 8], [82, 22]], '#d9b24f');
       px(x, 55, 0, 3, 4, '#d4b04f');
       return this.cache[key] = c;
     },

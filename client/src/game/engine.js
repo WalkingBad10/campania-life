@@ -423,7 +423,12 @@
         bacoli: [{ type: 'car', tx: 20, ty: 10, dir: 'right' }],
         salerno: [{ type: 'scooter', tx: 30, ty: 18, dir: 'right' }],
         avellino: [{ type: 'car', tx: 24, ty: 24, dir: 'up' }],
-        caserta: [{ type: 'car', tx: 28, ty: 32, dir: 'right' }]
+        caserta: [{ type: 'car', tx: 28, ty: 32, dir: 'right' }],
+        fuorigrotta: [
+          { type: 'car', tx: 30, ty: 19, dir: 'right' },
+          { type: 'scooter', tx: 50, ty: 36, dir: 'left' }
+        ],
+        pianura: [{ type: 'scooter', tx: 30, ty: 38, dir: 'right' }]
       };
       const list = routes[this.map.id] || [];
       for (const r of list) {
@@ -661,7 +666,8 @@
       // cammina sul sagrato/marciapiede, facendolo "affondare" nelle facciate.
       const structureTypes = {
         gesu_facade: 1, palazzo_ne: 1, palazzo_sw: 1, palazzo_banca: 1,
-        palazzo_bar: 1, palazzo_se: 1, palazzo_e: 1, campanile: 1
+        palazzo_bar: 1, palazzo_se: 1, palazzo_e: 1, campanile: 1,
+        metric_facade: 1
       };
       for (const d of (m.decors || [])) {
         if (!structureTypes[d.type]) continue;
@@ -886,6 +892,13 @@
         }
         case 'palazzo_ne': case 'palazzo_sw': case 'palazzo_banca': case 'palazzo_bar': case 'palazzo_se': case 'palazzo_e': {
           const img = ART.buildingSprite(d.type);
+          if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy !== undefined ? d.data.oy : 0));
+          break;
+        }
+        case 'metric_facade': {
+          // Facciate metriche delle nuove zone: sfondo architettonico, non entità.
+          // Il tipo architettonico e' in data.type (d.type e' il decor 'metric_facade').
+          const img = ART.buildingSprite(d.data.type);
           if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy !== undefined ? d.data.oy : 0));
           break;
         }

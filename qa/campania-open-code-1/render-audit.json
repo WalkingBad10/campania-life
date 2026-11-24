@@ -1,0 +1,2893 @@
+{
+  "generatedAt": "2026-11-24T22:52:45.057Z",
+  "baseUrl": "http://127.0.0.1:3000/",
+  "maps": [
+    {
+      "map": "napoli",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 693,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 416,
+          "maxY": 752
+        },
+        "building:palazzo_banca": {
+          "count": 1,
+          "dw": 160,
+          "dh": 128,
+          "sw": 160,
+          "sh": 128,
+          "minY": 608,
+          "maxY": 736
+        },
+        "building:palazzo_bar": {
+          "count": 1,
+          "dw": 128,
+          "dh": 128,
+          "sw": 128,
+          "sh": 128,
+          "minY": 608,
+          "maxY": 736
+        },
+        "building:palazzo_se": {
+          "count": 1,
+          "dw": 128,
+          "dh": 128,
+          "sw": 128,
+          "sh": 128,
+          "minY": 608,
+          "maxY": 736
+        },
+        "building:palazzo_e": {
+          "count": 1,
+          "dw": 160,
+          "dh": 80,
+          "sw": 160,
+          "sh": 80,
+          "minY": 256,
+          "maxY": 336
+        },
+        "campanileSprite": {
+          "count": 1,
+          "dw": 112,
+          "dh": 384,
+          "sw": 112,
+          "sh": 384,
+          "minY": 64,
+          "maxY": 448
+        },
+        "prop:plant": {
+          "count": 6,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "character": {
+          "count": 13,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 310,
+          "maxY": 686
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 426,
+          "maxY": 604
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 26,
+          "dh": 20,
+          "sw": 26,
+          "sh": 20,
+          "minY": 490,
+          "maxY": 686
+        },
+        "prop:edicola": {
+          "count": 1,
+          "dw": 48,
+          "dh": 52,
+          "sw": 48,
+          "sh": 52,
+          "minY": 544,
+          "maxY": 596
+        },
+        "prop:cart": {
+          "count": 1,
+          "dw": 40,
+          "dh": 28,
+          "sw": 40,
+          "sh": 28,
+          "minY": 560,
+          "maxY": 588
+        },
+        "prop:table_out": {
+          "count": 1,
+          "dw": 28,
+          "dh": 20,
+          "sw": 28,
+          "sh": 20,
+          "minY": 566,
+          "maxY": 586
+        },
+        "prop:chair_out": {
+          "count": 2,
+          "dw": 14,
+          "dh": 18,
+          "sw": 14,
+          "sh": 18,
+          "minY": 566,
+          "maxY": 584
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "costiera",
+      "mapH": 640,
+      "draws": {
+        "unknown": {
+          "count": 657,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 128,
+          "maxY": 464
+        },
+        "lemonTree": {
+          "count": 4,
+          "dw": 32,
+          "dh": 40,
+          "sw": 32,
+          "sh": 40,
+          "minY": 104,
+          "maxY": 192
+        },
+        "prop:plant": {
+          "count": 2,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 218,
+          "maxY": 238
+        },
+        "character": {
+          "count": 4,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 268,
+          "maxY": 526
+        },
+        "rock": {
+          "count": 1,
+          "dw": 20,
+          "dh": 14,
+          "sw": 20,
+          "sh": 14,
+          "minY": 424,
+          "maxY": 438
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "vesuvio",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 537,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 480,
+          "maxY": 768
+        },
+        "tree": {
+          "count": 36,
+          "dw": 32,
+          "dh": 40,
+          "sw": 32,
+          "sh": 40,
+          "minY": 456,
+          "maxY": 768
+        },
+        "rock": {
+          "count": 7,
+          "dw": 20,
+          "dh": 14,
+          "sw": 20,
+          "sh": 14,
+          "minY": 520,
+          "maxY": 726
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 582,
+          "maxY": 732
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "pompei",
+      "mapH": 640,
+      "draws": {
+        "unknown": {
+          "count": 639,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 320,
+          "maxY": 640
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 358,
+          "maxY": 484
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "capri",
+      "mapH": 384,
+      "draws": {
+        "unknown": {
+          "count": 519,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 96,
+          "maxY": 384
+        },
+        "lemonTree": {
+          "count": 8,
+          "dw": 32,
+          "dh": 40,
+          "sw": 32,
+          "sh": 40,
+          "minY": 72,
+          "maxY": 288
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 182,
+          "maxY": 276
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 250,
+          "maxY": 284
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "bacoli",
+      "mapH": 480,
+      "draws": {
+        "unknown": {
+          "count": 663,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 64,
+          "maxY": 400
+        },
+        "building:bacoli_casa": {
+          "count": 2,
+          "dw": 128,
+          "dh": 96,
+          "sw": 128,
+          "sh": 96,
+          "minY": 224,
+          "maxY": 352
+        },
+        "prop:plant": {
+          "count": 2,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 154,
+          "maxY": 174
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 204,
+          "maxY": 238
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "salerno",
+      "mapH": 576,
+      "draws": {
+        "unknown": {
+          "count": 660,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 144,
+          "maxY": 480
+        },
+        "rock": {
+          "count": 4,
+          "dw": 20,
+          "dh": 14,
+          "sw": 20,
+          "sh": 14,
+          "minY": 136,
+          "maxY": 166
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 26,
+          "dh": 20,
+          "sw": 26,
+          "sh": 20,
+          "minY": 282,
+          "maxY": 302
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 284,
+          "maxY": 366
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "avellino",
+      "mapH": 512,
+      "draws": {
+        "unknown": {
+          "count": 656,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 112,
+          "maxY": 448
+        },
+        "tree": {
+          "count": 17,
+          "dw": 32,
+          "dh": 40,
+          "sw": 32,
+          "sh": 40,
+          "minY": 152,
+          "maxY": 448
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 170,
+          "maxY": 204
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 252,
+          "maxY": 366
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 378,
+          "maxY": 398
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "caserta",
+      "mapH": 640,
+      "draws": {
+        "unknown": {
+          "count": 586,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 352,
+          "maxY": 640
+        },
+        "prop:plant": {
+          "count": 4,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 374,
+          "maxY": 580
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 506,
+          "maxY": 526
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "fuorigrotta",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 672,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 256,
+          "maxY": 592
+        },
+        "building:fuorigrotta_mostra": {
+          "count": 1,
+          "dw": 320,
+          "dh": 160,
+          "sw": 320,
+          "sh": 160,
+          "minY": 272,
+          "maxY": 432
+        },
+        "building:fuorigrotta_blocco": {
+          "count": 2,
+          "dw": 192,
+          "dh": 144,
+          "sw": 192,
+          "sh": 144,
+          "minY": 304,
+          "maxY": 720
+        },
+        "building:fuorigrotta_torre": {
+          "count": 2,
+          "dw": 160,
+          "dh": 240,
+          "sw": 160,
+          "sh": 240,
+          "minY": 208,
+          "maxY": 720
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 298,
+          "maxY": 590
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 390,
+          "maxY": 420
+        },
+        "tree": {
+          "count": 5,
+          "dw": 32,
+          "dh": 40,
+          "sw": 32,
+          "sh": 40,
+          "minY": 520,
+          "maxY": 560
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 602,
+          "maxY": 636
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "pianura",
+      "mapH": 640,
+      "draws": {
+        "unknown": {
+          "count": 640,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 320,
+          "maxY": 640
+        },
+        "building:pianura_borgo": {
+          "count": 2,
+          "dw": 160,
+          "dh": 112,
+          "sw": 160,
+          "sh": 112,
+          "minY": 320,
+          "maxY": 624
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 326,
+          "maxY": 484
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 330,
+          "maxY": 364
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 26,
+          "dh": 20,
+          "sw": 26,
+          "sh": 20,
+          "minY": 602,
+          "maxY": 622
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "casa_nonna",
+      "mapH": 352,
+      "draws": {
+        "unknown": {
+          "count": 505,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": -30.849999999999994,
+          "maxY": 382.85
+        },
+        "prop:church_altar": {
+          "count": 1,
+          "dw": 96,
+          "dh": 118,
+          "sw": 167,
+          "sh": 205,
+          "minY": -38,
+          "maxY": 80
+        },
+        "prop:church_painting1": {
+          "count": 3,
+          "dw": 56,
+          "dh": 40,
+          "sw": 219,
+          "sh": 160,
+          "minY": 56,
+          "maxY": 112
+        },
+        "prop:church_candle": {
+          "count": 2,
+          "dw": 12,
+          "dh": 26,
+          "sw": 30,
+          "sh": 67,
+          "minY": 70,
+          "maxY": 96
+        },
+        "prop:church_statue": {
+          "count": 3,
+          "dw": 28,
+          "dh": 78,
+          "sw": 66,
+          "sh": 182,
+          "minY": 34,
+          "maxY": 160
+        },
+        "prop:church_pew": {
+          "count": 8,
+          "dw": 54,
+          "dh": 24,
+          "sw": 159,
+          "sh": 71,
+          "minY": 168,
+          "maxY": 240
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 260,
+          "maxY": 300
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "casa_giocatore",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 2,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 116,
+          "maxY": 148
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 222
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "appartamento",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 2,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 132,
+          "maxY": 180
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 254
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "casa_amalfi",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 2,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 116,
+          "maxY": 164
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 238
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "bottega",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 116,
+          "maxY": 172
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 222
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "souvenir",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 2,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 108,
+          "maxY": 140
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 206
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "bar",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 541,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": -30.75,
+          "maxY": 318.75
+        },
+        "prop:bar_shelf": {
+          "count": 1,
+          "dw": 132,
+          "dh": 34,
+          "sw": 325,
+          "sh": 81,
+          "minY": 14,
+          "maxY": 48
+        },
+        "character": {
+          "count": 6,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 52,
+          "maxY": 188
+        },
+        "prop:bar_counter": {
+          "count": 1,
+          "dw": 150,
+          "dh": 38,
+          "sw": 500,
+          "sh": 123,
+          "minY": 58,
+          "maxY": 96
+        },
+        "prop:bar_detail": {
+          "count": 1,
+          "dw": 48,
+          "dh": 62,
+          "sw": 147,
+          "sh": 189,
+          "minY": 50,
+          "maxY": 112
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 254
+        },
+        "prop:bar_table": {
+          "count": 2,
+          "dw": 48,
+          "dh": 20,
+          "sw": 200,
+          "sh": 58,
+          "minY": 140,
+          "maxY": 160
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "pizzeria",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 541,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 5,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 68,
+          "maxY": 204
+        },
+        "prop:pizzeria_oven": {
+          "count": 1,
+          "dw": 96,
+          "dh": 110,
+          "sw": 254,
+          "sh": 336,
+          "minY": -14,
+          "maxY": 96
+        },
+        "prop:pizzeria_counter": {
+          "count": 1,
+          "dw": 110,
+          "dh": 52,
+          "sw": 369,
+          "sh": 170,
+          "minY": 60,
+          "maxY": 112
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 270
+        },
+        "prop:pizzeria_table": {
+          "count": 2,
+          "dw": 60,
+          "dh": 34,
+          "sw": 210,
+          "sh": 115,
+          "minY": 142,
+          "maxY": 176
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "metro",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 541,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": -22.86980609418282,
+          "maxY": 310.8698060941828
+        },
+        "prop:metro_hall": {
+          "count": 1,
+          "dw": 180,
+          "dh": 90,
+          "sw": 404,
+          "sh": 260,
+          "minY": -10,
+          "maxY": 80
+        },
+        "prop:metro_gate": {
+          "count": 1,
+          "dw": 150,
+          "dh": 48,
+          "sw": 270,
+          "sh": 94,
+          "minY": 96,
+          "maxY": 144
+        },
+        "prop:home_rug": {
+          "count": 1,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 158
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 148,
+          "maxY": 212
+        },
+        "prop:metro_platform": {
+          "count": 1,
+          "dw": 320,
+          "dh": 44,
+          "sw": 491,
+          "sh": 97,
+          "minY": 180,
+          "maxY": 224
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "metro2",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 541,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": -22.86980609418282,
+          "maxY": 310.8698060941828
+        },
+        "prop:metro_hall": {
+          "count": 1,
+          "dw": 180,
+          "dh": 90,
+          "sw": 404,
+          "sh": 260,
+          "minY": -10,
+          "maxY": 80
+        },
+        "prop:metro_gate": {
+          "count": 1,
+          "dw": 150,
+          "dh": 48,
+          "sw": 270,
+          "sh": 94,
+          "minY": 96,
+          "maxY": 144
+        },
+        "prop:home_rug": {
+          "count": 1,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 158
+        },
+        "character": {
+          "count": 2,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 148,
+          "maxY": 212
+        },
+        "prop:metro_platform": {
+          "count": 1,
+          "dw": 320,
+          "dh": 44,
+          "sw": 491,
+          "sh": 97,
+          "minY": 180,
+          "maxY": 224
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "negozio",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 2,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 124,
+          "maxY": 156
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 222
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "banca",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 2,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 124,
+          "maxY": 156
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 222
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "clinica",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 116,
+          "maxY": 156
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 222
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "ufficio",
+      "mapH": 288,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 0,
+          "maxY": 288
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 84,
+          "maxY": 172
+        },
+        "prop:home_rug": {
+          "count": 2,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 222
+        },
+        "prop:home_plant": {
+          "count": 1,
+          "dw": 24,
+          "dh": 30,
+          "sw": 24,
+          "sh": 30,
+          "minY": -30,
+          "maxY": 0
+        },
+        "prop:home_lamp": {
+          "count": 1,
+          "dw": 22,
+          "dh": 52,
+          "sw": 22,
+          "sh": 52,
+          "minY": 188,
+          "maxY": 240
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "grotta",
+      "mapH": 320,
+      "draws": {
+        "unknown": {
+          "count": 540,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 32,
+          "maxY": 320
+        },
+        "rock": {
+          "count": 24,
+          "dw": 20,
+          "dh": 14,
+          "sw": 20,
+          "sh": 14,
+          "minY": 24,
+          "maxY": 86
+        },
+        "prop:home_rug": {
+          "count": 1,
+          "dw": 64,
+          "dh": 24,
+          "sw": 56,
+          "sh": 24,
+          "minY": 134,
+          "maxY": 158
+        },
+        "character": {
+          "count": 1,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 252,
+          "maxY": 276
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      }
+    },
+    {
+      "map": "napoli",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 680,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 336,
+          "maxY": 656
+        },
+        "building:palazzo_banca": {
+          "count": 1,
+          "dw": 160,
+          "dh": 128,
+          "sw": 160,
+          "sh": 128,
+          "minY": 608,
+          "maxY": 736
+        },
+        "building:palazzo_bar": {
+          "count": 1,
+          "dw": 128,
+          "dh": 128,
+          "sw": 128,
+          "sh": 128,
+          "minY": 608,
+          "maxY": 736
+        },
+        "building:palazzo_se": {
+          "count": 1,
+          "dw": 128,
+          "dh": 128,
+          "sw": 128,
+          "sh": 128,
+          "minY": 608,
+          "maxY": 736
+        },
+        "building:palazzo_e": {
+          "count": 1,
+          "dw": 160,
+          "dh": 80,
+          "sw": 160,
+          "sh": 80,
+          "minY": 256,
+          "maxY": 336
+        },
+        "campanileSprite": {
+          "count": 1,
+          "dw": 112,
+          "dh": 384,
+          "sw": 112,
+          "sh": 384,
+          "minY": 64,
+          "maxY": 448
+        },
+        "prop:plant": {
+          "count": 6,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "character": {
+          "count": 13,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 310,
+          "maxY": 686
+        },
+        "gugliaSprite": {
+          "count": 1,
+          "dw": 126,
+          "dh": 240,
+          "sw": 126,
+          "sh": 240,
+          "minY": 208,
+          "maxY": 448
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 426,
+          "maxY": 604
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 26,
+          "dh": 20,
+          "sw": 26,
+          "sh": 20,
+          "minY": 490,
+          "maxY": 686
+        },
+        "prop:edicola": {
+          "count": 1,
+          "dw": 48,
+          "dh": 52,
+          "sw": 48,
+          "sh": 52,
+          "minY": 544,
+          "maxY": 596
+        },
+        "prop:cart": {
+          "count": 1,
+          "dw": 40,
+          "dh": 28,
+          "sw": 40,
+          "sh": 28,
+          "minY": 560,
+          "maxY": 588
+        },
+        "prop:table_out": {
+          "count": 1,
+          "dw": 28,
+          "dh": 20,
+          "sw": 28,
+          "sh": 20,
+          "minY": 566,
+          "maxY": 586
+        },
+        "prop:chair_out": {
+          "count": 2,
+          "dw": 14,
+          "dh": 18,
+          "sw": 14,
+          "sh": 18,
+          "minY": 566,
+          "maxY": 584
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "guglia"
+    },
+    {
+      "map": "napoli",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 680,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 48,
+          "maxY": 368
+        },
+        "building:gesu": {
+          "count": 1,
+          "dw": 448,
+          "dh": 248,
+          "sw": 448,
+          "sh": 248,
+          "minY": -8,
+          "maxY": 240
+        },
+        "building:palazzo_ne": {
+          "count": 1,
+          "dw": 288,
+          "dh": 160,
+          "sw": 288,
+          "sh": 160,
+          "minY": 64,
+          "maxY": 224
+        },
+        "building:palazzo_sw": {
+          "count": 1,
+          "dw": 224,
+          "dh": 128,
+          "sw": 224,
+          "sh": 128,
+          "minY": 256,
+          "maxY": 384
+        },
+        "character": {
+          "count": 13,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 180,
+          "maxY": 686
+        },
+        "prop:plant": {
+          "count": 4,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 26,
+          "dh": 20,
+          "sw": 26,
+          "sh": 20,
+          "minY": 490,
+          "maxY": 686
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "facciate"
+    },
+    {
+      "map": "napoli",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 680,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 208,
+          "maxY": 528
+        },
+        "building:palazzo_ne": {
+          "count": 1,
+          "dw": 288,
+          "dh": 160,
+          "sw": 288,
+          "sh": 160,
+          "minY": 64,
+          "maxY": 224
+        },
+        "building:palazzo_e": {
+          "count": 1,
+          "dw": 160,
+          "dh": 80,
+          "sw": 160,
+          "sh": 80,
+          "minY": 256,
+          "maxY": 336
+        },
+        "campanileSprite": {
+          "count": 1,
+          "dw": 112,
+          "dh": 384,
+          "sw": 112,
+          "sh": 384,
+          "minY": 64,
+          "maxY": 448
+        },
+        "character": {
+          "count": 13,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 310,
+          "maxY": 686
+        },
+        "prop:plant": {
+          "count": 4,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "gugliaSprite": {
+          "count": 1,
+          "dw": 126,
+          "dh": 240,
+          "sw": 126,
+          "sh": 240,
+          "minY": 208,
+          "maxY": 448
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 426,
+          "maxY": 604
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 26,
+          "dh": 20,
+          "sw": 26,
+          "sh": 20,
+          "minY": 490,
+          "maxY": 686
+        },
+        "prop:edicola": {
+          "count": 1,
+          "dw": 48,
+          "dh": 52,
+          "sw": 48,
+          "sh": 52,
+          "minY": 544,
+          "maxY": 596
+        },
+        "prop:table_out": {
+          "count": 1,
+          "dw": 28,
+          "dh": 20,
+          "sw": 28,
+          "sh": 20,
+          "minY": 566,
+          "maxY": 586
+        },
+        "prop:chair_out": {
+          "count": 2,
+          "dw": 14,
+          "dh": 18,
+          "sw": 14,
+          "sh": 18,
+          "minY": 566,
+          "maxY": 584
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "campanile"
+    },
+    {
+      "map": "fuorigrotta",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 680,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 256,
+          "maxY": 576
+        },
+        "building:fuorigrotta_mostra": {
+          "count": 1,
+          "dw": 320,
+          "dh": 160,
+          "sw": 320,
+          "sh": 160,
+          "minY": 272,
+          "maxY": 432
+        },
+        "building:fuorigrotta_blocco": {
+          "count": 2,
+          "dw": 192,
+          "dh": 144,
+          "sw": 192,
+          "sh": 144,
+          "minY": 304,
+          "maxY": 720
+        },
+        "building:fuorigrotta_torre": {
+          "count": 2,
+          "dw": 160,
+          "dh": 240,
+          "sw": 160,
+          "sh": 240,
+          "minY": 208,
+          "maxY": 720
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 298,
+          "maxY": 590
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 388,
+          "maxY": 414
+        },
+        "tree": {
+          "count": 5,
+          "dw": 32,
+          "dh": 40,
+          "sw": 32,
+          "sh": 40,
+          "minY": 520,
+          "maxY": 560
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 602,
+          "maxY": 636
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "fuorigrotta-facciate"
+    },
+    {
+      "map": "fuorigrotta",
+      "mapH": 768,
+      "draws": {
+        "unknown": {
+          "count": 680,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 160,
+          "maxY": 480
+        },
+        "building:fuorigrotta_teatro": {
+          "count": 1,
+          "dw": 560,
+          "dh": 280,
+          "sw": 560,
+          "sh": 280,
+          "minY": 0,
+          "maxY": 280
+        },
+        "building:fuorigrotta_mostra": {
+          "count": 1,
+          "dw": 320,
+          "dh": 160,
+          "sw": 320,
+          "sh": 160,
+          "minY": 272,
+          "maxY": 432
+        },
+        "building:fuorigrotta_blocco": {
+          "count": 1,
+          "dw": 192,
+          "dh": 144,
+          "sw": 192,
+          "sh": 144,
+          "minY": 304,
+          "maxY": 448
+        },
+        "building:fuorigrotta_torre": {
+          "count": 1,
+          "dw": 160,
+          "dh": 240,
+          "sw": 160,
+          "sh": 240,
+          "minY": 208,
+          "maxY": 448
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 292,
+          "maxY": 414
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 298,
+          "maxY": 590
+        },
+        "prop:plant": {
+          "count": 1,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "fuorigrotta-teatro"
+    },
+    {
+      "map": "pianura",
+      "mapH": 640,
+      "draws": {
+        "unknown": {
+          "count": 680,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 192,
+          "maxY": 512
+        },
+        "building:pianura_chiesa": {
+          "count": 1,
+          "dw": 320,
+          "dh": 248,
+          "sw": 320,
+          "sh": 248,
+          "minY": 24,
+          "maxY": 272
+        },
+        "building:pianura_municipio": {
+          "count": 1,
+          "dw": 312,
+          "dh": 200,
+          "sw": 312,
+          "sh": 200,
+          "minY": 56,
+          "maxY": 256
+        },
+        "building:pianura_borgo": {
+          "count": 4,
+          "dw": 160,
+          "dh": 112,
+          "sw": 160,
+          "sh": 112,
+          "minY": 80,
+          "maxY": 640
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 324,
+          "maxY": 430
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 28,
+          "dh": 34,
+          "sw": 28,
+          "sh": 34,
+          "minY": 330,
+          "maxY": 364
+        },
+        "prop:plant": {
+          "count": 2,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 26,
+          "dh": 20,
+          "sw": 26,
+          "sh": 20,
+          "minY": 602,
+          "maxY": 622
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "pianura-facciate"
+    },
+    {
+      "map": "bacoli",
+      "mapH": 480,
+      "draws": {
+        "unknown": {
+          "count": 668,
+          "dw": 16,
+          "dh": 16,
+          "sw": 16,
+          "sh": 16,
+          "minY": 32,
+          "maxY": 352
+        },
+        "building:bacoli_castello": {
+          "count": 1,
+          "dw": 288,
+          "dh": 176,
+          "sw": 288,
+          "sh": 176,
+          "minY": 0,
+          "maxY": 176
+        },
+        "building:bacoli_casa": {
+          "count": 2,
+          "dw": 128,
+          "dh": 96,
+          "sw": 128,
+          "sh": 96,
+          "minY": 224,
+          "maxY": 352
+        },
+        "rock": {
+          "count": 13,
+          "dw": 20,
+          "dh": 14,
+          "sw": 20,
+          "sh": 14,
+          "minY": 24,
+          "maxY": 38
+        },
+        "prop:plant": {
+          "count": 2,
+          "dw": 18,
+          "dh": 22,
+          "sw": 18,
+          "sh": 22,
+          "minY": -18,
+          "maxY": 4
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 154,
+          "maxY": 174
+        },
+        "character": {
+          "count": 3,
+          "dw": 16,
+          "dh": 24,
+          "sw": 16,
+          "sh": 24,
+          "minY": 164,
+          "maxY": 238
+        }
+      },
+      "visible": {
+        "character": {
+          "canvas": 24,
+          "visible": 14
+        },
+        "guglia": {
+          "canvas": 240,
+          "visible": 240
+        },
+        "campanile": {
+          "canvas": 384,
+          "visible": 384
+        }
+      },
+      "view": "bacoli-templi"
+    }
+  ],
+  "intentionalAnchors": [
+    {
+      "map": "napoli",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "costiera",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "capri",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "bacoli",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "salerno",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "avellino",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "caserta",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "fuorigrotta",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "pianura",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "casa_nonna",
+      "kind": "unknown",
+      "minY": -31,
+      "maxY": 383
+    },
+    {
+      "map": "casa_nonna",
+      "kind": "prop:church_altar",
+      "minY": -38,
+      "maxY": 80
+    },
+    {
+      "map": "casa_giocatore",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "appartamento",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "casa_amalfi",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "bottega",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "souvenir",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "bar",
+      "kind": "unknown",
+      "minY": -31,
+      "maxY": 319
+    },
+    {
+      "map": "bar",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "pizzeria",
+      "kind": "prop:pizzeria_oven",
+      "minY": -14,
+      "maxY": 96
+    },
+    {
+      "map": "pizzeria",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "metro",
+      "kind": "unknown",
+      "minY": -23,
+      "maxY": 311
+    },
+    {
+      "map": "metro",
+      "kind": "prop:metro_hall",
+      "minY": -10,
+      "maxY": 80
+    },
+    {
+      "map": "metro",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "metro2",
+      "kind": "unknown",
+      "minY": -23,
+      "maxY": 311
+    },
+    {
+      "map": "metro2",
+      "kind": "prop:metro_hall",
+      "minY": -10,
+      "maxY": 80
+    },
+    {
+      "map": "metro2",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "negozio",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "banca",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "clinica",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "ufficio",
+      "kind": "prop:home_plant",
+      "minY": -30,
+      "maxY": 0
+    },
+    {
+      "map": "guglia",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "facciate",
+      "kind": "building:gesu",
+      "minY": -8,
+      "maxY": 240
+    },
+    {
+      "map": "facciate",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "campanile",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "fuorigrotta-facciate",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "fuorigrotta-teatro",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "pianura-facciate",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    },
+    {
+      "map": "bacoli-templi",
+      "kind": "prop:plant",
+      "minY": -18,
+      "maxY": 4
+    }
+  ],
+  "issues": []
+}
