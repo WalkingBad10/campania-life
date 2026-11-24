@@ -42,6 +42,7 @@
       this.entities = []; this.particles = new CL.Particles();
       this.map = null; this.player = null; this.prompt = null; this.promptTarget = null;
       this.refreshT = 0; this.fadeT = 0; this.rainT = 0; this.weatherT = 0;
+      this.animT = 0;
       this.state = null;
       this.debug = true;
       this.enterCooldown = 0;
@@ -156,6 +157,7 @@
     /* --------------------------------------------------------------- update */
     update(dt) {
       CL.audio.tick();
+      this.animT += dt;
       CL.camera.update(dt);
       this.particles.update(dt);
       if (this.enterCooldown > 0) this.enterCooldown = Math.max(0, this.enterCooldown - dt);
@@ -563,6 +565,10 @@
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
         const ch = m.g[ty][tx], img = ART.tiles[ch];
         if (img) c.drawImage(img, tx * T, ty * T);
+        if ((ch === 'W' || ch === '~') && (tx * 7 + ty * 3 + Math.floor(this.animT * 2)) % 9 === 0) {
+          c.fillStyle = 'rgba(255,255,255,.13)';
+          c.fillRect(tx * T + 2 + ((this.animT * 6) % 10), ty * T + 5, 7, 1);
+        }
       }
       // Velatura artistica: scene M1 già presenti nel runtime, a bassa opacità.
       // I tile restano leggibili e le collisioni restano allineate alla griglia.
@@ -626,20 +632,25 @@
         const sx = d.x - cam.x, sy = d.y - cam.y;
         if (sx < -60 || sy < -60 || sx > CL.VIEW_W + 60 || sy > CL.VIEW_H + 60) continue;
         if (d.type === 'lamp' && (night || dusk)) {
-          const r = 34; const g = c.createRadialGradient(sx + 8, sy - 20, 2, sx + 8, sy - 20, r);
+          const r = 34 * (.94 + Math.sin(this.animT * 3.1 + sx * .07) * .06);
+          const g = c.createRadialGradient(sx + 8, sy - 20, 2, sx + 8, sy - 20, r);
           g.addColorStop(0, 'rgba(255,236,170,.28)'); g.addColorStop(1, 'rgba(255,220,120,0)');
           c.fillStyle = g; c.fillRect(sx - r, sy - 20 - r, r * 2, r * 2);
         }
         if ((d.type === 'candle_glow') && (indoors || night || dusk)) {
-          const r = 22; const g = c.createRadialGradient(sx + 8, sy, 1, sx + 8, sy, r);
+          const r = 22 * (.93 + Math.sin(this.animT * 4.2 + sx * .11) * .07);
+          const g = c.createRadialGradient(sx + 8, sy, 1, sx + 8, sy, r);
           g.addColorStop(0, 'rgba(255,170,70,.22)'); g.addColorStop(1, 'rgba(255,140,40,0)');
           c.fillStyle = g; c.fillRect(sx - r, sy - r, r * 2, r * 2);
         }
         if (d.type === 'warm_light') {
           const r = d.data.r || 24; const col = d.data.color || 'rgba(255,190,120,.14)';
+          c.save();
+          c.globalAlpha = .92 + Math.sin(this.animT * 2.4 + sx * .05) * .08;
           const g = c.createRadialGradient(sx, sy, 2, sx, sy, r);
           g.addColorStop(0, col); g.addColorStop(1, col.replace(/,[^,]+\)$/, ',0)'));
           c.fillStyle = g; c.fillRect(sx - r, sy - r, r * 2, r * 2);
+          c.restore();
         }
         if (d.type === 'window_light' && (night || indoors || dusk)) {
           c.fillStyle = d.data.color || 'rgba(255,220,150,.18)';
@@ -736,7 +747,26 @@
         }
         case 'lamp': { const img = ART.propSprite('lamp'); if (img) c.drawImage(img, x - 4, y - 36); break; }
         case 'bench': { const img = ART.propSprite('bench'); if (img) c.drawImage(img, x - 6, y - 10); break; }
-        case 'plant': { const img = ART.propSprite('plant'); if (img) c.drawImage(img, x - 1, y - 10); break; }
+        case 'plant': {
+          const img = ART.propSprite('plant');
+          if (img) {
+            c.translate(x + 8, y);
+            c.rotate(Math.sin(this.animT * 1.3 + x * .04) * .035);
+            c.drawImage(img, -9, -18);
+          }
+          break;
+        }
+        case 'home_plant': {
+          const img = ART.propSprite(d.type);
+          if (img) {
+            const dw = d.data.w || img.width, dh = d.data.h || img.height;
+            const oy = d.data.oy !== undefined ? d.data.oy : (16 - dh);
+            c.translate(x + (d.data.ox || 0) + dw / 2, y + oy + dh);
+            c.rotate(Math.sin(this.animT * 1.1 + x * .03) * .03);
+            c.drawImage(img, -dw / 2, -dh, dw, dh);
+          }
+          break;
+        }
         case 'cart': { const img = ART.propSprite('cart'); if (img) c.drawImage(img, x - 4, y - 16); break; }
         case 'sign': { const img = ART.propSprite('sign'); if (img) c.drawImage(img, x - 6, y - 22); break; }
         case 'table_out': { const img = ART.propSprite('table_out'); if (img) c.drawImage(img, x - 6, y - 10); break; }
@@ -747,7 +777,7 @@
         case 'ns_palazzo1': case 'ns_palazzo2': case 'ns_palazzo3':
         case 'pizzeria_oven': case 'pizzeria_counter': case 'pizzeria_table':
         case 'metro_hall': case 'metro_platform': case 'metro_gate':
-        case 'home_rug': case 'home_books': case 'home_lamp': case 'home_plant': case 'home_painting': {
+        case 'home_rug': case 'home_books': case 'home_lamp': case 'home_painting': {
           const img = ART.propSprite(d.type);
           if (img) {
             const dw = d.data.w || img.width;

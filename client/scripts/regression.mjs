@@ -803,6 +803,20 @@ async function main() {
     assert(ensureWalkable(game), 'walkable after regional travel');
   }, ctx);
 
+  await test('ambient animation renders on outdoor, interior and furnished maps', async () => {
+    newGame(ctx, CL.createState().profile);
+    CL.state.money = 5000;
+    CL.systems.property.buy('monolocale');
+    CL.systems.furniture.buy('monolocale', 'pianta');
+    const errs = ctx.errors.length;
+    for (const id of ['napoli', 'costiera', 'casa_giocatore', 'bar', 'metro']) {
+      game.enterMap(id, undefined, undefined, true);
+      step(game, 2);
+      for (const t of [0, 1.7, 4.2]) { game.animT = t; game.render(); }
+    }
+    assert(ctx.errors.length === errs, 'no render errors during ambient animation');
+  }, ctx);
+
   await test('no JS errors, no repeated recovery toast, long session', async () => {
     newGame(ctx);
     const beforeErr = ctx.errors.length;
