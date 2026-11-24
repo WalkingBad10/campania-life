@@ -172,7 +172,29 @@
     bacoli_guide:{name:'Rosa di Baia', look:{hair:'#6b3a2a',skin:'#d9a77d',shirt:'#4f8f8a',pants:'#4a5563'}, home:'bacoli', x:10, y:14, role:'quest'},
     salerno_barista:{name:'Enzo il salernitano', look:{hair:'#2d2622',skin:'#dda97e',shirt:'#e8e2d2',pants:'#3b4650'}, home:'salerno', x:34, y:22, role:'shop'},
     avellino_contadino:{name:'Pasquale il vignaiolo', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:28, y:22, role:'job'},
-    caserta_guardia:{name:'Guardia della Reggia', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'caserta', x:30, y:24, role:'ambient'}
+    caserta_guardia:{name:'Guardia della Reggia', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'caserta', x:30, y:24, role:'ambient'},
+    cliente_bar3:{name:'Pasquale', look:{hair:'#3a2b22',skin:'#d7a078',shirt:'#8a6b4a',pants:'#414a52'}, home:'bar', x:16, y:12, role:'ambient'},
+    cliente_bar4:{name:'Assunta', look:{hair:'#8d8579',skin:'#e0b18b',shirt:'#a45f74',pants:'#514658'}, home:'bar', x:7, y:11, role:'ambient'},
+    cliente_pizza1:{name:'Marco', look:{hair:'#342a24',skin:'#dba77f',shirt:'#5b8fa8',pants:'#404b55'}, home:'pizzeria', x:9, y:12, role:'ambient'},
+    cliente_pizza2:{name:'Valeria', look:{hair:'#7a3d2a',skin:'#e6b48c',shirt:'#c96a72',pants:'#4d4556'}, home:'pizzeria', x:19, y:11, role:'ambient'},
+    metro_user1:{name:'Passeggero', look:{hair:'#282522',skin:'#d2a078',shirt:'#4b647b',pants:'#353f49'}, home:'metro', x:8, y:10, role:'ambient'},
+    metro_user2:{name:'Turista in metro', look:{hair:'#c9a75f',skin:'#efc49f',shirt:'#d26d55',pants:'#5a6672'}, home:'metro', x:19, y:12, role:'ambient'},
+    negozio_venditore:{name:'Aiuto di Sora Maria', look:{hair:'#6b3f2a',skin:'#dba577',shirt:'#c0705e',pants:'#4e3b36'}, home:'negozio', x:8, y:9, role:'shop'},
+    bottegaio:{name:'Vincenzo il bottegaio', look:{hair:'#4a3123',skin:'#d6a075',shirt:'#6f8a5a',pants:'#4a463e'}, home:'bottega', x:10, y:8, role:'shop'},
+    cliente_bottega:{name:'Rita', look:{hair:'#6b432c',skin:'#dfae87',shirt:'#b76570',pants:'#4e4755'}, home:'bottega', x:5, y:10, role:'ambient'},
+    venditore_souvenir:{name:'Ricordi di Pompei', look:{hair:'#2f2925',skin:'#d5a079',shirt:'#c98b4b',pants:'#4a4340'}, home:'souvenir', x:9, y:8, role:'shop'},
+    impiegato_banca:{name:'Addetto allo sportello', look:{hair:'#3a2b25',skin:'#e0ad85',shirt:'#3f6076',pants:'#2f3b46'}, home:'banca', x:12, y:9, role:'shop'},
+    medico_clinica:{name:'Dott.ssa Ferrara', look:{hair:'#5c4034',skin:'#e5b28c',shirt:'#eef2ee',pants:'#58707c'}, home:'clinica', x:12, y:8, role:'shop'},
+    paziente_clinica:{name:'Paziente', look:{hair:'#8a8378',skin:'#d7a37d',shirt:'#8f9aa0',pants:'#4b4e52'}, home:'clinica', x:8, y:9, role:'ambient'},
+    impiegato_ufficio:{name:'Impiegato comunale', look:{hair:'#332b27',skin:'#d9a57e',shirt:'#527a68',pants:'#3c454d'}, home:'ufficio', x:13, y:6, role:'job'},
+    cliente_ufficio:{name:'Cittadino', look:{hair:'#6a4a34',skin:'#cf9a70',shirt:'#a06b58',pants:'#444b52'}, home:'ufficio', x:8, y:10, role:'ambient'},
+    vicino_appartamento:{name:'Vicino di Chiaia', look:{hair:'#332a24',skin:'#d7a47c',shirt:'#5f7f9a',pants:'#3f4750'}, home:'appartamento', x:18, y:9, role:'ambient'},
+    familiare_amalfi:{name:'Cugino di Amalfi', look:{hair:'#4a3225',skin:'#dfab81',shirt:'#d47d5a',pants:'#4c5259'}, home:'casa_amalfi', x:10, y:8, role:'family'},
+    coinquilino:{name:'Compagno di casa', look:{hair:'#2e2824',skin:'#d5a17a',shirt:'#7a8f6a',pants:'#454c53'}, home:'casa_giocatore', x:24, y:8, role:'ambient'},
+    capri_guide:{name:'Guida di Capri', look:{hair:'#3a2a22',skin:'#dfae86',shirt:'#5aa7c4',pants:'#46525e'}, home:'capri', x:15, y:12, role:'quest'},
+    metro2_user:{name:'Passeggero verso Dante', look:{hair:'#5c5148',skin:'#d7a47c',shirt:'#7b6b8a',pants:'#3f4750'}, home:'metro2', x:8, y:10, role:'ambient'},
+    chiesa_fedele:{name:'Fedele in preghiera', look:{hair:'#8a8176',skin:'#e0b08a',shirt:'#7a5a72',pants:'#4b4552'}, home:'casa_nonna', x:7, y:17, role:'ambient'},
+    chiesa_sacerdote:{name:'Padre Raffaele', look:{hair:'#3a342e',skin:'#d9a67e',shirt:'#efe9dc',pants:'#3b4248'}, home:'casa_nonna', x:20, y:17, role:'ambient'}
   };
 
   /* --------------------------------------------------------------- quest */

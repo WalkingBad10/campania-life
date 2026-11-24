@@ -229,7 +229,8 @@
         const ax = this.dir === 'left' ? -1 : this.dir === 'right' ? 1 : 0;
         const ay = this.dir === 'up' ? -1 : this.dir === 'down' ? 1 : 0;
         const nx = this.x + ax * this.speed * dt, ny = this.y + ay * this.speed * dt;
-        const blocked = !this.game.canMove(nx, ny, this.w, this.h) || CL.maps.portalAt(this.game.map, nx, ny);
+        const tile = CL.maps.tile(this.game.map, Math.floor(nx / T), Math.floor(ny / T));
+        const blocked = tile !== 'r' || !this.game.canMove(nx, ny, this.w, this.h) || CL.maps.portalAt(this.game.map, nx, ny);
         if (blocked) {
           this.dir = this.dir === 'left' ? 'right' : this.dir === 'right' ? 'left' : this.dir === 'up' ? 'down' : 'up';
         } else {

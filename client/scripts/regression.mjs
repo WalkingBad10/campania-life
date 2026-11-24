@@ -823,6 +823,46 @@ async function main() {
     }
   }, ctx);
 
+  await test('expanded interiors preserve saved anchors and expose reachable wings', async () => {
+    const anchors = {
+      casa_giocatore: [128, 144], appartamento: [160, 176], casa_amalfi: [144, 160],
+      bottega: [144, 144], souvenir: [128, 128], bar: [160, 176], pizzeria: [176, 192],
+      metro: [192, 208], metro2: [192, 208], negozio: [144, 144], banca: [128, 144],
+      clinica: [144, 144], ufficio: [144, 144], grotta: [144, 272]
+    };
+    for (const [id, anchor] of Object.entries(anchors)) {
+      const m = CL.maps.get(id);
+      assert(m.w >= 30 && m.h >= 18, `${id} covers viewport (${m.w}x${m.h})`);
+      assert(m.spawn.x === anchor[0] && m.spawn.y === anchor[1], `${id} spawn anchor unchanged`);
+      const wing = m.pois.find(q => q.id === 'wing_detail');
+      assert(wing, `${id} wing detail exists`);
+      CL.path.clearCache(m.id);
+      const route = CL.path.route(m, m.spawn, { x: wing.x, y: wing.y }, { w: 12, h: 10 });
+      assert(route.length > 0, `${id} wing reachable from saved spawn`);
+      assert(walkableTile(CL, m, Math.floor(wing.x / T), Math.floor(wing.y / T), 12, 10), `${id} wing tile walkable`);
+    }
+  }, ctx);
+
+  await test('ambient traffic stays on roads and interiors have living staff', async () => {
+    newGame(ctx);
+    const vehicles = game.entities.filter(e => e instanceof CL.Vehicle && e.ambient);
+    assert(vehicles.length >= 3, `traffic spawned on napoli (${vehicles.length})`);
+    const roadCheck = () => vehicles.every(v => CL.maps.tile(game.map, Math.floor(v.x / T), Math.floor(v.y / T)) === 'r');
+    assert(roadCheck(), 'traffic starts on road tiles');
+    step(game, 360);
+    assert(roadCheck(), 'traffic remains on road tiles after movement');
+    for (const id of ['bar', 'pizzeria', 'metro', 'metro2', 'negozio', 'banca', 'clinica', 'ufficio', 'bottega', 'souvenir', 'casa_giocatore', 'appartamento', 'casa_amalfi', 'casa_nonna', 'capri']) {
+      game.enterMap(id, undefined, undefined, true);
+      step(game, 2);
+      const npcs = game.entities.filter(e => e instanceof CL.NPC);
+      assert(npcs.length >= 1, `${id} has at least one resident`);
+      for (const n of npcs) {
+        assert(okPos(CL, game.map, n.x, n.y, n.w, n.h), `${id} resident ${n.id} walkable`);
+        assert(!CL.maps.portalAt(game.map, n.x, n.y), `${id} resident ${n.id} outside portal`);
+      }
+    }
+  }, ctx);
+
   await test('regional maps: Bacoli, Salerno, Avellino, Caserta are reachable', async () => {
     newGame(ctx);
     const links = [

@@ -309,9 +309,23 @@
             const n = new CL.NPC(this, nid, def);
             if (isInterior) {
               const spots = interiorSpots[target.map];
-              if (spots && spots[iSpot]) { n.x = spots[iSpot][0]; n.y = spots[iSpot][1]; iSpot++; }
-              else { n.x = this.map.width / 2; n.y = this.map.height - 80; }
-              n.homeX = n.x; n.homeY = n.y;
+              let sx, sy;
+              if (spots && spots[iSpot]) { [sx, sy] = spots[iSpot]; iSpot++; }
+              else if (Number.isFinite(def.x) && Number.isFinite(def.y)) { sx = def.x * T + 8; sy = def.y * T + 8; }
+              else { sx = this.map.width / 2; sy = this.map.height - 80; }
+              if (!this.canMove(sx, sy, n.w, n.h) || MAPS.portalAt(this.map, sx, sy)) {
+                let found = false;
+                for (let r = 1; r <= 8 && !found; r++) {
+                  for (let dy = -r; dy <= r && !found; dy++) for (let dx = -r; dx <= r; dx++) {
+                    if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
+                    const nx = sx + dx * T, ny = sy + dy * T;
+                    if (this.canMove(nx, ny, n.w, n.h) && !MAPS.portalAt(this.map, nx, ny)) {
+                      sx = nx; sy = ny; found = true; break;
+                    }
+                  }
+                }
+              }
+              n.x = sx; n.y = sy; n.homeX = sx; n.homeY = sy;
             }
             this.entities.push(n);
           }
@@ -395,7 +409,7 @@
         napoli: [
           { type: 'scooter', tx: 60, ty: 31, dir: 'left' },
           { type: 'car', tx: 58, ty: 42, dir: 'up' },
-          { type: 'bike', tx: 12, ty: 43, dir: 'up' }
+          { type: 'bike', tx: 8, ty: 31, dir: 'right' }
         ],
         costiera: [
           { type: 'car', tx: 30, ty: 14, dir: 'right' },
@@ -404,7 +418,7 @@
         bacoli: [{ type: 'car', tx: 20, ty: 10, dir: 'right' }],
         salerno: [{ type: 'scooter', tx: 30, ty: 18, dir: 'right' }],
         avellino: [{ type: 'car', tx: 24, ty: 24, dir: 'up' }],
-        caserta: [{ type: 'car', tx: 30, ty: 32, dir: 'right' }]
+        caserta: [{ type: 'car', tx: 28, ty: 32, dir: 'right' }]
       };
       const list = routes[this.map.id] || [];
       for (const r of list) {
@@ -575,7 +589,26 @@
     dialogue(npcId) {
       const def = D.npcs[npcId]; if (!def) return;
       const maker = D.dialogue[npcId];
-      const out = maker ? maker(this) : { text: 'Ciao!', choices: [{ label: 'Arrivederci', action: 'close' }] };
+      let out;
+      if (maker) {
+        out = maker(this);
+      } else {
+        const place = this.map && this.map.name ? this.map.name : 'questa zona';
+        const texts = {
+          shop: `Benvenuto a ${place}: qui si lavora sodo, ma si fa sempre un sorriso.`,
+          job: `A ${place} c’è sempre una mano in più che serve.`,
+          family: `Sei di casa, a ${place}? Allora siediti un momento.`,
+          ambient: `A ${place} passa di tutto: clienti, commercianti e gente del quartiere.`
+        };
+        const choices = [{ label: 'Arrivederci', action: 'close', data: {} }];
+        const shopId = def.home === 'souvenir' ? 'pompei' : def.home;
+        if (def.role === 'shop' && D.shops && D.shops[shopId]) {
+          choices.unshift({ label: 'Compra qualcosa', action: 'shop', data: { shop: shopId } });
+        } else if (def.role === 'job') {
+          choices.unshift({ label: 'Cerca lavoro', action: 'jobs', data: {} });
+        }
+        out = { text: texts[def.role] || texts.ambient, choices };
+      }
       CL.ui.showDialogue({
         name: def.name, look: def.look, text: out.text, choices: out.choices || [], npc: npcId
       });
@@ -780,13 +813,13 @@
         napoli: [
           { x: 7, y: 31, w: 4, h: 2, dir: 'h' },
           { x: 60, y: 31, w: 5, h: 2, dir: 'h' },
-          { x: 11, y: 43, w: 3, h: 4, dir: 'v' },
-          { x: 57, y: 40, w: 3, h: 4, dir: 'v' }
+          { x: 12, y: 46, w: 2, h: 2, dir: 'h' },
+          { x: 59, y: 38, w: 2, h: 4, dir: 'v' }
         ],
         costiera: [{ x: 20, y: 14, w: 5, h: 2, dir: 'h' }, { x: 50, y: 14, w: 5, h: 2, dir: 'h' }],
         bacoli: [{ x: 18, y: 10, w: 5, h: 2, dir: 'h' }],
         salerno: [{ x: 28, y: 18, w: 5, h: 2, dir: 'h' }],
-        avellino: [{ x: 22, y: 22, w: 3, h: 4, dir: 'v' }],
+        avellino: [{ x: 24, y: 21, w: 2, h: 4, dir: 'v' }],
         caserta: [{ x: 28, y: 32, w: 5, h: 2, dir: 'h' }]
       };
       for (const r of (rules[m.id] || [])) {

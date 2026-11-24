@@ -605,6 +605,72 @@
     return m;
   }
 
+  /* Le mappe interne storiche sono più piccole della viewport: vengono ampliate
+   * con due ali collegate, senza spostare spawn/portali/POI già salvati. */
+  function expandInterior(m, targetW = 30, targetH = 18) {
+    if (!m || m.zone !== 'interno' || m.id === 'casa_nonna') return m;
+    const ow = m.w, oh = m.h;
+    targetW = Math.max(targetW, ow); targetH = Math.max(targetH, oh);
+    if (ow === targetW && oh === targetH) return m;
+    const floor = (m.id === 'banca' || m.id === 'metro' || m.id === 'metro2') ? 'M' : m.id === 'grotta' ? 'k' : 'h';
+    const old = m.g;
+    const g = blank(targetW, targetH, '#');
+    for (let y = 0; y < oh; y++) for (let x = 0; x < ow; x++) g[y][x] = old[y][x];
+    for (let y = 1; y < targetH - 1; y++) for (let x = ow; x < targetW - 1; x++) g[y][x] = floor;
+    for (let y = oh; y < targetH - 1; y++) for (let x = 1; x < ow; x++) g[y][x] = floor;
+    for (let x = 0; x < targetW; x++) { g[0][x] = '#'; g[targetH - 1][x] = '#'; }
+    for (let y = 0; y < targetH; y++) { g[y][0] = '#'; g[y][targetW - 1] = '#'; }
+    // Il perimetro ridisegnato non deve sigillare porte e portali già presenti.
+    for (const p of m.portals) {
+      const x = Math.floor(p.x / T), y = Math.floor(p.y / T);
+      const ch = old[y] && old[y][x];
+      if (ch && !SOLID[ch]) g[y][x] = ch;
+    }
+    for (const q of m.pois) {
+      if (q.type !== 'door') continue;
+      const x = Math.floor(q.x / T), y = Math.floor(q.y / T);
+      const ch = old[y] && old[y][x];
+      if (ch && !SOLID[ch]) g[y][x] = ch;
+    }
+
+    const occupied = (x, y) => m.portals.some(p => Math.floor(p.x / T) === x && Math.floor(p.y / T) === y)
+      || m.pois.some(q => Math.floor(q.x / T) === x && Math.floor(q.y / T) === y);
+    let rightDoor = -1;
+    for (let y = 3; y < oh - 3; y++) {
+      if (!SOLID[g[y][ow - 2]] && !occupied(ow - 2, y)) { rightDoor = y; break; }
+    }
+    if (rightDoor > 0) g[rightDoor][ow - 1] = floor;
+    let bottomDoor = -1;
+    for (let x = 2; x < ow - 2; x++) {
+      if (!SOLID[g[oh - 2][x]] && !occupied(x, oh - 2) && !m.portals.some(p => Math.abs(p.x / T - x) < 2)) { bottomDoor = x; break; }
+    }
+    if (bottomDoor > 0) g[oh - 1][bottomDoor] = floor;
+
+    const rx = ow + 1;
+    if (targetW - ow > 5) {
+      rect(g, rx, 2, Math.min(4, targetW - ow - 3), 1, m.id === 'grotta' ? '^' : 'u');
+      const ty = Math.min(7, targetH - 3);
+      if (ty !== rightDoor) {
+        setTile(g, rx + 1, ty, 'v');
+        if (g[ty - 1] && g[ty - 1][rx + 1] !== undefined) setTile(g, rx + 1, ty - 1, 'w');
+        if (g[ty][rx] !== undefined) setTile(g, rx, ty, 'w');
+        if (g[ty][rx + 2] !== undefined) setTile(g, rx + 2, ty, 'w');
+      }
+      decor(m, rx, Math.min(9, targetH - 4), 'home_rug', { w: 64, h: 24, oy: -10 });
+    }
+    if (targetH - oh > 2) {
+      const by = oh + 1;
+      rect(g, 3, by, 4, 1, m.id === 'grotta' ? '^' : 'v');
+      for (const x of [2, 7]) if (g[by] && g[by][x] !== undefined) setTile(g, x, by, 'w');
+      decor(m, 12, by, 'home_rug', { w: 80, h: 24, oy: -10 });
+    }
+    decor(m, ow + 2, 3, 'warm_light', { r: 24, color: 'rgba(255,205,150,.12)' });
+    decor(m, 8, oh + 2, 'warm_light', { r: 22, color: 'rgba(255,205,150,.10)' });
+    poi(m, ow + 3, 5, 'wing_detail', 'scenery', 'Un angolo del locale', 'flavor');
+    m.g = g; m.w = targetW; m.h = targetH;
+    return m;
+  }
+
   function interior(id, kind, w, h, decorate) {
     if (id === 'casa_nonna') return churchGesu();
     if (id === 'bar') return barInterior();
@@ -722,6 +788,7 @@
           this.cache.napoli = m;
           return m;
       }
+      if (m.zone === 'interno') expandInterior(m);
       m.width = m.w * T; m.height = m.h * T;
       const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', bacoli: 'Bacoli e Baia', salerno: 'Salerno - Lungomare', avellino: 'Avellino - Colline Irpine', caserta: 'Caserta - Reggia', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', pizzeria:'Pizzeria Da Michele', metro:'Metro Toledo - Atrio', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };
       m.name = m.name || defaultNames[id] || id;
