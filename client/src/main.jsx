@@ -6,7 +6,9 @@ import './game/core.js';
 import './game/data.js';
 import './game/art.js';
 import './game/maps.js';
+import './game/pathfinding.js';
 import './game/systems.js';
+import './game/routines.js';
 import './game/entities.js';
 import './game/engine.js';
 

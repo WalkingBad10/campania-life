@@ -77,7 +77,7 @@ async function boot() {
   const origErr = console.error;
   console.error = (...args) => { errors.push(args.map(a => String(a?.stack || a)).join(' ')); origErr(...args); };
 
-  const mods = ['core.js','data.js','art.js','maps.js','systems.js','entities.js','engine.js'];
+  const mods = ['core.js','data.js','art.js','maps.js','pathfinding.js','systems.js','routines.js','entities.js','engine.js'];
   for (const m of mods) {
     await import(pathToFileURL(path.join(gameDir, m)).href + '?t=' + Date.now() + Math.random());
   }
@@ -560,6 +560,107 @@ async function main() {
     resetInput(CL);
     assert(game.map.id === 'napoli', `bar exit with npc got ${game.map.id}`);
     assert(ensureWalkable(game), 'walkable after npc door test');
+  }, ctx);
+
+  await test('A* pathfinding avoids walls and respects footprint', async () => {
+    newGame(ctx);
+    assert(CL.path && typeof CL.path.find === 'function', 'CL.path.find available');
+    const m = CL.maps.get('napoli');
+    CL.path.clearCache(m.id);
+    const start = { x: 2*T+T/2, y: 2*T+T/2 };
+    const s = CL.path.nearestTile(m, start.x, start.y, {w:12,h:10});
+    assert(s, 'start tile found');
+    // scegli una destinazione nella stessa componente connessa della griglia nav
+    const grid = CL.path.buildGrid(m, {w:12,h:10});
+    const W = grid.w, H = grid.h;
+    const seen = new Set([s.ty*W+s.tx]);
+    const q = [{tx:s.tx,ty:s.ty}];
+    let g = null;
+    while (q.length) {
+      const cur = q.shift();
+      if (Math.abs(cur.tx-s.tx)+Math.abs(cur.ty-s.ty) > 25) { g = cur; break; }
+      for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+        const nx=cur.tx+dx, ny=cur.ty+dy, idx=ny*W+nx;
+        if (nx<0||ny<0||nx>=W||ny>=H||seen.has(idx)||grid.blocked[idx]) continue;
+        seen.add(idx); q.push({tx:nx,ty:ny});
+      }
+    }
+    assert(g, 'reachable goal tile found');
+    const route = CL.path.route(m, {x:s.x,y:s.y}, {x:g.tx*T+T/2,y:g.ty*T+T/2}, {w:12,h:10});
+    assert(route.length > 0, 'route exists');
+    // every waypoint must be walkable with NPC footprint
+    for (const wp of route) {
+      assert(walkableTile(CL, m, wp.tx, wp.ty, 12, 10), `waypoint ${wp.tx},${wp.ty} walkable`);
+    }
+    assert(route.length < 200, `route reasonably short (${route.length})`);
+  }, ctx);
+
+  await test('A* pathfinding avoids portals and blocked goals', async () => {
+    newGame(ctx);
+    const m = CL.maps.get('napoli');
+    CL.path.clearCache(m.id);
+    const p = m.portals[0];
+    assert(p, 'map has portal');
+    const pt = { tx: Math.floor((p.x+p.w/2)/T), ty: Math.floor((p.y+p.h/2)/T) };
+    const grid = CL.path.buildGrid(m, {w:12,h:10});
+    assert(grid.blocked[pt.ty*grid.w+pt.tx] === 1, 'portal tile blocked in nav grid');
+    // goal inside a wall tile -> nearest walkable fallback
+    const route = CL.path.route(m, {x:2*T+T/2,y:2*T+T/2}, {x:0*T+T/2,y:0*T+T/2}, {w:12,h:10});
+    assert(Array.isArray(route), 'route to blocked goal returns array');
+    // explicit blocked set
+    const r2 = CL.path.route(m, {x:2*T+T/2,y:2*T+T/2}, {x:20*T+T/2,y:20*T+T/2}, {w:12,h:10, blocked:new Set([pt.ty*grid.w+pt.tx])});
+    assert(r2.every(w => !(w.ty*grid.w+w.tx === pt.ty*grid.w+pt.tx)), 'route avoids explicitly blocked tile');
+  }, ctx);
+
+  await test('A* cached grid and clearCache', async () => {
+    newGame(ctx);
+    const m = CL.maps.get('napoli');
+    const g1 = CL.path.buildGrid(m, {w:12,h:10});
+    const g2 = CL.path.buildGrid(m, {w:12,h:10});
+    assert(g1 === g2, 'grid cached by map+footprint');
+    const g3 = CL.path.buildGrid(m, {w:22,h:10});
+    assert(g3 !== g1, 'different footprint creates distinct grid');
+    CL.path.clearCache(m.id);
+    const g4 = CL.path.buildGrid(m, {w:12,h:10});
+    assert(g4 !== g1, 'clearCache invalidates grid');
+  }, ctx);
+
+  await test('NPC daily routines are deterministic and walkable', async () => {
+    newGame(ctx);
+    assert(CL.routines && typeof CL.routines.goalFor === 'function', 'CL.routines available');
+    const m = CL.maps.get('napoli');
+    const defs = Object.entries(CL.data.npcs).filter(([,d]) => d.home === 'napoli').slice(0, 6);
+    assert(defs.length > 0, 'napoli NPC defs exist');
+    for (const [id, def] of defs) {
+      const npc = { id, homeX: def.x*T+8, homeY: def.y*T+8, w:12, h:10, role:def.role };
+      for (let hour = 0; hour < 24; hour++) {
+        const goal = CL.routines.goalFor(npc, m, hour);
+        const again = CL.routines.goalFor(npc, m, hour);
+        assert(goal && Number.isFinite(goal.x) && Number.isFinite(goal.y), `${id} hour ${hour} goal`);
+        assert(walkableTile(CL, m, goal.tx, goal.ty, 12, 10), `${id} hour ${hour} walkable goal`);
+        assert(goal.x === again.x && goal.y === again.y, `${id} hour ${hour} deterministic`);
+      }
+      assert(CL.routines.whereAt(npc, 2) === 'home', `${id} night at home`);
+    }
+  }, ctx);
+
+  await test('NPC follows A* path without entering portals', async () => {
+    newGame(ctx);
+    const npc = game.entities.find(e => e instanceof CL.NPC);
+    assert(npc, 'NPC exists on napoli');
+    const start = { x: npc.x, y: npc.y };
+    let moved = false, portalHit = false;
+    for (let i = 0; i < 900; i++) {
+      step(game, 1);
+      if (CL.util.dist(npc.x, npc.y, start.x, start.y) > 8) moved = true;
+      for (const p of game.map.portals || []) {
+        if (npc.x > p.x-1 && npc.x < p.x+(p.w||16)+1 && npc.y > p.y-1 && npc.y < p.y+(p.h||16)+1) portalHit = true;
+      }
+    }
+    assert(moved, 'NPC moved from start');
+    assert(!portalHit, 'NPC never entered a portal');
+    assert(Array.isArray(npc.path), 'NPC has path array');
+    assert(ensureWalkable(game), 'player walkable after NPC simulation');
   }, ctx);
 
   await test('no JS errors, no repeated recovery toast, long session', async () => {

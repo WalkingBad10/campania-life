@@ -76,6 +76,8 @@
   CL.Player = Player;
 
   /* -------------------------------------------------------------------- PNG */
+  function hashTick(v) { return (Math.floor(v * 2) & 1) === 0; }
+
   class NPC extends Entity {
     constructor(game, id, def) {
       super(game, def.x * T + 8, def.y * T + 10);
@@ -84,48 +86,98 @@
       this.wanderT = U.rand(0, 4); this.tx = this.x; this.ty = this.y;
       this.bob = U.rand(0, 6);
     }
+    _dynamicBlocked() {
+      const set = new Set(), map = this.game.map;
+      if (!map) return set;
+      const add = (e) => {
+        if (!e || e === this || e.alive === false) return;
+        const tx = Math.floor(e.x / T), ty = Math.floor(e.y / T);
+        if (tx >= 0 && ty >= 0 && tx < map.w && ty < map.h) set.add(ty * map.w + tx);
+      };
+      add(this.game.player);
+      const ents = this.game.entities || [];
+      for (let i = 0; i < ents.length; i++) if (ents[i] !== this) add(ents[i]);
+      return set;
+    }
+
+    _nearReserved(x, y) {
+      const map = this.game.map;
+      if (!map) return false;
+      const portals = map.portals || [];
+      for (const p of portals) {
+        if (x > p.x - 10 && x < p.x + (p.w || 16) + 10 && y > p.y - 10 && y < p.y + (p.h || 16) + 10) return true;
+      }
+      const pois = map.pois || [];
+      for (const poi of pois) {
+        if (poi.type !== 'door') continue;
+        const px = poi.x || 0, py = poi.y || 0;
+        if (U.dist(x, y, px, py) < 26) return true;
+      }
+      return false;
+    }
+
+    _replan(hour) {
+      this.path = []; this.pathIdx = 0;
+      if (this.waitT > 0) return;
+      const map = this.game.map;
+      if (!map || !CL.path) { this.tx = this.homeX; this.ty = this.homeY; return; }
+      let goal = CL.routines ? CL.routines.goalFor(this, map, hour) : null;
+      if (!goal) {
+        // fallback: vecchio vagare locale, compatibile con mappe senza routine
+        const gx = this.homeX + U.randInt(-2, 2) * T, gy = this.homeY + U.randInt(-1, 1) * T;
+        goal = CL.path.nearestTile(map, gx, gy, { w: this.w, h: this.h, maxR: 6 });
+      }
+      if (!goal) { this.tx = this.homeX; this.ty = this.homeY; return; }
+      this.goal = goal;
+      this.path = CL.path.route(map, { x: this.x, y: this.y }, goal, {
+        w: this.w, h: this.h, blocked: this._dynamicBlocked(),
+        allowPartial: true, maxNodes: 1400
+      }) || [];
+      this.pathIdx = 0;
+      this.planT = U.rand(3.2, 6.5);
+      if (!this.path.length) this.waitT = U.rand(.6, 1.4);
+    }
+
     update(dt) {
       this.anim += dt * 1.4;
       this.bob += dt;
       this.offsetY = Math.sin(this.bob * 1.6) * .8;
       this._stuckT = this._stuckT || 0;
       this._lastPos = this._lastPos || { x: this.x, y: this.y };
-      // piccolo pantalone: si muove in un'area ristretta durante il giorno
-      if (!CL.systems.time.isNight() && this.role !== 'family') {
-        this.wanderT -= dt;
-        if (this.wanderT <= 0) {
-          this.wanderT = U.rand(3.5, 8);
-          for (let i = 0; i < 8; i++) {
-            const nx = this.homeX + U.randInt(-2, 2) * T;
-            const ny = this.homeY + U.randInt(-1, 1) * T;
-            if (this.game.canMove(nx, ny, this.w, this.h)) { this.tx = nx; this.ty = ny; break; }
-          }
+      this.planT = (this.planT == null ? U.rand(0, 3) : this.planT - dt);
+      this.waitT = Math.max(0, (this.waitT || 0) - dt);
+      this._replans = this._replans || 0;
+      const hour = CL.systems && CL.systems.time ? CL.systems.time.hour() : 12;
+      const night = CL.systems && CL.systems.time ? CL.systems.time.isNight() : false;
+      if (this.planT <= 0 || (!this.path || this.pathIdx >= this.path.length)) this._replan(night ? 2 : hour);
+
+      // waypoint corrente del percorso A*
+      if (this.path && this.pathIdx < this.path.length) {
+        const wp = this.path[this.pathIdx];
+        this.tx = wp.x; this.ty = wp.y;
+        if (U.dist(this.x, this.y, wp.x, wp.y) < 5) {
+          this.pathIdx++;
+          if (this.pathIdx >= this.path.length) { this.path = []; this.waitT = U.rand(1.2, 3.4); this.planT = 0.4; }
         }
-      } else { this.tx = this.homeX; this.ty = this.homeY; }
+      }
+
       if (U.dist(this.x, this.y, this.tx, this.ty) > 2) {
         const a = Math.atan2(this.ty - this.y, this.tx - this.x);
-        const sp = 16;
+        const sp = 17;
         const stepX = Math.cos(a) * sp * dt, stepY = Math.sin(a) * sp * dt;
         let moved = false;
-        const nearPortal = (x,y) => {
-          const ps = (this.game.map && this.game.map.portals) || [];
-          for (const p of ps) { if (x > p.x - 8 && x < p.x + p.w + 8 && y > p.y - 8 && y < p.y + p.h + 8) return true; }
-          return false;
-        };
         const tryMove = (nx, ny) => {
           if (!this.game.canMove(nx, ny, this.w, this.h)) return false;
-          // avoid overlapping player tightly and blocking doors
           const pl = this.game.player;
           if (pl && U.dist(nx, ny, pl.x, pl.y) < 14) return false;
-          if (nearPortal(nx, ny) && !(nearPortal(this.x, this.y))) return false;
+          if (this._nearReserved(nx, ny) && !this._nearReserved(this.x, this.y)) return false;
           this.x = nx; this.y = ny; return true;
         };
         if (tryMove(this.x + stepX, this.y + stepY)) moved = true;
         else if (tryMove(this.x + stepX, this.y)) moved = true;
         else if (tryMove(this.x, this.y + stepY)) moved = true;
         else {
-          // simple detour: perpendicular nudge
-          const pa = a + Math.PI / 2 * (Math.random() < .5 ? 1 : -1);
+          const pa = a + Math.PI / 2 * (hashTick(this.bob) ? 1 : -1);
           moved = tryMove(this.x + Math.cos(pa) * sp * dt, this.y + Math.sin(pa) * sp * dt);
         }
         if (moved) {
@@ -134,10 +186,15 @@
         } else {
           this.frame = 0;
           this._stuckT += dt;
-          if (this._stuckT > 1.2) {
-            // pick a nearby walkable point or go home
-            const cand = this.game.safePoint ? this.game.safePoint(this.game.map, this.homeX, this.homeY, this.w, this.h) : { x: this.homeX, y: this.homeY };
-            this.x = cand.x; this.y = cand.y; this.tx = this.homeX; this.ty = this.homeY; this._stuckT = 0;
+          if (this._stuckT > 1) {
+            this._stuckT = 0; this._replans++;
+            this.waitT = 0;
+            if (this._replans >= 3) {
+              const cand = this.game.safePoint ? this.game.safePoint(this.game.map, this.homeX, this.homeY, this.w, this.h) : { x: this.homeX, y: this.homeY };
+              if (cand) { this.x = cand.x; this.y = cand.y; }
+              this.tx = this.homeX; this.ty = this.homeY; this._replans = 0;
+            }
+            this.planT = 0;
           }
         }
       } else { this.frame = 0; this._stuckT = 0; }
