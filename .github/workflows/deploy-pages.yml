@@ -36,7 +36,9 @@ jobs:
         run: cp client/dist/index.html client/dist/404.html
       - name: Install Playwright Chromium
         working-directory: client
-        run: npx playwright install --with-deps chromium
+        # Nessun --with-deps: le dipendenze di sistema sono già presenti
+        # sull'runner GitHub e l'installazione apt era la causa del failure.
+        run: npx playwright install chromium
       - name: Mobile start smoke (touch)
         working-directory: client
         env:
