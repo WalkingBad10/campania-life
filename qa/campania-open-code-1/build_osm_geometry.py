@@ -84,7 +84,11 @@ CONFIG = {
                "ways/262236201.json"], w=64, h=40, base="p",
         anchors=[("way:580193824:centroid", (32, 23)),
                  ("way:148046054:centroid", (32, 8))],
-        note="Piazza San Giorgio e chiesa: doppio ancoraggio misurato.",
+        note=("Piazza San Giorgio, chiesa e borgo: doppio ancoraggio OSM. "
+              "Piazza Municipio e' 130 m a ovest, compressa sul bordo; "
+              "la stazione Circumflegrea e il Bar Etoile sono fuori bbox e restano "
+              "solo targhe direzionali, non edifici inventati."),
+        keepChars="rpgPdDeS,.",  # solo superfici: strade, marciapiedi, piazze, verde
     ),
 }
 
@@ -108,7 +112,9 @@ PROTECT_TILES = {
                     (30, 19), (50, 36)]
                    + [(x, y) for x in range(72) for y in (18, 19, 35, 36)],
     "pianura": [(11, 36), (32, 17), (1, 27)]
-               + [(x, y) for x in range(64) for y in (38, 39)],
+               + [(x, y) for x in range(64) for y in (38, 39)]
+               + [(x, y) for x in range(24, 37) for y in range(33, 40)]
+               + [(x, y) for x in range(62) for y in (37, 38, 39)],
 }
 
 SOFT = set(".,pdreSg")
@@ -355,6 +361,11 @@ def build_map(map_id: str, cfg: dict):
     props = osm_props(nodes, ways, tr, cfg["w"], cfg["h"], origin)
     buildings = [{"way": wid, "name": name, "bbox": [round(v, 2) for v in geom.bounds]}
                  for wid, kind, ch, geom, name, prio in layers if kind == "building"]
+    keep_chars = cfg.get("keepChars", "")
+    if keep_chars:
+        # Le facciate metriche e le targhe del borgo sono ancoraggi verificati:
+        # l'overlay puo' aggiungere suolo e impronte OSM, ma non cancellarle.
+        tiles = [t for t in tiles if t[2] in keep_chars]
     return {
         "source": cfg["files"], "note": cfg["note"], "base": cfg["base"],
         "anchors": anchors, "projection": tr.meta(),

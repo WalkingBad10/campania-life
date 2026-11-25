@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-25T18:47:42.345Z",
-  "baseUrl": "http://127.0.0.1:3000/",
+  "generatedAt": "2026-11-25T20:39:45.490Z",
+  "baseUrl": "http://127.0.0.1:4175/campania-life/",
   "maps": [
     {
       "map": "napoli",
@@ -2592,13 +2592,13 @@
           "maxY": 640
         },
         "prop:sign": {
-          "count": 4,
+          "count": 5,
           "dw": 17,
           "dh": 20,
           "sw": 17,
           "sh": 20,
           "minY": 234,
-          "maxY": 430
+          "maxY": 542
         },
         "character": {
           "count": 3,
@@ -2610,13 +2610,13 @@
           "maxY": 484
         },
         "building:pianura_borgo": {
-          "count": 2,
+          "count": 3,
           "dw": 160,
           "dh": 112,
           "sw": 160,
           "sh": 112,
-          "minY": 320,
-          "maxY": 624
+          "minY": 224,
+          "maxY": 448
         },
         "tree": {
           "count": 1,
@@ -8428,23 +8428,14 @@
           "minY": 192,
           "maxY": 512
         },
-        "building:pianura_borgo": {
-          "count": 4,
-          "dw": 160,
-          "dh": 112,
-          "sw": 160,
-          "sh": 112,
-          "minY": 80,
-          "maxY": 640
-        },
-        "building:pianura_municipio": {
-          "count": 1,
-          "dw": 312,
-          "dh": 200,
-          "sw": 312,
-          "sh": 200,
-          "minY": 56,
-          "maxY": 256
+        "prop:sign": {
+          "count": 6,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 90,
+          "maxY": 542
         },
         "building:pianura_chiesa": {
           "count": 1,
@@ -8455,23 +8446,14 @@
           "minY": 24,
           "maxY": 272
         },
-        "prop:sign": {
-          "count": 4,
-          "dw": 17,
-          "dh": 20,
-          "sw": 17,
-          "sh": 20,
-          "minY": 234,
-          "maxY": 430
-        },
-        "tree": {
-          "count": 2,
-          "dw": 19,
-          "dh": 24,
-          "sw": 19,
-          "sh": 24,
-          "minY": 280,
-          "maxY": 480
+        "building:pianura_borgo": {
+          "count": 5,
+          "dw": 160,
+          "dh": 112,
+          "sw": 160,
+          "sh": 112,
+          "minY": 128,
+          "maxY": 528
         },
         "character": {
           "count": 3,
@@ -8490,6 +8472,15 @@
           "sh": 13,
           "minY": -18,
           "maxY": -5
+        },
+        "tree": {
+          "count": 1,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
+          "minY": 456,
+          "maxY": 480
         },
         "vehicle": {
           "count": 1,

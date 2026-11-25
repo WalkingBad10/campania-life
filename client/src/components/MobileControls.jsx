@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const BTNS = [
-  { id: 'interact', label: 'E', cls: 'mc-btn mc-a' },
-  { id: 'run', label: 'CORRI', cls: 'mc-btn mc-run' },
-  { id: 'menu', label: 'TEL', cls: 'mc-btn mc-m' },
-];
-
 function setKey(k, down) {
   const inp = window.CL && window.CL.input;
   if (!inp) return;
@@ -104,19 +98,19 @@ export default function MobileControls({ visible }) {
           onMouseDown={e => { e.preventDefault(); setRunOn(true); setKey('run', true); }}
           onMouseUp={e => { e.preventDefault(); setRunOn(false); setKey('run', false); }}
           onMouseLeave={e => { if (runOn) { setRunOn(false); setKey('run', false); } }}
-        >CORRI</button>
+        aria-label="Corri" title="Corri">🏃</button>
         <button className="mc-btn mc-a"
           onTouchStart={() => setKey('interact', true)}
           onTouchEnd={() => setKey('interact', false)}
           onMouseDown={e => { e.preventDefault(); setKey('interact', true); }}
           onMouseUp={e => { e.preventDefault(); setKey('interact', false); }}
-        >E</button>
+        aria-label="Interagisci" title="Interagisci">✋</button>
         <button className="mc-btn mc-m"
           onTouchStart={() => setKey('menu', true)}
           onTouchEnd={() => setKey('menu', false)}
           onMouseDown={e => { e.preventDefault(); setKey('menu', true); }}
           onMouseUp={e => { e.preventDefault(); setKey('menu', false); }}
-        >TEL</button>
+        aria-label="Apri telefono" title="Telefono">📱</button>
       </div>
     </div>
   );

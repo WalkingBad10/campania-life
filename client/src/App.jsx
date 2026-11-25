@@ -24,8 +24,23 @@ export default function App() {
   const [menu, setMenu] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [toasts, setToasts] = useState([]);
+  // Rotazione: solo una classe CSS sul frame. Nessun reload, nessun cambio di
+  // screen, mappa, posizione, save o istanza del canvas/gioco.
+  const [portrait, setPortrait] = useState(() =>
+    typeof window !== 'undefined' && window.innerHeight > window.innerWidth);
 
   useEffect(() => { screenRef.current = screen; }, [screen]);
+  useEffect(() => {
+    const sync = () => setPortrait(window.innerHeight > window.innerWidth);
+    window.addEventListener('resize', sync);
+    window.addEventListener('orientationchange', sync);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', sync);
+    return () => {
+      window.removeEventListener('resize', sync);
+      window.removeEventListener('orientationchange', sync);
+      if (window.visualViewport) window.visualViewport.removeEventListener('resize', sync);
+    };
+  }, []);
   useEffect(() => {
     modalRef.current = screen !== 'game' || !!dlg || !!menu || !!confirm;
   }, [screen, dlg, menu, confirm]);
@@ -154,11 +169,12 @@ export default function App() {
   };
 
   return (
-    <div id="stage">
-      <canvas id="game" ref={canvasRef} width="480" height="270" aria-label="Mondo di Campania Life" onPointerDown={handleCanvasTap} />
-      <div id="fade" className={snap && screen === 'game' ? '' : 'on'} />
+    <div id="stage" className={portrait ? 'is-portrait' : 'is-landscape'}>
+      <div id="viewport-frame">
+        <canvas id="game" ref={canvasRef} width="480" height="270" aria-label="Mondo di Campania Life" onPointerDown={handleCanvasTap} />
+        <div id="fade" className={snap && screen === 'game' ? '' : 'on'} />
 
-      {screen === 'game' && <Hud snap={snap} onMenu={tab => setMenu({ tab, data: {} })} />}
+        {screen === 'game' && <Hud snap={snap} onMenu={tab => setMenu({ tab, data: {} })} />}
 
       {screen === 'title' && <TitleScreen
         hasSave={hasSave}
@@ -188,7 +204,8 @@ export default function App() {
       {dlg && <DialogueBox dlg={dlg} onChoice={applyChoice} />}
       {menu && <PhoneMenu tab={menu.tab} data={menu.data} game={gameRef.current} onTab={tab => setMenu({ tab, data: {} })} onClose={() => setMenu(null)} onToast={pushToast} />}
       {confirm && <ConfirmDialog data={confirm} onClose={() => setConfirm(null)} />}
-      <MobileControls visible={screen === 'game' && !menu && !dlg && !confirm} />
+        <MobileControls visible={screen === 'game' && !menu && !dlg && !confirm} />
+      </div>
       <Toasts items={toasts} />
     </div>
   );

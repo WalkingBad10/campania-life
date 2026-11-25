@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 const TABS = [
   ['phone', '📱 Telefono'], ['zaino', '🎒 Zaino'], ['lavori', '💼 Lavori'],
   ['banca', '🏦 Banca'], ['immobili', '🏠 Immobili'], ['mappa', '🗺 Mappa'],
-  ['diario', '📖 Missioni'], ['personaggio', '👤 Profilo']
+  ['diario', '📖 Missioni'], ['personaggio', '👤 Profilo'],
+  ['impostazioni', '⚙ Impostazioni'], ['salvataggio', '💾 Salvataggio']
 ];
 
 const SPAWNS = {
@@ -227,6 +228,20 @@ export default function PhoneMenu({ tab, data, game, onTab, onClose, onToast }) 
         <b>{CL.data.items[id].name}</b><div className="sub">+{CL.data.items[id].gift} affinità</div>
         <div className="tile-actions"><button onClick={() => { S.relations.gift(giftNpc, id); refresh(); }}>REGALA</button></div></div>)}</div>
         : <p className="muted">Compra fiori, cioccolato o vino per fare un regalo.</p>}
+    </>;
+  }
+
+  else if (tab === 'salvataggio') {
+    content = <>
+      <div className="card"><b>Stato del salvataggio</b>
+        <div className="sub">{CL.save.has() ? 'Partita presente su questo dispositivo.' : 'Nessuna partita locale.'} · chiave {CL.save.KEY}</div>
+      </div>
+      <h3>Copia di sicurezza</h3>
+      <textarea className="save-area" rows="3" value={saveText} onChange={e => setSaveText(e.target.value)} placeholder="Incolla qui un codice di salvataggio" />
+      <div className="panel-actions">
+        <button onClick={() => { CL.game.save(); setSaveText(CL.save.exportB64(CL.state)); onToast('Partita salvata e codice generato.', 'good'); }}>SALVA ED ESPORTA</button>
+        <button onClick={() => { try { CL.game.load(CL.save.importB64(saveText)); onToast('Importato.', 'good'); } catch (e) { onToast('Codice non valido.', 'bad'); } }}>IMPORTA</button>
+      </div>
     </>;
   }
 

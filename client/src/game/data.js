@@ -227,7 +227,7 @@
       desc: 'La costiera nasconde creature e storie. Il vecchio pescatore ti insegnerà.',
       stages: [
         { text: 'Raggiungi la Costiera Amalfitana', type: 'visit', target: 'costiera', count: 1 },
-        { text: 'Pesca al molo', type: 'fish', target: 1, count: 1 },
+        { text: 'Pesca al molo', type: 'fish', count: 1 },
         { text: 'Visita la Costiera al tramonto', type: 'visit', target: 'costiera', count: 1 }
       ]
     },
@@ -236,8 +236,8 @@
       desc: 'La banca finanzia i tuoi sogni. Metti da parte abbastanza per un tetto.',
       stages: [
         { text: 'Abbiamo 500 € in tasca', type: 'wealth', target: 500, count: 1 },
-        { text: 'Acquista un immobile', type: 'buyproperty', target: 1, count: 1 },
-        { text: 'Dormi nella tua nuova casa', type: 'sleephome', target: 1, count: 1 }
+        { text: 'Acquista il monolocale', type: 'buyproperty', target: 'monolocale', count: 1 },
+        { text: 'Dormi nella tua nuova casa', type: 'sleephome', count: 1 }
       ]
     },
     vulcano_dorme: {
@@ -257,9 +257,154 @@
         { text: 'Consegna 3 piatti', type: 'work', target: 'consegne', count: 3 },
         { text: 'Riporta il conto a Ciro', type: 'talk', target: 'barista', count: 2 }
       ]
+    },
+    pane_a_pianura: {
+      name: 'Il pane del borgo', giver: 'pianura_fornaio', reward: { money: 140, rep: 3, items: { pane: 3 } },
+      desc: 'Il forno di Piazza San Giorgio ha un carico di pane per le case di Pianura: consegnalo e riporta gli ordini al fornaio.',
+      stages: [
+        { text: 'Raggiungi Pianura', type: 'visit', target: 'pianura', count: 1 },
+        { text: 'Consegna il pane a un residente del borgo', type: 'talk', target: 'pianura_residente', count: 1 },
+        { text: 'Riporta gli ordini al fornaio', type: 'talk', target: 'pianura_fornaio', count: 1 }
+      ]
+    },
+    mostra_di_fuorigrotta: {
+      name: 'L’appunto della Mostra', giver: 'fuorigrotta_studente', reward: { money: 160, rep: 4, items: { caffe: 2 } },
+      desc: 'Uno studente ha lasciato l’appunto per l’esame tra i padiglioni della Mostra. Ripercorri i viali e chiedi al tecnico del teatro.',
+      stages: [
+        { text: 'Vai alla Mostra di Fuorigrotta', type: 'visit', target: 'fuorigrotta', count: 1 },
+        { text: 'Passa dalla metro di Campi Flegrei', type: 'visit', target: 'metro2', count: 1 },
+        { text: 'Chiedi al tecnico del teatro', type: 'talk', target: 'fuorigrotta_tecnico', count: 1 },
+        { text: 'Riconsegna l’appunto allo studente', type: 'talk', target: 'fuorigrotta_studente', count: 1 }
+      ]
+    },
+    terme_di_baia: {
+      name: 'Le terme di Baia', giver: 'bacoli_guide', reward: { money: 180, rep: 5, items: { pesce: 2 } },
+      desc: 'Rosa di Baia prepara una visita tra le terme romane e il porto. Vuole che tu verifichi il molo prima di portare i turisti.',
+      stages: [
+        { text: 'Raggiungi Bacoli', type: 'visit', target: 'bacoli', count: 1 },
+        { text: 'Controlla il porto pescando', type: 'fish', count: 1 },
+        { text: 'Parla con il pescatore del porto', type: 'talk', target: 'bacoli_pescatore', count: 1 },
+        { text: 'Conferma il percorso a Rosa', type: 'talk', target: 'bacoli_guide', count: 1 }
+      ]
+    },
+    lungomare_di_salerno: {
+      name: 'Il castello sul lungomare', giver: 'salerno_barista', reward: { money: 150, rep: 3, items: { caffe: 3 } },
+      desc: 'Al bar di Salerno è arrivato un viaggiatore che cerca il castello. Accompagnalo sul lungomare e riporta il messaggio a Enzo.',
+      stages: [
+        { text: 'Vai al lungomare di Salerno', type: 'visit', target: 'salerno', count: 1 },
+        { text: 'Indica la strada al viaggiatore', type: 'talk', target: 'salerno_turista', count: 1 },
+        { text: 'Riporta il messaggio a Enzo', type: 'talk', target: 'salerno_barista', count: 1 }
+      ]
+    },
+    vendemmia_irpina: {
+      name: 'La vendemmia irpina', giver: 'avellino_contadino', reward: { money: 220, rep: 6, items: { vino: 1 } },
+      desc: 'Pasquale ha le vigne pronte sulle colline di Avellino. Due turni di vendemmia e una bottiglia di Falanghina per la strada.',
+      stages: [
+        { text: 'Raggiungi le colline irpine', type: 'visit', target: 'avellino', count: 1 },
+        { text: 'Lavora due turni come vignaiolo', type: 'work', target: 'vignaiolo', count: 2 },
+        { text: 'Parla con l’altro contadino', type: 'talk', target: 'avellino_vignaiolo2', count: 1 }
+      ]
+    },
+    reggia_e_i_viali: {
+      name: 'I viali della Reggia', giver: 'turista', reward: { money: 240, rep: 8, items: { acqua: 2 } },
+      desc: 'Il turista tedesco vuole vedere la Reggia di Caserta. Raggiungila, chiedi informazioni sul posto e fai un turno tra i viali.',
+      stages: [
+        { text: 'Vai alla Reggia di Caserta', type: 'visit', target: 'caserta', count: 1 },
+        { text: 'Chiedi al visitatore della Reggia', type: 'talk', target: 'caserta_turista', count: 1 },
+        { text: 'Fai un turno come guardia della Reggia', type: 'work', target: 'guardia_reggia', count: 1 },
+        { text: 'Racconta il viaggio al turista', type: 'talk', target: 'turista', count: 1 }
+      ]
+    },
+    scavi_di_pompei: {
+      name: 'Il sopralluogo degli scavi', giver: 'archeologo', reward: { money: 200, rep: 7, items: { mappa: 1 } },
+      desc: 'Il professor Rovelli vuole un sopralluogo prima della visita di domani: controlla le rovine, parla con un visitatore e passa dal negozio di ricordi.',
+      stages: [
+        { text: 'Entra negli scavi di Pompei', type: 'visit', target: 'pompei', count: 1 },
+        { text: 'Ascolta il visitatore degli scavi', type: 'talk', target: 'pompei_visitatore', count: 1 },
+        { text: 'Passa dal negozio dei souvenir', type: 'visit', target: 'souvenir', count: 1 },
+        { text: 'Riferisci al professor Rovelli', type: 'talk', target: 'archeologo', count: 1 }
+      ]
+    },
+    faraglioni_di_capri: {
+      name: 'La tratta per Capri', giver: 'barcaiolo', reward: { money: 260, rep: 6, items: { cioccolato: 2 } },
+      desc: 'Gennaro il barcaiolo vuole sapere che la traversata sia tranquilla: controlla il mare, pesca qualcosa e sbarca a Capri.',
+      stages: [
+        { text: 'Controlla il mare sulla Costiera', type: 'visit', target: 'costiera', count: 1 },
+        { text: 'Pesca per controllare il mare', type: 'fish', count: 1 },
+        { text: 'Sbarca a Capri', type: 'visit', target: 'capri', count: 1 },
+        { text: 'Riferisci a Gennaro', type: 'talk', target: 'barcaiolo', count: 1 }
+      ]
+    },
+    caffe_per_il_cantiere: {
+      name: 'Il caffè per il cantiere', giver: 'barista', reward: { money: 190, rep: 4, items: { caffe: 4 } },
+      desc: 'Ciro ha due turni di caffè da preparare e una consegna per il capo cantiere. Portagli il conto a fine giornata.',
+      stages: [
+        { text: 'Fai due turni al bar', type: 'work', target: 'barista', count: 2 },
+        { text: 'Porta il caffè al capo cantiere', type: 'talk', target: 'capo', count: 1 },
+        { text: 'Riporta il conto a Ciro', type: 'talk', target: 'barista', count: 1 }
+      ]
+    },
+    turni_al_cantiere: {
+      name: 'Due turni in cantiere', giver: 'capo', reward: { money: 320, rep: 6, items: { divisa: 1 } },
+      desc: 'Il capo cantiere chiude il cantiere di via Toledo: servono due turni di operaio e un ultimo giro per controllare il quartiere.',
+      stages: [
+        { text: 'Fai due turni da operaio', type: 'work', target: 'operaio', count: 2 },
+        { text: 'Fai un giro per Napoli', type: 'visit', target: 'napoli', count: 1 },
+        { text: 'Riferisci al capo cantiere', type: 'talk', target: 'capo', count: 1 }
+      ]
+    },
+    fondo_in_banca: {
+      name: 'Un fondo in banca', giver: 'banchiere', reward: { money: 250, rep: 5, items: { mappa: 1 } },
+      desc: 'La dott.ssa Rina vuole che ti abitui a risparmiare: metti da parte 800 € tra contanti e conto prima di ampliare i tuoi affari.',
+      stages: [
+        { text: 'Passa in banca', type: 'visit', target: 'banca', count: 1 },
+        { text: 'Raggiungi 800 € di ricchezza', type: 'wealth', target: 800, count: 1 },
+        { text: 'Mostra il fondo alla banchiera', type: 'talk', target: 'banchiere', count: 1 }
+      ]
+    },
+    commissioni_da_maria: {
+      name: 'Le commissioni di Sora Maria', giver: 'negoziante', reward: { money: 170, rep: 4, items: { pane: 4, arancino: 2 } },
+      desc: 'Sora Maria ha preparato una lista per la bottega del quartiere: passa dal negozio, parla con l’aiuto e riporta la lista a lei.',
+      stages: [
+        { text: 'Entra nella bottega di Sora Maria', type: 'visit', target: 'negozio', count: 1 },
+        { text: 'Controlla la lista con l’aiuto', type: 'talk', target: 'negozio_venditore', count: 1 },
+        { text: 'Riporta la lista a Sora Maria', type: 'talk', target: 'negoziante', count: 1 }
+      ]
+    },
+    serata_da_michele: {
+      name: 'La serata da Michele', giver: 'pizzaiolo', reward: { money: 160, rep: 4, items: { pizza: 3 } },
+      desc: 'Gino ha una serata piena in pizzeria: controlla il locale, senti i clienti al bancone e riconsegna i conti.',
+      stages: [
+        { text: 'Vai da Michele', type: 'visit', target: 'pizzeria', count: 1 },
+        { text: 'Ascolta Valeria al bancone', type: 'talk', target: 'cliente_pizza2', count: 1 },
+        { text: 'Riconsegna i conti a Gino', type: 'talk', target: 'pizzaiolo', count: 1 }
+      ]
+    },
+    zuppa_del_pescatore: {
+      name: 'Il pesce per la zuppa', giver: 'pescatore', reward: { money: 230, rep: 5, items: { pesce: 3 } },
+      desc: 'Il vecchio pescatore vuole due pesci azzurri per la zuppa di domani. Torna al molo con la canna e portagli il risultato.',
+      stages: [
+        { text: 'Raggiungi il molo della Costiera', type: 'visit', target: 'costiera', count: 1 },
+        { text: 'Pesca due pesci azzurri', type: 'fish', count: 2 },
+        { text: 'Porta il pesce al vecchio pescatore', type: 'talk', target: 'pescatore', count: 1 }
+      ]
+    },
+    cena_da_nonna: {
+      name: 'La cena di famiglia', giver: 'nonna', reward: { money: 200, rep: 5, items: { fiore: 2 } },
+      desc: 'Nonna Assunta ha apparecchiato in famiglia: porta un fiore, passa un momento con chi prega in chiesa e riposa prima di tornare da lei.',
+      stages: [
+        { text: 'Vai a casa di nonna', type: 'visit', target: 'casa_nonna', count: 1 },
+        { text: 'Porta un saluto alla fedele in chiesa', type: 'talk', target: 'chiesa_fedele', count: 1 },
+        { text: 'Riposa dopo la cena', type: 'sleephome', count: 1 },
+        { text: 'Racconta la serata a nonna', type: 'talk', target: 'nonna', count: 1 }
+      ]
     }
   };
-  D.questOrder = ['primo_giorno', 'richiamo_mare', 'casa_tua', 'vulcano_dorme', 'sapori'];
+  D.questOrder = ['primo_giorno', 'richiamo_mare', 'casa_tua', 'vulcano_dorme', 'sapori',
+    'pane_a_pianura', 'mostra_di_fuorigrotta', 'terme_di_baia', 'lungomare_di_salerno',
+    'vendemmia_irpina', 'reggia_e_i_viali', 'scavi_di_pompei', 'faraglioni_di_capri',
+    'caffe_per_il_cantiere', 'turni_al_cantiere', 'fondo_in_banca', 'commissioni_da_maria',
+    'serata_da_michele', 'zuppa_del_pescatore', 'cena_da_nonna'];
 
   /* --------------------------------------------------------------- negozi */
   D.shops = {
@@ -278,23 +423,35 @@
   const choice = (label, action, data) => ({ label, action, data: data || {} });
   D.dialogue = {
     nonna(g) {
-      const q = g.state.quests.primo_giorno;
+      const q = (g.state.quests || {}).primo_giorno;
       const ready = CL.systems && CL.systems.family && CL.systems.family.mealReady();
       const mealChoice = ready && ready.ok ? [choice(D.family.meal.label, 'family_meal')] : [];
+      const firstDay = choice('Inizio la mia prima giornata', 'quest_start', { id: 'primo_giorno' });
+      const dinner = choice('Mi occupo io della cena', 'quest_start', { id: 'cena_da_nonna' });
       if (!q || q.stage === 4) return line('Mi fa piacere vederti sorridere, ragazzo. La Campania è grande: girala, conoscila, innamoratene. E torna a trovare nonna.', [
         ...mealChoice,
+        firstDay,
+        dinner,
         choice('Parlami della famiglia', 'talk_family'),
         choice('Mi dai un consiglio?', 'talk_tip'),
         choice('Arrivederci, nonna', 'close')
       ]);
-      if (q.stage === 0) return line('Finalmente sei qui! Vai al Caffè Vittoria, prendi un caffè e poi trova un modo per guadagnare qualcosa. Il vicolo ti insegnerà.', [choice('Ci vado subito', 'close')]);
-      if (q.stage === 3) return line('Hai già guadagnato qualcosa? Bravo! Ricorda: il denaro va e viene, ma le persone restano.', [choice('Grazie nonna', 'close')]);
-      return line('Com’è andata al bar? Non fare il timido, chiedi pure informazioni a Ciro.', [choice('Lo farò', 'close')]);
+      if (q.stage === 0) return line('Finalmente sei qui! Vai al Caffè Vittoria, prendi un caffè e poi trova un modo per guadagnare qualcosa. Il vicolo ti insegnerà.', [
+        firstDay, dinner, choice('Ci vado subito', 'close')
+      ]);
+      if (q.stage === 3) return line('Hai già guadagnato qualcosa? Bravo! Ricorda: il denaro va e viene, ma le persone restano.', [
+        firstDay, dinner, choice('Grazie nonna', 'close')
+      ]);
+      return line('Com’è andata al bar? Non fare il timido, chiedi pure informazioni a Ciro.', [
+        firstDay, dinner, choice('Lo farò', 'close')
+      ]);
     },
     barista(g) {
       return line('Benvenuto al Caffè Vittoria! Il caffè qui si beve in piedi, in due sorsi. Vuoi qualcosa?', [
         choice('Compra qualcosa', 'shop', { shop: 'bar' }),
         choice('Voglio lavorare qui', 'job', { job: 'barista' }),
+        choice('Porto i sapori in giro per la città', 'quest_start', { id: 'sapori' }),
+        choice('Ti aiuto con il caffè per il cantiere', 'quest_start', { id: 'caffe_per_il_cantiere' }),
         choice('Parlami del quartiere', 'talk_neighborhood'),
         choice('Esco', 'close')
       ]);
@@ -303,6 +460,7 @@
       return line('Benvenuto da Michele! La margherita esce dal forno a legna in un minuto. Che ti preparo?', [
         choice('Ordina pizza (8 €)', 'order_pizza'),
         choice('Menu pizzeria', 'shop', { shop: 'pizzeria' }),
+        choice('Ti do una mano stasera', 'quest_start', { id: 'serata_da_michele' }),
         choice('Solo un saluto', 'close')
       ]);
     },
@@ -310,6 +468,8 @@
       return line('Buongiorno. Posso aiutarti con un conto, un prestito o... con i tuoi risparmi. Hai già pensato a una casa?', [
         choice('Apri il conto / deposita', 'bank', { mode: 'menu' }),
         choice('Mostrami gli immobili', 'property'),
+        choice('Voglio una casa tutta mia', 'quest_start', { id: 'casa_tua' }),
+        choice('Voglio mettere da parte un fondo', 'quest_start', { id: 'fondo_in_banca' }),
         choice('Vattene', 'close')
       ]);
     },
@@ -324,18 +484,22 @@
       return line('Amore, entra, guarda, tocca. Se ti serve qualcosa per la tua avventura, ce l’ho.', [
         choice('Compra', 'shop', { shop: 'negozio' }),
         choice('Vendi oggetti', 'sell'),
+        choice('Faccio le commissioni per te', 'quest_start', { id: 'commissioni_da_maria' }),
         choice('Esco', 'close')
       ]);
     },
     capo(g) {
       return line('Ehi tu! Cerco braccia per il cantiere. Si lavora duro, si paga bene. Che dici?', [
         choice('Voglio lavorare', 'job', { job: 'operaio' }),
+        choice('Chiudo i turni in cantiere', 'quest_start', { id: 'turni_al_cantiere' }),
         choice('Ci penso', 'close')
       ]);
     },
     pescatore(g) {
       return line('Il mare non regala niente a chi non si sveglia presto. Hai una canna? Io ti insegnerei, ma...', [
         choice('Voglio imparare', 'job', { job: 'pescatore' }),
+        choice('Mi porti a conoscere il mare?', 'quest_start', { id: 'richiamo_mare' }),
+        choice('Ti pesco il pesce per la zuppa', 'quest_start', { id: 'zuppa_del_pescatore' }),
         choice('Compra una canna al chiosco', 'close'),
         choice('Mi racconti del mare?', 'talk_sea'),
         choice('Arrivederci', 'close')
@@ -345,17 +509,19 @@
       return line('Entschuldigung! I am looking for the most beautiful view. They tell me the mountain is magical...', [
         choice('Vai alla Costiera', 'talk_coast'),
         choice('Parlami del Vesuvio', 'talk_vesuvio'),
+        choice('Ti accompagno alla Reggia', 'quest_start', { id: 'reggia_e_i_viali' }),
         choice('Ciao!', 'close')
       ]);
     },
     barcaiolo(g) {
       return line('Il battello fa la spola tra il molo e l’isola. Se hai fretta, ti ci porto io. 12 € a persona.', [
         choice('Vai a Capri (12 €)', 'boat'),
+        choice('Controllo la tratta per Capri', 'quest_start', { id: 'faraglioni_di_capri' }),
         choice('No, grazie', 'close')
       ]);
     },
     guardiano(g) {
-      const q = g.state.quests.vulcano_dorme;
+      const q = (g.state.quests || {}).vulcano_dorme;
       if (q && q.stage === 2) return line('Hai visto il bagliore nella grotta, vero? Portami una prova e ti dirò tutto.', [choice('Ci provo', 'close')]);
       return line('Questo monte non dorme mai davvero. Se scendi nella grotta, porta una rete... e coraggio.', [
         choice('Inizio l’esplorazione', 'quest_start', { id: 'vulcano_dorme' }),
@@ -367,6 +533,7 @@
       return line('Le rovine parlano a chi sa ascoltare. Vuoi accompagnare i visitatori?', [
         choice('Lavora come guida', 'job', { job: 'guida' }),
         choice('Compra un ricordo', 'shop', { shop: 'pompei' }),
+        choice('Faccio il sopralluogo prima della visita', 'quest_start', { id: 'scavi_di_pompei' }),
         choice('Esco', 'close')
       ]);
     },
@@ -381,6 +548,37 @@
         choice('Conosciamoci meglio', 'talk_social'),
         choice('Ti regalo qualcosa', 'gift'),
         choice('Arrivederci', 'close')
+      ]);
+    },
+    pianura_fornaio(g) {
+      return line('Il pane di Piazza San Giorgio esce ancora caldo. Portalo su per le rampe del borgo e riportami gli ordini delle case.', [
+        choice('Porto il pane per il borgo', 'quest_start', { id: 'pane_a_pianura' }),
+        choice('A dopo, fornaio', 'close')
+      ]);
+    },
+    fuorigrotta_studente(g) {
+      return line('Ho lasciato l’appunto per l’esame tra i padiglioni della Mostra. Chiedi al tecnico del teatro, poi torna da me.', [
+        choice('Ritrovo l’appunto', 'quest_start', { id: 'mostra_di_fuorigrotta' }),
+        choice('Devo andare', 'close')
+      ]);
+    },
+    bacoli_guide(g) {
+      return line('Le terme romane si visitano con calma. Controlla il porto e dimmi se il molo è ancora pescoso, così so dove portare i turisti.', [
+        choice('Controllo il porto per te', 'quest_start', { id: 'terme_di_baia' }),
+        choice('Arrivederci', 'close')
+      ]);
+    },
+    salerno_barista(g) {
+      return line('Un viaggiatore del lungomare cerca il castello e non sa dove voltare. Accompagnalo e riportami che ne ha pensato.', [
+        choice('Lo accompagno', 'quest_start', { id: 'lungomare_di_salerno' }),
+        choice('Arrivederci', 'close')
+      ]);
+    },
+    avellino_contadino(g) {
+      return line('Le vigne sono mature, ma servono due turni buoni. Finiscili e ti lascio una bottiglia di Falanghina per la strada.', [
+        choice('Aiuto con la vendemmia', 'quest_start', { id: 'vendemmia_irpina' }),
+        choice('Cerca lavoro', 'jobs'),
+        choice('Ci vediamo', 'close')
       ]);
     }
   };

@@ -11,6 +11,7 @@ const NEEDS = [
 
 export default function Hud({ snap, onMenu }) {
   const [compact, setCompact] = useState(!!CL.settings.compactHud);
+  const [dock, setDock] = useState(null); // menu rapido a icone, chiuso di default
   if (!snap) return null;
   const st = CL.state;
   const foods = CL.data.foodOrder.filter(id => snap.inventory[id] > 0).slice(0, 5);
@@ -23,8 +24,8 @@ export default function Hud({ snap, onMenu }) {
   return (
     <div className={'hud layer' + (compact ? ' compact' : '')}>
       <div className="hud-top">
-        <div className="hud-place">
-          <span className="pin">📍</span> {snap.location}
+        <div className="hud-place" title={snap.location + ' · ' + snap.period + ' · Giorno ' + snap.day}>
+          <span className="pin">📍</span> <span className="place-name">{snap.location}</span>
           <small>{snap.period} · Giorno {snap.day}</small>
         </div>
         <div className="hud-clock">
@@ -34,6 +35,27 @@ export default function Hud({ snap, onMenu }) {
         <div className="hud-money">
           <b>{snap.money.toLocaleString('it-IT')} €</b>
           <small>Banca {snap.bank.toLocaleString('it-IT')} € · Rep {snap.rep}</small>
+        </div>
+        <div className="hud-top-actions">
+          {dock && <div className="icon-dock" role="menu" aria-label="Menu rapido">
+            {[
+              ['🗺', 'mappa', 'Mappa'], ['🎒', 'zaino', 'Inventario'],
+              ['📖', 'diario', 'Missioni'], ['📱', 'phone', 'Telefono'],
+              ['👤', 'personaggio', 'Profilo'], ['💼', 'lavori', 'Lavori'],
+              ['🏦', 'banca', 'Portafoglio'], ['⚙', 'impostazioni', 'Impostazioni'],
+              ['💾', 'salvataggio', 'Salvataggio']
+            ].map(([icon, tab, label]) => (
+              <button key={tab} aria-label={label} title={label}
+                onClick={() => { setDock(null); if (tab === 'impostazioni') onMenu('impostazioni'); else onMenu(tab); }}>
+                {icon}
+              </button>
+            ))}
+          </div>}
+          <button className="hud-compact-btn" onClick={toggleCompact}
+            aria-label={compact ? 'Mostra dettagli' : 'Compatta HUD'}
+            title={compact ? 'Mostra tutti i dettagli del HUD' : 'Compatta il HUD'}>{compact ? '▣' : '▢'}</button>
+          <button className="hud-menu-btn" aria-label="Apri menu" title="Menu"
+            onClick={() => setDock(v => v ? null : true)}>{dock ? '✕' : '☰'}</button>
         </div>
       </div>
 
@@ -49,7 +71,7 @@ export default function Hud({ snap, onMenu }) {
 
       {snap.quests.length > 0 && (
         <div className="hud-quest">
-          <div className="hq-title">MISSIONE · {snap.quests[0].name}</div>
+          <div className="hq-title">📖 {snap.quests[0].name}</div>
           <div className="hq-text">{snap.quests[0].text}</div>
           {snap.quests[0].count > 1 && <div className="hq-prog">{snap.quests[0].prog}/{snap.quests[0].count}</div>}
         </div>
@@ -70,11 +92,6 @@ export default function Hud({ snap, onMenu }) {
       <div className="hud-help">
         <span>Frecce/WASD muovi · E interagisci · Q cattura · Tab telefono</span>
         {snap.debug ? <span className="hud-debug">DBG {snap.location} | in:{snap.debug.keys||'-'} | ax:{(snap.debug.axis?.x||0).toFixed(1)},{(snap.debug.axis?.y||0).toFixed(1)} | blk:{snap.debug.blocked||'ok'} | modal:{snap.debug.modal?'1':'0'}</span> : null}
-        <div className="hud-help-actions">
-          <button className="hud-compact-btn" onClick={toggleCompact}
-            title={compact ? 'Mostra tutti i dettagli del HUD' : 'Compatta il HUD'}>{compact ? '▣' : '▢'}</button>
-          <button onClick={() => onMenu('phone')}>☰ MENU</button>
-        </div>
       </div>
     </div>
   );

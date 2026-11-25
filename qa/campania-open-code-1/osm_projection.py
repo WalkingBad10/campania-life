@@ -20,6 +20,9 @@ import build_osm_geometry as gen
 GUGLIA = 261256738
 GESU = 261249895
 CROCE = 27179695
+PIANURA_SQUARE = 580193824
+PIANURA_CHURCH = 148046054
+PIANURA_TOWNHALL = 262236201
 
 
 def build() -> tuple[dict, dict]:
@@ -89,6 +92,24 @@ def report(maps: dict, out: dict) -> None:
           "restano facciate metriche M1 e non vengono forzate nella griglia.")
     print("- I percorsi giocabili preesistenti sono protetti dal patch: nessuna strada nuova "
           "viene inventata per collegare spawn, portali, POI e residenti.")
+
+    # Pianura: riporta le distanze reali tra ancoraggi verificati, così la
+    # semplificazione di scala resta esplicita e non viene mascherata da un
+    # posizionamento arbitrario dei POI nella piazza.
+    cfg = gen.CONFIG["pianura"]
+    nodes, ways, origin = gen.load(cfg)
+    def point(spec: str):
+        return gen.feature_point(spec, nodes, ways, origin, 1 / gen.TILE_M)
+    square = point("way:%d:centroid" % PIANURA_SQUARE)
+    church = point("way:%d:centroid" % PIANURA_CHURCH)
+    townhall = point("way:%d:centroid" % PIANURA_TOWNHALL)
+    if square and church and townhall:
+        print()
+        print(f"Pianura Piazza San Giorgio->chiesa: {math.dist(square, church) / gen.TILE_M:.1f} celle OSM "
+              f"-> 15 celle nel gioco (facciata metrica ancorata).")
+        print(f"Pianura Piazza San Giorgio->Municipio: {math.dist(square, townhall) / gen.TILE_M:.1f} celle OSM "
+              f"-> bordo ovest compresso e dichiarato; la stazione Circumflegrea "
+              f"(40.8560001,14.1624307) resta fuori griglia, quindi solo varco metro, non fabbricato.")
 
 
 if __name__ == "__main__":

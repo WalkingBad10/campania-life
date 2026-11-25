@@ -17,7 +17,12 @@ input,select,textarea{background:#0d151d;border:2px solid #53646c;color:#fff;pad
 input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 #stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   background:radial-gradient(ellipse at 50% 30%,#152634,#070b10 72%)}
-#game{position:absolute;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges}
+/* Il frame 16:9 e' l'unica area di gioco: HUD e controlli touch viaggiano con
+   il canvas, quindi la rotazione cambia solo le dimensioni del frame e non
+   modifica camera, posizione, progressi o markup del gioco. */
+#viewport-frame{position:relative;width:min(100vw,calc(100vh * 16 / 9));height:min(100vh,calc(100vw * 9 / 16));
+  aspect-ratio:16/9;overflow:hidden;box-shadow:0 0 0 1px #e9b84a22,0 1vmin 5vmin #0008}
+#game{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;image-rendering:crisp-edges}
 .layer{position:absolute;inset:0;pointer-events:none}
 .screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;
   background:rgba(8,14,20,.72);backdrop-filter:blur(2px)}
@@ -103,6 +108,16 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
 .hud.compact .hud-help span:not(.hud-debug){display:none}
 .hud.compact .hud-quest{padding:.3vmin .7vmin}
 .hud.compact .hud-top>div{background:rgba(12,20,28,.64)}
+/* HUD minimale a icone: menu chiuso di default in una piccola icona ☰.
+   Le icone stanno in alto a destra, lontane dallo joystick e dai pulsanti
+   touch in basso: la rotazione non può nasconderle né intercettarle. */
+.hud-top-actions{position:relative;display:flex;gap:.5vmin;align-items:flex-start;pointer-events:auto;z-index:50}
+.hud-menu-btn,.hud-compact-btn{background:rgba(12,20,28,.86);color:var(--gold);border-color:#e9b84a88;box-shadow:none;min-width:30px;padding:4px}
+.icon-dock{position:absolute;right:0;top:calc(100% + .8vmin);display:grid;grid-template-columns:repeat(4,34px);gap:4px;
+  padding:6px;background:rgba(12,20,28,.96);border:2px solid #e9b84a99;box-shadow:0 3px 12px #000b;pointer-events:auto}
+.icon-dock button{width:34px;height:34px;padding:0;font-size:17px;background:#18242e;color:var(--cream);border:1px solid #65757c;box-shadow:none}
+.icon-dock button:hover{border-color:var(--gold)}
+.place-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36vmin;display:inline-block;vertical-align:middle}
 
 /* --------------------------------------------------------- DIALOGUE */
 #dialogue{position:absolute;left:4%;right:4%;bottom:3%;min-height:19%;display:flex;gap:1.2vmin;padding:1.2vmin 1.6vmin;
@@ -174,6 +189,8 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
 .confirm-screen{z-index:60}
 @media(max-width:640px){
   .create-grid,.settings-grid{grid-template-columns:1fr}
+  .hud-top{padding:max(env(safe-area-inset-top),1.2vmin) 1.6vmin 0}
+  .hud-help{padding:0 1.4vmin max(env(safe-area-inset-bottom),1vmin)}
   .hud-help span{display:none}
   .hud-quest{width:40vw;top:8vmin}
   .hud-clock{min-width:64px}
@@ -202,3 +219,28 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
 .mc-a{width:74px;height:74px;font-size:22px}
 .mc-m{width:56px;height:56px;font-size:12px}
 .hud-debug{font-size:10px;color:#9fd3ff;background:rgba(0,0,0,.45);padding:2px 6px;border:1px solid rgba(120,180,255,.5);margin:0 6px;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+
+/* Portrait (telefono): il frame resta 16:9 al centro, le icone si leggono
+   sopra il letterbox; landscape basso: controlli e dock compatti ai bordi. */
+@media (orientation:portrait){
+  #viewport-frame{width:min(100vw,calc((100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 16 / 9));
+    height:min(calc((100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))),calc(100vw * 9 / 16))}
+  .hud-needs{top:11vmin}
+  .hud-quest{width:min(46vw,190px);top:11vmin}
+  .icon-dock{grid-template-columns:repeat(4,32px)}
+  .icon-dock button{width:32px;height:32px;font-size:15px}
+  .mc-joy-wrap{left:max(env(safe-area-inset-left),2.2vmin)}
+  .mc-actions{right:max(env(safe-area-inset-right),2.2vmin)}
+}
+@media (orientation:landscape) and (max-height:520px){
+  .hud-needs{top:8vmin;gap:2px}
+  .need-bar{width:42px;height:5px}
+  .hud-quest{top:8vmin;width:min(30vw,180px)}
+  .mc-joy{width:92px;height:92px}
+  .mc-knob{width:40px;height:40px;margin:-20px 0 0 -20px}
+  .mc-btn{width:48px;height:48px;font-size:11px}
+  .mc-run{width:54px;height:54px}
+  .mc-a{width:56px;height:56px;font-size:18px}
+  .mc-m{width:44px;height:44px;font-size:14px}
+}

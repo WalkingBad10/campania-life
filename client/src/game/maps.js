@@ -822,68 +822,79 @@
     // griglia l'alto corrisponde a SUD: chiesa e municipio restano dove sono
     // ancorati, ma la lettura geografica segue OSM (vedi report QA).
     const w = 64, h = 40;
-    const m = makeMap('pianura', 'pianura', w, h, blank(w, h, 'p'));
+    const m = makeMap('pianura', 'pianura', w, h, blank(w, h, '.'));
     m.name = 'Pianura - Piazza San Giorgio';
     const g = m.g;
-    // Formatta le direttrici reali senza riscrivere le masse edilizie: agisce solo
-    // sui tile di suolo attraversabili (p, ., d, e).
-    const pave = (x, y, ch) => {
-      if (g[y] && ['.', 'p', 'd', 'e'].includes(g[y][x])) setTile(g, x, y, ch);
-    };
-    const paveRect = (x0, y0, ww, hh, ch) => {
-      for (let y = y0; y < y0 + hh; y++) for (let x = x0; x < x0 + ww; x++) pave(x, y, ch);
-    };
 
     // Versante di Camaldoli: verde e roccia, non alberi sparsi nella piazza.
-    rect(g, 56, 0, 8, h, 'T');
-    for (const [x, y] of [[58, 6], [60, 13], [57, 21], [61, 29], [58, 35]]) setTile(g, x, y, '^');
+    // OSM way 261403353 (Parco Camaldoli a Pianura) e' il bordo est del bbox.
+    rect(g, 58, 0, 6, h, ',');
+    for (const [x, y] of [[59, 4], [61, 11], [60, 18], [62, 25], [60, 32]]) setTile(g, x, y, 'T');
 
-    // Chiesa di San Giorgio Martire: 40x31 m, volume dominante a nord.
-    rect(g, 22, 1, 20, 16, '#');
+    // Chiesa di San Giorgio Martire — OSM way 148046054: il perimetro
+    // proiettato e' (22,1)-(42,15) celle, quindi la facciata metrica resta
+    // ancorata alla massa reale, non a un rettangolo scelto a mano.
+    rect(g, 22, 1, 20, 15, '#');
     decor(m, 22, 1, 'metric_facade', { type: 'pianura_chiesa', h: 248, oy: 8 });
     poi(m, 32, 17, 'san_giorgio', 'landmark', 'Chiesa di San Giorgio Martire', 'flavor');
 
-    // Municipio: 39x25 m, lato ovest della piazza.
-    rect(g, 2, 3, 20, 13, '#');
-    decor(m, 2, 3, 'metric_facade', { type: 'pianura_municipio', h: 200, oy: 8 });
+    // Municipio — OSM way 262236201 e' 128 celle a WNW di Piazza San Giorgio:
+    // non puo' stare dentro la viewport alla scala metrica. Resta quindi un
+    // cartello verificato sul bordo ovest, non un edificio inventato in piazza.
+    poi(m, 1, 7, 'municipio_pianura', 'landmark', 'Municipio di Pianura · 128 m a ovest', 'flavor');
+    decor(m, 1, 7, 'sign', { h: 20 });
 
-    // Piazza San Giorgio: lastrico in tufo,asse pedonali radiali.
+    // Piazza San Giorgio (OSM way 580193824): area lastricata 85x93 m,
+    // compressa nella viewport a 42x14 celle. Le strade non sono disegnate a
+    // mano: l'overlay OSM applica le carreggiate reali dei way elencati qui.
     rect(g, 12, 17, 42, 14, 'd');
     rect(g, 20, 17, 22, 3, 'e'); rect(g, 30, 20, 3, 11, 'e');
     rect(g, 13, 24, 18, 2, 'e'); rect(g, 36, 29, 16, 2, 'e');
-    // Orientamento documentato: in alto e' SUD, a sinistra OVEST. La piazza
-    // reale e' 85x93 m, quindi qui e' un'asse-area compressa (42x14 celle)
-    // con la stessa area lastricata; le direttrici restano leggibili ai bordi.
-    // OSM: Simeoli e Corso Duca d'Aosta sono unclassified, Santamaria e'
-    // residential. Carreggiate 'r' con marciapiedi 'p', non strisce pedonali.
-    hline(g, 0, 11, 18, 'r', 2); hline(g, 0, 11, 17, 'p'); hline(g, 0, 11, 20, 'p');
-    hline(g, 0, 11, 28, 'r', 2); hline(g, 0, 11, 27, 'p'); hline(g, 0, 11, 30, 'p');
-    vline(g, 48, 17, 30, 'r', 2); vline(g, 47, 17, 30, 'p'); vline(g, 50, 17, 30, 'p');
-    // Attraversamenti sulle due direttrici est-ovest.
-    for (const yy of [18, 19, 28, 29]) for (let x = 47; x <= 50; x++) setTile(g, x, yy, 'r');
-    paveRect(12, 31, 42, 1, 'd');                // soglia sud della piazza
+    // Orientamento documentato: in alto e' SUD, a sinistra OVEST. Le
+    // direttrici OSM reali (Via Don Vincenzo Simeoli, Corso Duca d'Aosta,
+    // Via Luigi Santamaria, Via Comunale Napoli) entrano nella griglia
+    // tramite osm-geometry.js; qui restano solo le targhe ai bordi.
     poi(m, 1, 18, 'via_simeoli', 'landmark', 'Via Don Vincenzo Simeoli', 'flavor');
     poi(m, 1, 29, 'corso_duca_aosta', 'landmark', 'Corso Duca d’Aosta', 'flavor');
     poi(m, 52, 24, 'via_santamaria', 'landmark', 'Via Luigi Santamaria', 'flavor');
-    // Etoile e' a 1,82 km a WSW: non viene inventata dentro la piazza, ma
-    // segnalata sul bordo ovest come direzione reale (Via Montagna Spaccata 449).
-    poi(m, 1, 27, 'bar_etoile', 'service', 'Bar Etoile · Via Montagna Spaccata 449', 'flavor');
+    poi(m, 52, 12, 'via_cannavino', 'landmark', 'Via Cannavino', 'flavor');
+    poi(m, 1, 34, 'via_comunale_napoli', 'landmark', 'Via Comunale Napoli', 'flavor');
+    // Bar Etoile non e' mappato in OSM nel bbox: la directory verificata lo
+    // pone in Via Montagna Spaccata 23, Pozzuoli (40.864620,14.133520),
+    // a ~3,6 km da qui. Resta una targa direzionale, non un edificio o un
+    // negozio inventato dentro Piazza San Giorgio.
+    poi(m, 1, 27, 'bar_etoile', 'service', 'Etoile · Via Montagna Spaccata, Pozzuoli', 'flavor');
     decor(m, 1, 27, 'sign', { h: 20 });
-    decor(m, 52, 24, 'sign', { h: 20 });
+    for (const [x, y] of [[52, 24], [52, 12], [1, 34]]) decor(m, x, y, 'sign', { h: 20 });
 
-    // Case del borgo: 20x14 m, 2-4 piani, basamento in piperno.
-    const houses = [[2, 20], [13, 32], [46, 5], [46, 33], [54, 21]];
-    for (const [x, y] of houses) {
-      rect(g, x, y, 10, 7, '#');
-      decor(m, x, y, 'metric_facade', { type: 'pianura_borgo', h: 112, oy: 0 });
+    // Impronte edilizie reali proiettate da OSM (build_osm_geometry.py):
+    // way 656057487 (4,21)-(10,28), way 656057490 (13,16)-(21,30),
+    // way 656057491 (8,14)-(13,28), way 624279817 (49,26)-(54,34),
+    // way 656237918 (40,8)-(57,21). Le facciate metriche seguono queste
+    // masse; nessun blocco viene aggiunto a capriccio per "riempire" la mappa.
+    const houses = [[4, 21, 6, 7], [13, 16, 8, 14], [8, 14, 5, 14],
+                    [49, 26, 5, 8], [40, 8, 17, 13]];
+    for (const [x, y, bw, bh] of houses) {
+      rect(g, x, y, bw, bh, '#');
+      decor(m, x, y, 'metric_facade', {
+        type: 'pianura_borgo', w: bw * T, h: bh * T, oy: 0
+      });
     }
+    // Piazza Municipio di Pianura (OSM way 580193815/580193818) e' 64 celle
+    // a ovest: ne conservo il lastrico sul bordo, senza spostare la chiesa.
+    rect(g, 0, 7, 5, 8, 'd');
+    for (const [x, y] of [[2, 9], [2, 13]]) setTile(g, x, y, 'P');
 
-    // Stazione Circumflegrea: lo spawn metro e' (10,30).
-    rect(g, 6, 32, 10, 4, 'D');
-    rect(g, 8, 36, 6, 2, '#'); setTile(g, 11, 36, 'Y');
-    poi(m, 11, 36, 'metro_pianura', 'service', 'Tornelli — metro per Pianura', 'metro_travel', { to: 'metro2' });
+    // Il varco metro e' un contratto di gameplay ereditato, non la pianta di
+    // un fabbricato: la stazione EAV reale (40.8560001,14.1624307) e' fuori
+    // bbox e verra' raggiunta via viaggio, non disegnata dentro la piazza.
+    setTile(g, 11, 36, 'Y');
+    poi(m, 11, 36, 'metro_pianura', 'service', 'Circumflegrea · stazione di Pianura', 'metro_travel', { to: 'metro2' });
+    // Via Giorgio De' Grassi (OSM way 144838126, accessedda Piazza San Giorgio)
+    // e' l'asse che collega il borgo alla stazione: carreggiata reale proiettata
+    // e attraversamento protetto, non una strada inventata.
     hline(g, 6, 61, 38, 'r', 2); hline(g, 6, 61, 37, 'p');
-    poi(m, 30, 38, 'via_de_grassi', 'landmark', 'Via Giorgio De’ Grassi · SP97', 'flavor');
+    poi(m, 30, 38, 'via_de_grassi', 'landmark', 'Via Giorgio De’ Grassi', 'flavor');
 
     for (const [x, y] of [[13, 19], [51, 19], [17, 30], [45, 31]]) {
       if (g[y] && ['d', 'e'].includes(g[y][x])) setTile(g, x, y, 'P');

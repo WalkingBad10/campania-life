@@ -276,14 +276,26 @@
 
   /* ----------------------------------------------------------------- quest */
   S.quests = {
+    // I salvataggi v1 possono arrivare senza quests o con voci parziali.
+    ensure() {
+      const st = CL.state;
+      if (!st.quests || typeof st.quests !== 'object' || Array.isArray(st.quests)) st.quests = {};
+      return st.quests;
+    },
     start(id) {
-      const st = CL.state, q = D.quests[id];
-      if (!q || st.quests[id]) return false;
-      st.quests[id] = { stage: 0, prog: 0, active: true, done: false };
+      const q = D.quests[id], all = this.ensure();
+      if (!q || all[id]) return false;
+      all[id] = { stage: 0, prog: 0, active: true, done: false };
       toast('Nuova missione: ' + q.name, 'info'); sfx('alert'); refresh(); autosave(); return true;
     },
-    active() { return Object.keys(CL.state.quests).filter(id => CL.state.quests[id].active && !CL.state.quests[id].done); },
-    current(id) { const st = CL.state.quests[id]; return st && !st.done ? D.quests[id].stages[st.stage] : null; },
+    active() {
+      const all = this.ensure();
+      return Object.keys(all).filter(id => D.quests[id] && all[id] && all[id].active && !all[id].done);
+    },
+    current(id) {
+      const q = D.quests[id], st = this.ensure()[id];
+      return q && st && !st.done && q.stages && q.stages[st.stage] ? q.stages[st.stage] : null;
+    },
     progress(type, target, n) {
       n = n || 1; let changed = false;
       for (const id of S.quests.active()) {
@@ -314,8 +326,9 @@
       refresh();
     },
     complete(id) {
-      const st = CL.state, q = D.quests[id]; if (!q) return;
-      const qs = st.quests[id]; qs.active = false; qs.done = true; qs.stage = q.stages.length;
+      const st = CL.state, q = D.quests[id], qs = this.ensure()[id];
+      if (!q || !qs) return;
+      qs.active = false; qs.done = true; qs.stage = q.stages.length;
       const r = q.reward || {};
       if (r.money) S.economy.earn(r.money, 'Missione: ' + q.name);
       if (r.rep) st.rep += r.rep;
@@ -324,10 +337,12 @@
       S.achievements.check(); refresh(); autosave();
     },
     give(id) {
-      const st = CL.state;
-      if (!st.quests[id]) { this.start(id); toast(D.quests[id].desc, 'info'); return; }
-      const q = st.quests[id];
-      if (q.active) toast('Obiettivo attuale: ' + this.current(id).text, 'info');
+      const q = D.quests[id];
+      if (!q) { toast('Missione sconosciuta.', 'bad'); return; }
+      const all = this.ensure();
+      if (!all[id]) { this.start(id); toast(q.desc, 'info'); return; }
+      const objective = this.current(id);
+      if (objective) toast('Obiettivo attuale: ' + objective.text, 'info');
       else toast('Missione già completata.', 'info');
     }
   };

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-25T18:48:31.525Z",
-  "baseUrl": "http://127.0.0.1:3000/",
+  "generatedAt": "2026-11-25T20:40:04.852Z",
+  "baseUrl": "http://127.0.0.1:4175/campania-life/",
   "scope": "EMULAZIONE Playwright/Chromium. Non sostituisce test su MacBook e Pixel 9 Pro XL fisici.",
   "devices": [
     {
@@ -139,10 +139,10 @@
           "vehicles": 2
         },
         "pianura": {
-          "palette": 670,
-          "edgeDensity": 0.237,
-          "contrast": 234,
-          "luminance": 129.1,
+          "palette": 691,
+          "edgeDensity": 0.169,
+          "contrast": 231,
+          "luminance": 123,
           "map": {
             "w": 64,
             "h": 40,
@@ -705,10 +705,10 @@
           "vehicles": 2
         },
         "pianura": {
-          "palette": 670,
-          "edgeDensity": 0.237,
-          "contrast": 234,
-          "luminance": 129.1,
+          "palette": 691,
+          "edgeDensity": 0.169,
+          "contrast": 231,
+          "luminance": 123,
           "map": {
             "w": 64,
             "h": 40,

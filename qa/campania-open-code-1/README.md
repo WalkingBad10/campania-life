@@ -214,6 +214,15 @@ Il confronto geografico è stato fatto con OSM/satellite, misure documentate e a
 - `client/scripts/render-audit.mjs`: dimensioni **effettivamente disegnate** dal motore — Guglia 126 × 240, campanile 112 × 384, Gesù 448 × 248, palazzo NE 288 × 160, facciate metriche delle nuove zone e stadio 208 × 160 — **0 errori**. I 34 anchor volutamente fuori bounds (arredi a muro, riempimento viewport, gronda del Gesù) sono documentati in `render-audit.json` e non sono architetture tagliate.
 - `client/scripts/texture-audit.mjs`: **50/50 PNG distribuiti referenziati**, 0 file inutilizzati, **21/21 facciate** alla dimensione metrica corretta e senza campate laterali vuote. I fogli estratti e gli asset M1 non usati sono stati spostati in `_source-sheets/` (esclusi dal build e da Git), non più nella cartella distribuita.
 
+## Fase missioni, UI responsive e Pianura OSM (dopo `eeb5a3c`)
+
+- **Pianura OSM operativa**: generate 41 impronte reali, `tiles=610`, `props=0`, compressione 1,00 e ancoraggi `way:580193824:centroid->(32,23)` / `way:148046054:centroid->(32,8)`. Stazione Circumflegrea e Bar Etoile verificati fuori griglia: nessun edificio inventato in piazza, solo varco metro e targa direzionale.
+- **20 missioni reali**: 5 storiche corrette + 15 nuove con NPC assegnante, dialoghi `quest_start`, obiettivi verificati, destinazioni raggiungibili, ricompense economiche e salvataggio. `casa_tua` usa `buyproperty.target: 'monolocale'`; `richiamo_mare` e `casa_tua` non hanno più target `fish`/`sleephome` errati. `S.quests` tollera salvataggi v1 senza `quests` o con dati parziali.
+- **Rotazione**: canvas logico `480×270` invariato; portrait/landscape cambiano solo CSS, classi e safe-area, senza toccare camera, `gameRef`, `screen`, mappa, posizione, save o rimount. Test Playwright dedicato (`tests/rotation.spec.js`) verificava già l'equivalenza prima e dopo il tap sul menu.
+- **Dock icone**: chiuso di default, in alto a destra (fuori dal joystick), con mappa, inventario, missioni, telefono, portafoglio, profilo, lavori, impostazioni e salvataggio. Tab `salvataggio` reale in `PhoneMenu` con `CL.game.save()` ed export/import.
+- **Playwright aggiornato a 1.65.1**: con Node 26.13.1 il runner 1.52 non scopriva alcun test. I vecchi specs di camminata usavano coordinate di portali obsolete: ora leggono i portali dalla mappa viva e usano il pathfinding del gioco; church/bar camminano davvero dallo spawn, il test d'insieme sugli interni usa un fixture di posizionamento solo per le porte isolate dalla rete OSM (es. metro) e mantiene input reale per l'attraversamento.
+- **Gate**: `regression.mjs` **42/42**, Playwright 6 test, build Vite OK, `git diff --check` OK. Le analisi VL proseguono solo su singole immagini `*-nohud` generate da `vl-capture.mjs`.
+
 ## Limiti dichiarati
 - Le schermate e le metriche sono **emulazione Playwright/Chromium**, non test su dispositivi fisici.
 - Il confronto visivo automatico di questa tornata usa `opencode/nemotron-3.5-super-vl-free`, che legge direttamente le immagini. `confronto-visivo.jpg` (rigenerato con la Guglia a 30 m) e le screenshot sono conservate anche per l'eventuale revisione umana.

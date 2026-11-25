@@ -1458,6 +1458,55 @@ async function main() {
     }
   }, ctx);
 
+  await test('20 real quests are coherent, completable and persist in v1 saves', async () => {
+    const { CL, game } = ctx;
+    newGame(ctx);
+    const D = CL.data, ids = D.questOrder;
+    assert(ids.length === 20, `quest catalogue has 20 entries (${ids.length})`);
+    assert(new Set(ids).size === ids.length, 'quest ids are unique');
+    assert(ids.every(id => D.quests[id]), 'questOrder references existing quests');
+    const types = new Set(['talk','visit','money','wealth','work','buyproperty','sleephome','fish']);
+    for (const id of ids) {
+      const q = D.quests[id];
+      assert(D.npcs[q.giver], `${id} giver ${q.giver} exists`);
+      assert(q.reward && q.reward.money > 0, `${id} has an economic reward`);
+      assert(q.desc && q.desc.length > 20, `${id} has an introductory description`);
+      assert(Array.isArray(q.stages) && q.stages.length > 0, `${id} has stages`);
+      for (const st of q.stages) {
+        assert(st.text && types.has(st.type) && st.count > 0, `${id} stage ${st.type} valid`);
+        if (st.type === 'talk') assert(D.npcs[st.target], `${id} talk target exists`);
+        if (st.type === 'work') assert(D.jobs[st.target], `${id} job target exists`);
+        if (st.type === 'buyproperty') assert(D.properties[st.target], `${id} property target exists`);
+        if (st.type === 'visit') assert(CL.maps.get(st.target) || D.zones[st.target], `${id} destination reachable`);
+      }
+    }
+    const S = CL.systems;
+    assert(S.quests.start('pane_a_pianura'), 'real quest starts from NPC dialogue data');
+    assert(!S.quests.start('pane_a_pianura'), 'starting twice is rejected');
+    S.quests.progress('visit', 'pianura');
+    S.quests.progress('talk', 'pianura_residente');
+    const moneyBefore = CL.state.money;
+    S.quests.progress('talk', 'pianura_fornaio');
+    assert(CL.state.quests.pane_a_pianura.done, 'quest completes only after real actions');
+    assert(CL.state.money > moneyBefore, 'reward is credited to the economy');
+    const raw = localStorage.getItem('campania_life_save_v1');
+    const wrapper = JSON.parse(raw);
+    assert(wrapper.v === 1 && wrapper.data.quests.pane_a_pianura.done,
+      'completion persists in save v1');
+    // Salvataggio parziale: missioni assenti o voci incomplete non rompono il motore.
+    const legacy = JSON.parse(JSON.stringify(wrapper.data));
+    delete legacy.quests;
+    delete legacy.flags.visited;
+    assert(game.load(legacy), 'legacy save without quests loads');
+    assert(S.quests.active().length === 0, 'missing quests migrate to an empty journal');
+    assert(S.quests.start('cena_da_nonna'), 'new quest can start after migration');
+    legacy.quests = { cena_da_nonna: { stage: 99, prog: 0, active: true, done: false }, primo_giorno: null };
+    assert(game.load(legacy), 'partial quest state loads');
+    assert(S.quests.current('cena_da_nonna') === null, 'out-of-range stage is safe');
+    S.quests.give('cena_da_nonna'); // non deve lanciare su uno stage parziale
+    assert(CL.state.quests.primo_giorno === null || !CL.state.quests.primo_giorno, 'partial journal preserved');
+  }, ctx);
+
   const results = ctx.results;
   const failed = results.filter(r=>!r.ok);
   console.log(`\nRESULTS ${results.length-failed.length}/${results.length} passed`);
