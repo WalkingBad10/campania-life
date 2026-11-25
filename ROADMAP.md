@@ -2,8 +2,8 @@
 
 **Aggiornato:** 25 novembre 2026 — revisione strutturale e consolidamento completati, pubblicazione autonoma autorizzata.
 **Repo:** `CampaniaLife` · branch locale `main` · remote `origin/main`.
-**Stato pubblico:** precedente build funzionante `3609be9` / `index-DnHhzGjX.js`. Dopo la pubblicazione finale verificare bundle e smoke test sul sito pubblico, poi aggiornare i run ID in `qa/campania-open-code-1/README.md`.
-**Nota:** la workflow `45513882269` era stata annullata deliberatamente prima della revisione visiva; il nuovo push su `main` genera una workflow sostitutiva sullo stesso URL.
+**Stato pubblico:** versione finale `c9fddbd`, bundle remoto `index-BK9wvC9o.js`, workflow `45606128039` `success` (build `139177320188`, deploy `139177739108`). Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta e chiave save presenti nel bundle remoto.
+**Nota:** la workflow `45513882269` era stata annullata deliberatamente prima della revisione visiva; la pubblicazione finale è avvenuta sullo stesso URL con la workflow `45606128039`.
 
 ---
 
@@ -68,10 +68,10 @@
 
 ## 3. Pubblicazione autonoma
 
-1. Committare e pushare `main` senza attendere ulteriore conferma: l'utente ha autorizzato esplicitamente la pubblicazione dopo il superamento dei controlli.
-2. Attendere la GitHub Actions (`Deploy Campania Life to GitHub Pages`) e verificare `build` + `deploy` `success`.
-3. Ripetere `npm run test:mobile-start` sul sito pubblico: NUOVA PARTITA, WASD, joystick touch, save `campania_life_save_v1` e CONTINUA.
-4. Aggiornare i run ID finali e il bundle remoto in `qa/campania-open-code-1/README.md` e in questo file.
+1. [x] Committato e pushato `main` senza attendere ulteriore conferma: autorizzazione esplicita dell'utente dopo il superamento dei controlli.
+2. [x] GitHub Actions `45606128039` completata: `build` `139177320188` e `deploy` `139177739108` entrambi `success`.
+3. [x] `npm run test:mobile-start` ripetuto sul sito pubblico: NUOVA PARTITA, WASD, joystick touch, save `campania_life_save_v1` e CONTINUA tutti OK.
+4. [x] Run ID finali e bundle remoto aggiornati in questo file e in `qa/campania-open-code-1/README.md`.
 5. Non ripristinare lo step CI `Install Playwright Chromium`: `mobile-start.mjs` usa il fallback al Chrome di sistema.
 6. Non ripristinare `checkpoint/pre-structural-review` (`51a22c0`): le correzioni successive sono la fonte autorevole.
 

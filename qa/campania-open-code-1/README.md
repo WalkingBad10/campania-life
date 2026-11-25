@@ -118,7 +118,7 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
 - Save key `campania_life_save_v1`, forma `{ v:1, t, data }`, nessun nuovo campo top-level.
 - Marker beta invariato: `BETA PUBBLICA · Richiede verifica manuale su MacBook e smartphone`.
 - URL pubblico: `https://walkingbad10.github.io/campania-life/` (invariato).
-- Deploy finale verificato: run `45511188531` `success` (build `138859007577` e deploy `138859324288` entrambi `success`), bundle remoto `index-DabNvwyZ.js`. Sul sito pubblico `npm run test:mobile-start` entra in `napoli`, muove il giocatore da `240,272` a `240,228`, salva in `campania_life_save_v1` e ripristina con «CONTINUA». Marker beta e chiave save presenti nel bundle remoto.
+- Deploy finale verificato: run `45606128039` `success` (build `139177320188` e deploy `139177739108` entrambi `success`), commit `c9fddbd`, bundle remoto `index-BK9wvC9o.js`. Sul sito pubblico `npm run test:mobile-start` entra in `napoli` a `240,272`, verifica WASD quattro direzioni con corsa e idle e joystick quattro direzioni, muove il giocatore a `229,272`, salva in `campania_life_save_v1` e ripristina con «CONTINUA». Marker beta e chiave save presenti nel bundle remoto.
 - Spawn Napoli `240,272`; guglia base `34,25,4x3` e POI `36,26`; edicola `38,34`; `palazzo_e` altezza `5*T`; corridoio metro `56,21..28` percorribile.
 - `U` lampione e `E` panchina solidi; `G`, `Y`, `D`, `d`, `e` attraversabili.
 - Portali, POI, missioni, negozi, interazioni e formato salvataggi invariati.
