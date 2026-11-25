@@ -733,7 +733,10 @@
         const tile = MAPS.tile(m, Math.floor(e.x / T), Math.floor(e.y / T));
         const onThreshold = MAPS.portalAt(m, e.x, e.y) || MAPS.doorClosed(m, e.x, e.y) ||
           tile === 'Y' || tile === '7' || tile === '8';
-        items.push({ y: e.y + (e.offsetY || 0) + (onThreshold ? 10000 : 0), ent: e });
+        // La profondità è il punto di contatto a terra (fondo dei piedi),
+        // non il centro della hitbox: con l'ancoraggio corretto l'ombra e i
+        // piedi sono 4 px più in basso e un decor non deve coprirli a metà.
+        items.push({ y: e.y + (e.h || 10) / 2 + (e.offsetY || 0) + (onThreshold ? 10000 : 0), ent: e });
       }
       items.sort((a, b) => a.y - b.y);
       for (const it of items) {
@@ -1186,6 +1189,24 @@
         const p = this.player; if (!p) return;
         const ax = this.dbg.axis || {x:0,y:0};
         const info = this.blockedInfo(p.x, p.y, p.w, p.h);
+        // Hitbox reali: celle solide, entità e footprint del giocatore.
+        // Attivo solo con ?debug=1: la build pubblica non lo disegna.
+        const ox = Math.round(CL.camera.x), oy = Math.round(CL.camera.y);
+        c.save(); c.lineWidth = 1;
+        if (this.map) for (let ty = 0; ty < this.map.h; ty++) for (let tx = 0; tx < this.map.w; tx++) {
+          if (!MAPS.solidChar(this.map.g[ty][tx])) continue;
+          const px = tx * T - ox, py = ty * T - oy;
+          if (px < -T || px > CL.VIEW_W || py < -T || py > CL.VIEW_H) continue;
+          c.strokeStyle = 'rgba(255,80,80,.32)'; c.strokeRect(px + .5, py + .5, T - 1, T - 1);
+        }
+        for (const e of (this.entities || [])) {
+          if (!e || !e.alive) continue;
+          c.strokeStyle = e instanceof CL.Vehicle ? '#6bd8ff' : '#ffd166';
+          c.strokeRect(Math.round(e.x - e.w / 2 - ox) + .5, Math.round(e.y - e.h / 2 - oy) + .5, e.w, e.h);
+        }
+        c.strokeStyle = '#7dff8a'; c.lineWidth = 2;
+        c.strokeRect(Math.round(p.x - p.w / 2 - ox) + .5, Math.round(p.y - p.h / 2 - oy) + .5, p.w, p.h);
+        c.restore();
         const lines = [
           `map:${this.map ? this.map.id : '-'} x:${p.x.toFixed(1)} y:${p.y.toFixed(1)}`,
           `in:${this.dbg.keys||'none'} ax:${ax.x.toFixed(2)},${ax.y.toFixed(2)} m:${this.dbg.modal?'1':'0'}`,

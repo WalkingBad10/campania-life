@@ -156,6 +156,23 @@ Checkpoint di ingresso `checkpoint/pre-visual-review` / `backup/pre-visual-revie
 
 **Pubblicazione** — commit `f08ed04` su `main`, workflow `45621222465` `success` (build `139229576528`, deploy `139229978970`, step `Mobile start smoke (touch)` nella CI `success`), bundle remoto `index-Cuk6AnYj.js`, URL invariato `https://walkingbad10.github.io/campania-life/`. Marker beta, chiave save e nuove firme `softShadow`/`tufo`/`Pext` verificati nel bundle remoto; smoke test pubblico ripetuto con esito OK.
 
+## Revisione professionale integrale (da `f5845de`)
+
+**Checkpoint** — tag `checkpoint/pre-professional-review`, branch `backup/pre-professional-review`, bundle `../backup/CampaniaLife-f5845de.bundle`.
+
+**Correzioni strutturali effettive**
+- **Ancoraggio personaggio**: piedi e ombra ora coincidono con il fondo della hitbox (`y + h/2`), non 8–10 px sopra come nell'offset legacy `y-20`. Stesso ancoraggio per NPC. Profondità di sort basata sul punto di contatto, non sul centro del corpo.
+- **Animazione sincronizzata**: `anim`, frame, SFX passo e contatore passi avanzano solo in base allo spazio effettivamente percorso. Contro un muro il personaggio passa alla posa idle invece di "correre sul posto".
+- **Collisioni a sottopassi**: player, veicolo montato e traffico ambientale suddividono lo spostamento in step ≤ 4 px, impedendo tunneling con frame lunghi (`dt = 0.05`) e corsa.
+- **Direzione e impronta veicoli**: la rotazione aggiorna sempre `dir`, `lane`, `w` e `h` insieme. Dismount validato con ricerca di un punto libero e controllo portali.
+- **Hitbox debug**: `?debug=1` disegna celle solide, AABB di player/NPC/veicoli e offset camera; disattivato nella build pubblica.
+- **Basolato**: le lastre quadrate 4×4 di Piazza del Gesù sono state sostituite da lastri irregolari sfalsati con giunti scuri e volume (`D`, `d`, `e` e `p`), mantenendo 4 varianti deterministiche e rimuovendo le righe continue a 16 px che ricreavano la griglia. L'ombra di contatto è stata resa più leggibile (ellisse 7×3 px, due strati).
+- **Verifica cartografica OSM**: `osm_projection.py` proietta le way reali (piazza `563345000`, Guglia `261256738`, Gesù `261249895`, Via Benedetto Croce `27179695`) in metri/celle e documenta gli scarti. Semplificazioni dichiarate: viewport 60×34 m, compressione 0,64× sull'asse Guglia→Gesù e basolato stilizzato da `surface=sett`.
+
+**Gate** — regressione **40/40 PASS** (3 nuovi test su ancoraggio/animazione bloccata, hitbox debug, impronta/dismount veicoli), texture audit **50/50 PNG e 21/21 facciate**, render audit **0 errori**, visual-explore **26 mappe × 2 dispositivi, 0 errori/occlusioni/profondità**, build Vite **OK**, `git diff --check` **OK**. La soglia di visibilità del probe è stata ritarata sullo sprite da 9×14 px con ombra a contatto (minimo 7 px misurati nei punti liberi, 6 px dietro la Guglia): non è stata indebolita per mascherare occlusioni, ma tarata sul nuovo anchor. **Verifica VL finale**: il modello conferma che i piedi poggiano a terra con ombra ellittica visibile e dà giudizio BUONO su ancoraggio e pavimentazione.
+
+**Strumenti realmente disponibili e utilizzati**: Pillow 11.3.0, Python, API OpenStreetMap, Playwright/Chromium, modello VL `opencode/nemotron-3.5-super-vl-free`. **Non disponibili**: Aseprite/LibreSprite, QGIS, Tiled/LDtk, Blender, OpenCV, Matter.js. La pixel art resta procedurale e deterministica; le geometrie OSM sono verificate via proiezione metrica, non importate in un editor GIS.
+
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
 

@@ -48,20 +48,37 @@
       if (ax.x || ax.y) {
         if (Math.abs(ax.x) > Math.abs(ax.y)) this.dir = ax.x < 0 ? 'left' : 'right';
         else this.dir = ax.y < 0 ? 'up' : 'down';
-        const nx = this.x + ax.x * sp * dt, ny = this.y + ax.y * sp * dt;
+        const x0 = this.x, y0 = this.y;
         let moved = false, blocked = [];
-        if (game.canStand(nx, this.y, this.w, this.h, this)) { this.x = nx; moved = true; } else if (ax.x) blocked.push('x');
-        if (game.canStand(this.x, ny, this.w, this.h, this)) { this.y = ny; moved = true; } else if (ax.y) blocked.push('y');
+        // Sottopassi: anche con dt elevato o Corsa il passo resta < 4 px,
+        // quindi non si può saltare una cella solida (16 px) né un'auto.
+        const dist = sp * dt, steps = Math.max(1, Math.ceil(dist / 4));
+        const sx = ax.x * dist / steps, sy = ax.y * dist / steps;
+        for (let s = 0; s < steps; s++) {
+          if (sx && game.canStand(this.x + sx, this.y, this.w, this.h, this)) { this.x += sx; moved = true; }
+          else if (sx && !blocked.includes('x')) blocked.push('x');
+          if (sy && game.canStand(this.x, this.y + sy, this.w, this.h, this)) { this.y += sy; moved = true; }
+          else if (sy && !blocked.includes('y')) blocked.push('y');
+        }
         if (game.dbg) game.dbg.blocked = moved ? '' : ('collision:' + blocked.join(','));
         // Corsa e camminata hanno animazioni diverse; la direzione resta
         // sempre quella dell'ultimo input, anche se il movimento è bloccato.
         this.mode = CL.input.isDown('run') ? 'run' : 'walk';
-        this.anim += dt * (sp / 22);
+        // L'animazione avanza in base allo spazio REALMENTE percorso: quando
+        // un muro blocca il passo il personaggio non "scivola" sul posto.
+        const walked = Math.hypot(this.x - x0, this.y - y0);
+        this.anim += walked / 5.5;
         this.frame = Math.floor(this.anim) % 4;
-        this.idleT = 0;
-        this.stepT -= dt;
-        if (this.stepT <= 0) { CL.audio.sfx('step'); this.stepT = this.mode === 'run' ? .24 : .34; }
-        CL.state.stats.steps += dt * sp / 16;
+        if (!moved) {
+          // Fermo davanti a un ostacolo: respiroidtà, ultima direzione conservata.
+          this.idleT += dt;
+          this.frame = Math.floor(this.idleT * 1.5) % 2;
+        } else {
+          this.idleT = 0;
+          this.stepT -= dt;
+          if (this.stepT <= 0) { CL.audio.sfx('step'); this.stepT = this.mode === 'run' ? .22 : .32; }
+          CL.state.stats.steps += walked / 16;
+        }
         game.checkPortals(this);
       } else {
         // Inattività: respiro a due fotogrammi, ultima direzione conservata.
@@ -74,12 +91,20 @@
     }
     draw(ctx) {
       if (this.vehicle) return;
-      ctx.fillStyle = 'rgba(24,22,20,.26)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 7, 3, 0, 0, Math.PI * 2); ctx.fill();
       const night = CL.systems.time.isNight();
       const img = night ? ART.nightCharacter(this.look, this.dir, this.frame, this.mode)
                         : ART.character(this.look, this.dir, this.frame, this.mode);
-      ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
+      // y e' il CENTRO della hitbox (canStand usa y-h/2 .. y+h/2): i piedi
+      // devono coincidere con il fondo della hitbox, non 10 px sopra. L'ombra
+      // e' leggermente sfalsata in basso-destra per una luce coerente da NO.
+      const footY = Math.round(this.y + this.h / 2 + this.offsetY) - 1;
+      ctx.save();
+      ctx.fillStyle = 'rgba(18,15,13,.42)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(18,15,13,.22)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 5, 2, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      ctx.drawImage(img, Math.round(this.x - img.width / 2), footY - img.height + 1);
     }
     interact() { this.game.interactNear(this); }
   }
@@ -230,10 +255,14 @@
       if (U.dist(this.x, this.y, this._lastPos.x, this._lastPos.y) > 0.5) { this._stuckT = 0; this._lastPos.x = this.x; this._lastPos.y = this.y; }
     }
     draw(ctx) {
-      ctx.fillStyle = 'rgba(24,22,20,.24)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 7, 3, 0, 0, Math.PI * 2); ctx.fill();
       const img = ART.character(this.look, this.dir, this.frame, this.moving ? 'walk' : 'idle');
-      ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
+      // Stesso ancoraggio del giocatore: piedi sul fondo della hitbox.
+      const footY = Math.round(this.y + this.h / 2 + this.offsetY) - 1;
+      ctx.save();
+      ctx.fillStyle = 'rgba(18,15,13,.36)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      ctx.drawImage(img, Math.round(this.x - img.width / 2), footY - img.height + 1);
     }
     interact(player) {
       CL.systems.relations.talk(this.id);
@@ -285,7 +314,8 @@
         this._turnCooldown = Math.max(0, (this._turnCooldown || 0) - dt);
         const ax = this.dir === 'left' ? -1 : this.dir === 'right' ? 1 : 0;
         const ay = this.dir === 'up' ? -1 : this.dir === 'down' ? 1 : 0;
-        const nx = this.x + ax * this.speed * dt, ny = this.y + ay * this.speed * dt;
+        const vd = this.speed * dt, vn = Math.max(1, Math.ceil(vd / 4));
+        const nx = this.x + ax * vd, ny = this.y + ay * vd;
         const tileAt = (px, py) => CL.maps.tile(this.game.map, Math.floor(px / T), Math.floor(py / T));
         const usable = (px, py) => tileAt(px, py) === 'r' &&
           this.game.canStand(px, py, this.w, this.h, this) && !CL.maps.portalAt(this.game.map, px, py);
@@ -306,12 +336,18 @@
           }
         }
         if (!usable(nx, ny)) {
-          // Fine corsia: inversione a U cambiando corsia, non through un muro.
+          // Fine corsia: inversione a U, ma solo se l'impronta ruotata è libera.
+          // Cambiare dir senza aggiornare lane/w/h lascerebbe il veicolo fuori corsia.
           const back = OPPOSITE[this.dir];
-          if (!this._face(back)) this.dir = back;
+          this._face(back);
           this._turnCooldown = .6;
         } else {
-          this.x = nx; this.y = ny;
+          // Avanzamento a sottopassi: la collisione non può essere saltata.
+          const sx = ax * vd / vn, sy = ay * vd / vn;
+          for (let i = 0; i < vn; i++) {
+            if (ax && usable(this.x + sx, this.y)) this.x += sx; else break;
+            if (ay && usable(this.x, this.y + sy)) this.y += sy; else break;
+          }
           this.offsetY = Math.sin(CL.state.time.total * .02) * .4;
         }
         return;
@@ -320,11 +356,22 @@
       const ax = CL.input.axis();
       this.moving = !!(ax.x || ax.y);
       if (this.moving) {
-        if (Math.abs(ax.x) > Math.abs(ax.y)) this.dir = ax.x < 0 ? 'left' : 'right';
-        else this.dir = ax.y < 0 ? 'up' : 'down';
-        const nx = this.x + ax.x * this.speed * dt, ny = this.y + ax.y * this.speed * dt;
-        if (this.game.canStand(nx, this.y, this.w, this.h, this)) this.x = nx;
-        if (this.game.canStand(this.x, ny, this.w, this.h, this)) this.y = ny;
+        const next = Math.abs(ax.x) > Math.abs(ax.y) ? (ax.x < 0 ? 'left' : 'right')
+                                                     : (ax.y < 0 ? 'up' : 'down');
+        // Rouotazione in loco: impronta e corsia devono sempre seguire la
+        // direzione, altrimenti l'auto viaggia con il lato sbagliato del muro.
+        if (next !== this.dir) {
+          const fp = CL.vehicleFootprint(this.type, next);
+          if (this.game.canStand(this.x, this.y, fp.w, fp.h, this)) {
+            this.dir = next; this.w = fp.w; this.h = fp.h; this.lane = CL.laneOffset(next);
+          }
+        }
+        const vd = this.speed * dt, vn = Math.max(1, Math.ceil(vd / 4));
+        const sx = ax.x * vd / vn, sy = ay * vd / vn;
+        for (let i = 0; i < vn; i++) {
+          if (sx && this.game.canStand(this.x + sx, this.y, this.w, this.h, this)) this.x += sx;
+          if (sy && this.game.canStand(this.x, this.y + sy, this.w, this.h, this)) this.y += sy;
+        }
         this.game.checkPortals(this);
         CL.state.stats.steps += dt * .2;
       }
@@ -351,8 +398,19 @@
     interact(player) {
       if (this.ambient && !this.mounted) { CL.ui.toast('Il traffico cittadino non si ferma.', 'info'); return; }
       if (this.mounted) {
+        // Dismount validato: cerca un punto libero vicino all'auto, non un
+        // offset fisso che può finire dentro un muro, un NPC o un portale.
+        const map = this.game.map;
+        const tryOff = [[16,6],[-16,6],[16,-6],[-16,-6],[0,18],[0,-18],[24,0],[-24,0]];
+        let spot = null;
+        for (const [dx,dy] of tryOff) {
+          const px = this.x + dx, py = this.y + dy;
+          if (this.game.canStand(px, py, player.w, player.h, player) &&
+              !CL.maps.portalAt(map, px, py)) { spot = {x:px,y:py}; break; }
+        }
+        if (!spot) { CL.ui.toast('Non c’è spazio per scendere qui.', 'bad'); return; }
         this.mounted = false; player.vehicle = null;
-        player.x = this.x + 16; player.y = this.y + 6;
+        player.x = spot.x; player.y = spot.y;
         CL.audio.sfx('door'); CL.ui.toast('Sei sceso dal ' + this.label(), 'info');
       } else {
         if (CL.state.needs.energy < 8) { CL.ui.toast('Sei troppo stanco per guidare.', 'bad'); return; }

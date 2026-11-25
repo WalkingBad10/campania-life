@@ -101,7 +101,8 @@
 5. [x] Revisione visiva pubblicata: commit `f08ed04`, GitHub Actions `45621222465` `success` (build `139229576528`, deploy `139229978970`, smoke touch nella CI `success`), bundle remoto `index-Cuk6AnYj.js`, smoke pubblico ripetuto OK, marker/chiave save verificati nel bundle.
 6. [x] Run ID finali e bundle remoto aggiornati in questo file e in `qa/campania-open-code-1/README.md`.
 7. Non ripristinare lo step CI `Install Playwright Chromium`: `mobile-start.mjs` usa il fallback al Chrome di sistema.
-8. Non ripristinare `checkpoint/pre-structural-review` (`51a22c0`) né `checkpoint/pre-quality-review` (`4cd0e35`) né `checkpoint/pre-visual-review` (`2243cbc`): le correzioni successive sono la fonte autorevole.
+8. Non ripristinare `checkpoint/pre-structural-review` (`51a22c0`) né `checkpoint/pre-quality-review` (`4cd0e35`) né `checkpoint/pre-visual-review` (`2243cbc`) né `checkpoint/pre-professional-review` (`f5845de`): le correzioni successive sono la fonte autorevole.
+9. Revisione professionale integrale da `f5845de`: ancoraggio piedi/ombra, animazione legata al movimento reale, sub-stepping collisioni, impronte veicoli coerenti, dismount validato, hitbox debug, basolato irregolare, verifica OSM con semplificazioni dichiarate. Gate: 40/40 regressioni, texture/render audit e visual-explore verdi.
 
 ---
 

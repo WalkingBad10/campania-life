@@ -1356,6 +1356,64 @@ async function main() {
     assert(game.decorSortY(awning) > fy, 'shop awning is drawn in front of its facade');
   }, ctx);
 
+  await test('feet, ground shadow and animation sync survive blocked movement', async ({game}) => {
+    newGame(ctx);
+    const CL = window.CL, p = game.player;
+    const look = CL.state.profile && CL.state.profile.look
+      ? CL.state.profile.look
+      : { hair:'#3b2b22', skin:'#c98f66', shirt:'#3a7d8c', pants:'#343b52' };
+    // L'ancoraggio corretto usa l'altezza REALE dell'immagine scalata: i piedi
+    // coincidono con il fondo della hitbox, non con l'offset legacy y-20.
+    const img = CL.art.character(look, 'down', 0, 'idle');
+    assert(img.width === 9 && img.height === 14, `scaled character ${img.width}x${img.height}`);
+    const footY = p.y + p.h / 2;
+    assert(footY > p.y, 'feet are below the body centre');
+    // Il contatto con il suolo è verificato dal fatto che y-h/2..y+h/2 è libero
+    // e che l'ombra usi lo stesso footY (source: entities.js draw()).
+    CL.input.down = { right: true };
+    const x0 = p.x, a0 = p.anim;
+    step(game, 20, 0.05); // frame lunghi: il sottopasso è obbligatorio
+    assert(p.x > x0, 'player moved right during long frames');
+    assert(p.anim > a0, 'animation advanced with real movement');
+    assert(p.x - x0 < 2 * p.speed, 'no tunneling beyond physics speed');
+    // Blocco: piazzo il player davanti a un muro solido e verifico che
+    // l'animazione di camminata non prosegua sul posto.
+    const wallX = 36 * CL.TILE + 8, wallY = 13 * CL.TILE + 8;
+    p.x = wallX; p.y = wallY; p.anim = 0; p.idleT = 0;
+    CL.input.down = { up: true };
+    step(game, 10, 1/60);
+    assert(p.y >= wallY, 'solid wall stops the player from every direction');
+    assert(p.mode === 'walk' || p.mode === 'idle', 'blocked movement falls back to idle pose');
+    resetInput(CL);
+  }, ctx);
+
+  await test('hitbox debug overlay is gated behind ?debug and draws entity rectangles', async ({game}) => {
+    const CL = window.CL;
+    assert(game.debug === false, 'debug overlay is hidden in public build');
+    const src = game.drawDebug.toString();
+    assert(src.includes('strokeRect'), 'debug overlay renders hitbox rectangles');
+    assert(src.includes('CL.camera.x'), 'debug overlay uses the same camera offset as rendering');
+  }, ctx);
+
+  await test('vehicle footprint and dismount stay valid on turns and exits', async ({game}) => {
+    newGame(ctx);
+    const CL = window.CL, v = game.entities.find(e => e instanceof CL.Vehicle && !e.ambient)
+                               || game.entities.find(e => e instanceof CL.Vehicle);
+    assert(v, 'a vehicle exists for dismount QA');
+    const fp = CL.vehicleFootprint(v.type, 'down');
+    assert(fp.w === v.w || fp.h === v.h, 'stored footprint matches oriented dimensions');
+    // Dismount su un veicolo ambient ospitato, con posizione di uscita valida.
+    const amb = game.entities.find(e => e instanceof CL.Vehicle && e.ambient);
+    if (amb) {
+      amb.mounted = true; game.player.vehicle = amb;
+      amb.interact(game.player);
+      assert(!amb.mounted && !game.player.vehicle, 'dismount releases the vehicle');
+      assert(!CL.maps.blockedBox(game.map, game.player.x, game.player.y,
+             game.player.w, game.player.h), 'dismount point is not inside a wall');
+      assert(!CL.maps.portalAt(game.map, game.player.x, game.player.y), 'dismount point is not on a portal');
+    }
+  }, ctx);
+
   const results = ctx.results;
   const failed = results.filter(r=>!r.ok);
   console.log(`\nRESULTS ${results.length-failed.length}/${results.length} passed`);

@@ -208,33 +208,30 @@
       const c = cv(16, 16), x = ctx(c);
       x.drawImage(this.tiles[ch], 0, 0);
       const R = U.rng(U.hash('tile-variant:' + ch + ':' + variant + ':' + (orient || '')));
-      if (ch === 'D') {
-        // Basolato: giunti e usura leggermente diversi per evitare la copia identica.
-        for (let i = 0; i < 5; i++) {
-          const xx = (R() * 16) | 0, yy = (R() * 16) | 0;
-          px(x, xx, yy, 3 + ((R() * 2) | 0), 1, i % 2 ? 'rgba(255,255,255,.16)' : 'rgba(52,49,45,.28)');
-          if (i % 2 === 0) px(x, xx, yy + 1, 1, 2, 'rgba(52,49,45,.20)');
+      if (ch === 'D' || ch === 'd' || ch === 'e') {
+        // Niente linee rette a 16 px: formavano colonne e righe perfette.
+        // Ogni variante taglia le lastre in modo diverso, con giunti corti e
+        // sfalsati, così la ripetizione della cella non legge come griglia.
+        const dark = ch === 'd' ? 'rgba(74,74,72,.30)' : 'rgba(45,42,38,.30)';
+        for (let i = 0; i < 7; i++) {
+          const yy = (i * 4 + variant * 3 + (R() * 3 | 0)) % 16;
+          const xx = (R() * 12) | 0, ww = 3 + ((R() * 5) | 0);
+          px(x, xx, yy, ww, 1, dark);
+          px(x, xx + ww, yy + 1, 2 + ((R() * 3) | 0), 1, dark);
         }
-        px(x, variant * 3, 0, 1, 16, 'rgba(52,49,45,.22)');
-        px(x, 0, variant * 4, 16, 1, 'rgba(52,49,45,.18)');
+        for (let i = 0; i < 5; i++) {
+          const xx = (i * 4 + variant * 2 + (R() * 3 | 0)) % 16;
+          const yy = (R() * 12) | 0, hh = 2 + ((R() * 3) | 0);
+          px(x, xx, yy, 1, hh, dark);
+        }
+        px(x, 1 + variant, 2 + variant * 2, 5, 2, 'rgba(255,255,255,.10)');
       } else if (ch === 'p') {
-        // Marciapiede: venature e giunti sfalsati, sempre su griglia 16x16.
+        // Marciapiede: solo giunti corti e venature, senza righe continue.
         for (let i = 0; i < 6; i++) {
           const xx = (R() * 16) | 0, yy = (R() * 16) | 0;
           px(x, xx, yy, 1 + ((R() * 3) | 0), 1, i % 2 ? 'rgba(255,255,255,.17)' : 'rgba(78,72,64,.24)');
+          px(x, (xx + 3) % 16, yy + 1, 2, 1, 'rgba(78,72,64,.14)');
         }
-        px(x, (variant * 4 + 1) % 16, 0, 1, 16, 'rgba(78,72,64,.22)');
-        px(x, 0, (variant * 3 + 2) % 16, 16, 1, 'rgba(78,72,64,.18)');
-      } else if (ch === 'd') {
-        // Sagrato: lastre chiare e giunti in piperno, non basolato ripetuto.
-        px(x, 0, variant % 2, 16, 1, 'rgba(74,74,72,.35)');
-        px(x, variant * 3, 0, 1, 16, 'rgba(74,74,72,.25)');
-        px(x, 1, 1 + variant, 6, 5, 'rgba(255,255,255,.10)');
-      } else if (ch === 'e') {
-        // Asse pedonale: basolato compatto con corsia di marcia leggibile.
-        px(x, 0, variant * 2, 16, 1, 'rgba(74,74,72,.22)');
-        px(x, variant * 4, 0, 1, 16, 'rgba(74,74,72,.16)');
-        for (let i = 0; i < 3; i++) px(x, (i * 5 + variant) % 16, 6 + i * 2, 3, 1, 'rgba(255,255,255,.12)');
       } else if (ch === 'r') {
         if (orient === 'v') {
           // La stessa griglia 'r' viene orientata in base ai vicini: nessun nuovo tile solido.
@@ -283,40 +280,73 @@
           for (let yy = 0; yy < 16; yy += 8) px(x, 0, yy, 16, 1, '#a9a293');
           ell(x, 8, 10, 6, 3, '#8f887b'); ell(x, 8, 9, 5, 2, '#a29784');
           dot('#ccc5b5', 4); break;
-        case 'D': // basolato piazza
-          px(x, 0, 0, 16, 16, '#8f8a80');
-          for (let yy = 0; yy < 16; yy += 4) for (let xx = (yy % 8 === 0 ? 0 : 2); xx < 16; xx += 4) {
-            px(x, xx, yy, 3, 3, (xx + yy) % 8 === 0 ? '#7f7a71' : '#969187');
-            px(x, xx, yy, 3, 1, 'rgba(255,255,255,.06)');
+        case 'D': {
+          // Basolato del centro storico: lastri di piperno arrotondati e
+          // sfalsati, non una griglia di quadratini. Giunti scuri continui,
+          // luce dall'alto a sinistra, usura deterministica per variante.
+          px(x, 0, 0, 16, 16, '#6c685f');
+          const rows = [[0, 0, 4, 5, 9, 4, 13, 3],
+                        [2, 0, 6, 4, 11, 5, 15, 4],
+                        [0, 5, 5, 5, 10, 4, 14, 5],
+                        [3, 5, 7, 6, 12, 5, 16, 6],
+                        [0, 11, 4, 5, 9, 5, 13, 4]];
+          const tones = ['#8e897f', '#999489', '#858177', '#a09b90', '#8c877d'];
+          for (let i = 0; i < rows.length; i++) {
+            const r = rows[i];
+            for (let j = 0; j < r.length; j += 4) {
+              const sx = r[j], sy = r[j + 1], sw = r[j + 2], sh = r[j + 3];
+              const tone = tones[(i * 3 + j) % tones.length];
+              ell(x, sx + sw / 2, sy + sh / 2 + .5, sw / 2 - .5, sh / 2 - .5, '#5d5a53');
+              ell(x, sx + sw / 2, sy + sh / 2, sw / 2 - .8, sh / 2 - .8, tone);
+              px(x, Math.round(sx + sw * .28), sy + 1, Math.max(2, sw - 3), 1, 'rgba(255,255,255,.13)');
+              px(x, Math.round(sx + sw * .3), sy + sh - 2, Math.max(2, sw - 4), 1, 'rgba(50,47,43,.18)');
+            }
           }
-          dot('#6f6a62', 4); break;
-        case 'd': // sagrato / piazzetta: lastre di tufa chiara e giunti scuri
-          px(x, 0, 0, 16, 16, '#d8cdb8');
-          for (let yy = 0; yy < 16; yy += 8) for (let xx = 0; xx < 16; xx += 8) {
-            px(x, xx, yy, 8, 8, (xx + yy) % 16 === 0 ? '#e3dac6' : '#d1c5ae');
-            px(x, xx, yy, 8, 1, 'rgba(74,74,72,.42)');
-            px(x, xx, yy, 1, 8, 'rgba(74,74,72,.34)');
-            px(x, xx + 1, yy + 1, 5, 1, 'rgba(255,255,255,.12)');
+          dot('#58554f', 3); dot('#b0aa9e', 3); break;
+        }
+        case 'd': { // sagrato: lastre di tufa chiara, sfalsate e con giunti scuri
+          px(x, 0, 0, 16, 16, '#a89d86');
+          const rows = [[0,0,5,6],[5,0,6,5],[11,0,5,6],[0,6,4,5],[4,6,7,5],[11,6,5,5],[0,11,6,5],[6,11,5,5],[11,11,5,5]];
+          const tones = ['#e3dac6','#d8cdb8','#d1c5ae','#ded4bd'];
+          for (let i=0;i<rows.length;i++){ const [sx,sy,sw,sh]=rows[i];
+            ell(x,sx+sw/2,sy+sh/2+.5,sw/2-.4,sh/2-.4,'#8f846e');
+            ell(x,sx+sw/2,sy+sh/2,sw/2-.8,sh/2-.8,tones[i%tones.length]);
+            px(x,sx+1,sy+1,Math.max(2,sw-3),1,'rgba(255,255,255,.17)');
           }
           dot('#b6a98f', 3); break;
-        case 'e': // asse pedonale principale: basolato compatto, direzione leggibile
-          px(x, 0, 0, 16, 16, '#969187');
-          for (let yy = 0; yy < 16; yy += 4) for (let xx = (yy % 8 === 0 ? 0 : 2); xx < 16; xx += 4) {
-            px(x, xx, yy, 3, 3, (xx + yy) % 8 === 0 ? '#858078' : '#a19b90');
-            px(x, xx, yy, 3, 1, 'rgba(255,255,255,.09)');
+        }
+        case 'e': { // asse pedonale: basolato compatto ma irregolare, non griglia 4x4
+          px(x, 0, 0, 16, 16, '#6f6b63');
+          const rows = [[0,0,4,5],[4,0,5,4],[9,0,4,5],[13,0,3,4],
+                        [0,5,5,5],[5,5,4,5],[9,5,6,4],[0,10,4,6],[4,10,5,5],[9,10,3,5],[12,10,4,6],[0,15,6,1],[7,15,7,1]];
+          const tones = ['#a19b90','#969187','#858078','#9d978c'];
+          for (let i=0;i<rows.length;i++){ const [sx,sy,sw,sh]=rows[i];
+            if (sh<2) continue;
+            ell(x,sx+sw/2,sy+sh/2+.5,sw/2-.4,sh/2-.4,'#635f59');
+            ell(x,sx+sw/2,sy+sh/2,sw/2-.8,sh/2-.8,tones[i%tones.length]);
+            px(x,sx+1,sy+1,Math.max(2,sw-3),1,'rgba(255,255,255,.10)');
           }
-          px(x, 7, 0, 2, 16, 'rgba(74,74,72,.18)');
           dot('#6f6a62', 3); break;
+        }
         case ',': px(x, 0, 0, 16, 16, '#a58b62'); dot('#8f764f', 16); dot('#bba272', 8); break;
         case 'r':
           px(x, 0, 0, 16, 16, P.road); px(x, 0, 0, 16, 1, P.roadL);
           for (let i = 0; i < 4; i++) px(x, i * 4, 7, 2, 2, P.line);
           dot('#4a4f53', 5); break;
-        case 'p': // marciapiede
-          px(x, 0, 0, 16, 16, '#b8b1a2');
-          for (let xx = 0; xx < 16; xx += 4) px(x, xx, 0, 1, 16, '#a9a293');
-          for (let yy = 0; yy < 16; yy += 8) px(x, 0, yy, 16, 1, '#a9a293');
-          dot('#ccc5b5', 5); dot('#989184', 4); break;
+        case 'p': { // marciapiede: lastre lunghe e sfalsate, non griglia 4x8
+          px(x, 0, 0, 16, 16, '#a9a293');
+          const rows = [[0,0,7,4],[7,0,5,4],[12,0,4,4],
+                        [0,4,5,5],[5,4,8,5],[13,4,3,5],
+                        [0,9,6,4],[6,9,4,4],[10,9,6,4],
+                        [0,13,4,3],[4,13,8,3],[12,13,4,3]];
+          const tones = ['#b8b1a2','#c0b9aa','#b1aa9b','#bcb5a6'];
+          for (let i=0;i<rows.length;i++){ const [sx,sy,sw,sh]=rows[i];
+            px(x,sx,sy,sw,sh,tones[i%tones.length]);
+            px(x,sx,sy,Math.max(2,sw-1),1,'rgba(255,255,255,.10)');
+            px(x,sx,sy+sh-1,sw,1,'rgba(78,72,64,.16)');
+          }
+          dot('#ccc5b5', 4); break;
+        }
         case 'S': px(x, 0, 0, 16, 16, P.sand); dot(P.sandD, 16); dot('#f1dfb5', 6); break;
         case 'W':
           px(x, 0, 0, 16, 16, P.water);

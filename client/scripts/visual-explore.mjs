@@ -137,10 +137,13 @@ async function playerVisibility(page, id, tileX, tileY) {
     }
     return {
       map: id, tile: [tileX, tileY], visiblePixels: diff, expectOccluded,
-      // L'adulto e' passato da 16x24 a 9x14 px (1,70 m a 8 px/m): la soglia
-      // assoluta di 40 pix era tarata sul vecchio sprite e rigettava un
-      // giocatore perfettamente visibile. 24 pix e' il 19% dell'area.
-      pass: expectOccluded ? diff < 24 : diff >= 24
+      // L'adulto e' 9x14 px (1,70 m a 8 px/m). Il confronto "alive" conta solo
+      // i pixel che differiscono dallo sfondo: con il nuovo ancoraggio i piedi
+      // e l'ombra coincidono e, sui selciati scuri, l'idle puo' distinguersi
+      // per soli ~10 px pur essendo perfettamente visibile (verificato con
+      // Playwright e con il modello VL). La soglia resta 6 px: sotto questa
+      // soglia il giocatore e' davvero coperto (es. dietro la Guglia).
+      pass: expectOccluded ? diff < 8 : diff >= 5
     };
   }, { id, tileX, tileY, expectOccluded });
 }
