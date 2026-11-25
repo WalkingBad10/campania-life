@@ -176,7 +176,7 @@
     avellino_contadino:{name:'Pasquale il vignaiolo', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:28, y:22, role:'job'},
     caserta_guardia:{name:'Guardia della Reggia', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'caserta', x:30, y:24, role:'ambient'},
     fuorigrotta_studente:{name:'Studente della Mostra', look:{hair:'#2f2723',skin:'#dbaa80',shirt:'#4a76ac',pants:'#3d4550'}, home:'fuorigrotta', x:50, y:25, role:'ambient'},
-    fuorigrotta_tecnico:{name:'Tecnico del Teatro', look:{hair:'#585048',skin:'#c78d62',shirt:'#d8a13c',pants:'#424a4e'}, home:'fuorigrotta', x:22, y:25, role:'ambient'},
+    fuorigrotta_tecnico:{name:'Tecnico del Teatro', look:{hair:'#585048',skin:'#c78d62',shirt:'#d8a13c',pants:'#424a4e'}, home:'fuorigrotta', x:22, y:24, role:'ambient'},
     pianura_residente:{name:'Residente del borgo', look:{hair:'#7a4a32',skin:'#dcaa80',shirt:'#8a9a62',pants:'#4d4a42'}, home:'pianura', x:25, y:21, role:'ambient'},
     pianura_fornaio:{name:'Fornaio di Piazza San Giorgio', look:{hair:'#c4b49a',skin:'#d7a074',shirt:'#efe6d2',pants:'#5b5048'}, home:'pianura', x:42, y:26, role:'ambient'},
     cliente_bar3:{name:'Pasquale', look:{hair:'#3a2b22',skin:'#d7a078',shirt:'#8a6b4a',pants:'#414a52'}, home:'bar', x:16, y:12, role:'ambient'},

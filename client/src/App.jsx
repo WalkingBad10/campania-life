@@ -179,6 +179,7 @@ export default function App() {
             <p><b>CAMPANIA LIFE — Avventure tra Mare e Montagna</b><br />
               Un progetto originale. Sprite, mappe, musiche e testi sono generati o scritti per questo gioco.</p>
             <p className="muted">Frontend React · Motore Canvas 2D · Backend Python FastAPI · Database PostgreSQL.</p>
+            <p className="muted">Geometrie stradali: © OpenStreetMap contributors — <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL</a> — retrieve 2026-11-25.</p>
             <div className="panel-actions"><button onClick={() => setScreen('title')}>INDIETRO</button></div>
           </div>
         </div>

@@ -1,0 +1,200 @@
+{
+  "napoli": [
+    {
+      "file": "piazza-1.jpg",
+      "title": "File:Napoli - Chiesa del Gesù Nuovo e guglia dell' Immacolata.JPG",
+      "author": "Luca Aless",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Napoli_-_Chiesa_del_Ges%C3%B9_Nuovo_e_guglia_dell%27_Immacolata.JPG",
+      "query": "Piazza del Gesù Nuovo Napoli"
+    },
+    {
+      "file": "piazza-2.jpg",
+      "title": "File:Obelisco in piazza del Gesù - Napoli BW 2013-05-16.jpg",
+      "author": "Berthold Werner",
+      "license": "CC BY-SA 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Obelisco_in_piazza_del_Ges%C3%B9_-_Napoli_BW_2013-05-16.jpg",
+      "query": "Piazza del Gesù Nuovo Napoli"
+    }
+  ],
+  "fuorigrotta": [
+    {
+      "file": "fuorigrotta-1.jpg",
+      "title": "File:Alloggi di Luigi Cosenza in viale Augusto - Paolo Monti - Servizio fotografico (Napoli, 1965) - BEIC 6366033.jpg",
+      "author": "Paolo Monti",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Alloggi_di_Luigi_Cosenza_in_viale_Augusto_-_Paolo_Monti_-_Servizio_fotografico_(Napoli,_1965)_-_BEIC_6366033.jpg",
+      "query": "Fuorigrotta Viale Augusto Napoli"
+    },
+    {
+      "file": "fuorigrotta-2.jpg",
+      "title": "File:Napoli Fuorigrotta, viale Augusto.jpg",
+      "author": "Unknown authorUnknown author",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Napoli_Fuorigrotta,_viale_Augusto.jpg",
+      "query": "Fuorigrotta Viale Augusto Napoli"
+    }
+  ],
+  "salerno": [
+    {
+      "file": "salerno-1.jpg",
+      "title": "File:Lungomare Trieste e centro storico di Salerno.jpg",
+      "author": "SOLOXSALERNO at Italian Wikipedia",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Lungomare_Trieste_e_centro_storico_di_Salerno.jpg",
+      "query": "Salerno lungomare centro storico"
+    },
+    {
+      "file": "salerno-2.jpg",
+      "title": "File:Lungomare Salerno.jpg",
+      "author": "Jack45",
+      "license": "CC BY 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Lungomare_Salerno.jpg",
+      "query": "Salerno lungomare centro storico"
+    }
+  ],
+  "avellino": [
+    {
+      "file": "avellino-1.jpg",
+      "title": "File:Centro storico di Avellino.jpg",
+      "author": "Principe88",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Centro_storico_di_Avellino.jpg",
+      "query": "avellino"
+    },
+    {
+      "file": "avellino-2.jpg",
+      "title": "File:Avellino via Mancini.jpg",
+      "author": "Costangelopacilio",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Avellino_via_Mancini.jpg",
+      "query": "avellino"
+    }
+  ],
+  "caserta": [
+    {
+      "file": "reggia-1.jpg",
+      "title": "File:Reggia di caserta, facciata.JPG",
+      "author": "Sailko",
+      "license": "CC BY 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Reggia_di_caserta,_facciata.JPG",
+      "query": "caserta"
+    },
+    {
+      "file": "reggia-2.jpg",
+      "title": "File:Piazza Dante in Caserta (1).jpg",
+      "author": "MOs810",
+      "license": "CC BY 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Piazza_Dante_in_Caserta_(1).jpg",
+      "query": "caserta"
+    }
+  ],
+  "pianura": [
+    {
+      "file": "pianura-1.jpg",
+      "title": "File:Pianura.jpg",
+      "author": "Microinfo10",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Pianura.jpg",
+      "query": "pianura"
+    },
+    {
+      "file": "pianura-2.jpg",
+      "title": "File:Veduta Contrada Pisani (Napoli).jpg",
+      "author": "Aurelio96",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Veduta_Contrada_Pisani_(Napoli).jpg",
+      "query": "pianura"
+    }
+  ],
+  "pompei": [
+    {
+      "file": "pompei-1.jpg",
+      "title": "File:Composition ruins Pompeii.jpg",
+      "author": "Jebulon",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File:Composition_ruins_Pompeii.jpg",
+      "query": "Pompei Scavi archeologici"
+    },
+    {
+      "file": "pompei-2.jpg",
+      "title": "File:Pompei - Scavi archeologici 5431.jpg",
+      "author": "Phyrexian",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Pompei_-_Scavi_archeologici_5431.jpg",
+      "query": "Pompei Scavi archeologici"
+    }
+  ],
+  "costiera": [
+    {
+      "file": "positano-1.jpg",
+      "title": "File:I08 397 Amalfitana, la Calcara.jpg",
+      "author": "Falk2",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:I08_397_Amalfitana,_la_Calcara.jpg",
+      "query": "Positano Costiera Amalfitana"
+    },
+    {
+      "file": "positano-2.jpg",
+      "title": "File:I08 398 Amalfitana, la Calcara.jpg",
+      "author": "Falk2",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:I08_398_Amalfitana,_la_Calcara.jpg",
+      "query": "Positano Costiera Amalfitana"
+    }
+  ],
+  "capri": [
+    {
+      "file": "capri-1.jpg",
+      "title": "File:Marina Grande Capri.jpg",
+      "author": "Wolfgang Moroder",
+      "license": "CC BY-SA 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Marina_Grande_Capri.jpg",
+      "query": "capri"
+    },
+    {
+      "file": "capri-2.jpg",
+      "title": "File:Capri island - Campania - Italy - July 12th 2013 - 16.jpg",
+      "author": "Norbert Nagel",
+      "license": "CC BY-SA 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Capri_island_-_Campania_-_Italy_-_July_12th_2013_-_16.jpg",
+      "query": "capri"
+    }
+  ],
+  "vesuvio": [
+    {
+      "file": "vesuvio-1.jpg",
+      "title": "File:Vesuvio Cratere.jpg",
+      "author": "Photo2023",
+      "license": "CC BY 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Vesuvio_Cratere.jpg",
+      "query": "vesuvio"
+    },
+    {
+      "file": "vesuvio-2.jpg",
+      "title": "File:Cratere del Vesuvio (2018).jpg",
+      "author": "Horcrux",
+      "license": "CC BY-SA 4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Cratere_del_Vesuvio_(2018).jpg",
+      "query": "vesuvio"
+    }
+  ],
+  "bacoli": [
+    {
+      "file": "castello-1.jpg",
+      "title": "File:Baia Castello - Castello di Baia - Castello Aragonese - near Pozzuoli - Campania - Italy - July 11th 2013 - 01.jpg",
+      "author": "Norbert Nagel",
+      "license": "CC BY-SA 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Baia_Castello_-_Castello_di_Baia_-_Castello_Aragonese_-_near_Pozzuoli_-_Campania_-_Italy_-_July_11th_2013_-_01.jpg",
+      "query": "Castello di Baia"
+    },
+    {
+      "file": "castello-2.jpg",
+      "title": "File:Baia Castello - Castello di Baia - Castello Aragonese - near Pozzuoli - Campania - Italy - July 11th 2013 - 02.jpg",
+      "author": "Norbert Nagel",
+      "license": "CC BY-SA 3.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Baia_Castello_-_Castello_di_Baia_-_Castello_Aragonese_-_near_Pozzuoli_-_Campania_-_Italy_-_July_11th_2013_-_02.jpg",
+      "query": "Castello di Baia"
+    }
+  ]
+}

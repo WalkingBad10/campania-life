@@ -77,7 +77,7 @@ async function boot() {
   const origErr = console.error;
   console.error = (...args) => { errors.push(args.map(a => String(a?.stack || a)).join(' ')); origErr(...args); };
 
-  const mods = ['core.js','data.js','art.js','maps.js','pathfinding.js','systems.js','routines.js','entities.js','engine.js'];
+  const mods = ['core.js','data.js','art.js','osm-geometry.js','maps.js','pathfinding.js','systems.js','routines.js','entities.js','engine.js'];
   for (const m of mods) {
     await import(pathToFileURL(path.join(gameDir, m)).href + '?t=' + Date.now() + Math.random());
   }
@@ -1263,6 +1263,50 @@ async function main() {
     const p = game.player;
     assert(okPos(CL, game.map, p.x, p.y, p.w, p.h), `player stays on walkable ground at ${p.x.toFixed(1)},${p.y.toFixed(1)}`);
     assert(p.x >= 0 && p.y >= 0 && p.x <= game.map.width && p.y <= game.map.height, 'player stays inside the map');
+  }, ctx);
+
+  await test('OSM reconstruction never removes an existing outdoor route', async () => {
+    const ids = ['napoli','costiera','vesuvio','pompei','capri','bacoli','salerno','avellino','caserta','fuorigrotta','pianura'];
+    const root = window.CL_OSM;
+    assert(root && /OpenStreetMap/.test(root.attribution), 'OSM attribution is exposed to the game');
+    assert(root.tileM === 2, 'OSM patch uses the documented 2 m tile');
+    for (const id of ids) {
+      const spec = root.maps[id], m = CL.maps.get(id);
+      assert(spec && spec.tiles.length > 0, `${id} has real OSM tiles`);
+      assert(m.osm && m.osm.tiles > 0 && m.osm.attribution === root.attribution
+        && m.osm.reachableBefore instanceof Set,
+        `${id} reports the applied OSM overlay and its pre-overlay routes`);
+      assert(Array.isArray(spec.anchors) && spec.anchors.length > 0,
+        `${id} declares real OSM anchors`);
+
+      const sx = Math.floor(m.spawn.x / CL.TILE), sy = Math.floor(m.spawn.y / CL.TILE);
+      const seen = new Set([sx + ',' + sy]), queue = [[sx, sy]];
+      for (let head = 0; head < queue.length; head++) {
+        const [x, y] = queue[head];
+        for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+          const nx = x + dx, ny = y + dy, key = nx + ',' + ny;
+          if (nx < 0 || ny < 0 || nx >= m.w || ny >= m.h || seen.has(key)) continue;
+          if (CL.maps.solidChar(m.g[ny][nx])) continue;
+          seen.add(key); queue.push([nx, ny]);
+        }
+      }
+      const targets = [];
+      for (const p of m.portals) targets.push(['portal ' + p.to,
+        Math.floor((p.x + (p.w || CL.TILE) / 2) / CL.TILE),
+        Math.floor((p.y + (p.h || CL.TILE) / 2) / CL.TILE)]);
+      for (const q of m.pois) {
+        if (q.data && q.data.decorative) continue;
+        targets.push(['POI ' + q.id, Math.floor(q.x / CL.TILE), Math.floor(q.y / CL.TILE)]);
+      }
+      for (const n of Object.values(CL.data.npcs)) {
+        if (n.home === id) targets.push(['resident ' + n.id, n.x, n.y]);
+      }
+      for (const [label, tx, ty] of targets) {
+        const wasReachable = m.osm.reachableBefore.has(ty + ':' + tx);
+        if (!wasReachable) continue; // varchi già chiusi o decorativi nel layout storico
+        assert(seen.has(tx + ',' + ty), `${id} ${label} still reachable from spawn after OSM overlay`);
+      }
+    }
   }, ctx);
 
   await test('road surfaces stay continuous and Piazza del Gesu follows OSM axes', async () => {

@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import './game/core.js';
 import './game/data.js';
 import './game/art.js';
+import './game/osm-geometry.js';
 import './game/maps.js';
 import './game/pathfinding.js';
 import './game/systems.js';

@@ -54,6 +54,29 @@
   function outline(x, cx, cy, rx, ry, col) {
     ell(x, cx, cy, rx + 1, ry + 1, col || P.dark);
   }
+  // Poligoni e linee a pixel interi: servono per i piani inclinati di tetti,
+  // parabrezza e telai, senza anti-aliasing e senza dipendenze esterne.
+  function poly(x, pts, col) {
+    x.fillStyle = col;
+    x.beginPath();
+    x.moveTo(Math.round(pts[0][0]), Math.round(pts[0][1]));
+    for (let i = 1; i < pts.length; i++) x.lineTo(Math.round(pts[i][0]), Math.round(pts[i][1]));
+    x.closePath(); x.fill();
+  }
+  function line(x, x0, y0, x1, y1, col, thick) {
+    x0 = Math.round(x0); y0 = Math.round(y0); x1 = Math.round(x1); y1 = Math.round(y1);
+    const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+    let err = dx + dy, t = 0;
+    for (;;) {
+      px(x, x0, y0, thick || 1, thick || 1, col);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy) { err += dy; x0 += sx; }
+      if (e2 <= dx) { err += dx; y0 += sy; }
+      if (++t > 256) break;
+    }
+  }
 
   const ART = CL.art = {
     P, ready: false, tiles: {}, cache: {}, images: {}, _imgReady: false,
@@ -134,7 +157,18 @@
       worldDrawScale = CL.WORLD_SCALE;
       try { src = make(); } finally { worldDrawScale = 1; }
       if (!src || !src.width || !src.height) return src;
-      if (src._legacyW) return this.cache[key] = src; // già in scala metrica
+      if (src._legacyW) {
+        // Il disegno diretto in scala metrica può lasciare antialiasing agli
+        // angoli del canvas. Gli sprite mondo devono avere angoli trasparenti:
+        // nessuno sfondo quadrato deve apparire sotto ruote, chiome o ombre.
+        const raw = ctxRaw(src);
+        raw.setTransform(1, 0, 0, 1, 0, 0);
+        raw.clearRect(0, 0, 1, 1);
+        raw.clearRect(src.width - 1, 0, 1, 1);
+        raw.clearRect(0, src.height - 1, 1, 1);
+        raw.clearRect(src.width - 1, src.height - 1, 1, 1);
+        return this.cache[key] = src; // già in scala metrica
+      }
       // Le PNG M1 arrivano ancora in risoluzione legacy: vengono adattate
       // con nearest-neighbor, senza anti-aliasing.
       const w = Math.max(1, Math.round(src.width * CL.WORLD_SCALE));
@@ -145,6 +179,7 @@
     },
     tree(v) { return this._world('w:tree:' + v, () => this._tree(v)); },
     lemonTree(v) { return this._world('w:lemon:' + v, () => this._lemonTree(v)); },
+    palmTree(v) { return this._world('w:palm:' + v, () => this._palmTree(v)); },
     rock(v) { return this._world('w:rock:' + v, () => this._rock(v)); },
     flower(v) { return this._world('w:flower:' + v, () => this._flower(v)); },
     fountain() { return this._world('w:fountain', () => this._fountain()); },
@@ -485,59 +520,210 @@
         case "'": // dettaglio/accento
           px(x, 0, 0, 16, 16, P.pave); px(x, 7, 4, 2, 8, '#c9a44a'); break;
         /* ----------------------------- interni ricchi ----------------------------- */
-        case 'A':
-          px(x,0,0,16,16,'#d9d2c3'); px(x,0,0,16,1,'#cfc7b7'); px(x,0,0,1,16,'#cfc7b7');
-          px(x,8,0,1,16,'#c9c0af'); px(x,0,8,16,1,'#c9c0af'); dot('#ece5d7',5); dot('#c4bba9',4); break;
-        case 'M':
-          px(x,0,0,16,16,'#d4ccbc'); for(let yy=0;yy<16;yy+=8)for(let xx=0;xx<16;xx+=8){ px(x,xx,yy,8,8,(xx+yy)%16===0?'#c8beac':'#ddd5c5'); px(x,xx+3,yy+3,2,2,'#b2a692'); } dot('#eee6d6',4); break;
-        case 'R':
-          px(x,0,0,16,16,'#8f2f2f'); px(x,1,0,14,16,'#a53a3a'); px(x,2,0,2,16,'#c9a44a'); px(x,12,0,2,16,'#c9a44a'); dot('#7a2525',6); break;
-        case 'Z':
-          px(x,0,0,16,16,'#7a5637'); for(let yy=0;yy<16;yy+=4) px(x,0,yy,16,1,'#68472d'); dot('#8b6542',6); dot('#5e4028',4); break;
-        case 'h':
-          px(x,0,0,16,16,'#cdbd9d'); for(let yy=0;yy<16;yy+=4)for(let xx=0;xx<16;xx+=4){ px(x,xx,yy,4,4,(xx+yy)%8===0?'#d8cab0':'#c4b492'); px(x,xx,yy,4,1,'rgba(255,255,255,.08)'); } break;
-        case 'j':
-          px(x,0,0,16,16,'#ddd3c0'); px(x,0,14,16,2,'#b9ad98'); dot('#e8dfcf',8); dot('#cfc4b0',4); break;
-        case 'l':
-          px(x,0,0,16,16,'#cfc5b3'); px(x,2,0,12,16,'#ddd3c2'); px(x,4,0,2,16,'#efe6d6'); px(x,10,0,2,16,'#bdb3a1'); px(x,0,0,16,2,'#b8ae9c'); px(x,0,14,16,2,'#b8ae9c'); break;
-        case 'n':
-          px(x,0,0,16,16,'#d9d2c3'); px(x,2,4,12,4,'#6f4f34'); px(x,2,8,12,2,'#855f3d'); px(x,3,10,2,4,'#5a4028'); px(x,11,10,2,4,'#5a4028'); break;
-        case 'q':
-          px(x,0,0,16,16,'#d4ccbc'); px(x,1,3,14,10,'#ece3d1'); px(x,1,3,14,2,'#c9a44a'); px(x,3,6,10,5,'#d9cfbe'); px(x,7,7,2,3,'#b08a45'); break;
-        case 's':
-          px(x,0,0,16,16,'#ddd3c0'); px(x,1,1,14,14,'#7a5637'); px(x,2,2,12,3,'#f0e4cf'); px(x,2,6,12,3,'#d9c7a5'); px(x,2,10,12,3,'#c7d8c0'); px(x,3,3,2,1,'#c9564a'); px(x,6,3,2,1,'#4a87b8'); px(x,9,7,2,1,'#e9b84a'); break;
-        case 'u':
-          px(x,0,0,16,16,'#7a5637'); px(x,0,0,16,4,'#9b7349'); px(x,0,4,16,1,'#5e4028'); px(x,1,6,14,8,'#68472d'); px(x,2,7,3,2,'#c9a44a'); break;
-        case 'v':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,2,4,12,7,'#8b6244'); px(x,3,5,10,5,'#a07050'); px(x,3,11,2,3,'#65432e'); px(x,11,11,2,3,'#65432e'); break;
-        case 'w':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,4,3,8,4,'#7a5637'); px(x,4,7,8,3,'#986d48'); px(x,4,10,2,4,'#65432e'); px(x,10,10,2,4,'#65432e'); break;
-        case 'x':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,1,2,14,12,'#6b4b33'); px(x,2,3,12,10,'#e8e1d4'); px(x,2,3,12,4,'#f3efe6'); px(x,2,9,12,4,'#8fb0c8'); break;
-        case 'y':
-          px(x,0,0,16,16,'#d6cbb6'); px(x,1,2,14,12,'#8a8f95'); px(x,2,3,12,4,'#5d6670'); px(x,3,9,4,3,'#3f4750'); px(x,9,9,4,3,'#3f4750'); px(x,6,5,4,1,'#c9a44a'); break;
-        case 'z':
-          px(x,0,0,16,16,'#d7ccb8'); px(x,2,5,12,7,'#dfe6eb'); px(x,3,6,10,5,'#b8d0d8'); px(x,7,2,2,3,'#9aa3ad'); px(x,7,11,2,3,'#8b6244'); break;
-        case '1':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,1,5,14,4,'#7a5637'); px(x,2,6,12,2,'#986d48'); px(x,2,9,2,5,'#65432e'); px(x,12,9,2,5,'#65432e'); break;
-        case '2':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,3,3,10,7,'#2f3c46'); px(x,4,4,8,5,'#6fb0c8'); px(x,7,10,2,2,'#59636d'); px(x,5,12,6,1,'#59636d'); break;
-        case '3':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,3,5,10,7,'#4a5560'); px(x,4,6,8,3,'#9fc3d8'); px(x,5,10,6,1,'#c9a44a'); break;
-        case '4':
-          px(x,0,0,16,16,'#ddd3c0'); px(x,1,1,14,14,'#6b4b33'); px(x,2,2,12,12,'#845e3d'); px(x,3,3,4,4,'#c9564a'); px(x,9,3,4,4,'#4a87b8'); px(x,3,9,4,4,'#7a9a5a'); px(x,9,9,4,4,'#e9b84a'); break;
-        case '5':
-          px(x,0,0,16,16,'#d4ccbc'); px(x,7,8,2,5,'#efe2c6'); px(x,7,6,2,2,'#f3c44f'); px(x,6,10,4,1,'#c9a44a'); break;
-        case '6':
-          px(x,0,0,16,16,'#ddd3c0'); px(x,2,2,12,12,'#7a5637'); px(x,3,3,10,10,'#5f7e96'); px(x,4,8,8,4,'#7a9a5a'); px(x,6,5,3,3,'#e9b84a'); break;
-        case '7':
-          px(x,0,0,16,16,'#d8cdb7'); px(x,2,2,12,12,'#6b5540'); px(x,3,3,10,10,'#9fc3d8'); px(x,7,3,2,10,'#6b5540'); px(x,3,7,10,2,'#6b5540'); px(x,3,3,10,3,'rgba(255,255,255,.25)'); break;
-        case '8':
-          px(x,0,0,16,16,'#ddd3c0'); px(x,3,1,10,15,'#6b4b33'); px(x,4,2,8,13,'#855f3d'); px(x,10,9,1,1,'#c9a44a'); break;
-        case '9':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,6,10,4,4,'#8b6244'); ell(x,8,7,4,4,'#5f9a4e'); ell(x,6,6,2,2,'#7ab868'); break;
-        case '0':
-          px(x,0,0,16,16,'#d8ccb4'); px(x,1,3,14,10,'#8b6244'); px(x,2,4,12,5,'#dceef3'); px(x,3,6,3,2,'#e0ab69'); px(x,7,6,3,2,'#d9543f'); px(x,11,6,2,2,'#f2d24f'); px(x,2,9,12,3,'#6b4b33'); break;
+        // Ogni tile e' una porzione di arredo o di pavimento: giunti sfalsati,
+        // ombre di contatto e piccoli oggetti riconoscibili (tazze, bottiglie,
+        // libri, candele). I motivi restano dentro la cella 16x16 e si ripetono
+        // senza cuciture visibili.
+        case 'A': { // marmo a lastre con venature diagonali
+          px(x,0,0,16,16,'#ded7c7');
+          for (let yy=0;yy<16;yy+=8) for (let xx=0;xx<16;xx+=8) {
+            px(x,xx,yy,8,8,(xx+yy)%16===0?'#d5cdbd':'#e6dfd0');
+            px(x,xx,yy,8,1,'rgba(255,255,255,.22)');
+            px(x,xx,yy+7,8,1,'rgba(110,100,86,.18)');
+            line(x,xx+2,yy+5,xx+6,yy+2,'rgba(150,140,122,.22)',1);
+          }
+          px(x,0,0,1,16,'#c9c0af'); px(x,8,0,1,16,'#c9c0af');
+          px(x,0,8,16,1,'#c9c0af'); break;
+        }
+        case 'M': { // pavimento in pietra chiara con commessi a spina
+          px(x,0,0,16,16,'#d4ccbc');
+          for (let yy=0;yy<16;yy+=8) for (let xx=0;xx<16;xx+=8) {
+            px(x,xx,yy,8,8,(xx+yy)%16===0?'#c8beac':'#ddd5c5');
+            px(x,xx+1,yy+1,6,1,'rgba(255,255,255,.26)');
+            px(x,xx+3,yy+4,2,2,'#b8ae9c');
+          }
+          px(x,0,7,16,1,'rgba(110,100,84,.14)'); break;
+        }
+        case 'R': { // tappeto rosso con doppio bordo e rombo centrale
+          px(x,0,0,16,16,'#7a2525'); px(x,1,0,14,16,'#a53a3a');
+          px(x,2,0,1,16,'#c9a44a'); px(x,13,0,1,16,'#c9a44a');
+          px(x,3,0,10,16,'#963030');
+          poly(x,[[8,2],[14,8],[8,14],[2,8]],'#b84440');
+          poly(x,[[8,4],[12,8],[8,12],[4,8]],'#c96752');
+          px(x,7,7,2,2,'#e0b95e'); dot('#7a2525',4); break;
+        }
+        case 'Z': { // parquet: liste sfalsate, venature e nodi
+          px(x,0,0,16,16,'#7a5637');
+          const planks=[[0,0,7,4],[7,0,9,4],[0,4,10,4],[10,4,6,4],[0,8,5,4],[5,8,11,4],[0,12,12,4],[12,12,4,4]];
+          planks.forEach((p,i)=>{ px(x,p[0],p[1],p[2],p[3],i%2?'#8b6542':'#7d5839');
+            px(x,p[0],p[1],p[2],1,'rgba(255,230,180,.12)');
+            px(x,p[0],p[1]+p[3]-1,p[2],1,'rgba(50,32,20,.24)');
+            px(x,p[0]+2,p[1]+2,Math.max(2,p[2]-4),1,'rgba(60,40,24,.16)');
+          });
+          ell(x,4,10,2,1,'#5e4028'); ell(x,13,5,1,1,'#5e4028'); break;
+        }
+        case 'h': { // piastrelle di ceramica con stucco e riflesso
+          px(x,0,0,16,16,'#a89b7f');
+          for (let yy=0;yy<16;yy+=4) for (let xx=0;xx<16;xx+=4) {
+            px(x,xx,yy,3,3,(xx+yy)%8===0?'#d8cab0':'#c4b492');
+            px(x,xx,yy,3,1,'rgba(255,255,255,.18)');
+            px(x,xx,yy+2,3,1,'rgba(90,76,56,.14)');
+          }
+          dot('#eee0c2',4); break;
+        }
+        case 'j': { // parete intonacata con zoccolino e ombra sotto il soffitto
+          px(x,0,0,16,16,'#ddd3c0');
+          px(x,0,0,16,1,'#c5bcaa'); px(x,0,1,16,1,'rgba(255,255,255,.20)');
+          for (let i=1;i<16;i+=5) px(x,i,3,1,9,'rgba(160,146,126,.10)');
+          px(x,0,13,16,1,'#cbbfa9'); px(x,0,14,16,2,'#b9ad98');
+          px(x,0,14,16,1,'#e2d8c4'); break;
+        }
+        case 'l': { // colonna scanalata con capitello e base
+          px(x,0,0,16,16,'#cfc5b3'); px(x,3,0,10,16,'#ddd3c2');
+          px(x,4,0,2,16,'#efe6d6'); px(x,7,0,2,16,'#c5bbaa');
+          px(x,11,0,2,16,'#bdb3a1'); px(x,2,0,12,3,'#e8dfcf');
+          px(x,2,3,12,1,'#b8ae9c'); px(x,2,13,12,2,'#e8dfcf');
+          px(x,2,15,12,1,'#a89e8d'); break;
+        }
+        case 'n': { // panca di chiesa: schienale, sedile a liste e gambe
+          px(x,0,0,16,16,'#d9d2c3');
+          px(x,1,5,14,3,'#6f4f34'); px(x,2,6,12,1,'#9a7048');
+          for (let yy=8;yy<=11;yy+=2) { px(x,2,yy,12,1,'#855f3d'); px(x,2,yy+1,12,1,'#6b4a31'); }
+          px(x,2,12,12,1,'#4a382b'); px(x,3,13,3,2,'#5a4028'); px(x,11,13,3,2,'#5a4028');
+          px(x,1,15,14,1,'rgba(30,24,20,.16)'); break;
+        }
+        case 'q': { // altare con gradini, paliotto e candelieri
+          px(x,0,0,16,16,'#d4ccbc');
+          px(x,0,12,16,4,'#b9ad98'); px(x,1,10,14,2,'#e6dcc8');
+          px(x,2,4,12,7,'#ece3d1'); px(x,2,4,12,1,'#c9a44a');
+          px(x,3,5,10,5,'#f3ecdd'); px(x,6,6,4,3,'#c9a44a');
+          line(x,8,6,8,9,'#f5f0df',1); line(x,7,7,9,7,'#f5f0df',1);
+          for (const cx0 of [3,12]) { px(x,cx0,2,1,3,'#efe2c6'); px(x,cx0,1,1,1,'#f3c44f'); }
+          break;
+        }
+        case 's': { // scansia: tre ripiani con bottiglie e bicchieri
+          px(x,0,0,16,16,'#ddd3c0'); px(x,1,1,14,14,'#6b4b33');
+          for (const sy of [2,6,10]) {
+            px(x,2,sy,12,4,'#87613f'); px(x,2,sy+3,12,1,'#4f3725');
+            px(x,3,sy+1,2,2,'#c9564a'); px(x,6,sy+1,2,2,'#4a87b8');
+            px(x,9,sy+1,2,2,'#7a9a5a'); px(x,12,sy+1,2,2,'#e9b84a');
+            px(x,2,sy,12,1,'rgba(255,235,200,.24)');
+          }
+          px(x,1,14,14,2,'#4f3725'); break;
+        }
+        case 'u': { // bancone: piano in marmo, cassetti, predella ottonata
+          px(x,0,0,16,16,'#7a5637'); px(x,0,0,16,3,'#9b7349');
+          px(x,0,3,16,2,'#ece3d1'); px(x,0,3,16,1,'#fff7e4');
+          px(x,0,5,16,1,'#5e4028'); px(x,1,6,14,7,'#68472d');
+          for (let i=3;i<15;i+=4) { px(x,i,7,3,4,'#7d5839'); px(x,i,8,3,1,'#9b7349'); px(x,i+1,9,1,1,'#c9a44a'); }
+          px(x,0,13,16,2,'#4a3526'); px(x,1,15,14,1,'#c9a44a'); break;
+        }
+        case 'v': { // tavolino tondo visto dall'alto: tovaglia, piatto, tazza
+          px(x,0,0,16,16,'#d8ccb4');
+          ell(x,8,7,7,5,'#65432e'); ell(x,8,6,7,5,'#a07050');
+          ell(x,8,6,5,3,'#e3d7bd'); ell(x,8,6,3,2,'#f3ecdd');
+          px(x,10,4,2,2,'#c9564a'); px(x,7,8,2,1,'#8b6244');
+          px(x,4,13,2,3,'#65432e'); px(x,10,13,2,3,'#65432e');
+          px(x,3,15,10,1,'rgba(30,24,20,.14)'); break;
+        }
+        case 'w': { // sedia impagliata con schienale a liste
+          px(x,0,0,16,16,'#d8ccb4'); px(x,3,2,10,6,'#7a5637');
+          for (let i=4;i<13;i+=2) px(x,i,3,1,4,'#a87c52');
+          px(x,3,8,10,3,'#986d48'); px(x,3,8,10,1,'#b78a5c');
+          px(x,4,11,2,4,'#65432e'); px(x,10,11,2,4,'#65432e');
+          px(x,3,15,10,1,'rgba(30,24,20,.16)'); break;
+        }
+        case 'x': { // finestra con vetri, traversa e davanzale
+          px(x,0,0,16,16,'#d8ccb4'); px(x,1,2,14,12,'#6b4b33');
+          px(x,2,3,12,10,'#a9ccd8'); px(x,2,3,12,4,'#dfeef0');
+          px(x,2,9,12,4,'#8fb0c8'); px(x,7,3,2,10,'#6b4b33');
+          px(x,2,7,12,2,'#6b4b33'); px(x,3,4,3,2,'rgba(255,255,255,.32)');
+          px(x,0,14,16,2,'#b08a45'); break;
+        }
+        case 'y': { // macchina da caffe' in acciaio: manometro, erogatore, tazze
+          px(x,0,0,16,16,'#d6cbb6'); px(x,1,2,14,12,'#8a8f95');
+          px(x,2,3,12,4,'#5d6670'); ell(x,6,5,2,2,'#e8e2cf');
+          px(x,6,5,1,1,'#c9564a'); px(x,10,4,3,1,'#c9a44a');
+          px(x,3,8,10,2,'#b6bcc0'); px(x,4,10,2,3,'#3f4750');
+          px(x,10,10,2,3,'#3f4750'); px(x,4,13,3,2,'#f0e4cf');
+          px(x,9,13,3,2,'#f0e4cf'); px(x,1,2,14,1,'#d7dcdc'); break;
+        }
+        case 'z': { // lavello con rubinetto e riflesso
+          px(x,0,0,16,16,'#d7ccb8'); px(x,2,5,12,7,'#b6bab8');
+          px(x,3,6,10,5,'#8fa9b2'); px(x,4,7,8,3,'#bcd6dc');
+          px(x,7,2,2,4,'#9aa3ad'); px(x,6,2,4,1,'#c3cad0');
+          px(x,7,11,2,2,'#8b6244'); px(x,2,12,12,1,'#a29783'); break;
+        }
+        case '1': { // divanetto di legno con cuscino
+          px(x,0,0,16,16,'#d8ccb4'); px(x,1,4,14,5,'#7a5637');
+          px(x,2,5,12,3,'#986d48'); px(x,3,6,10,1,'#b78a5c');
+          px(x,2,9,12,2,'#68472d'); px(x,2,11,2,4,'#65432e');
+          px(x,12,11,2,4,'#65432e'); px(x,2,15,12,1,'rgba(30,24,20,.14)'); break;
+        }
+        case '2': { // monitor / display con riflesso e base
+          px(x,0,0,16,16,'#d8ccb4'); px(x,2,2,12,8,'#2f3c46');
+          px(x,3,3,10,6,'#6fb0c8'); px(x,4,4,4,2,'rgba(255,255,255,.34)');
+          px(x,8,6,4,1,'#a9d5de'); px(x,7,10,2,3,'#59636d');
+          px(x,4,13,8,2,'#4a545c'); break;
+        }
+        case '3': { // registratore di cassa con tastierino e display
+          px(x,0,0,16,16,'#d8ccb4'); px(x,3,4,10,8,'#4a5560');
+          px(x,4,5,8,3,'#9fc3d8'); px(x,5,6,4,1,'#e9f5f3');
+          for (let i=4;i<12;i+=2) px(x,i,9,1,1,'#d8ccb4');
+          px(x,5,12,6,1,'#c9a44a'); px(x,2,13,12,2,'#3f4750'); break;
+        }
+        case '4': { // libreria con tre ripiani e libri di altezze diverse
+          px(x,0,0,16,16,'#ddd3c0'); px(x,1,1,14,14,'#6b4b33');
+          const cols=['#c9564a','#4a87b8','#e9b84a','#7a9a5a','#f0e4cf','#8a6fa8'];
+          for (let sh=0;sh<3;sh++) {
+            const by=2+sh*4;
+            px(x,2,by+3,12,1,'#4f3725');
+            for (let i=0;i<6;i++) px(x,2+i*2,by+1+(i%2),1,2,cols[(i+sh)%cols.length]);
+          }
+          px(x,1,14,14,2,'#4f3725'); break;
+        }
+        case '5': { // candela con fiamma, cera colante e porta-candela
+          px(x,0,0,16,16,'#d4ccbc'); px(x,7,8,2,5,'#efe2c6');
+          px(x,7,6,2,2,'#f3c44f'); px(x,8,5,1,2,'#e8843c');
+          px(x,6,7,1,3,'#f8eed2'); px(x,6,10,4,1,'#c9a44a');
+          px(x,5,11,6,2,'#8a7048'); px(x,4,13,8,1,'rgba(30,24,20,.14)'); break;
+        }
+        case '6': { // vaso con pianta e foglie a livelli
+          px(x,0,0,16,16,'#ddd3c0'); px(x,6,10,4,4,'#7a5637');
+          px(x,5,9,6,2,'#a07050'); ell(x,8,7,5,4,'#5f7e96');
+          ell(x,6,6,3,2,'#7a9a5a'); ell(x,11,5,3,2,'#4f8a4c');
+          px(x,8,4,1,4,'#3f6f3b'); px(x,7,2,2,2,'#e9b84a');
+          px(x,4,14,8,1,'rgba(30,24,20,.14)'); break;
+        }
+        case '7': { // finestra con tenda, montanti e davanzale in legno
+          px(x,0,0,16,16,'#d8cdb7'); px(x,1,2,14,12,'#6b5540');
+          px(x,2,3,12,10,'#9fc3d8'); px(x,2,3,12,3,'#dcecef');
+          px(x,3,6,4,7,'#e8dcc0'); px(x,10,6,4,7,'#e8dcc0');
+          px(x,7,3,2,10,'#6b5540'); px(x,2,8,12,2,'#6b5540');
+          px(x,3,4,3,2,'rgba(255,255,255,.32)'); px(x,1,14,14,2,'#a97c52');
+          break;
+        }
+        case '8': { // porta con pannelli, maniglia e ombra sotto la soglia
+          px(x,0,0,16,16,'#ddd3c0'); px(x,2,1,12,15,'#5a4028');
+          px(x,3,2,10,13,'#855f3d'); px(x,4,3,8,4,'#9b7349');
+          px(x,4,8,8,4,'#9b7349'); px(x,4,3,8,1,'#b78a5c');
+          px(x,4,8,8,1,'#b78a5c'); px(x,10,10,1,1,'#c9a44a');
+          px(x,2,15,12,1,'rgba(30,24,20,.22)'); break;
+        }
+        case '9': { // pianta in vaso con foglie a più livelli
+          px(x,0,0,16,16,'#d8ccb4'); px(x,6,10,4,4,'#8b6244');
+          px(x,5,9,6,2,'#a07050'); ell(x,8,7,5,4,'#5f9a4e');
+          ell(x,6,6,3,2,'#7ab868'); ell(x,11,5,2,2,'#4f8a4c');
+          px(x,8,3,1,4,'#3f6f3b'); px(x,4,14,8,1,'rgba(30,24,20,.16)'); break;
+        }
+        case '0': { // vetrina con tre prodotti e riflesso sul vetro
+          px(x,0,0,16,16,'#d8ccb4'); px(x,1,3,14,10,'#8b6244');
+          px(x,2,4,12,6,'#dceef3'); px(x,3,5,3,3,'#e0ab69');
+          px(x,7,5,3,3,'#d9543f'); px(x,11,5,2,3,'#f2d24f');
+          px(x,3,5,3,1,'rgba(255,255,255,.34)');
+          px(x,2,10,12,2,'#6b4b33'); px(x,2,12,12,1,'#a07050');
+          px(x,1,13,14,1,'rgba(30,24,20,.18)'); break;
+        }
         default: px(x, 0, 0, 16, 16, '#d44d9a');
       }
       return c;
@@ -552,20 +738,32 @@
       const lean = [0, 1, -1, 0, 2, -1, 1][v];
       const crownX = 16 + lean, crownY = [17, 18, 16, 19, 17, 16, 18][v];
       const rx = [12, 13, 11, 12, 13, 11, 12][v], ry = [10, 11, 10, 9, 11, 10, 12][v];
-      // Ombra ellittica a contatto col suolo: niente basamento quadrato.
-      ell(x, 16 + lean / 2, 36, 12, 3, 'rgba(28,26,22,.20)');
-      ell(x, 16 + lean / 2, 35, 9, 2, 'rgba(28,26,22,.10)');
-      px(x, 14 + lean, 27, 5, 11, P.woodD); px(x, 15 + lean, 27, 3, 11, P.wood);
-      px(x, 12 + lean, 36, 3, 2, '#5e442f'); px(x, 18 + lean, 36, 3, 2, '#5e442f');
-      ell(x, crownX, crownY + 1, rx + 1, ry, P.dark);
-      ell(x, crownX, crownY, rx, ry - 1, base);
-      ell(x, crownX - 6, crownY - 4, 6, 6, shade(base, 18));
-      ell(x, crownX + 6, crownY - 2, 6, 5, shade(base, -14));
-      ell(x, crownX + (v % 2 ? 2 : -1), crownY - 8, 6, 4, shade(base, 26));
-      // Rami corti che rompono la silhouette circolare identica tra alberi.
-      px(x, 11 + lean, 23 + (v % 2), 4, 1, '#6b4d33');
-      px(x, 19 + lean, 21 - (v % 3), 4, 1, '#6b4d33');
-      for (let i = 0; i < 30; i++) px(x, 5 + (R() * 22 | 0), 8 + (R() * 20 | 0), 1, 1, R() > .5 ? shade(base, 32) : shade(base, -22));
+      // Ombra di contatto: due ellissi e piccoli ciuffi d'erba, mai un quadrato.
+      ell(x, 16 + lean / 2, 37, 12, 3, 'rgba(28,26,22,.16)');
+      ell(x, 16 + lean / 2, 36, 10, 2, 'rgba(28,26,22,.22)');
+      px(x, 8 + lean, 36, 2, 1, '#668f46'); px(x, 22 + lean, 37, 3, 1, '#6f994c');
+      // Fusto rastremato con corteccia e biforcazioni: la chioma non e' un pallone piatto.
+      poly(x, [[13 + lean, 38], [19 + lean, 38], [18 + lean, 25], [14 + lean, 25]], '#5e442f');
+      px(x, 14 + lean, 26, 4, 12, P.woodD); px(x, 15 + lean, 26, 2, 12, P.wood);
+      px(x, 15 + lean, 29, 1, 5, '#9a704b'); px(x, 18 + lean, 31, 1, 4, '#3e2d20');
+      line(x, 15 + lean, 28, 10 + lean, 23, '#6b4d33', 1);
+      line(x, 18 + lean, 27, 22 + lean, 22, '#6b4d33', 1);
+      px(x, 12 + lean, 37, 4, 2, '#7a5738'); px(x, 17 + lean, 37, 4, 2, '#6a4931');
+      // Volumi sovrapposti: faccia in ombra a destra, luce alta a sinistra.
+      ell(x, crownX, crownY + 2, rx + 1, ry, '#2f3f2d');
+      ell(x, crownX, crownY, rx, ry - 1, shade(base, -18));
+      ell(x, crownX - 5, crownY - 4, rx - 4, ry - 3, shade(base, 16));
+      ell(x, crownX + 5, crownY - 1, rx - 6, ry - 3, shade(base, -28));
+      ell(x, crownX + (v % 2 ? 2 : -2), crownY - 8, 6, 4, shade(base, 30));
+      ell(x, crownX - 8, crownY + 2, 4, 3, shade(base, -10));
+      // Ciuffi di foglie disposti lungo i contorni, non texture casuale uniforme.
+      for (let i = 0; i < 28; i++) {
+        const a = R() * Math.PI * 2, rr = .55 + R() * .42;
+        const lx = crownX + Math.round(Math.cos(a) * rx * rr);
+        const ly = crownY + Math.round(Math.sin(a) * (ry - 1) * rr);
+        px(x, lx, ly, 2, 1, Math.cos(a) < -.15 ? shade(base, 34) : shade(base, -34));
+        if (i % 3 === 0) px(x, lx, ly - 1, 1, 1, shade(base, 22));
+      }
       return this.cache[key] = c;
     },
     _tree(variant) {
@@ -580,11 +778,58 @@
       if (this.cache[key]) return this.cache[key];
       const n = cv(32, 40), x = ctx(n); x.drawImage(this._treeRaw(variant), 0, 0);
       const v = variant % 7;
-      [[9, 16], [22, 21], [15, 10], [25, 13]].forEach(([a, b], i) => {
+      [[9, 16], [22, 21], [15, 10], [25, 13], [12, 24], [20, 8]].forEach(([a, b], i) => {
         const ax = a + [0, 1, -1, 2, 0, -2, 1][v], by = b + (i % 2 ? v % 2 : -(v % 2));
-        px(x, ax, by, 2, 3, '#f2d24f'); px(x, ax, by, 1, 1, '#fff0a0');
+        // Limone con peduncolo, foglia e riflesso: leggibile anche a 8 px/m.
+        px(x, ax, by + 1, 3, 3, '#c99a2f'); px(x, ax, by + 2, 2, 2, '#f2d24f');
+        px(x, ax, by + 2, 1, 1, '#fff3b0'); px(x, ax + 1, by, 1, 1, '#6f8d43');
+        if (i % 2 === 0) px(x, ax - 1, by - 1, 2, 1, '#4f8a4c');
+      });
+      // Fiori d'arancio: pochi punti chiari tra le foglie, non texture casuale.
+      const blooms = [[7, 13], [18, 18], [24, 10]];
+      blooms.forEach(([bx, by], i) => {
+        px(x, bx + [0, 1, -1][v % 3], by, 2, 2, '#f6efd4');
+        px(x, bx + 1, by + 1, 1, 1, '#e0a94c');
       });
       return this.cache[key] = n;
+    },
+    _palmTree(variant) {
+      // Washingtonia del Viale Augusto: tronco alto, chioma a ventaglio e
+      // ombra di contatto. Nessuna chioma sferica da albero da frutto.
+      const key = 'palm' + variant; if (this.cache[key]) return this.cache[key];
+      const v = variant % 7, c = cv(32, 40), x = ctx(c), R = U.rng(v * 421 + 7);
+      const lean = [0, 1, -1, 1, 0, -2, 2][v];
+      const topY = [14, 12, 15, 13, 16, 12, 14][v];
+      ell(x, 16 + lean, 37, 11, 3, 'rgba(28,26,22,.15)');
+      ell(x, 16 + lean, 36, 8, 2, 'rgba(28,26,22,.22)');
+      // Fusto: segmente corti e ombra longitudinale, non un rettangolo piatto.
+      poly(x, [[14 + lean, 38], [18 + lean, 38], [17 + lean, topY + 4], [15 + lean, topY + 4]], '#6b5137');
+      px(x, 15 + lean, topY + 4, 2, 34 - topY, '#9a7650');
+      px(x, 17 + lean, topY + 5, 1, 31 - topY, '#4d3727');
+      for (let yy = topY + 7; yy < 37; yy += 3) px(x, 15 + lean, yy, 3, 1, 'rgba(60,42,28,.42)');
+      // Fronde radiali: linee spesse con foglioline ai lati, lunghezze diverse.
+      const cx = 16 + lean;
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2 + (v % 3) * .12;
+        const len = 10 + (i % 3) * 2 + (v % 2);
+        const ex = cx + Math.round(Math.cos(a) * len);
+        const ey = topY + 3 + Math.round(Math.sin(a) * (len * .52));
+        const col = Math.sin(a) > .25 ? '#2f5c35' : (Math.cos(a) < -.2 ? '#5e9347' : '#427a3d');
+        line(x, cx, topY + 3, ex, ey, col, 2);
+        // penne lungo la fronda, disposte solo sul lato esterno
+        for (let s = 3; s < len; s += 2) {
+          const px0 = cx + Math.round(Math.cos(a) * s);
+          const py0 = topY + 3 + Math.round(Math.sin(a) * s * .52);
+          const tip = Math.sin(a) > 0 ? 1 : -1;
+          px(x, px0, py0 + tip, 2, 1, shade(col, R() > .5 ? 16 : -14));
+        }
+        px(x, ex, ey, 2, 1, shade(col, 24));
+      }
+      // Cuore della chioma e qualche fronda caduta, per non lasciare un buco.
+      ell(x, cx, topY + 3, 4, 3, '#537f40');
+      px(x, cx - 2, topY + 1, 3, 1, '#76a352');
+      px(x, cx + 11, topY + 8, 3, 1, '#6a8f49');
+      return this.cache[key] = c;
     },
     _rock(variant) {
       const key = 'rock' + variant; if (this.cache[key]) return this.cache[key];
@@ -610,6 +855,9 @@
     },
 
     /* ---------------------------------------------------------- personaggi */
+    /* La sagoma e l'ancoraggio dei piedi restano identici: cambiano solo le
+     * finiture a 1 px (collo, pieghe, scarpe, sopracciglia, riflessi sui capelli)
+     * in modo che il personaggio legga come figura a tre quarti e non a blocchi. */
     _character(look, dir, frame, mode) {
       const anim = mode || 'walk';
       const key = ['c5', look.hair, look.skin, look.shirt, look.pants, dir, frame, anim].join('|');
@@ -628,54 +876,85 @@
       const legA = anim === 'idle' ? 0 : (f === 1 ? stride : f === 3 ? -stride : 0);
       const armA = anim === 'idle' ? 0 : anim === 'run' ? (f === 1 ? -2 : f === 3 ? 2 : 0) : (f === 1 ? -1 : f === 3 ? 1 : 0);
       const isSide = dir === 'left' || dir === 'right';
-      px(x, 3, 22, 10, 2, 'rgba(18,22,28,.22)');
+      // Ombra di contatto con nucleo piu' scuro sotto i piedi.
+      px(x, 3, 22, 10, 2, 'rgba(18,22,28,.20)');
+      px(x, 5, 23, 6, 1, 'rgba(18,22,28,.16)');
       if (isSide) {
-        const lx = 6 + (f===1?1:f===3?-1:0);
-        px(x, lx, 17 + bob, 3, 4, look.pants); px(x, lx, 17+bob, 1, 3, pantsL);
-        px(x, lx+1, 21 + bob, 3, 2, shoe); px(x, lx+1, 22+bob, 3, 1, shoeD);
+        const lx = 6 + (f === 1 ? 1 : f === 3 ? -1 : 0);
+        px(x, lx, 17 + bob, 3, 4, look.pants); px(x, lx, 17 + bob, 1, 3, pantsL);
+        px(x, lx + 2, 18 + bob, 1, 3, pantsD);
+        px(x, lx + 1, 21 + bob, 3, 2, shoe); px(x, lx + 1, 22 + bob, 3, 1, shoeD);
+        px(x, lx + 1, 21 + bob, 2, 1, '#8a7160'); // laccio
       } else {
         px(x, 5, 17 + bob, 3, 4 + Math.max(0, legA), look.pants);
         px(x, 9, 17 + bob, 3, 4 + Math.max(0, -legA), look.pants);
         px(x, 5, 17 + bob, 1, 3, pantsL); px(x, 9, 17 + bob, 1, 3, pantsL);
+        px(x, 7, 18 + bob, 1, 3, pantsD); px(x, 11, 18 + bob, 1, 3, pantsD);
         px(x, 4, 21 + bob + legA, 4, 2, shoe); px(x, 9, 21 + bob - legA, 4, 2, shoe);
         px(x, 4, 22 + bob + legA, 4, 1, shoeD); px(x, 9, 22 + bob - legA, 4, 1, shoeD);
+        px(x, 5, 21 + bob + legA, 2, 1, '#8a7160'); px(x, 10, 21 + bob - legA, 2, 1, '#8a7160');
       }
       const bx = isSide ? 5 + (anim === 'run' ? (dir === 'left' ? -1 : 1) : 0) : 4, bw = isSide ? 6 : 8;
       px(x, bx, 11 + bob, bw, 7, look.shirt);
       px(x, bx, 11 + bob, bw, 1, shirtD); px(x, bx, 17 + bob, bw, 1, shirtD);
-      px(x, bx+1, 12 + bob, 2, 4, shirtL);
-      px(x, bx+2, 16 + bob, bw-4, 1, pantsD);
+      px(x, bx + 1, 12 + bob, 2, 4, shirtL);
+      px(x, bx + bw - 1, 12 + bob, 1, 5, shirtD);
+      px(x, bx + 2, 16 + bob, bw - 4, 1, pantsD); // cintura
+      px(x, bx + bw / 2 - 1 | 0, 16 + bob, 2, 1, '#c9a44a'); // fibbia
+      if (!isSide) {
+        px(x, bx + 3, 11 + bob, 2, 2, skinD); // scollo a V
+        px(x, bx + 3, 11 + bob, 1, 1, skinL);
+        px(x, bx + 1, 14 + bob, 2, 1, shirtD); // piega della manica
+      }
       if (isSide) {
         const ax = dir === 'left' ? 4 : 10;
         px(x, ax, 12 + bob + armA, 2, 4, look.shirt);
+        px(x, ax, 15 + bob + armA, 2, 1, shirtD);
         px(x, ax, 16 + bob + armA, 2, 2, look.skin);
+        px(x, ax, 17 + bob + armA, 1, 1, skinD);
       } else {
         px(x, 2, 12 + bob + armA, 2, 4, look.shirt); px(x, 12, 12 + bob - armA, 2, 4, look.shirt);
+        px(x, 2, 15 + bob + armA, 2, 1, shirtD); px(x, 12, 15 + bob - armA, 2, 1, shirtD);
         px(x, 2, 16 + bob + armA, 2, 2, look.skin); px(x, 12, 16 + bob - armA, 2, 2, look.skin);
+        px(x, 2, 17 + bob + armA, 1, 1, skinD); px(x, 13, 17 + bob - armA, 1, 1, skinD);
       }
       px(x, 7, 10 + bob, 2, 2, skinD);
       const hx = 4;
       px(x, hx, 3 + bob, 8, 8, look.skin);
-      px(x, hx-1, 5 + bob, 1, 5, look.skin); px(x, hx+8, 5 + bob, 1, 5, look.skin);
-      px(x, hx, 4 + bob, 1, 5, skinL); px(x, hx, 10 + bob, 8, 1, skinD);
-      px(x, hx-1, 2 + bob, 10, 3, look.hair); px(x, hx-1, 4 + bob, 1, 4, look.hair); px(x, hx+8, 4 + bob, 1, 4, look.hair);
+      px(x, hx - 1, 5 + bob, 1, 5, skinD); px(x, hx + 8, 5 + bob, 1, 5, skinL);
+      px(x, hx, 4 + bob, 1, 5, skinL); px(x, hx + 7, 4 + bob, 1, 5, skinD);
+      px(x, hx, 10 + bob, 8, 1, skinD);
+      px(x, hx - 1, 2 + bob, 10, 3, look.hair); px(x, hx - 1, 4 + bob, 1, 4, look.hair); px(x, hx + 8, 4 + bob, 1, 4, look.hair);
       px(x, hx, 1 + bob, 8, 1, hairL); px(x, hx, 2 + bob, 8, 1, hairD);
       if (dir === 'up') {
-        px(x, hx-1, 3 + bob, 10, 8, look.hair); px(x, hx+1, 5 + bob, 6, 4, hairD); px(x, hx, 2 + bob, 8, 1, hairL);
-      } else if (dir === 'left') {
-        px(x, hx, 4 + bob, 3, 6, look.hair);
-        px(x, hx+1, 7 + bob, 1, 2, d); px(x, hx+1, 7 + bob, 1, 1, '#fff');
-        px(x, hx+2, 9 + bob, 2, 1, shade(look.skin, -30));
-      } else if (dir === 'right') {
-        px(x, hx+5, 4 + bob, 3, 6, look.hair);
-        px(x, hx+6, 7 + bob, 1, 2, d); px(x, hx+6, 7 + bob, 1, 1, '#fff');
-        px(x, hx+4, 9 + bob, 2, 1, shade(look.skin, -30));
+        // Nuca: ciuffi e volume, nessun volto visibile.
+        px(x, hx - 1, 3 + bob, 10, 8, look.hair);
+        px(x, hx + 1, 5 + bob, 6, 4, hairD);
+        px(x, hx + 2, 4 + bob, 3, 1, hairL);
+        px(x, hx, 2 + bob, 8, 1, hairL);
+        px(x, hx - 1, 8 + bob, 2, 3, hairD);
+      } else if (dir === 'left' || dir === 'right') {
+        const front = dir === 'left' ? hx : hx + 5;
+        px(x, front, 4 + bob, 3, 6, look.hair);
+        px(x, dir === 'left' ? hx + 1 : hx + 6, 6 + bob, 2, 1, hairL);
+        const ex = dir === 'left' ? hx + 1 : hx + 6;
+        px(x, ex, 7 + bob, 1, 2, d); px(x, ex, 7 + bob, 1, 1, '#fff');
+        px(x, ex - (dir === 'left' ? 1 : -1), 6 + bob, 1, 1, hairD); // sopracciglio
+        px(x, dir === 'left' ? hx - 1 : hx + 8, 8 + bob, 1, 2, skinL); // naso di profilo
+        px(x, dir === 'left' ? hx + 1 : hx + 5, 9 + bob, 2, 1, shade(look.skin, -30));
+        px(x, dir === 'left' ? hx + 8 : hx, 4 + bob, 1, 5, hairD);
       } else {
-        px(x, hx+2, 7 + bob, 1, 2, d); px(x, hx+6, 7 + bob, 1, 2, d);
-        px(x, hx+2, 7 + bob, 1, 1, '#fff'); px(x, hx+6, 7 + bob, 1, 1, '#fff');
-        px(x, hx+4, 9 + bob, 1, 1, shade(look.skin, -30));
-        px(x, hx+3, 10 + bob, 3, 1, 'rgba(120,60,50,.18)');
+        // Fronte: sopracciglia, occhi con bianco, naso e bocca.
+        px(x, hx + 2, 6 + bob, 1, 1, hairD); px(x, hx + 6, 6 + bob, 1, 1, hairD);
+        px(x, hx + 2, 7 + bob, 1, 2, d); px(x, hx + 6, 7 + bob, 1, 2, d);
+        px(x, hx + 2, 7 + bob, 1, 1, '#fff'); px(x, hx + 6, 7 + bob, 1, 1, '#fff');
+        px(x, hx + 4, 8 + bob, 1, 1, skinD);
+        px(x, hx + 4, 9 + bob, 1, 1, shade(look.skin, -30));
+        px(x, hx + 3, 10 + bob, 3, 1, 'rgba(120,60,50,.20)');
+        px(x, hx + 2, 4 + bob, 2, 1, hairL);
+        px(x, hx + 8, 5 + bob, 1, 3, hairD);
       }
+      // L'ammiccamento dell'idle chiude gli occhi con la stessa tonalita' dei capelli.
       if (anim === 'idle' && f === 1 && !isSide) {
         px(x, hx + 2, 7 + bob, 1, 2, look.hair); px(x, hx + 6, 7 + bob, 1, 2, look.hair);
       }
@@ -752,6 +1031,10 @@
     },
 
     /* ------------------------------------------------------------- veicoli */
+    /* Vista dall'alto a tre quarti: parabrezza inclinato, passaruota, riflessi
+     * sui vetri e ombre di contatto. Le dimensioni dei canvas restano quelle
+     * storiche (30x20 / 20x30 px sorgente), così gli offset del motore e le
+     * impronte a terra non cambiano. */
     _vehicle(type, dir) {
       const key = ['veh', type, dir].join('|'); if (this.cache[key]) return this.cache[key];
       const vertical = dir === 'up' || dir === 'down';
@@ -762,79 +1045,174 @@
         scooter: '#c94f43', bike: '#4f8f6a'
       }[type] || '#3f8fae';
       const dark = '#24272c', glass = '#9fd0dd', light = '#ffe9a8', red = '#e8613c';
+      const rim = '#b9c0c1';
       const wheel = (wx, wy, r) => {
-        ell(x, wx, wy, r, r, dark); ell(x, wx, wy, r - 2, r - 2, '#8b8f95');
-        px(x, wx - 1, wy - 1, 2, 2, '#cfd4d4');
+        ell(x, wx, wy, r + 1, r + 1, 'rgba(20,23,26,.20)');
+        ell(x, wx, wy, r, r, dark);
+        ell(x, wx, wy, r - 1, r - 1, '#545b61');
+        ell(x, wx, wy, r - 2, r - 2, rim);
+        px(x, wx - 1, wy - 1, 2, 2, '#e6eae6');
+        for (let a = 0; a < 360; a += 90) {
+          const rad = a * Math.PI / 180;
+          px(x, wx + Math.round(Math.cos(rad) * (r - 1)) - 1,
+                wy + Math.round(Math.sin(rad) * (r - 1)) - 1, 2, 2, '#727a7e');
+        }
+      };
+      const arch = (wx, wy) => {
+        ell(x, wx, wy + 1, 6, 5, shade(body, -58));
+        ell(x, wx, wy + 1, 5, 4, '#34393d');
+      };
+      const lamp = (lx, ly, head) => {
+        px(x, lx, ly, 3, 2, head ? light : red);
+        px(x, lx, ly, 2, 1, head ? '#fffbe2' : '#ff9a73');
+        if (head) px(x, lx + (dir === 'left' || dir === 'up' ? -1 : 3), ly, 1, 2, 'rgba(255,232,160,.30)');
       };
 
       if (!vertical) {
         const frontRight = dir === 'right';
-        const nose = frontRight ? W - 4 : 2;
-        const tail = frontRight ? 2 : W - 4;
-        ell(x, W / 2, 17, W / 2 - 3, 2, 'rgba(0,0,0,.18)');
+        // MX rispecchia i dettagli direzionali: il lato "avanti" e' sempre a destra.
+        const MX = a => frontRight ? a : W - a;
+        ell(x, W / 2, 17, W / 2 - 3, 2, 'rgba(0,0,0,.20)');
         if (type === 'bike') {
           wheel(6, 15, 4); wheel(W - 6, 15, 4);
-          px(x, 7, 11, 10, 2, body); px(x, 9, 8, 2, 4, body);
-          px(x, 15, 10, 5, 1, '#b8bcc0'); px(x, 5, 7, 6, 2, frontRight ? body : dark);
-          px(x, W - 7, 7, 4, 2, frontRight ? light : red);
-          px(x, 11, 12, 3, 2, '#2f6a4d');
+          // Telaio a triangolo, forcella, catena e sella: non una barra piatta.
+          line(x, 6, 15, 11, 10, shade(body, 18), 2);
+          line(x, 11, 10, W - 6, 15, shade(body, -12), 2);
+          line(x, 6, 15, W - 6, 15, shade(body, -26), 1);
+          line(x, 11, 10, 9, 15, body, 2);
+          line(x, W - 6, 8, W - 6, 15, '#9aa2a4', 1);
+          px(x, 8, 8, 6, 2, dark); px(x, 9, 7, 4, 1, shade(body, 26));
+          px(x, MX(W - 10), 7, 6, 2, dark); px(x, MX(W - 9), 6, 4, 1, '#cdd3d0');
+          px(x, 10, 12, 4, 2, '#2f6a4d'); px(x, 11, 13, 3, 1, '#8b6a3f');
+          px(x, 6, 11, 7, 1, shade(body, -20)); px(x, W - 11, 11, 6, 1, shade(body, -20));
+          lamp(MX(W - 8), 8, true); px(x, MX(3), 10, 2, 2, red);
+          px(x, 12, 16, 2, 1, '#d7c98f'); // pedale
         } else if (type === 'scooter') {
-          wheel(6, 15, 4); wheel(W - 6, 15, 4);
-          px(x, 6, 9, 14, 5, body); px(x, 8, 7, 8, 3, shade(body, 24));
-          px(x, W - 8, 5, 2, 6, dark); px(x, W - 10, 4, 6, 2, dark);
-          px(x, 7, 13, 12, 1, shade(body, -40)); px(x, 8, 10, 3, 2, '#f0d58a');
-          px(x, nose, 8, 3, 2, frontRight ? light : red);
+          const ax = 6, bx = W - 6;
+          wheel(ax, 15, 4); wheel(bx, 15, 4);
+          px(x, ax, 10, bx - ax, 5, shade(body, -16));
+          poly(x, [[ax + 1, 10], [bx - 2, 10], [bx - 3, 8], [ax + 3, 8]], body);
+          px(x, ax + 2, 10, bx - ax - 5, 1, shade(body, 30));
+          px(x, ax + 2, 13, bx - ax - 5, 1, 'rgba(20,18,16,.24)');
+          // Scudo anteriore inclinato, faro, specchio e parafango posteriore.
+          poly(x, [[bx - 4, 12], [bx - 1, 12], [bx + 1, 4], [bx - 2, 4]], shade(body, 12));
+          px(x, bx - 2, 5, 3, 2, light); px(x, bx - 2, 5, 1, 1, '#fffbe2');
+          line(x, bx - 1, 4, bx - 3, 1, '#666f72', 1);
+          px(x, bx - 6, 1, 4, 1, '#8b9496');
+          px(x, ax + 1, 6, 7, 3, '#3b3f42'); px(x, ax + 2, 6, 5, 1, shade(body, 24));
+          px(x, ax - 1, 12, 6, 1, shade(body, -28));
+          px(x, ax + 4, 13, 3, 3, '#585f62'); // scarico
+          px(x, MX(9), 9, 3, 2, '#f0d58a'); // cassetto portaoggetti
+          lamp(MX(W - 5), 8, true); px(x, MX(3), 9, 2, 2, red);
         } else if (type === 'bus') {
-          wheel(7, 16, 4); wheel(W - 7, 16, 4);
-          px(x, 2, 4, W - 4, 12, body); px(x, 3, 5, 7, 5, glass);
-          px(x, 12, 5, 7, 5, glass); px(x, 21, 5, 7, 5, glass);
-          px(x, 2, 13, W - 4, 3, shade(body, -42));
-          px(x, frontRight ? W - 4 : 2, 10, 3, 2, frontRight ? light : red);
-          px(x, 3, 16, 4, 2, '#eee6c8'); px(x, W - 7, 16, 4, 2, '#eee6c8');
+          const wheels = [7, W - 7];
+          px(x, 1, 4, W - 2, 13, body);
+          px(x, 2, 5, W - 4, 2, shade(body, 26));
+          px(x, 2, 14, W - 4, 2, shade(body, -40));
+          for (let wx = 4; wx < W - 7; wx += 8) {
+            px(x, wx, 7, 6, 5, glass);
+            px(x, wx, 7, 6, 1, 'rgba(255,255,255,.30)');
+            px(x, wx, 11, 6, 1, '#5d6e70');
+            px(x, wx + 6, 7, 1, 5, shade(body, -20));
+          }
+          // Porta anteriore, corsia e insegna della linea.
+          px(x, MX(W - 9), 7, 5, 7, '#6f7674');
+          px(x, MX(W - 8), 8, 3, 5, glass);
+          px(x, MX(W - 9), 7, 1, 7, '#e9e2cb');
+          px(x, MX(W - 7), 3, 6, 2, '#3d4147');
+          px(x, MX(W - 6), 3, 4, 1, '#f6e27a');
+          for (let i = 3; i < W - 3; i += 6) px(x, i, 16, 2, 1, 'rgba(20,20,18,.24)');
+          for (const wx of wheels) { arch(wx, 16); wheel(wx, 16, 4); }
+          lamp(MX(W - 4), 11, true); px(x, MX(1), 11, 2, 2, red);
+          px(x, 6, 2, 10, 2, shade(body, -30)); // botola sul tetto
         } else {
-          wheel(7, 15, 4); wheel(W - 7, 15, 4);
-          px(x, 2, 8, W - 4, 7, body);
+          const wheels = [7, W - 7];
+          px(x, 2, 11, W - 4, 6, body);
+          px(x, 3, 11, W - 6, 1, shade(body, 28));
+          px(x, 2, 16, W - 4, 1, shade(body, -48));
           if (type === 'van') {
-            px(x, 2, 5, W - 4, 10, body); px(x, frontRight ? W - 11 : 3, 6, 8, 4, glass);
-            px(x, 4, 8, W - 8, 1, '#4a87b8'); px(x, 4, 13, W - 8, 1, '#4a87b8');
+            poly(x, [[3, 12], [4, 5], [W - 5, 5], [W - 4, 12]], body);
+            px(x, 4, 5, W - 8, 1, shade(body, 32));
+            px(x, MX(W - 11), 6, 8, 4, glass);
+            px(x, MX(W - 11), 6, 4, 1, 'rgba(255,255,255,.34)');
+            line(x, MX(13), 6, MX(13), 16, shade(body, -34), 1); // porta scorrevole
+            px(x, MX(15), 12, 3, 1, '#d7d3c2');
+            for (let i = 5; i < 12; i += 3) px(x, MX(5), i, 6, 1, shade(body, -16));
           } else {
-            px(x, 6, 5, W - 12, 4, shade(body, 18)); px(x, 8, 6, 7, 3, glass);
-            px(x, W - 15, 6, 6, 3, shade(glass, -25)); px(x, 15, 6, 1, 3, shade(body, -30));
+            poly(x, [[6, 12], [9, 6], [W - 10, 6], [W - 6, 12]], shade(body, 14));
+            poly(x, [[8, 11], [10, 7], [W - 12, 7], [W - 8, 11]], glass);
+            px(x, MX(10), 7, 5, 1, 'rgba(255,255,255,.36)');
+            px(x, MX(W - 12), 7, 3, 4, shade(glass, -26));
+            line(x, MX(W / 2), 7, MX(W / 2), 12, shade(body, -34), 1);
+            px(x, MX(W / 2 - 5), 13, 3, 1, '#efe4c2'); // maniglia
+            px(x, MX(W - 8), 11, 3, 1, '#666f72'); // specchietto
+            if (type === 'taxi') {
+              px(x, W / 2 - 3, 1, 6, 3, '#f6e27a');
+              px(x, W / 2 - 2, 2, 4, 1, dark);
+              px(x, W / 2 - 3, 3, 6, 1, shade('#f6e27a', -30));
+              for (let i = 5; i < W - 5; i += 4) {
+                px(x, i, 14, 2, 2, (i / 4 | 0) % 2 ? dark : '#f5f0df');
+              }
+              px(x, W / 2 - 1, 10, 2, 2, '#f6e27a'); // medaglione
+            }
           }
-          px(x, 2, 13, W - 4, 2, shade(body, -45));
-          px(x, nose, 9, 3, 2, frontRight ? light : red);
-          px(x, tail, 10, 2, 2, frontRight ? red : light);
-          if (type === 'taxi') {
-            px(x, W / 2 - 3, 1, 6, 3, '#f6e27a'); px(x, W / 2 - 2, 2, 4, 1, dark);
-            for (let i = 4; i < W - 4; i += 4) px(x, i, 12, 2, 1, i % 8 ? dark : '#f5f0df');
-          }
+          for (const wx of wheels) { arch(wx, 15); wheel(wx, 15, 4); }
+          lamp(MX(W - 3), 10, true); px(x, MX(1), 11, 2, 2, red);
+          px(x, MX(W - 2), 13, 2, 1, '#d7c98f'); // targa
         }
       } else {
         const front = dir === 'down';
-        ell(x, 10, 27, 8, 2, 'rgba(0,0,0,.18)');
+        ell(x, 10, 27, 8, 2, 'rgba(0,0,0,.20)');
         if (type === 'bike' || type === 'scooter') {
           wheel(10, 24, 4);
-          px(x, 8, 11, 4, 12, body); px(x, 6, 9, 8, 3, dark);
-          px(x, 4, 10, 12, 2, shade(body, -30));
-          px(x, 7, 14, 6, 4, front ? glass : shade(body, -20));
-          px(x, front ? 8 : 7, 20, 2, 2, front ? light : red);
-          px(x, front ? 11 : 11, 20, 2, 2, front ? light : red);
+          poly(x, [[8, 22], [12, 22], [11, 10], [9, 10]], body);
+          px(x, 7, 9, 6, 3, dark); px(x, 8, 9, 4, 1, shade(body, 26));
+          px(x, 4, 10, 12, 2, '#9aa2a4'); // manubrio
+          px(x, 4, 9, 2, 2, '#6f7779'); px(x, 14, 9, 2, 2, '#6f7779');
+          px(x, 7, 14, 6, 5, front ? glass : shade(body, -20));
+          px(x, 8, 14, 2, 2, 'rgba(255,255,255,.30)');
+          px(x, 8, 20, 4, 2, shade(body, -30)); // pedana
+          lamp(8, 22, front); lamp(11, 22, front);
+          if (type === 'scooter') {
+            px(x, 6, 6, 8, 3, shade(body, 18));
+            px(x, 8, 5, 4, 1, '#f0d58a');
+            px(x, 5, 17, 2, 4, shade(body, -24)); px(x, 13, 17, 2, 4, shade(body, -24));
+          } else {
+            px(x, 9, 11, 2, 10, '#4a5154'); // telaio
+            px(x, 7, 16, 6, 1, shade(body, -20));
+          }
         } else {
-          wheel(2, 21, 4); wheel(18, 21, 4);
-          px(x, 3, 7, 14, 16, body);
-          px(x, 4, 4, 12, 4, shade(body, 20));
-          px(x, 4, 8, 12, 5, front ? glass : shade(glass, -35));
-          px(x, 5, 9, 4, 1, '#e9f5f3');
-          px(x, 4, 14, 12, 5, shade(body, -12));
-          px(x, 1, 12, 3, 2, shade(body, -25)); px(x, 16, 12, 3, 2, shade(body, -25));
-          px(x, 7, 17, 6, 2, dark); px(x, 8, 21, 4, 2, '#e9e3cf');
-          px(x, front ? 4 : 4, 20, 3, 2, front ? light : red);
-          px(x, 13, 20, 3, 2, front ? light : red);
-          if (type === 'taxi') px(x, 7, 2, 6, 3, '#f6e27a');
-          if (type === 'van') { px(x, 4, 8, 12, 5, shade(glass, -15)); px(x, 4, 13, 12, 2, '#4a87b8'); }
+          const wheels = [2, 18];
+          poly(x, [[5, 8], [15, 8], [18, 22], [2, 22]], body);
+          px(x, 5, 8, 10, 1, shade(body, 30));
+          poly(x, [[7, 8], [13, 8], [15, 14], [5, 14]], shade(body, 16));
+          px(x, 6, 9, 8, 5, front ? glass : shade(glass, -35));
+          px(x, 6, 9, 3, 2, 'rgba(255,255,255,.34)');
+          px(x, 4, 15, 12, 5, shade(body, -14));
+          px(x, 4, 19, 12, 2, shade(body, -35));
+          px(x, 1, 12, 3, 3, shade(body, -28)); // specchietti
+          px(x, 16, 12, 3, 3, shade(body, -28));
+          px(x, 5, 17, 10, 1, shade(body, -46));
+          px(x, 7, 17, 6, 2, dark); px(x, 8, 21, 4, 2, '#e9e3cf'); // targa
+          for (const wx of wheels) { arch(wx, 21); wheel(wx, 21, 4); }
+          lamp(4, 20, front); lamp(13, 20, front);
+          px(x, 8, 6, 4, 1, 'rgba(255,255,255,.24)'); // riflesso sul tetto
+          if (type === 'taxi') {
+            px(x, 7, 2, 6, 4, '#f6e27a');
+            px(x, 8, 3, 4, 1, dark);
+            px(x, 7, 5, 6, 1, shade('#f6e27a', -28));
+          }
+          if (type === 'van') {
+            px(x, 6, 9, 8, 5, shade(glass, -15));
+            px(x, 6, 15, 8, 2, '#4a87b8');
+            px(x, 9, 10, 2, 4, shade(body, -22)); // linee del cofano
+          }
           if (type === 'bus') {
-            px(x, 3, 5, 14, 4, dark); px(x, 5, 6, 10, 2, '#f6e27a');
-            px(x, 4, 8, 12, 6, glass); px(x, 3, 15, 14, 4, shade(body, -35));
+            px(x, 4, 4, 12, 4, dark); px(x, 6, 5, 8, 2, '#f6e27a');
+            px(x, 5, 9, 10, 6, glass);
+            px(x, 9, 9, 2, 6, '#d8ddd4'); px(x, 6, 13, 8, 1, 'rgba(255,255,255,.24)');
+            px(x, 3, 16, 14, 4, shade(body, -35));
+            px(x, 7, 3, 6, 1, 'rgba(255,255,255,.30)');
           }
         }
       }
@@ -974,31 +1352,72 @@
       return this.cache[key] = c;
     },
     /* Facciate dei nuovi contesti: senza asset M1 dedicati l'architettura viene
-     * ricostruita (finestre regolari, cornici, plinti, materiali) con RNG per kind. */
+     * ricostruita con giunti regolari, aperture incassate e profili in rilievo.
+     * Niente texture casuale: ogni motivo e' una corsa di rivestimento o un
+     * elemento architettonico ripetuto con passo costante. */
     _facadeProcedural(kind, S, x, W, H, R) {
-      const poly = (pts, col) => {
-        x.fillStyle = col; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
-        for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
-        x.closePath(); x.fill();
-      };
-      const noise = n => {
-        for (let i = 0; i < n; i++) px(x, (R() * W) | 0, (R() * H) | 0, 1, 1,
-          R() > .5 ? 'rgba(255,255,255,.055)' : 'rgba(0,0,0,.055)');
+      // Corsi di muratura sfalsati: danno profondita' senza rumore casuale.
+      const courses = (course, joint, col, y0, y1) => {
+        for (let yy = y0; yy < y1; yy += course) {
+          px(x, 0, yy, W, 1, col);
+          const off = ((yy - y0) / course % 2) * (joint / 2 | 0);
+          for (let xx = off; xx < W; xx += joint) px(x, xx, yy + 1, 1, course - 1, col);
+        }
       };
       const cornice = (y, h, col) => {
-        px(x, 0, y, W, h, col); px(x, 0, y, W, 1, shade(col, 22));
-        px(x, 0, y + h - 1, W, 1, shade(col, -24));
+        px(x, 0, y, W, h, col); px(x, 0, y, W, 1, shade(col, 26));
+        px(x, 0, y + h - 1, W, 1, shade(col, -28));
+        for (let i = 3; i < W - 2; i += 8) px(x, i, y + h, 3, 2, shade(col, -16));
       };
       const plinth = (h, col) => {
-        px(x, 0, H - h, W, h, col); px(x, 0, H - h, W, 2, shade(col, 24));
-        px(x, 0, H - 2, W, 2, shade(col, -28));
+        px(x, 0, H - h, W, h, col); px(x, 0, H - h, W, 2, shade(col, 26));
+        px(x, 0, H - h + 3, W, 1, shade(col, -22));
+        px(x, 0, H - 2, W, 2, shade(col, -32));
+        for (let i = 8; i < W; i += 24) px(x, i, H - h + 4, 1, h - 6, 'rgba(20,20,18,.14)');
       };
+      const roofTiles = (y, h, col) => {
+        px(x, 0, y, W, h, col);
+        for (let i = 0; i < W; i += 8) {
+          ell(x, i + 4, y + h - 4, 4, 3, shade(col, 18));
+          px(x, i + 3, y + h - 5, 2, 2, shade(col, -24));
+        }
+      };
+      // Finestra con risega, architrave, vetro diviso e davanzale in ombra.
       const win = (wx, wy, ww, wh, frame, glass, sill) => {
-        px(x, wx, wy, ww, wh, frame || '#6e6a60');
-        px(x, wx + 2, wy + 2, ww - 4, wh - 4, glass || '#7597a4');
-        px(x, wx + 2, wy + 2, ww - 4, 2, 'rgba(255,255,255,.28)');
-        px(x, wx + 2, wy + wh - 5, ww - 4, 3, 'rgba(20,28,34,.32)');
-        px(x, wx - 1, wy + wh, ww + 2, 2, sill || S.trim);
+        frame = frame || '#6e6a60'; glass = glass || '#7597a4';
+        px(x, wx - 2, wy - 2, ww + 4, wh + 4, 'rgba(20,22,20,.13)');
+        px(x, wx - 1, wy - 2, ww + 2, 2, shade(frame, 20));
+        px(x, wx, wy, ww, wh, frame);
+        px(x, wx + 2, wy + 2, ww - 4, wh - 4, '#3b4448');
+        px(x, wx + 3, wy + 3, ww - 6, wh - 6, glass);
+        px(x, wx + 3, wy + 3, ww - 6, 2, 'rgba(255,255,255,.32)');
+        px(x, wx + 3, wy + wh - 6, ww - 6, 3, 'rgba(18,26,30,.34)');
+        px(x, wx + ww / 2 - 1 | 0, wy + 3, 2, wh - 6, shade(frame, 18));
+        px(x, wx + 3, wy + wh / 2 | 0, ww - 6, 1, shade(frame, 12));
+        px(x, wx - 2, wy + wh, ww + 4, 2, sill || S.trim);
+        px(x, wx - 2, wy + wh + 2, ww + 4, 1, 'rgba(20,20,18,.24)');
+      };
+      const shutters = (wx, wy, ww, wh, col) => {
+        col = col || '#4f6f5a';
+        for (const sx of [wx - 5, wx + ww + 1]) {
+          px(x, sx, wy + 1, 4, wh - 2, shade(col, -26));
+          px(x, sx + 1, wy + 2, 2, wh - 4, col);
+          for (let yy = wy + 4; yy < wy + wh - 2; yy += 3) px(x, sx + 1, yy, 2, 1, shade(col, 22));
+          px(x, sx, wy + 1, 4, 1, shade(col, 24));
+        }
+      };
+      const balcony = (wx, wy, ww) => {
+        px(x, wx - 3, wy + 14, ww + 6, 3, shade(S.trim, -24));
+        px(x, wx - 3, wy + 12, ww + 6, 2, S.trim);
+        px(x, wx - 3, wy + 17, ww + 6, 1, 'rgba(20,20,18,.26)');
+        for (let i = wx - 2; i < wx + ww + 2; i += 3) {
+          px(x, i, wy + 5, 1, 8, '#4f595e');
+          px(x, i + 1, wy + 5, 1, 8, 'rgba(210,220,220,.24)');
+        }
+        px(x, wx - 3, wy + 4, ww + 6, 1, '#59636a');
+        px(x, wx - 3, wy + 12, ww + 6, 1, '#59636a');
+        px(x, wx + 2, wy + 8, 4, 4, '#a45b45');
+        px(x, wx + 2, wy + 5, 3, 3, '#4e8b50'); px(x, wx + 3, wy + 4, 1, 1, '#d95e52');
       };
       const grid = (cols, rows, x0, y0, sx, sy, ww, wh, fn) => {
         for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
@@ -1008,31 +1427,63 @@
         }
       };
       const arch = (ax, ay, aw, ah, frame, glass) => {
+        frame = frame || '#8e7c62'; glass = glass || '#4b463f';
+        px(x, ax - 3, ay + aw / 2 - 2, aw + 6, ah - aw / 2 + 4, 'rgba(20,20,18,.14)');
         x.fillStyle = frame; x.beginPath();
         x.arc(ax + aw / 2, ay + aw / 2, aw / 2, Math.PI, 0); x.fill();
         px(x, ax, ay + aw / 2, aw, ah - aw / 2, frame);
-        x.fillStyle = glass; x.beginPath();
+        x.fillStyle = '#3b4144'; x.beginPath();
         x.arc(ax + aw / 2, ay + aw / 2, aw / 2 - 3, Math.PI, 0); x.fill();
-        px(x, ax + 3, ay + aw / 2, aw - 6, ah - aw / 2 - 2, glass);
+        px(x, ax + 3, ay + aw / 2, aw - 6, ah - aw / 2 - 2, '#3b4144');
+        x.fillStyle = glass; x.beginPath();
+        x.arc(ax + aw / 2, ay + aw / 2, aw / 2 - 5, Math.PI, 0); x.fill();
+        px(x, ax + 5, ay + aw / 2, aw - 10, ah - aw / 2 - 4, glass);
+        px(x, ax + aw / 2 - 1 | 0, ay + aw / 2, 2, ah - aw / 2 - 2, '#9b8f78');
+        for (let a = -150; a <= -30; a += 30) {
+          const rad = a * Math.PI / 180;
+          px(x, ax + aw / 2 + Math.round(Math.cos(rad) * (aw / 2 - 1)) - 1,
+                ay + aw / 2 + Math.round(Math.sin(rad) * (aw / 2 - 1)) - 1, 3, 2, shade(frame, 26));
+        }
+        px(x, ax + aw / 2 - 2, ay - 3, 4, 5, shade(frame, 30)); // chiave di volta
+        px(x, ax - 3, ay + ah, aw + 6, 2, shade(frame, -18));
       };
       const door = (dx, dy, dw, dh, leaf) => {
         leaf = leaf || '#6f5237';
-        px(x, dx - 3, dy - 3, dw + 6, 3, S.trim);
-        px(x, dx, dy, dw, dh, '#4a3a2c');
-        px(x, dx + 2, dy + 2, dw - 4, dh - 2, leaf);
-        px(x, dx + dw / 2 - 1, dy + 3, 2, dh - 3, shade(leaf, -26));
-        px(x, dx + dw - 5, dy + dh / 2, 2, 2, '#d4b04f');
+        px(x, dx - 4, dy - 4, dw + 8, 3, shade(S.trim, -12));
+        px(x, dx - 3, dy - 2, dw + 6, 2, S.trim);
+        px(x, dx, dy, dw, dh, '#3d352c');
+        px(x, dx + 2, dy + 2, dw - 4, dh - 3, leaf);
+        px(x, dx + 3, dy + 3, dw / 2 - 4 | 0, 5, shade(leaf, 18));
+        px(x, dx + dw / 2 + 1 | 0, dy + 3, dw / 2 - 4 | 0, 5, shade(leaf, 12));
+        px(x, dx + dw / 2 - 1 | 0, dy + 3, 2, dh - 3, shade(leaf, -30));
+        px(x, dx + 4, dy + 11, dw - 8, dh - 14, shade(leaf, -14));
+        px(x, dx + 5, dy + 12, dw - 10, 1, shade(leaf, 20));
+        px(x, dx + dw - 6, dy + dh / 2 | 0, 2, 2, '#d4b04f');
+        px(x, dx - 5, dy + dh, dw + 10, 2, shade(S.trim, -26));
       };
-      noise((W * H / 26) | 0);
       switch (kind) {
         case 'fuorigrotta_blocco': {
-          // Blocco razionalista: 5 piani, griglia regolare, tetto piano.
+          // Blocco razionalista di Luigi Cosenza: cinque piani, balconi a
+          // sbalzo, portico ad archi al piano terra e panni stesi ai balconi.
+          courses(12, 16, 'rgba(70,66,58,.07)', 8, H - 12);
           grid(9, 5, 12, 18, 20, 24, 11, 14, (wx, wy, ww, wh, r, c) => {
-            if (r === 4 && c === 4) return;
+            if (r === 4) return; // il piano terra e' il portico, non una griglia di finestre
             win(wx, wy, ww, wh, '#7a7569', '#708c99');
+            if (r >= 1 && r <= 3) balcony(wx, wy, ww);
+            if ((r === 1 && c % 3 === 1) || (r === 3 && c % 3 === 0)) {
+              // Panni tra due balconi: geometria fissa, non texture casuale.
+              px(x, wx + ww + 1, wy + 7, 7, 1, '#ddd8cb');
+              px(x, wx + ww + 2, wy + 8, 5, 3, c % 2 ? '#8a9fb0' : '#b36b55');
+              px(x, wx + ww + 3, wy + 9, 3, 1, 'rgba(255,255,255,.24)');
+            }
           });
-          for (const yy of [38, 62, 86, 110]) cornice(yy, 2, '#c3c0b5');
-          door(88, 114, 16, 18);
+          for (let c = 0; c < 9; c++) {
+            if (c === 4) continue; // varco d'ingresso
+            arch(16 + c * 20, 112, 13, 20, '#b6b1a3', '#4f5558');
+          }
+          for (const yy of [38, 62, 86, 104]) cornice(yy, 2, '#c3c0b5');
+          px(x, 78, 106, 36, 5, '#a9a69b'); // aggetto sopra l'ingresso
+          door(88, 112, 16, 20);
           cornice(0, 8, S.roof);
           plinth(12, '#8f8c82');
           break;
@@ -1040,13 +1491,18 @@
         case 'fuorigrotta_torre': {
           // Torre razionalista: 8 piani, finestre più alte e marcapiani stretti.
           // Passo di piano 26 px = 3,25 m: dentro il limite documentato di 3,3 m.
+          courses(13, 12, 'rgba(70,66,58,.06)', 8, H - 12);
           grid(6, 8, 8, 16, 24, 26, 13, 17, (wx, wy, ww, wh, r, c) => {
             if (r === 7 && (c === 2 || c === 3)) return;
             win(wx, wy, ww, wh, '#78746a', '#6f8a97');
+            // Pinne verticali in cemento: ritmo della torre, non righe piatte.
+            px(x, wx - 3, wy - 2, 2, wh + 5, '#c6c3b8');
+            px(x, wx - 3, wy - 2, 1, wh + 5, '#e0ddd2');
           });
           for (const yy of [38, 64, 90, 116, 142, 168, 194]) cornice(yy, 2, '#c1beb3');
           door(72, 196, 16, 25);
           cornice(0, 8, S.roof);
+          px(x, 58, 2, 44, 5, '#8d8a80'); px(x, 64, 4, 32, 2, '#b5b1a6'); // cassonetto sul tetto
           plinth(12, '#8b887f');
           break;
         }
@@ -1056,44 +1512,59 @@
           for (let wx = 18; wx < 180; wx += 22) {
             px(x, wx, 40, 13, 168, '#9fa9a6'); px(x, wx + 2, 44, 9, 160, '#7fa7b3');
             px(x, wx + 2, 44, 9, 3, 'rgba(255,255,255,.28)'); px(x, wx, 208, 13, 3, '#b6b5aa');
+            for (let my = 60; my < 204; my += 24) px(x, wx + 2, my, 9, 1, 'rgba(220,232,228,.34)');
+            px(x, wx + 5, 44, 1, 160, '#c3c7c0');
           }
           for (let wx = 380; wx < 545; wx += 22) {
             px(x, wx, 40, 13, 168, '#9fa9a6'); px(x, wx + 2, 44, 9, 160, '#7fa7b3');
             px(x, wx + 2, 44, 9, 3, 'rgba(255,255,255,.28)'); px(x, wx, 208, 13, 3, '#b6b5aa');
+            for (let my = 60; my < 204; my += 24) px(x, wx + 2, my, 9, 1, 'rgba(220,232,228,.34)');
+            px(x, wx + 5, 44, 1, 160, '#c3c7c0');
           }
           px(x, 182, 36, 196, 180, '#8d948e'); px(x, 186, 40, 188, 172, '#79a8b6');
           for (let mx = 186; mx < 374; mx += 14) px(x, mx, 40, 2, 172, '#c3c7c0');
           for (const my of [80, 120, 160]) px(x, 186, my, 188, 2, '#c3c7c0');
           px(x, 186, 40, 188, 3, 'rgba(255,255,255,.24)');
+          // Aggetto della marquee con lampadine e ombra proiettata sul vetro.
+          px(x, 178, 212, 204, 6, '#e3e0d2'); px(x, 178, 218, 204, 2, '#8f9188');
+          for (let lx = 186; lx < 376; lx += 12) { px(x, lx, 214, 2, 2, '#f4d98a'); px(x, lx, 216, 1, 1, '#fff4c8'); }
           cornice(216, 5, '#c1c0b5'); door(260, 221, 40, 51, '#5d6b70');
           px(x, 236, H - 8, 88, 8, '#a9a79c');
+          px(x, 240, H - 8, 80, 1, '#d3d0c4');
           break;
         }
         case 'fuorigrotta_stadio': {
-          // Stadio Maradona: ellisse di cemento, corsia in mattone e prato
-          // rettangolare. La vista dall'alto è coerente con la camera del gioco
-          // e con la pianta ellittica documentata da OSM way 22790881.
+          // Stadio Maradona: ellisse di cemento, corsia in mattone e prato.
+          // La vista dall'alto e' coerente con la pianta OSM way 22790881.
           ell(x, W / 2, H / 2 + 4, 101, 71, '#8e948e');
           ell(x, W / 2, H / 2 + 2, 98, 68, '#d4d5cd');
+          ell(x, W / 2, H / 2 + 2, 94, 64, '#bcbfb6');
           ell(x, W / 2, H / 2 + 2, 88, 59, '#b56d55');
           ell(x, W / 2, H / 2 + 2, 82, 53, '#7d9b6d');
           const fx = W / 2, fy = H / 2 + 1;
+          // Gradoni a fasce concentriche e corsia con corsie interne.
+          for (let rr = 0; rr < 3; rr++) {
+            x.strokeStyle = rr % 2 ? 'rgba(90,96,90,.20)' : 'rgba(235,235,220,.16)';
+            x.lineWidth = 2; x.beginPath();
+            x.ellipse(fx, fy + 2, 96 - rr * 4, 66 - rr * 3, 0, 0, Math.PI * 2); x.stroke();
+          }
           px(x, fx - 54, fy - 23, 108, 46, '#e7e5d6');
           px(x, fx - 51, fy - 20, 102, 40, '#628d54');
+          for (let gy = fy - 17; gy < fy + 20; gy += 10) px(x, fx - 51, gy, 102, 3, '#6d9a5c');
           px(x, fx - 51, fy - 20, 102, 3, '#77a365');
           px(x, fx - 1, fy - 20, 2, 40, '#e9e8d8');
+          px(x, fx - 49, fy - 18, 2, 36, 'rgba(233,232,216,.60)');
+          px(x, fx + 47, fy - 18, 2, 36, 'rgba(233,232,216,.60)');
           ell(x, fx, fy, 9, 9, 'rgba(233,232,216,.85)');
-          for (let a = 0; a < 360; a += 15) {
-            const rad = a * Math.PI / 180;
-            px(x, fx + Math.round(Math.cos(rad) * 93), fy + 2 + Math.round(Math.sin(rad) * 63), 2, 2, '#a8aaa1');
-          }
+          ell(x, fx, fy, 6, 6, '#628d54'); ell(x, fx, fy, 3, 3, '#e9e8d8');
+          // Porte e ripe del settore sud.
           for (const ex of [44, 96, 148]) {
             px(x, ex, H - 18, 16, 18, '#8f9490');
             px(x, ex + 2, H - 14, 12, 14, '#5f6663');
             px(x, ex + 6, H - 14, 4, 14, '#404745');
+            px(x, ex + 2, H - 16, 12, 2, '#bcc0b7');
           }
-          // Ali laterali: gradoni e servizi leggibili anche ai margini, non
-          // semplici bande piatte create dall'aspect-fit.
+          // Ali laterali: gradoni e servizi leggibili anche ai margini.
           for (let sy = 12; sy < H - 12; sy += 10) {
             px(x, 0, sy, 18, 2, '#aeb2aa'); px(x, W - 18, sy, 18, 2, '#aeb2aa');
             px(x, 0, sy + 5, 12, 1, '#c4c7bd'); px(x, W - 12, sy + 5, 12, 1, '#c4c7bd');
@@ -1103,6 +1574,11 @@
             px(x, sx, 8, 2, H - 16, '#767e78');
             px(x, W - 2 - sx, 8, 2, H - 16, '#767e78');
           }
+          // Torri faro: due pali con corpi illuminanti e riflesso.
+          for (const lx of [14, W - 18]) {
+            px(x, lx, 6, 2, 26, '#9fa49c'); px(x, lx - 3, 5, 8, 5, '#d8dcd2');
+            px(x, lx - 2, 6, 6, 3, '#f0e9b8'); px(x, lx - 1, 5, 4, 1, '#fdf3cf');
+          }
           px(x, 0, 0, W, 4, S.roof); px(x, 0, H - 4, W, 4, S.roof);
           px(x, 0, 0, 3, H, S.roof); px(x, W - 3, 0, 3, H, S.roof);
           break;
@@ -1111,12 +1587,17 @@
           // Padiglione espositivo: campate vetrate continue tra pilastri in cemento.
           cornice(0, 10, S.roof); px(x, 0, 10, W, 6, '#d9d6ca');
           px(x, 8, 20, W - 16, 108, '#8ba7ac'); px(x, 10, 22, W - 20, 104, '#a8c8d0');
-          for (let mx = 10; mx < W - 10; mx += 12) px(x, mx, 22, 2, 104, '#d7d8cf');
+          for (let mx = 10; mx < W - 10; mx += 12) {
+            px(x, mx, 22, 2, 104, '#d7d8cf');
+            px(x, mx + 3, 24, 4, 2, 'rgba(255,255,255,.30)');
+          }
           px(x, 10, 70, W - 20, 2, '#d7d8cf');
           for (let px0 = 0; px0 <= W - 12; px0 += 40) {
             px(x, px0, 16, 12, 120, '#dcd9cf');
             px(x, px0, 16, 2, 120, '#f0ede2'); px(x, px0 + 10, 16, 2, 120, '#b4b0a4');
+            px(x, px0 + 2, 136, 8, 2, 'rgba(30,30,26,.18)');
           }
+          px(x, 8, 18, W - 16, 2, '#e6e3d7'); // trave di coronamento
           cornice(136, 6, '#cecabf'); plinth(12, '#9b978c');
           door(146, 118, 28, 30, '#788a8c');
           break;
@@ -1124,12 +1605,22 @@
         case 'pianura_chiesa': {
           // San Giorgio Martire: facciata a capanna in tufo e campanile a destra.
           const fw = 244;
-          poly([[0, 76], [122, 14], [fw, 76]], '#9a8262');
-          poly([[6, 76], [122, 22], [fw - 6, 76]], S.wall);
+          poly(x, [[0, 76], [122, 14], [fw, 76]], '#9a8262');
+          poly(x, [[6, 76], [122, 22], [fw - 6, 76]], S.wall);
+          poly(x, [[30, 68], [122, 24], [214, 68]], '#c7b797');
+          // Corsi di tufo e coppi sullo spiovente.
+          courses(10, 14, 'rgba(110,92,66,.13)', 78, H - 12);
+          for (let i = 8; i < fw - 8; i += 10) px(x, i, 74 - Math.abs(i - 122) / 5 | 0, 6, 2, '#ad9574');
           px(x, 0, 74, fw, 6, '#b6a488'); px(x, 0, 80, fw, H - 92, S.wall);
-          for (const bx of [6, fw - 18]) px(x, bx, 82, 12, H - 94, '#c7b797');
-          ell(x, 122, 54, 10, 10, '#9a8262'); ell(x, 122, 54, 7, 7, '#3f4547');
-          ell(x, 122, 54, 5, 5, '#6f97a4');
+          for (const bx of [6, fw - 18]) {
+            px(x, bx, 82, 12, H - 94, '#c7b797');
+            px(x, bx + 2, 84, 1, H - 98, '#e0d1b2');
+          }
+          // Rosone con tracce radiali e vetrata.
+          ell(x, 122, 54, 11, 11, '#8e7c62'); ell(x, 122, 54, 8, 8, '#3f4547');
+          ell(x, 122, 54, 6, 6, '#6f97a4');
+          line(x, 122, 48, 122, 60, '#c8bc9e', 1); line(x, 116, 54, 128, 54, '#c8bc9e', 1);
+          ell(x, 122, 54, 2, 2, '#d9cfae');
           arch(96, 158, 52, 78, '#8e7c62', '#4b463f'); door(104, 190, 36, 46);
           arch(28, 120, 36, 50, '#9a8262', '#6d8f9c');
           arch(180, 120, 36, 50, '#9a8262', '#6d8f9c');
@@ -1137,61 +1628,75 @@
           const tx = 252;
           px(x, tx, 76, 64, H - 88, '#c7b797');
           px(x, tx, 76, 5, H - 88, '#a08d6e'); px(x, tx + 59, 76, 5, H - 88, '#a08d6e');
-          poly([[tx - 4, 48], [tx + 32, 16], [tx + 68, 48]], '#9a8262');
-          poly([[tx + 2, 48], [tx + 32, 22], [tx + 62, 48]], '#c7b797');
+          courses(11, 12, 'rgba(130,108,76,.14)', 78, H - 12);
+          poly(x, [[tx - 4, 48], [tx + 32, 16], [tx + 68, 48]], '#9a8262');
+          poly(x, [[tx + 2, 48], [tx + 32, 22], [tx + 62, 48]], '#c7b797');
           px(x, tx - 4, 48, 72, 6, '#b6a488');
+          for (let i = tx + 2; i < tx + 66; i += 8) px(x, i, 44, 5, 2, '#ad9574');
           arch(tx + 20, 52, 24, 30, '#8e7c62', '#4b463f');
           px(x, tx + 30, 64, 4, 12, '#d4b04f');
           break;
         }
         case 'pianura_borgo': {
           // Casa di borgo: tre piani, basamento in piperno e persiane verdi.
-          px(x, 0, 0, W, 12, '#9b6b4b');
-          for (let rx = 0; rx < W; rx += 8) px(x, rx, 2, 6, 2, '#b9815f');
-          px(x, 0, 12, W, 4, '#b39b78');
+          roofTiles(0, 12, '#9b6b4b'); px(x, 0, 12, W, 4, '#b39b78');
+          courses(9, 12, 'rgba(100,78,54,.10)', 16, H - 16);
           grid(4, 3, 12, 24, 36, 28, 14, 16, (wx, wy, ww, wh, r, c) => {
             if (r === 2 && c === 2) return;
             win(wx, wy, ww, wh, '#6b5540', '#5c7881');
-            px(x, wx - 4, wy + 2, 4, 12, '#4f6f5a'); px(x, wx + ww, wy + 2, 4, 12, '#4f6f5a');
-            px(x, wx - 4, wy + 2, 4, 1, '#6f8d76'); px(x, wx + ww, wy + 2, 4, 1, '#6f8d76');
+            shutters(wx, wy, ww, wh, '#4f6f5a');
+            if (r === 1) balcony(wx, wy, ww);
           });
+          // Pigmento dei cantoni in pietra e ombra sotto il tetto.
+          for (const cx0 of [2, W - 8]) px(x, cx0, 16, 6, H - 32, '#c3ad8a');
+          // Grondaia scura sul cantone destro: evita una campata cieca e
+          // mantiene il ritmo delle facciate di borgo anche sul bordo.
+          px(x, W - 14, 20, 3, H - 40, '#6f5f48');
+          px(x, W - 13, 20, 1, H - 40, '#a08b68');
+          px(x, 0, 16, W, 1, 'rgba(30,24,18,.20)');
           door(70, 80, 20, 18, '#6b4b33'); plinth(16, '#414446');
           break;
         }
         case 'pianura_municipio': {
-          // Municipio sobrio: sei assi di finestre e portale centrale.
+          // Municipio sobrio: undici assi di finestre e portale centrale.
           // Anche qui il passo di piano e' 26 px = 3,25 m.
+          courses(13, 16, 'rgba(90,80,62,.07)', 10, H - 14);
           grid(11, 6, 15, 18, 27, 26, 14, 16, (wx, wy, ww, wh, r, c) => {
             if (r === 5 && (c === 5 || c === 6)) return;
             win(wx, wy, ww, wh, '#8c887c', '#718994');
+            if (r === 3 && (c === 4 || c === 6)) balcony(wx, wy, ww);
           });
           for (const yy of [39, 65, 91, 117, 143]) cornice(yy, 3, '#bdb6a6');
+          // Lesene e frontone del portale.
+          for (const lx of [124, 172]) px(x, lx, 140, 5, 48, '#c9c1b1');
+          px(x, 130, 132, 52, 5, '#d8d1c0');
+          px(x, 142, 128, 28, 4, '#e7e0cf');
           door(142, 144, 28, 36, '#6d6250');
           cornice(0, 10, S.roof); px(x, 112, 4, 88, 6, '#e6dfcd');
+          px(x, 146, 2, 20, 3, '#b7ae9d'); // orologio / iscrizione
           plinth(14, '#868277');
           break;
         }
         case 'bacoli_terme': {
           // Ruderi romani: laterizio e cemento a vista, arcate e coronamento spezzato.
-          for (let yy = 20; yy < H; yy += 10) {
-            px(x, 0, yy, W, 1, 'rgba(88,58,44,.26)');
-            for (let bx = (yy / 10 % 2) * 8; bx < W; bx += 16) px(x, bx, yy, 1, 9, 'rgba(88,58,44,.20)');
-          }
-          for (let i = 0; i < 6; i++) {
-            const nx = 8 + i * 50 + ((R() * 9) | 0), ny = 16 + ((R() * 12) | 0);
-            // Non si può usare clearRect: bucava il muro e mostrava il tile
-            // sottostante. Le finestre cieche sono mattoni incassati opachi.
-            const ww = 12 + ((R() * 14) | 0), wh = 12 + ((R() * 8) | 0);
-            px(x, nx, ny, ww, wh, '#6f6052'); px(x, nx + 2, ny + 2, ww - 4, wh - 4, '#4c433a');
-            px(x, nx + 2, ny + 2, ww - 4, 1, '#8e7e6b');
+          courses(10, 16, 'rgba(88,58,44,.24)', 20, H);
+          for (let i = 0; i < 5; i++) {
+            const nx = 12 + i * 58, ny = 18 + (i % 2) * 5;
+            // Finestre cieche incassate: mai clearRect, che bucherebbe il muro.
+            px(x, nx, ny, 18, 14, '#6f6052'); px(x, nx + 2, ny + 2, 14, 10, '#4c433a');
+            px(x, nx + 2, ny + 2, 14, 1, '#a2927e');
+            px(x, nx - 2, ny + 14, 22, 2, '#a88b72');
           }
           for (let ax = 18; ax < W - 30; ax += 58) {
-            arch(ax, 62, 38, 62, '#8f6a55', '#51483f'); px(x, ax - 3, 124, 44, 3, '#a88b72');
+            arch(ax, 62, 38, 62, '#8f6a55', '#51483f');
+            px(x, ax + 6, 92, 26, 30, 'rgba(226,205,170,.12)'); // luce filtrata dalle arcate
+            px(x, ax - 3, 124, 44, 3, '#a88b72');
           }
-          for (let i = 0; i < 8; i++) {
-            const bx = (R() * (W - 40)) | 0, by = 28 + ((R() * 90) | 0);
-            px(x, bx, by, 20 + ((R() * 26) | 0), 6 + ((R() * 10) | 0), '#a8a396');
-            px(x, bx, by, 20, 1, '#c3bfb3');
+          for (let i = 0; i < 4; i++) {
+            const bx = 18 + i * 74, by = 34 + (i % 2) * 14;
+            px(x, bx, by, 30, 7, '#a8a396');
+            px(x, bx, by, 30, 1, '#c3bfb3');
+            px(x, bx + 3, by + 2, 4, 4, '#7c776c'); // conco spezzato
           }
           plinth(12, '#8a7d6c');
           break;
@@ -1199,35 +1704,44 @@
         case 'bacoli_castello': {
           // Castello aragonese: tufo bugnato, merli e monofore strette.
           px(x, 0, 32, W, H - 44, S.wall);
-          for (let yy = 44; yy < H - 12; yy += 12) {
-            px(x, 0, yy, W, 1, 'rgba(110,92,66,.28)');
-            for (let bx = (yy / 12 % 2) * 12; bx < W; bx += 24) px(x, bx, yy, 1, 11, 'rgba(110,92,66,.18)');
+          courses(12, 24, 'rgba(110,92,66,.26)', 44, H - 12);
+          // Bugnato: ogni blocco ha luce in alto e ombra in basso.
+          for (let yy = 44; yy < H - 12; yy += 12) for (let bx = (yy / 12 % 2) * 12; bx < W; bx += 24) {
+            px(x, bx + 1, yy + 1, 21, 1, 'rgba(240,224,190,.16)');
+            px(x, bx + 1, yy + 10, 21, 1, 'rgba(70,56,38,.18)');
           }
           px(x, 0, 28, W, 6, '#b6a07c');
           for (let mx = 4; mx < W - 12; mx += 24) {
             px(x, mx, 10, 16, 18, '#c8b592'); px(x, mx, 10, 16, 2, '#dfcfae');
             px(x, mx, 26, 16, 2, '#8e7b60');
+            px(x, mx + 7, 12, 2, 3, '#8e7b60'); // merlo con feritoia
           }
           for (const tx of [0, W - 32]) {
             px(x, tx, 22, 32, H - 34, '#c2ae8b');
             px(x, tx, 22, 4, H - 34, '#9b8768'); px(x, tx + 28, 22, 4, H - 34, '#9b8768');
-            for (let mx = tx + 2; mx < tx + 30; mx += 14) px(x, mx, 14, 10, 8, '#c8b592');
+            for (let mx = tx + 2; mx < tx + 30; mx += 14) {
+              px(x, mx, 14, 10, 8, '#c8b592'); px(x, mx + 4, 16, 2, 3, '#8e7b60');
+            }
           }
           for (const yy of [64, 108]) for (let wx = 44; wx < W - 40; wx += 36) {
             px(x, wx, yy, 8, 12, '#5e5548'); px(x, wx + 1, yy + 1, 6, 10, '#3b3630');
+            px(x, wx + 3, yy + 2, 2, 6, '#756b59');
             px(x, wx - 1, yy + 12, 10, 2, '#a08d6e');
           }
           arch(132, 112, 24, 52, '#8e7b60', '#3b3630'); plinth(12, '#7d6a52');
           break;
         }
         case 'caserta_reggia': {
-          // Reggia di Caserta: 14 assi regolari, cornicioni continui e portale
-          // centrale. Stesso passo di piano metrico del municipio (26 px = 3,25 m).
+          // Reggia di Caserta: 14 assi regolari, cornicioni continui e portale.
+          // Stesso passo di piano metrico del municipio (26 px = 3,25 m).
+          courses(13, 13, 'rgba(90,82,66,.06)', 10, H - 14);
           grid(14, 6, 14, 18, 26, 26, 16, 16, (wx, wy, ww, wh, r, c) => {
             if (r === 5 && (c === 6 || c === 7)) return;
             win(wx, wy, ww, wh, '#a8a094', '#7894a1');
+            if (r === 4 && c % 2 === 0) balcony(wx, wy, ww);
           });
           for (const yy of [39, 65, 91, 117, 143]) cornice(yy, 3, '#bdb5a6');
+          for (const lx of [164, 222]) px(x, lx, 140, 6, 48, '#cfc7b7');
           door(178, 144, 28, 36, '#6d6250');
           cornice(0, 10, S.roof); px(x, 132, 4, 120, 6, '#e6dfcd');
           plinth(14, '#8f887b');
@@ -1236,16 +1750,16 @@
         case 'salerno_arechi': {
           // Castello di Arechi: tufo, merli guelfi e monofore strette.
           px(x, 0, 26, W, H - 38, S.wall);
-          for (let yy = 38; yy < H - 10; yy += 11) {
-            px(x, 0, yy, W, 1, 'rgba(110,92,66,.26)');
-            for (let bx = (yy / 11 % 2) * 10; bx < W; bx += 20) px(x, bx, yy, 1, 10, 'rgba(110,92,66,.18)');
-          }
+          courses(11, 20, 'rgba(110,92,66,.24)', 38, H - 10);
           for (let mx = 2; mx < W - 10; mx += 20) {
             px(x, mx, 8, 14, 18, S.wall); px(x, mx, 8, 14, 2, '#dfcfae');
+            px(x, mx + 6, 10, 2, 4, '#8e7b60');
           }
           px(x, 0, 24, W, 5, '#b6a07c');
           for (const ax of [38, 108, 178]) {
             px(x, ax, 52, 10, 16, '#5e5548'); px(x, ax + 1, 53, 8, 14, '#3b3630');
+            px(x, ax + 4, 55, 2, 8, '#877c68');
+            px(x, ax - 2, 68, 14, 2, '#b6a07c');
           }
           arch(94, 60, 36, 58, S.trim, '#3b3630'); plinth(12, '#7d6a52');
           break;
@@ -1253,10 +1767,12 @@
         case 'salerno_palazzo': {
           // Palazzo del lungomare: tre piani, persiane e coronamento continuo.
           cornice(0, 8, S.roof);
+          courses(8, 14, 'rgba(110,86,60,.08)', 10, H - 12);
           grid(5, 3, 12, 16, 28, 24, 14, 16, (wx, wy, ww, wh, r, c) => {
             if (r === 2 && c === 2) return;
             win(wx, wy, ww, wh, '#8d6f52', '#5f8291');
-            px(x, wx - 3, wy + 2, 3, 12, '#4f6f5a'); px(x, wx + ww, wy + 2, 3, 12, '#4f6f5a');
+            shutters(wx, wy, ww, wh, '#4f6f5a');
+            if (r === 1 && c === 1) balcony(wx, wy, ww);
           });
           for (const yy of [38, 62]) cornice(yy, 2, S.trim);
           door(70, 62, 20, 26, '#6b4b33'); plinth(12, '#7c6b54');
@@ -1265,17 +1781,17 @@
         case 'bacoli_casa': {
           // Casa di pescatori: tufo chiaro, tetto a coppi e due finestre con persiane.
           px(x, 0, 12, W, H - 24, S.wall);
-          for (let yy = 24; yy < H - 12; yy += 9) px(x, 0, yy, W, 1, 'rgba(120,98,70,.20)');
-          px(x, 0, 0, W, 14, '#8e6b4d');
-          for (let rx = 0; rx < W; rx += 8) {
-            px(x, rx, 2, 6, 3, '#a97d59'); px(x, rx, 8, 6, 2, '#6f5237');
-          }
+          courses(9, 12, 'rgba(120,98,70,.16)', 24, H - 12);
+          roofTiles(0, 14, '#8e6b4d');
           px(x, 0, 12, W, 3, '#b39b78');
           for (const wx of [18, 94]) {
             win(wx, 44, 16, 18, '#6b5540', '#5c7881');
-            px(x, wx - 4, 46, 4, 14, '#4f6f5a'); px(x, wx + 16, 46, 4, 14, '#4f6f5a');
+            shutters(wx, 44, 16, 18, '#4f6f5a');
           }
           door(54, 62, 20, 24, '#6b4b33'); plinth(12, '#7c6b54');
+          // Rete e galleggianti appesi alla parete: richiamo al borgo marinaro.
+          for (let i = 0; i < 5; i++) line(x, 108 + i * 4, 40, 112 + i * 4, 56, 'rgba(90,112,110,.50)', 1);
+          ell(x, 112, 60, 4, 2, '#c9564a');
           break;
         }
       }
@@ -1465,19 +1981,204 @@
       if (m1[kind] && this.images[m1[kind]]) return this.images[m1[kind]];
       const key='prop:'+kind; if(this.cache[key]) return this.cache[key];
       let c,x;
-      if(kind==='lamp'){ c=cv(24,52); x=ctx(c); px(x,10,20,4,30,'#3b4248'); px(x,8,18,8,4,'#2f353b'); px(x,7,8,10,11,'#f6e7a2'); px(x,6,6,12,3,'#4a5158'); px(x,9,2,6,5,'#3d444b'); x.fillStyle='rgba(255,240,170,.14)'; x.beginPath(); x.arc(12,13,14,0,Math.PI*2); x.fill(); px(x,8,48,8,3,'#4a5158'); }
-      else if(kind==='bench'){ c=cv(36,22); x=ctx(c); px(x,2,9,32,4,'#6d4a2f'); px(x,3,4,30,6,'#855d3b'); px(x,3,5,30,1,'#9a7048'); px(x,5,13,3,7,'#4a382b'); px(x,28,13,3,7,'#4a382b'); px(x,4,3,28,2,'#704d31'); }
-      else if(kind==='edicola'){ c=cv(48,52); x=ctx(c); px(x,2,12,44,34,'#2f6a4d'); px(x,4,16,40,24,'#f3ecd8'); px(x,6,18,12,7,'#c9564a'); px(x,20,18,10,7,'#4a87b8'); px(x,32,18,8,7,'#7a9a5a'); px(x,6,27,10,6,'#e0ab69'); px(x,18,27,10,6,'#d9c7a5'); px(x,4,40,40,4,'#6b5632'); px(x,0,8,48,6,'#8a7046'); px(x,2,44,44,4,'#5a4528'); px(x,-1,6,50,4,'#9a8052'); }
-      else if(kind==='plant'){ c=cv(18,22); x=ctx(c); px(x,6,13,6,7,'#8b6244'); px(x,5,12,8,2,'#a07050'); x.fillStyle='#5f9a4e'; x.beginPath(); x.arc(9,8,7,0,Math.PI*2); x.fill(); x.fillStyle='#7ab868'; x.beginPath(); x.arc(7,7,3,0,Math.PI*2); x.fill(); x.fillStyle='#d96f8b'; px(x,11,6,2,2,'#d96f8b'); }
-      else if(kind==='cart'){ c=cv(40,28); x=ctx(c); px(x,4,10,28,10,'#7a5637'); px(x,5,11,26,8,'#986d48'); px(x,6,4,24,8,'#c9564a'); px(x,8,6,4,4,'#f2d24f'); px(x,14,6,4,4,'#e0ab69'); px(x,20,6,4,4,'#f0e4cf'); px(x,6,20,6,6,'#4a382b'); px(x,24,20,6,6,'#4a382b'); px(x,7,21,4,4,'#8b8f95'); px(x,25,21,4,4,'#8b8f95'); }
-      else if(kind==='sign'){ c=cv(28,34); x=ctx(c); px(x,12,14,4,18,'#65432e'); px(x,2,2,24,14,'#f0e4cf'); px(x,2,2,24,2,'#7a5637'); px(x,4,6,20,2,'#b44a3a'); px(x,6,10,16,2,'#5a7a8f'); }
-      else if(kind==='table_out'){ c=cv(28,20); x=ctx(c); px(x,2,8,24,4,'#8b6244'); px(x,3,6,22,3,'#a07050'); px(x,4,12,3,6,'#65432e'); px(x,21,12,3,6,'#65432e'); px(x,12,4,4,3,'#f0e4cf'); }
-      else if(kind==='chair_out'){ c=cv(14,18); x=ctx(c); px(x,3,2,8,6,'#7a5637'); px(x,3,8,8,3,'#986d48'); px(x,3,11,2,5,'#65432e'); px(x,9,11,2,5,'#65432e'); }
-      else if(kind==='home_rug'){ c=cv(56,24); x=ctx(c); px(x,0,0,56,24,'#7a2f38'); px(x,3,3,50,18,'#b8444a'); px(x,6,6,44,12,'#2f6070'); px(x,9,9,38,6,'#d8a94f'); for(let i=12;i<44;i+=8){ px(x,i,9,2,6,'#8e3340'); px(x,i+2,11,4,2,'#e8d7a8'); } px(x,0,0,56,2,'#e0b95e'); px(x,0,22,56,2,'#e0b95e'); }
-      else if(kind==='home_books'){ c=cv(42,52); x=ctx(c); px(x,0,0,42,52,'#6b4b33'); px(x,2,2,38,48,'#8b6244'); const cols=['#c9564a','#4a87b8','#e9b84a','#7a9a5a','#f0e4cf','#8a6fa8']; for(let s=0;s<3;s++){ const by=5+s*15; px(x,4,by+11,34,3,'#5e4028'); for(let i=0;i<7;i++){ px(x,5+i*5,by+2+(i%2),4,9,cols[(i+s)%cols.length]); px(x,5+i*5,by+2+(i%2),4,1,'#f3efe6'); } } px(x,0,0,42,3,'#9b7349'); }
-      else if(kind==='home_lamp'){ c=cv(22,52); x=ctx(c); x.fillStyle='rgba(255,220,150,.15)'; x.beginPath(); x.arc(11,15,15,0,Math.PI*2); x.fill(); px(x,9,20,4,24,'#8b7048'); px(x,6,44,10,4,'#5e4a30'); px(x,3,6,16,15,'#d8a94f'); px(x,5,4,12,4,'#f0d58a'); px(x,3,19,16,3,'#a87c3c'); px(x,6,9,10,7,'#fff0b8'); }
-      else if(kind==='home_plant'){ c=cv(24,30); x=ctx(c); px(x,7,20,10,9,'#a05f3f'); px(x,6,18,12,3,'#c07a52'); px(x,9,27,6,3,'#7a4930'); x.fillStyle='#4f8a4c'; x.beginPath(); x.arc(12,12,8,0,Math.PI*2); x.fill(); x.fillStyle='#6faa5c'; x.beginPath(); x.arc(8,10,4,0,Math.PI*2); x.fill(); x.fillStyle='#8fbe70'; x.beginPath(); x.arc(16,9,4,0,Math.PI*2); x.fill(); px(x,11,8,2,8,'#3f6f3b'); }
-      else if(kind==='home_painting'){ c=cv(34,26); x=ctx(c); px(x,0,0,34,26,'#8b6244'); px(x,2,2,30,22,'#d8b86a'); px(x,4,4,26,18,'#8fc3d8'); px(x,4,15,26,7,'#6f9a5c'); px(x,12,8,10,10,'#f0e4cf'); px(x,14,6,6,5,'#c9564a'); px(x,0,0,34,2,'#b08a45'); px(x,0,24,34,2,'#b08a45'); }
+      /* Tutti i props conservano le dimensioni legacy: gli offset di disegno
+       * del motore (lamp -36, bench -10, cart -16, ...) e le ombre a terra
+       * restano quindi esattamente dove erano. */
+      const shadeBase = (cx, cy, rx, ry) => ell(x, cx, cy, rx, ry, 'rgba(24,22,20,.20)');
+      if(kind==='lamp'){
+        // Lampione in ghisa:(base con ombra, fusto rastremato, lanterna a vetri.
+        c=cv(24,52); x=ctx(c);
+        x.fillStyle='rgba(255,238,168,.13)'; x.beginPath(); x.arc(12,13,14,0,Math.PI*2); x.fill();
+        shadeBase(12,50,8,2);
+        poly(x,[[9,48],[15,48],[14,36],[10,36]],'#2f353b');
+        px(x,10,20,4,16,'#3b4248'); px(x,10,20,1,16,'#6a7176'); px(x,13,20,1,16,'#242a30');
+        px(x,8,35,8,3,'#4a5158'); px(x,9,34,6,1,'#737a80');
+        px(x,7,47,10,4,'#3d444b'); px(x,8,47,8,1,'#676e74'); px(x,8,50,8,2,'#292f34');
+        px(x,8,18,8,3,'#2f353b'); px(x,6,17,12,2,'#4a5158');
+        px(x,7,8,10,9,'#f6e7a2'); px(x,8,9,8,7,'#fff3c8');
+        px(x,6,7,2,11,'#394047'); px(x,16,7,2,11,'#394047');
+        px(x,8,13,8,1,'#8d9092'); px(x,11,8,2,9,'#6f7679');
+        poly(x,[[5,8],[19,8],[16,5],[8,5]],'#4a5158');
+        px(x,7,4,10,2,'#5b6268'); px(x,10,2,4,3,'#3d444b'); px(x,11,0,2,3,'#6a7176');
+        px(x,8,9,2,2,'rgba(255,255,255,.65)');
+      }
+      else if(kind==='bench'){
+        // Panchina da piazza: tre liste sullo schienale, tre sul sedile,
+        // braccioli in ghisa e gambe con ombra di contatto.
+        c=cv(36,22); x=ctx(c);
+        shadeBase(18,20,16,2);
+        for (const by of [3,6,9]) {
+          px(x,4,by,28,2,'#704d31'); px(x,5,by,26,1,'#9a7048');
+          px(x,5,by+1,26,1,'#5a3d27');
+        }
+        px(x,3,2,2,10,'#3b4248'); px(x,31,2,2,10,'#3b4248');
+        px(x,4,11,28,3,'#6d4a2f'); px(x,5,11,26,1,'#a97a53');
+        for (let sx=6;sx<32;sx+=4) { px(x,sx,12,1,2,'#5a3d27'); px(x,sx+2,11,1,1,'#c29466'); }
+        px(x,3,12,3,1,'#4a5158'); px(x,30,12,3,1,'#4a5158');
+        poly(x,[[2,13],[6,13],[5,14],[3,14]],'#3b4248');
+        poly(x,[[30,13],[34,13],[33,14],[31,14]],'#3b4248');
+        for (const lx of [6,27]) {
+          px(x,lx,14,3,5,'#4a382b'); px(x,lx,17,4,2,'#352922');
+          px(x,lx+1,14,1,3,'#8a6240');
+        }
+        px(x,5,19,26,1,'rgba(24,22,20,.18)');
+      }
+      else if(kind==='edicola'){
+        // Edicola: tetto a falda, vetrina con riviste, tendina a righe e zoccolo.
+        c=cv(48,52); x=ctx(c);
+        shadeBase(24,48,22,3);
+        poly(x,[[0,10],[6,4],[42,4],[48,10]],'#8a7046');
+        px(x,0,8,48,6,'#9a8052'); px(x,0,8,48,1,'#c0a776'); px(x,0,13,48,1,'#5a4528');
+        for (let sx=0;sx<48;sx+=8) px(x,sx,6,4,2,'#ad9161');
+        px(x,2,14,44,30,'#2f6a4d'); px(x,4,17,40,23,'#f3ecd8');
+        px(x,5,18,38,2,'#fff7e2'); px(x,5,39,38,2,'#cdbfa5');
+        for (let mx=6;mx<42;mx+=12) {
+          px(x,mx,21,10,6,'#c9564a'); px(x,mx+1,22,8,4,'#f0e4cf');
+          px(x,mx,29,10,6,'#4a87b8'); px(x,mx+1,30,8,4,'#dceef3');
+          px(x,mx,37,10,2,'#e0ab69');
+        }
+        px(x,20,17,2,23,'#2f6a4d'); px(x,32,17,2,23,'#2f6a4d');
+        px(x,4,16,40,2,'#c9564a'); px(x,4,20,40,2,'#f0e4cf');
+        for (let ax=4;ax<44;ax+=8) px(x,ax,16,4,2,'#c9564a');
+        px(x,4,44,40,4,'#6b5632'); px(x,6,45,36,1,'#a07c4c');
+        px(x,2,47,44,3,'#5a4528'); px(x,6,48,36,1,'#7a5c34');
+      }
+      else if(kind==='plant'){
+        c=cv(18,22); x=ctx(c);
+        shadeBase(9,20,7,2);
+        px(x,6,13,6,6,'#8b6244'); px(x,7,14,4,4,'#a07050'); px(x,6,13,6,2,'#a87552');
+        px(x,5,12,8,2,'#5e4028');
+        ell(x,9,8,7,6,'#5f9a4e'); ell(x,6,7,4,4,'#7ab868');
+        ell(x,12,6,3,3,'#4f8a4c'); ell(x,9,4,3,2,'#87c06e');
+        px(x,9,3,1,7,'#3f6f3b'); px(x,11,6,2,2,'#d96f8b'); px(x,5,9,2,1,'#a8d47a');
+      }
+      else if(kind==='cart'){
+        // Carretto da mercato: cassetta in legno, merce colorata, ruote a raggi.
+        c=cv(40,28); x=ctx(c);
+        shadeBase(20,26,17,2);
+        poly(x,[[4,10],[34,10],[32,19],[6,19]],'#7a5637');
+        px(x,5,11,28,7,'#986d48'); px(x,5,11,28,1,'#c09466');
+        for (let bx=6;bx<32;bx+=6) { px(x,bx,11,1,7,'#65432e'); px(x,bx,12,5,1,'rgba(255,225,180,.18)'); }
+        px(x,5,18,28,2,'#5e4028');
+        poly(x,[[6,10],[9,4],[31,4],[34,10]],'#c9564a');
+        px(x,8,4,22,1,'#e87d68');
+        ell(x,11,6,3,2,'#f2d24f'); ell(x,17,6,3,2,'#e8843c'); ell(x,24,6,3,2,'#7a9a5a'); ell(x,29,6,2,2,'#e9b84a');
+        for (const wx of [9,28]) {
+          ell(x,wx,22,5,5,'#3a3430'); ell(x,wx,22,3,3,'#8b8f95');
+          px(x,wx,20,1,5,'#d8dcd8'); px(x,wx-2,22,5,1,'#d8dcd8');
+          px(x,wx,22,1,1,'#4a5158');
+        }
+        px(x,34,12,4,2,'#65432e'); px(x,36,8,2,5,'#8b6244');
+      }
+      else if(kind==='sign'){
+        // Segnavia: due tabelle sfalsate, palo con base e ombra.
+        c=cv(28,34); x=ctx(c);
+        shadeBase(14,32,10,2);
+        px(x,12,12,4,18,'#65432e'); px(x,13,13,1,16,'#8b6244');
+        px(x,10,29,8,3,'#4a382b');
+        px(x,2,2,24,12,'#f0e4cf'); px(x,2,2,24,2,'#7a5637');
+        px(x,2,12,24,2,'#b08a45'); px(x,3,5,18,2,'#b44a3a'); px(x,3,9,14,2,'#5a7a8f');
+        px(x,6,15,20,8,'#e8d7a8'); px(x,6,15,20,1,'#8b6244'); px(x,6,22,20,1,'#b08a45');
+        px(x,8,18,15,2,'#7a5637');
+        px(x,10,31,8,1,'rgba(24,22,20,.18)');
+      }
+      else if(kind==='table_out'){
+        // Tavolino da bar: piano a tre quarti, tovagliolo, tazza, gambe.
+        c=cv(28,20); x=ctx(c);
+        shadeBase(14,18,12,2);
+        poly(x,[[3,7],[24,7],[27,10],[1,10]],'#8b6244');
+        poly(x,[[2,8],[25,8],[26,10],[2,10]],'#a07050');
+        px(x,3,7,22,1,'#c09466'); px(x,5,8,18,1,'rgba(255,235,200,.24)');
+        for (const lx of [4,21]) { px(x,lx,11,3,6,'#65432e'); px(x,lx,15,4,2,'#4a382b'); }
+        px(x,11,4,6,3,'#f0e4cf'); px(x,12,5,4,2,'#fff7e4');
+        ell(x,22,7,2,1,'#f0ead6'); px(x,20,5,4,1,'#c9a44a');
+      }
+      else if(kind==='chair_out'){
+        // Sedia da tavolo: schienale a liste, sedile, gambe e ombra.
+        c=cv(14,18); x=ctx(c);
+        shadeBase(7,16,6,2);
+        px(x,3,2,8,6,'#7a5637'); px(x,4,3,6,4,'#986d48');
+        for (let sy=3;sy<7;sy+=2) px(x,5,sy,4,1,'#b78a5c');
+        px(x,3,8,8,3,'#986d48'); px(x,3,8,8,1,'#c09466');
+        px(x,2,11,10,1,'#65432e');
+        for (const lx of [3,9]) { px(x,lx,12,2,4,'#65432e'); px(x,lx,15,3,1,'#4a382b'); }
+      }
+      else if(kind==='home_rug'){
+        // Tappeto orientale: doppio bordo, motivi a rombo simmetrici e frange.
+        c=cv(56,24); x=ctx(c);
+        px(x,0,0,56,24,'#7a2f38'); px(x,2,2,52,20,'#e0b95e');
+        px(x,4,4,48,16,'#b8444a'); px(x,6,6,44,12,'#2f6070');
+        px(x,8,8,40,8,'#8e3340');
+        for (let i=10;i<46;i+=8) {
+          poly(x,[[i,12],[i+4,9],[i+8,12],[i+4,15]],'#d8a94f');
+          poly(x,[[i+1,12],[i+4,10],[i+7,12],[i+4,14]],'#e8d7a8');
+          px(x,i+3,12,2,1,'#8e3340');
+        }
+        for (let f=1;f<56;f+=4) { px(x,f,0,1,2,'#f0e4cf'); px(x,f,22,1,2,'#f0e4cf'); }
+        px(x,0,2,56,1,'#c9564a'); px(x,0,21,56,1,'#c9564a');
+      }
+      else if(kind==='home_books'){
+        // Libreria a tre ripiani: libri di altezze diverse, ombre e coronamento.
+        c=cv(42,52); x=ctx(c);
+        px(x,0,0,42,52,'#5e4028'); px(x,2,2,38,48,'#8b6244');
+        px(x,3,3,36,1,'rgba(255,230,190,.24)');
+        const cols=['#c9564a','#4a87b8','#e9b84a','#7a9a5a','#f0e4cf','#8a6fa8'];
+        for (let s=0;s<3;s++) {
+          const by=5+s*15;
+          px(x,4,by+11,34,4,'#5e4028'); px(x,4,by+11,34,1,'#b78a5c');
+          for (let i=0;i<7;i++) {
+            const bx=5+i*5, h=8+(i+s)%3;
+            px(x,bx,by+12-h,4,h,cols[(i+s)%cols.length]);
+            px(x,bx,by+12-h,4,1,'#f3efe6');
+            px(x,bx+3,by+13-h,1,h-1,'rgba(30,20,14,.24)');
+            if(i%3===0) px(x,bx+1,by+9-h,2,1,'#c9a44a');
+          }
+          px(x,4,by+15,34,1,'rgba(30,20,14,.20)');
+        }
+        for (const sx of [1,38]) px(x,sx,2,3,50,'#6b4b33');
+        px(x,0,0,42,3,'#9b7349'); px(x,0,3,42,1,'#c09466');
+        px(x,0,49,42,3,'#4a3526');
+      }
+      else if(kind==='home_lamp'){
+        // Lampada da tavolo: stelo, base, paralume conico e bagliore.
+        c=cv(22,52); x=ctx(c);
+        x.fillStyle='rgba(255,220,150,.14)'; x.beginPath(); x.arc(11,15,15,0,Math.PI*2); x.fill();
+        shadeBase(11,49,10,2);
+        px(x,10,20,3,25,'#8b7048'); px(x,10,20,1,25,'#c1a26c');
+        px(x,6,46,10,4,'#5e4a30'); px(x,7,46,8,1,'#a88958');
+        px(x,8,43,6,2,'#8b7048');
+        poly(x,[[3,20],[19,20],[15,5],[7,5]],'#d8a94f');
+        poly(x,[[4,19],[18,19],[15,6],[8,6]],'#f0d58a');
+        px(x,7,6,2,13,'rgba(255,255,255,.42)');
+        px(x,3,19,16,2,'#a87c3c'); px(x,6,9,10,7,'#fff0b8');
+        px(x,9,2,4,4,'#8b7048'); px(x,10,0,2,3,'#c1a26c');
+      }
+      else if(kind==='home_plant'){
+        // Vaso da interno: terra, fusto e chioma a tre livelli di luce.
+        c=cv(24,30); x=ctx(c);
+        shadeBase(12,28,9,2);
+        px(x,7,20,10,8,'#a05f3f'); px(x,8,21,8,6,'#c07a52');
+        px(x,6,18,12,3,'#7a4930'); px(x,7,18,10,1,'#d09165');
+        px(x,8,23,8,1,'rgba(60,36,24,.24)'); px(x,9,27,6,2,'#7a4930');
+        ell(x,12,13,8,6,'#4f8a4c'); ell(x,8,11,4,4,'#6faa5c');
+        ell(x,16,10,4,4,'#8fbe70'); ell(x,12,7,4,3,'#a8d47a');
+        px(x,11,7,2,10,'#3f6f3b'); px(x,7,9,3,1,'#b8dc8a');
+        px(x,17,12,2,2,'#d96f8b');
+      }
+      else if(kind==='home_painting'){
+        // Quadro: cornice dorata, cielo, colline, casa e albero in miniatura.
+        c=cv(34,26); x=ctx(c);
+        px(x,0,0,34,26,'#8b6244'); px(x,1,1,32,24,'#d8b86a');
+        px(x,3,3,28,20,'#8fc3d8'); px(x,3,3,28,5,'#c9e5ef');
+        ell(x,24,8,3,3,'#f4e7a8');
+        poly(x,[[3,17],[11,10],[18,17],[25,12],[31,17],[31,23],[3,23]],'#6f9a5c');
+        px(x,12,14,8,7,'#f0e4cf'); poly(x,[[11,14],[16,10],[21,14]],'#c9564a');
+        px(x,15,17,2,4,'#7a5637');
+        px(x,6,16,2,7,'#3f6f3b'); ell(x,7,14,3,3,'#4f8a4c');
+        px(x,3,21,28,2,'#5f7e96');
+        px(x,0,0,34,2,'#b08a45'); px(x,0,24,34,2,'#8a6a32');
+        px(x,0,0,2,26,'#b08a45'); px(x,32,0,2,26,'#8a6a32');
+      }
       else { c=cv(16,16); x=ctx(c); px(x,0,0,16,16,'#d44d9a'); }
       return this.cache[key]=c;
     },

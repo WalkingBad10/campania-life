@@ -76,6 +76,7 @@ const AUDIT = `(() => {
       campanile: measure(CL.art.campanileSprite()),
       tree: measure(CL.art.tree(0)),
       lemonTree: measure(CL.art.lemonTree(0)),
+      palmTree: measure(CL.art.palmTree(0)),
       carSide: measure(CL.art.vehicle('car', 'right')),
       carFront: measure(CL.art.vehicle('car', 'down')),
       scooter: measure(CL.art.vehicle('scooter', 'right')),
@@ -107,7 +108,7 @@ async function main() {
     // Etichetta gli sprite per riconoscerli nel trace di drawImage.
     const tag = (fn, name) => { const f = CL.art[fn].bind(CL.art); CL.art[fn] = (...a) => { const im = f(...a); if (im) im.__clKind = typeof name === 'function' ? name(...a) : name; return im; }; };
     ['gugliaSprite', 'campanileSprite', 'character', 'creature', 'vehicle', 'tree', 'lemonTree',
-      'rock', 'flower', 'fountain'].forEach(n => tag(n, n));
+      'palmTree', 'rock', 'flower', 'fountain'].forEach(n => tag(n, n));
     tag('propSprite', k => 'prop:' + k);
     const bs = CL.art.buildingSprite.bind(CL.art);
     CL.art.buildingSprite = k => { const im = bs(k); if (im) im.__clKind = 'building:' + k; return im; };
@@ -194,7 +195,7 @@ async function main() {
   // I quadri metrici finali, non i sorgenti legacy: il doppio downscale
   // produceva sprite sfocati e ancoraggi errati.
   const spriteDims = {
-    character: [9, 14], tree: [19, 24], lemonTree: [19, 24],
+    character: [9, 14], tree: [19, 24], lemonTree: [19, 24], palmTree: [19, 24],
     carSide: [18, 12], carFront: [12, 18], scooter: [15, 12],
     bench: [21, 13], lamp: [14, 31], plant: [11, 13],
     awning: [19, 12], cornice: [19, 6], balcony: [24, 11], portalArch: [21, 14]
@@ -208,7 +209,7 @@ async function main() {
   }
   // I quattro angoli devono essere trasparenti: nessuno sfondo quadrato
   // sotto alberi, panchine, lampioni o veicoli.
-  for (const k of ['tree', 'lemonTree', 'carSide', 'carFront', 'scooter', 'bench', 'lamp', 'plant', 'portalArch']) {
+  for (const k of ['tree', 'lemonTree', 'palmTree', 'carSide', 'carFront', 'scooter', 'bench', 'lamp', 'plant', 'portalArch']) {
     const v = nap.visible[k] || {};
     if ((v.corners || []).some(a => a > 20)) issues.push(`${k} ha uno sfondo opaco agli angoli: ${v.corners}`);
   }

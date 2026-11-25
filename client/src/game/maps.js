@@ -93,6 +93,166 @@
     return { x: dx, y: dy };
   }
 
+  /* ------------------------------------------------- GEOMETRIE OSM REALI
+   * Le geometrie proiettate arrivano da qa/campania-open-code-1/build_osm_geometry.py
+   * (OpenStreetMap, ODbL). Qui vengono applicate come overlay protetto: solo
+   * superfici camminabili e impronte edilizie, mai spawn/portali/POI/facciate.
+   * Ogni superficie stradale non corroborata da una tile OSM viene rimossa:
+   * non esiste più un elenco di caselle disegnate a mano da "ripulire".
+   */
+  const OSM_SURFACE = new Set(['.', ',', 'p', 'd', 'e', 'r', 'S', 'g']);
+  const OSM_ALLOW = {
+    b: new Set(['.', ',', 'g']),
+    e: OSM_SURFACE, p: OSM_SURFACE, r: OSM_SURFACE,
+    S: new Set(['.', ',', 'p']), ',': new Set(['.', ',']),
+    T: new Set(['.', ',', 'g'])
+  };
+  const OSM_PASSAGE = new Set(['r', 'p', 'D', 'd', 'e', 'G', 'Y', "'"]);
+  const OSM_STRIP = {
+    costiera: [{ chars: 'rpe', boxes: [[0, 13, 72, 4]] }],
+    vesuvio: [{ chars: ',', boxes: [[27, 12, 12, 35]] }],
+    pompei: [{ chars: '#', boxes: [[6, 4, 50, 24]] }],
+    bacoli: [{ chars: 'rp', boxes: [[0, 10, 48, 4], [23, 11, 3, 13]] }],
+    salerno: [{ chars: 'rpe', boxes: [[0, 17, 56, 3], [0, 29, 56, 2]] }],
+    avellino: [{ chars: 'rpe', boxes: [[0, 15, 48, 3], [24, 0, 2, 32]] }],
+    caserta: [{ chars: 'rpeD', boxes: [[0, 31, 60, 4], [30, 0, 2, 31]] }],
+    fuorigrotta: [{ chars: 'rpe', boxes: [[0, 18, 72, 20], [0, 32, 72, 15], [19, 18, 4, 30], [54, 18, 4, 30]] }],
+    pianura: [{ chars: 'rpe', boxes: [[0, 17, 12, 3], [0, 27, 12, 4], [47, 17, 4, 14], [0, 37, 62, 2]] }]
+  };
+  const OSM_PROP_TYPES = new Set(['plant', 'bench', 'lamp', 'table_out']);
+
+  function osmLock(locked, x, y, pad) {
+    for (let j = -pad; j <= pad; j++) for (let i = -pad; i <= pad; i++) {
+      const tx = x + i, ty = y + j;
+      if (tx >= 0 && ty >= 0) locked.add(ty + ':' + tx);
+    }
+  }
+
+  // I percorsi già giocabili prima dell'overlay OSM sono contratti di salvataggio:
+  // restano aperti anche quando un'impronta edilizia reale li sovrappone alla
+  // risoluzione di 2 m/cella. Non vengono create nuove strade: si conserva solo
+  // il tessuto camminabile che collegava spawn, portali, POI e residenti.
+  function osmProtectRoutes(m, locked) {
+    const sx = Math.floor(m.spawn.x / T), sy = Math.floor(m.spawn.y / T);
+    const start = sy + ':' + sx;
+    const prev = new Map([[start, null]]);
+    const queue = [[sx, sy]];
+    for (let head = 0; head < queue.length; head++) {
+      const [x, y] = queue[head];
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, ny = y + dy, key = ny + ':' + nx;
+        if (nx < 0 || ny < 0 || nx >= m.w || ny >= m.h || prev.has(key)) continue;
+        if (CL.maps.solidChar(m.g[ny][nx])) continue;
+        prev.set(key, y + ':' + x);
+        queue.push([nx, ny]);
+      }
+    }
+    const targets = [];
+    for (const p of m.portals) targets.push([Math.floor((p.x + (p.w || T) / 2) / T),
+                                             Math.floor((p.y + (p.h || T) / 2) / T)]);
+    for (const q of m.pois) {
+      if (q.data && q.data.decorative) continue;
+      targets.push([Math.floor(q.x / T), Math.floor(q.y / T)]);
+    }
+    const npcs = (CL.data && CL.data.npcs) || {};
+    for (const n of Object.values(npcs)) {
+      if (n.home === m.id) targets.push([n.x, n.y]);
+    }
+    for (const [tx, ty] of targets) {
+      let key = ty + ':' + tx;
+      if (!prev.has(key)) continue;
+      while (key) {
+        const parts = key.split(':');
+        osmLock(locked, Number(parts[1]), Number(parts[0]), 0);
+        key = prev.get(key);
+      }
+    }
+    return new Set(prev.keys());
+  }
+
+  function applyOsmGeometry(m) {
+    const root = w.CL_OSM;
+    const spec = root && root.maps && root.maps[m.id];
+    if (!spec || m.zone === 'interno') return m;
+    const g = m.g, locked = new Set();
+    const base = spec.base || '.';
+
+    // Contratti di salvataggio e ancoraggi storici: mai toccati.
+    osmLock(locked, Math.floor(m.spawn.x / T), Math.floor(m.spawn.y / T), 1);
+    for (const p of m.portals) {
+      for (let y = 0; y < Math.ceil(p.h / T); y++)
+        for (let x = 0; x < Math.ceil(p.w / T); x++)
+          osmLock(locked, Math.floor(p.x / T) + x, Math.floor(p.y / T) + y, 1);
+    }
+    for (const q of m.pois) osmLock(locked, Math.floor(q.x / T), Math.floor(q.y / T), 1);
+    for (const d of m.decors) {
+      const fp = decorFootprint(d);
+      if (!fp) continue;
+      for (let y = Math.floor(fp.y / T); y <= Math.floor((fp.y + fp.h) / T); y++)
+        for (let x = Math.floor(fp.x / T); x <= Math.floor((fp.x + fp.w) / T); x++)
+          osmLock(locked, x, y, 0);
+    }
+    for (const [x, y] of spec.protected || []) osmLock(locked, x, y, 0);
+    const reachableBefore = osmProtectRoutes(m, locked);
+    // Tutto ciò che non è superficie è architettura/arredo: resta invariato.
+    for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+      const ch = g[y][x];
+      if (!OSM_SURFACE.has(ch) || ch === 'D' || ch === "'") locked.add(y + ':' + x);
+    }
+
+    // Rimuove solo le superfici disegnate a mano, non i corpi edilizi ancorati.
+    const strips = OSM_STRIP[m.id] || [];
+    for (const strip of strips) for (const [ox, oy, ww, hh] of strip.boxes) {
+      for (let y = oy; y < oy + hh; y++) for (let x = ox; x < ox + ww; x++) {
+        if (!g[y] || g[y][x] === undefined) continue;
+        if (locked.has(y + ':' + x)) continue;
+        if (strip.chars.includes(g[y][x])) setTile(g, x, y, base);
+      }
+    }
+
+    let applied = 0;
+    for (const [x, y, ch] of spec.tiles || []) {
+      if (!g[y] || g[y][x] === undefined) continue;
+      const key = y + ':' + x;
+      if (locked.has(key)) continue;
+      const allow = OSM_ALLOW[ch];
+      if (!allow || !allow.has(g[y][x])) continue;
+      setTile(g, x, y, ch);
+      applied++;
+    }
+
+    // Una carreggiata OSM di una sola cella non deve restare isolata.
+    for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+      if (g[y][x] !== 'r' || locked.has(y + ':' + x)) continue;
+      const near = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+        .some(([dx, dy]) => OSM_PASSAGE.has(CL.maps.tile(m, x + dx, y + dy)));
+      if (!near) setTile(g, x, y, base);
+    }
+
+    let props = 0;
+    const seen = new Set(m.decors.map(d => Math.floor(d.x / T) + ':' + Math.floor(d.y / T)));
+    for (const [x, y, kind, name] of spec.props || []) {
+      if (props >= 24 || !OSM_PROP_TYPES.has(kind)) continue;
+      if (!g[y] || g[y][x] === undefined) continue;
+      const key = y + ':' + x;
+      if (locked.has(key) || seen.has(key)) continue;
+      const cur = g[y][x];
+      const ok = kind === 'plant' ? ['.', ',', 'g'].includes(cur)
+        : ['p', 'd', 'e'].includes(cur);
+      if (!ok) continue;
+      decor(m, x, y, kind, { osm: true, name: name || '' });
+      seen.add(key);
+      props++;
+    }
+
+    m.osm = {
+      attribution: root.attribution, tileM: root.tileM, source: spec.source,
+      compression: spec.projection && spec.projection.compression,
+      tiles: applied, props, note: spec.note, reachableBefore
+    };
+    return m;
+  }
+
   /* ------------------------------------------------------------- NAPOLI */
   function napoli() {
     // Ricostruzione urbanistica da OSM + fotografie pubbliche (vedi qa/campania-open-code-1).
@@ -222,7 +382,9 @@
     // Terrazza del caffè sul lato sud-est, non al centro della piazza.
     decor(m, 48, 36, 'table_out', { h: 12 });
     decor(m, 46, 36, 'chair_out', { h: 10 }); decor(m, 50, 36, 'chair_out', { h: 10 });
-    decor(m, 33, 37, 'sign', { h: 20 });
+    // Il cartello pedonale resta solo sul bordo est, non davanti alla guglia:
+    // la piazza reale e' pedonale e le targhe segnalano le direttrici ai lati.
+    decor(m, 65, 37, 'sign', { h: 20 });
     decor(m, 62, 28, 'sign', { h: 20 });
     [[16,17],[16,25],[52,22],[52,35],[27,29],[36,29]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
 
@@ -275,7 +437,11 @@
     const R = U.rng(3312), g = m.g;
     scatter(g, ',', 80, c => c === '.', R);
     hline(g, 0, 71, 14, 'r', 2); hline(g, 0, 71, 13, 'p'); hline(g, 0, 71, 16, 'p');
-    hline(g, 0, 71, 22, 'S', 2); hline(g, 0, 71, 25, '~');
+    hline(g, 0, 71, 22, 'S', 2);
+    // Battigia sfalsata: ghiaia e schiuma interrompono il bordo rettilineo
+    // tra sabbia e mare, mantenendo l'acqua non attraversabile.
+    for (let x = 0; x <= 71; x++) setTile(g, x, 24, (x % 5 === 0 || x % 7 === 3) ? '~' : ',');
+    hline(g, 0, 71, 25, '~');
     for (let y = 26; y < 40; y++) hline(g, 0, 71, y, 'W');
     // Molo e passerella: superfici in legno camminabili, collegate alla riva e al battello.
     rect(g, 20, 23, 4, 11, 'o'); setTile(g, 21, 33, 'o'); setTile(g, 22, 33, 'o');
@@ -587,7 +753,10 @@
     // Piazzetta della stazione Mostra: lo spawn metro e' (11,26).
     rect(g, 6, 23, 10, 5, 'D');
     rect(g, 8, 21, 6, 2, '#'); setTile(g, 11, 22, 'Y');
-    decor(m, 8, 21, 'metric_facade', { type: 'fuorigrotta_mostra', h: 160, oy: -64 });
+    // Il padiglione e' largo 20 celle: centratelo sull'impronta 8..13 invece
+    // di aggettare fino all'isolato accanto. Base sollevata di 8 px: il
+    // giocatore sul piazzale (11,26) passa davanti all'ingresso, non dietro.
+    decor(m, 1, 21, 'metric_facade', { type: 'fuorigrotta_mostra', h: 160, oy: -72 });
     poi(m, 11, 22, 'metro_mostra', 'service', 'Tornelli — metro per Toledo', 'metro_travel', { to: 'metro2' });
     poi(m, 11, 26, 'mostra_ingresso', 'landmark', 'Ingresso Mostra d’Oltremare', 'flavor');
 
@@ -1155,6 +1324,7 @@
           this.cache.napoli = m;
           return m;
       }
+      if (m.zone !== 'interno') applyOsmGeometry(m);
       if (m.zone === 'interno') expandInterior(m);
       m.width = m.w * T; m.height = m.h * T;
       const defaultNames = { napoli: 'Piazza del Gesù Nuovo', costiera: 'Costiera Amalfitana', vesuvio: 'Falde del Vesuvio', pompei: 'Scavi di Pompei', capri: 'Capri', bacoli: 'Bacoli e Baia', salerno: 'Salerno - Lungomare', avellino: 'Avellino - Colline Irpine', caserta: 'Caserta - Reggia', fuorigrotta: 'Fuorigrotta - Viale Augusto', pianura: 'Pianura - Piazza San Giorgio', grotta: 'Grotta del Vesuvio', bar: 'Caffè Vittoria', pizzeria:'Pizzeria Da Michele', metro:'Metro Toledo - Atrio', negozio: 'Bottega di Sora Maria', banca: 'Banca di Napoli', clinica: 'Clinica', ufficio: 'Ufficio lavori', casa_nonna: 'Chiesa del Gesù Nuovo', casa_giocatore: 'Casa nuova', appartamento: 'Appartamento a Chiaia', casa_amalfi: 'Casetta ad Amalfi', bottega: 'Bottega di famiglia', souvenir: 'Souvenir degli scavi' };

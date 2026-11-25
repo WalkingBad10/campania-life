@@ -746,7 +746,10 @@
           // Sette varianti deterministiche: la chioma non e' sempre la stessa
           // sagoma, e il tile sotto resta pavimento continuo con sola ombra.
           const variant = U.hash('tree:' + m.id + ':' + it.tx + ':' + it.ty) % 7;
-          const img = m.zone === 'costiera' ? ART.lemonTree(variant) : ART.tree(variant);
+          // Il filare di Viale Augusto e' documentato come Washingtonia:
+          // usa palmTree, non la chioma sferica usata altrove.
+          const img = m.id === 'fuorigrotta' ? ART.palmTree(variant)
+            : m.zone === 'costiera' ? ART.lemonTree(variant) : ART.tree(variant);
           c.drawImage(img, it.tx * T - 8, it.ty * T - 24);
         } else if (it.kind === 'O') {
           this.drawGuglia(c, it.tx * T, it.ty * T);

@@ -1,109 +1,96 @@
 #!/usr/bin/env python3
-"""Proiezione metrica OSM -> griglia di gioco, con confronto sugli ancoraggi.
+"""Proiezione metrica OSM -> griglia di gioco e generatore del patch cartografico.
 
-Non e' un generatore di mappe: e' uno strumento di verifica. Legge le geometrie
-OSM scaricate dal file JSON locale (api.openstreetmap.org, licenza ODbL), le
-proietta in metri con una tangent plane attorno al centro della piazza, le
-converte in celle da 2,0 m e confronta gli ancoraggi dichiarati nel gioco.
+Questo file e' l'entry point operativo: ricostruisce effettivamente le superfici
+delle 11 mappe esterne leggendo le geometrie OSM reali salvate in osm-data/
+(api.openstreetmap.org, licenza ODbL) e scrive client/src/game/osm-geometry.js.
+Accanto al patch stampa il report degli ancoraggi e delle semplificazioni, così
+la fedelta' dichiarata resta verificabile.
 
-Ogni scarto viene riportato esplicitamente: una semplificazione documentata e'
-preferibile a una fedelta' dichiarata ma non verificata.
+Uso:
+    python3 qa/campania-open-code-1/osm_projection.py
 """
 from __future__ import annotations
 
 import json
 import math
-import statistics
-from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-RAW = HERE.parent.parent / "client" / "src" / "game"
-GEOM = Path("/private/var/folders/_s/02q2txw13sgf302965d4f1_m0000gn/T/opencode/visual-review/pro-review/osm-geom.json")
+import build_osm_geometry as gen
 
-PIAZZA = 563345000
 GUGLIA = 261256738
 GESU = 261249895
 CROCE = 27179695
-TILE_M = 2.0
-
-# Ancoraggi dichiarati in client/src/game/maps.js (function napoli()).
-GAME = {
-    "guglia": (36, 26),       # POI, tile
-    "gesu": (20, 9),          # POI
-    "croce": (63, 32),        # POI
-    "piazza_center": (42, 27), # centro della pavimentazione pedonale
-}
 
 
-def load() -> dict[int, list[tuple[float, float]]]:
-    data = json.loads(GEOM.read_text())
-    return {int(k): [(float(a), float(b)) for a, b in v] for k, v in data.items()}
+def build() -> tuple[dict, dict]:
+    """Genera il patch OSM usato dal gioco e lo restituisce per il report."""
+    maps = {map_id: gen.build_map(map_id, cfg) for map_id, cfg in gen.CONFIG.items()}
+    out = {
+        "version": 1,
+        "attribution": gen.ATTRIBUTION,
+        "tileM": gen.TILE_M,
+        "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
+        "maps": maps,
+    }
+    gen.OUT.write_text(
+        "window.CL_OSM = " + json.dumps(out, separators=(",", ":"), ensure_ascii=False) + ";\n"
+    )
+    return maps, out
 
 
-def projector(points):
-    lat0 = statistics.mean(p[0] for p in points)
-    lon0 = statistics.mean(p[1] for p in points)
-    mlat = 111132.0
-    mlon = 111320.0 * math.cos(math.radians(lat0))
-
-    def xy(p):
-        return ((p[1] - lon0) * mlon, (p[0] - lat0) * mlat)
-
-    return xy
-
-
-def center(xy, pts):
-    xs, ys = zip(*(xy(p) for p in pts))
-    return statistics.mean(xs), statistics.mean(ys)
-
-
-def main():
-    ways = load()
-    allp = [p for pts in ways.values() for p in pts]
-    xy = projector(allp)
-    c_piazza = center(xy, ways[PIAZZA])
-    c_guglia = center(xy, ways[GUGLIA])
-    c_gesu = center(xy, ways[GESU])
-
-    print("CAMPANIA OPEN CODE 1 — verifica proiezione OSM -> griglia")
-    print(f"TILE = {TILE_M} m; origine = centro medio delle geometrie OSM")
+def report(maps: dict, out: dict) -> None:
+    print("CAMPANIA OPEN CODE 1 — proiezione OSM -> griglia e patch applicato")
+    print(f"{out['attribution']}")
+    print(f"TILE = {gen.TILE_M} m; output = {gen.OUT}")
     print()
-    for wid, name in [(PIAZZA, "Piazza del Gesu Nuovo"), (GUGLIA, "Guglia dell'Immacolata"),
-                      (GESU, "Chiesa del Gesu Nuovo"), (CROCE, "Via Benedetto Croce")]:
-        pts = [xy(p) for p in ways[wid]]
-        xs, ys = zip(*pts)
-        print(f"{name:26s} way {wid}: {max(xs)-min(xs):6.1f} x {max(ys)-min(ys):6.1f} m "
-              f"({(max(xs)-min(xs))/TILE_M:4.1f} x {(max(ys)-min(ys))/TILE_M:4.1f} celle)")
+    for map_id, spec in maps.items():
+        anchors = ", ".join(
+            f"{a['spec']}->{tuple(a['grid'])}" for a in spec["anchors"]
+        ) or "nessuno"
+        st = spec["stats"]
+        print(f"{map_id:12s} tiles={st['tiles']:5d} props={st['props']:3d} "
+              f"buildings={st['buildings']:3d} compression="
+              f"{spec['projection']['compression']:.2f} | {anchors}")
 
-    def delta(a, b, ga, gb, label):
-        dx, dy = a[0] - b[0], a[1] - b[1]
-        gdx, gdy = ga[0] - gb[0], ga[1] - gb[1]
-        real = (dx / TILE_M, dy / TILE_M)
-        print(f"{label:34s} OSM ({real[0]:+6.1f},{real[1]:+6.1f}) celle | "
-              f"gioco ({gdx:+3d},{gdy:+3d}) celle | scarto "
-              f"({gdx-real[0]:+6.1f},{gdy-real[1]:+6.1f})")
-
-    print()
-    delta(c_guglia, c_piazza, GAME["guglia"], GAME["piazza_center"], "Guglia da centro piazza")
-    delta(c_gesu, c_piazza, GAME["gesu"], GAME["piazza_center"], "Gesu da centro piazza")
-    d_real = math.dist(c_guglia, c_gesu) / TILE_M
-    d_game = math.dist(GAME["guglia"], GAME["gesu"])
-    print(f"Distanza Guglia->Gesu: OSM {d_real:5.1f} celle, gioco {d_game:5.1f} celle "
-          f"-> compressione {d_game/d_real:.2f}x")
-
-    pts = [xy(p) for p in ways[CROCE]]
-    ang = math.degrees(math.atan2(pts[-1][1] - pts[0][1], pts[-1][0] - pts[0][0]))
-    print(f"Asse Via Benedetto Croce: {ang:.1f} gradi (est=0, nord=90)")
+    # Verifica storica del centro di Napoli, ora ricalcolata dagli stessi dati OSM
+    # che generano il patch (non da un file temporaneo).
+    cfg = gen.CONFIG["napoli"]
+    nodes, ways, origin = gen.load(cfg)
+    pts = {
+        "guglia": gen.feature_point("way:%d:centroid" % GUGLIA, nodes, ways, origin, 1 / gen.TILE_M),
+        "gesu_centro": gen.feature_point("way:%d:centroid" % GESU, nodes, ways, origin, 1 / gen.TILE_M),
+        "gesu_prospetto": gen.feature_point("way:%d:south-face" % GESU, nodes, ways, origin, 1 / gen.TILE_M),
+    }
+    if all(pts.values()):
+        print()
+        d_facade = math.dist(pts["guglia"], pts["gesu_prospetto"]) / gen.TILE_M
+        d_centro = math.dist(pts["guglia"], pts["gesu_centro"]) / gen.TILE_M
+        d_game = math.dist((36, 26), (20, 14))
+        print(f"Napoli Guglia->Gesu: prospetto OSM {d_facade:.1f} celle, gioco {d_game:.1f} celle "
+              f"-> compressione frontale {d_game / d_facade:.2f}x")
+        print(f"Distanza tra centroid OSM {d_centro:.1f} celle: il gioco ancoraggio il "
+              f"prospetto, non il centro dell'edificio ({d_game / d_centro:.2f}x sul centro).")
+    if CROCE in ways:
+        pts_c = [gen.to_meters(nodes[n]["lat"], nodes[n]["lon"], origin)
+                 for n in ways[CROCE].get("nodes", []) if n in nodes]
+        if len(pts_c) >= 2:
+            a, b = pts_c[0], pts_c[-1]
+            ang = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
+            print(f"Asse Via Benedetto Croce: {ang:.1f} gradi (est=0, nord=90)")
 
     print()
     print("Semplificazioni dichiarate:")
     print("- La viewport logica (480x270 px = 60x34 m) non puo' contenere la piazza reale "
           "e il fronte del Gesu' alla distanza OSM senza ridurre l'adulto sotto 9x14 px.")
-    print("- Il gioco comprime l'asse nord-sud Guglia->Gesu'; gli ancoraggi dei portali "
-          "sono preservati e lo scarto e' riportato sopra, non occultato.")
-    print("- La pavimentazione e' derivata da surface=sett (way 563345000 e 27179695); "
-          "il disegno del basolato e' stilizzato, non una fototessera della lastricatura.")
+    print("- Le compressioni riportate sopra sono misurate tra ancoraggi OSM reali, non stimate.")
+    print("- La pavimentazione deriva dai tag surface=sett/paving_stones; il disegno del "
+          "basolato e' stilizzato, non una fototessera della lastricatura.")
+    print("- Le distanze superiori alla viewport (es. Castello di Baia, Reggia di Caserta) "
+          "restano facciate metriche M1 e non vengono forzate nella griglia.")
+    print("- I percorsi giocabili preesistenti sono protetti dal patch: nessuna strada nuova "
+          "viene inventata per collegare spawn, portali, POI e residenti.")
 
 
 if __name__ == "__main__":
-    main()
+    built_maps, built_out = build()
+    report(built_maps, built_out)

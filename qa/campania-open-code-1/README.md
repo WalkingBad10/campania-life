@@ -173,6 +173,16 @@ Checkpoint di ingresso `checkpoint/pre-visual-review` / `backup/pre-visual-revie
 
 **Strumenti realmente disponibili e utilizzati**: Pillow 11.3.0, Python, API OpenStreetMap, Playwright/Chromium, modello VL `opencode/nemotron-3.5-super-vl-free`. **Non disponibili**: Aseprite/LibreSprite, QGIS, Tiled/LDtk, Blender, OpenCV, Matter.js. La pixel art resta procedurale e deterministica; le geometrie OSM sono verificate via proiezione metrica, non importate in un editor GIS.
 
+## Fase cartografica operativa (dopo `06a801f`)
+
+`osm_projection.py` non è più solo documentazione: è l'entry point che scarica/legge i bbox OSM reali, proietta way e nodi nel sistema metrico del gioco e genera `client/src/game/osm-geometry.js`. L'overlay è applicato dentro `MAPS.get()` subito dopo lo switch e prima di `expandInterior`/cache, con un layer protetto (`OSM_SURFACE`, `OSM_ALLOW`, `OSM_PASSAGE`, `OSM_STRIP`, `OSM_PROP_TYPES`, `osmLock()`, `osmProtectRoutes()`): spawn, portali, POI, door, checkpoint, decor e percorsi già giocabili non vengono cancellati. Solo le 11 mappe esterne ricevono geometrie OSM; i 15 interni restano invariati.
+
+Le 22 fotografie Wikimedia in `photo-refs/` (2 per località) sono riferimenti QA con autore/licenza/sorgente in `refs.json`: non sono copiate nei pixel del gioco. Attribuzione dati: **© OpenStreetMap contributors — ODbL — retrieve 2026-11-25**, licenza `https://opendatacommons.org/licenses/odbl/1-0/`; il link è esposto anche nei crediti del gioco.
+
+Difetti concreti corretti in questa fase: occlusioni residue su Fuorigrotta `(11,26)` e `(22,25)` senza abbassare le soglie; facciata Mostra rientrata nella propria impronta; angoli opachi degli sprite mondo eliminati; campata cieca di `pianura_borgo` chiusa con grondaia; cartello pedonale spostato dal centro della piazza al bordo est; palme Washingtonia dedicate per Viale Augusto; portico ad archi, balconi e panni sul blocco razionalista; battigia sfalsata a Positano.
+
+Gate della fase: regressione **41/41 PASS** (nuovo test «OSM reconstruction never removes an existing outdoor route»), texture audit **50/50 PNG e 21/21 facciate**, render audit **0 errori**, visual-explore **2 dispositivi × 26 mappe, 0 errori/occlusioni/profondità/geometria**, build Vite `OK`, `git diff --check` `OK`. Le analisi VL sono state ripetute con `opencode/nemotron-3.5-super-vl-free` su immagini singole, usando anche inquadrature dedicate senza HUD (`vl-*-nohud.png`) per separare la minimappa dagli oggetti del mondo.
+
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
 

@@ -127,9 +127,15 @@ async function playerVisibility(page, id, tileX, tileY) {
     CL.camera.snap(G.player);
     const cv = G.canvas, ctx = cv.getContext('2d');
     const grab = () => ctx.getImageData(0, 0, cv.width, cv.height).data.slice();
+    // Il probe misura l'occlusione nel mondo: HUD e minimappa disegnano sempre
+    // il segnaposto del giocatore anche quando l'entità è nascosta, quindi
+    // verrebbero contati come "visibile" pixel che non appartengono allo sprite.
+    const drawHud = G.drawHud;
+    G.drawHud = () => {};
     G.player.alive = true; G.render(); const shown = grab();
     G.player.alive = false; G.render(); const hidden = grab();
     G.player.alive = true; G.render();
+    G.drawHud = drawHud;
     let diff = 0;
     for (let i = 0; i < shown.length; i += 4) {
       const delta = Math.abs(shown[i]-hidden[i]) + Math.abs(shown[i+1]-hidden[i+1]) + Math.abs(shown[i+2]-hidden[i+2]);
