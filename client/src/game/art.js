@@ -26,8 +26,24 @@
     r = U.clamp(r, 0, 255); g = U.clamp(g, 0, 255); b = U.clamp(b, 0, 255);
     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   }
-  function cv(wid, hei) { const c = document.createElement('canvas'); c.width = wid; c.height = hei; return c; }
-  function ctx(c) { const x = c.getContext('2d'); x.imageSmoothingEnabled = false; return x; }
+  // I sprite "mondo" vengono disegnati direttamente alla scala metrica finale:
+  // niente downscale con smoothing che sfoca i dettagli a 1 px. Il canvas
+  // pubblico conserva pero' le dimensioni legacy, cosi' gli offset di disegno
+  // e i test sulle ancore restano invariati.
+  let worldDrawScale = 1;
+  function cvRaw(wid, hei) { const c = document.createElement('canvas'); c.width = Math.max(1, wid); c.height = Math.max(1, hei); return c; }
+  function ctxRaw(c) { const x = c.getContext('2d'); x.imageSmoothingEnabled = false; return x; }
+  function cv(wid, hei) {
+    if (worldDrawScale === 1) return cvRaw(wid, hei);
+    const c = cvRaw(Math.round(wid * worldDrawScale), Math.round(hei * worldDrawScale));
+    c._legacyW = wid; c._legacyH = hei;
+    return c;
+  }
+  function ctx(c) {
+    const x = ctxRaw(c);
+    if (c._legacyW) x.setTransform(worldDrawScale, 0, 0, worldDrawScale, 0, 0);
+    return x;
+  }
   function px(x, a, b, wid, hei, col) { x.fillStyle = col; x.fillRect(a | 0, b | 0, wid | 0, hei | 0); }
   function ell(x, cx, cy, rx, ry, col) {
     x.fillStyle = col;
@@ -90,7 +106,7 @@
           // procedurale per sempre: la si invalida quando tutti gli asset sono
           // pronti, così la grafica finale non dipende dall'ordine dei frame.
           for (const key of Object.keys(this.cache)) {
-            if (key.startsWith('bld:') || key.startsWith('w:p:')) delete this.cache[key];
+            if (key.startsWith('bld:') || key.startsWith('w:p:') || key.startsWith('prop:')) delete this.cache[key];
           }
           resolve();
         };
@@ -112,12 +128,19 @@
      */
     _world(key, make) {
       if (this.cache[key]) return this.cache[key];
-      const src = make(); if (!src || !src.width || !src.height) return src;
+      // I costruttori disegnano direttamente nella griglia finale: i dettagli
+      // a 1 px non vengono piu' sfocati da un doppio passaggio di scala.
+      let src;
+      worldDrawScale = CL.WORLD_SCALE;
+      try { src = make(); } finally { worldDrawScale = 1; }
+      if (!src || !src.width || !src.height) return src;
+      if (src._legacyW) return this.cache[key] = src; // già in scala metrica
+      // Le PNG M1 arrivano ancora in risoluzione legacy: vengono adattate
+      // con nearest-neighbor, senza anti-aliasing.
       const w = Math.max(1, Math.round(src.width * CL.WORLD_SCALE));
       const h = Math.max(1, Math.round(src.height * CL.WORLD_SCALE));
-      const c = cv(src.width, src.height), x = ctx(c);
-      x.imageSmoothingEnabled = true;
-      x.drawImage(src, Math.floor((src.width - w) / 2), src.height - h, w, h);
+      const c = cvRaw(w, h), x = ctxRaw(c);
+      x.drawImage(src, 0, 0, w, h);
       return this.cache[key] = c;
     },
     tree(v) { return this._world('w:tree:' + v, () => this._tree(v)); },
@@ -131,8 +154,32 @@
         () => this._character(look, dir, frame, anim));
     },
     creature(id, frame) { return this._world('w:cr:' + id + ':' + frame, () => this._creature(id, frame)); },
+    // Versione notturna pre-ombreggiata: nessun rettangolo scuro sopra il
+    // giocatore, che prima copriva il sprite e lo faceva sembrare un blocco.
+    nightCharacter(look, dir, frame, mode) {
+      const key = 'w:cn:' + [look.hair, look.skin, look.shirt, look.pants, dir, frame, mode || 'walk'].join('|');
+      if (this.cache[key]) return this.cache[key];
+      const src = this.character(look, dir, frame, mode);
+      const c = cvRaw(src.width, src.height), x = ctxRaw(c);
+      x.drawImage(src, 0, 0);
+      x.globalCompositeOperation = 'source-atop';
+      x.fillStyle = 'rgba(12,20,42,.22)'; x.fillRect(0, 0, c.width, c.height);
+      return this.cache[key] = c;
+    },
     vehicle(type, dir) { return this._world('w:v:' + type + ':' + dir, () => this._vehicle(type, dir)); },
     propSprite(kind) { return this._world('w:p:' + kind, () => this._propSprite(kind)); },
+    // Finiture architettoniche precedentemente disegnate come rettangoli nel
+    // motore: ora sono sprite con pieghe, dentelli e trafori, ritagliati con
+    // trasparenza e nella stessa scala metrica del resto del mondo.
+    awningSprite(color, wid) {
+      const w = Math.max(8, wid || 32), col = color || '#b94a3a';
+      return this._world('w:aw:' + col + ':' + w, () => this._awning(col, w));
+    },
+    trimSprite(kind, wid, color, pots) {
+      const w = Math.max(8, wid || 32), col = color || '#b9b0a0';
+      return this._world('w:tr:' + kind + ':' + col + ':' + w + ':' + (pots ? 1 : 0),
+        () => this._trim(kind, w, col, pots !== false));
+    },
 
     px, shade, ell, cv, ctx,
 
@@ -425,9 +472,9 @@
     },
 
     /* ------------------------------------------------------- oggetti alti */
-    _tree(variant) {
-      const key = 'tree' + variant; if (this.cache[key]) return this.cache[key];
-      const c = cv(32, 40), x = ctx(c), R = U.rng(variant * 977 + 13);
+    _treeRaw(variant) {
+      const key = 'raw:tree' + variant; if (this.cache[key]) return this.cache[key];
+      const c = cvRaw(32, 40), x = ctxRaw(c), R = U.rng(variant * 977 + 13);
       px(x, 14, 28, 5, 12, P.woodD); px(x, 15, 28, 3, 12, P.wood);
       const base = variant % 3 === 0 ? '#4d8146' : variant % 3 === 1 ? '#5d944f' : '#437a45';
       ell(x, 16, 18, 13, 11, P.dark); ell(x, 16, 17, 12, 10, base);
@@ -436,12 +483,17 @@
       for (let i = 0; i < 26; i++) px(x, 5 + (R() * 22 | 0), 8 + (R() * 19 | 0), 1, 1, R() > .5 ? shade(base, 32) : shade(base, -22));
       return this.cache[key] = c;
     },
+    _tree(variant) {
+      const key = 'tree' + variant; if (this.cache[key]) return this.cache[key];
+      const c = cv(32, 40), x = ctx(c); x.drawImage(this._treeRaw(variant), 0, 0);
+      return this.cache[key] = c;
+    },
     _lemonTree(variant) {
-      // Usa il disegno grezzo: il wrapping di scala avviene una sola volta,
-      // in lemonTree(), altrimenti l'albero verrebbe scalato due volte.
-      const c = this._tree(variant), key = 'lemon' + variant;
+      // Parte sempre dal grezzo: riusare il canvas di tree() dopo che era
+      // stato cacheato produceva un doppio downscale (albero visibile 14 px).
+      const key = 'lemon' + variant;
       if (this.cache[key]) return this.cache[key];
-      const n = cv(32, 40), x = ctx(n); x.drawImage(c, 0, 0);
+      const n = cv(32, 40), x = ctx(n); x.drawImage(this._treeRaw(variant), 0, 0);
       [[9, 16], [22, 21], [15, 10], [25, 13]].forEach(([a, b]) => { px(x, a, b, 2, 3, '#f2d24f'); px(x, a, b, 1, 1, '#fff0a0'); });
       return this.cache[key] = n;
     },
@@ -613,30 +665,90 @@
     /* ------------------------------------------------------------- veicoli */
     _vehicle(type, dir) {
       const key = ['veh', type, dir].join('|'); if (this.cache[key]) return this.cache[key];
-      const c = cv(type === 'bus' ? 34 : type === 'car' ? 30 : type === 'scooter' ? 26 : 24, 20), x = ctx(c);
-      const ty = type === 'bus' ? '#d9a63c' : type === 'car' ? '#3f8fae' : type === 'scooter' ? '#c94f43' : '#4f8f6a';
-      const wheel = '#24272c';
-      if (type === 'bike') {
-        ell(x, 6, 15, 4, 4, wheel); ell(x, 18, 15, 4, 4, wheel);
-        px(x, 7, 14, 2, 2, '#cfd4d4'); px(x, 17, 14, 2, 2, '#cfd4d4');
-        px(x, 8, 10, 8, 2, ty); px(x, 10, 7, 2, 4, ty); px(x, 15, 11, 4, 1, '#b8bcc0');
-        px(x, 7, 8, 5, 2, dir === 'left' ? '#2b3036' : ty);
-      } else if (type === 'scooter') {
-        ell(x, 6, 15, 4, 4, wheel); ell(x, 20, 15, 4, 4, wheel);
-        ell(x, 6, 14, 2, 2, '#cfd4d4'); ell(x, 20, 14, 2, 2, '#cfd4d4');
-        px(x, 7, 9, 13, 5, ty); px(x, 9, 7, 7, 3, shade(ty, 24));
-        px(x, 17, 5, 2, 6, '#3b4045'); px(x, 15, 4, 6, 2, '#3b4045');
-        px(x, 8, 13, 12, 1, shade(ty, -40));
-      } else if (type === 'car') {
-        ell(x, 7, 15, 4, 4, wheel); ell(x, 23, 15, 4, 4, wheel);
-        px(x, 3, 8, 24, 7, ty); px(x, 7, 5, 16, 4, ty); px(x, 9, 6, 12, 3, '#8fc9d6');
-        px(x, 3, 13, 24, 2, shade(ty, -45)); px(x, 5, 9, 3, 2, '#ffe9a8'); px(x, 22, 9, 3, 2, '#e8613c');
+      const vertical = dir === 'up' || dir === 'down';
+      const W = type === 'bus' ? 34 : type === 'car' || type === 'taxi' || type === 'van' ? 30 : type === 'scooter' ? 26 : 24;
+      const c = cv(vertical ? 20 : W, vertical ? 30 : 20), x = ctx(c);
+      const body = {
+        car: '#3f8fae', taxi: '#e8b635', van: '#e6e7dd', bus: '#d9a63c',
+        scooter: '#c94f43', bike: '#4f8f6a'
+      }[type] || '#3f8fae';
+      const dark = '#24272c', glass = '#9fd0dd', light = '#ffe9a8', red = '#e8613c';
+      const wheel = (wx, wy, r) => {
+        ell(x, wx, wy, r, r, dark); ell(x, wx, wy, r - 2, r - 2, '#8b8f95');
+        px(x, wx - 1, wy - 1, 2, 2, '#cfd4d4');
+      };
+
+      if (!vertical) {
+        const frontRight = dir === 'right';
+        const nose = frontRight ? W - 4 : 2;
+        const tail = frontRight ? 2 : W - 4;
+        ell(x, W / 2, 17, W / 2 - 3, 2, 'rgba(0,0,0,.18)');
+        if (type === 'bike') {
+          wheel(6, 15, 4); wheel(W - 6, 15, 4);
+          px(x, 7, 11, 10, 2, body); px(x, 9, 8, 2, 4, body);
+          px(x, 15, 10, 5, 1, '#b8bcc0'); px(x, 5, 7, 6, 2, frontRight ? body : dark);
+          px(x, W - 7, 7, 4, 2, frontRight ? light : red);
+          px(x, 11, 12, 3, 2, '#2f6a4d');
+        } else if (type === 'scooter') {
+          wheel(6, 15, 4); wheel(W - 6, 15, 4);
+          px(x, 6, 9, 14, 5, body); px(x, 8, 7, 8, 3, shade(body, 24));
+          px(x, W - 8, 5, 2, 6, dark); px(x, W - 10, 4, 6, 2, dark);
+          px(x, 7, 13, 12, 1, shade(body, -40)); px(x, 8, 10, 3, 2, '#f0d58a');
+          px(x, nose, 8, 3, 2, frontRight ? light : red);
+        } else if (type === 'bus') {
+          wheel(7, 16, 4); wheel(W - 7, 16, 4);
+          px(x, 2, 4, W - 4, 12, body); px(x, 3, 5, 7, 5, glass);
+          px(x, 12, 5, 7, 5, glass); px(x, 21, 5, 7, 5, glass);
+          px(x, 2, 13, W - 4, 3, shade(body, -42));
+          px(x, frontRight ? W - 4 : 2, 10, 3, 2, frontRight ? light : red);
+          px(x, 3, 16, 4, 2, '#eee6c8'); px(x, W - 7, 16, 4, 2, '#eee6c8');
+        } else {
+          wheel(7, 15, 4); wheel(W - 7, 15, 4);
+          px(x, 2, 8, W - 4, 7, body);
+          if (type === 'van') {
+            px(x, 2, 5, W - 4, 10, body); px(x, frontRight ? W - 11 : 3, 6, 8, 4, glass);
+            px(x, 4, 8, W - 8, 1, '#4a87b8'); px(x, 4, 13, W - 8, 1, '#4a87b8');
+          } else {
+            px(x, 6, 5, W - 12, 4, shade(body, 18)); px(x, 8, 6, 7, 3, glass);
+            px(x, W - 15, 6, 6, 3, shade(glass, -25)); px(x, 15, 6, 1, 3, shade(body, -30));
+          }
+          px(x, 2, 13, W - 4, 2, shade(body, -45));
+          px(x, nose, 9, 3, 2, frontRight ? light : red);
+          px(x, tail, 10, 2, 2, frontRight ? red : light);
+          if (type === 'taxi') {
+            px(x, W / 2 - 3, 1, 6, 3, '#f6e27a'); px(x, W / 2 - 2, 2, 4, 1, dark);
+            for (let i = 4; i < W - 4; i += 4) px(x, i, 12, 2, 1, i % 8 ? dark : '#f5f0df');
+          }
+        }
       } else {
-        ell(x, 7, 16, 4, 4, wheel); ell(x, 27, 16, 4, 4, wheel);
-        px(x, 2, 5, 30, 11, ty); px(x, 4, 6, 7, 5, '#8fc9d6'); px(x, 13, 6, 7, 5, '#8fc9d6'); px(x, 22, 6, 7, 5, '#8fc9d6');
-        px(x, 2, 13, 30, 3, shade(ty, -42)); px(x, 3, 16, 4, 2, '#eee6c8'); px(x, 28, 16, 4, 2, '#e8613c');
+        const front = dir === 'down';
+        ell(x, 10, 27, 8, 2, 'rgba(0,0,0,.18)');
+        if (type === 'bike' || type === 'scooter') {
+          wheel(10, 24, 4);
+          px(x, 8, 11, 4, 12, body); px(x, 6, 9, 8, 3, dark);
+          px(x, 4, 10, 12, 2, shade(body, -30));
+          px(x, 7, 14, 6, 4, front ? glass : shade(body, -20));
+          px(x, front ? 8 : 7, 20, 2, 2, front ? light : red);
+          px(x, front ? 11 : 11, 20, 2, 2, front ? light : red);
+        } else {
+          wheel(2, 21, 4); wheel(18, 21, 4);
+          px(x, 3, 7, 14, 16, body);
+          px(x, 4, 4, 12, 4, shade(body, 20));
+          px(x, 4, 8, 12, 5, front ? glass : shade(glass, -35));
+          px(x, 5, 9, 4, 1, '#e9f5f3');
+          px(x, 4, 14, 12, 5, shade(body, -12));
+          px(x, 1, 12, 3, 2, shade(body, -25)); px(x, 16, 12, 3, 2, shade(body, -25));
+          px(x, 7, 17, 6, 2, dark); px(x, 8, 21, 4, 2, '#e9e3cf');
+          px(x, front ? 4 : 4, 20, 3, 2, front ? light : red);
+          px(x, 13, 20, 3, 2, front ? light : red);
+          if (type === 'taxi') px(x, 7, 2, 6, 3, '#f6e27a');
+          if (type === 'van') { px(x, 4, 8, 12, 5, shade(glass, -15)); px(x, 4, 13, 12, 2, '#4a87b8'); }
+          if (type === 'bus') {
+            px(x, 3, 5, 14, 4, dark); px(x, 5, 6, 10, 2, '#f6e27a');
+            px(x, 4, 8, 12, 6, glass); px(x, 3, 15, 14, 4, shade(body, -35));
+          }
+        }
       }
-      if (dir === 'up' || dir === 'left') { x.save(); x.translate(c.width, 0); x.scale(-1, 1); x.drawImage(c, 0, 0); x.restore(); }
       return this.cache[key] = c;
     },
 
@@ -978,7 +1090,11 @@
           }
           for (let i = 0; i < 6; i++) {
             const nx = 8 + i * 50 + ((R() * 9) | 0), ny = 16 + ((R() * 12) | 0);
-            x.clearRect(nx, ny, 12 + ((R() * 14) | 0), 12 + ((R() * 8) | 0));
+            // Non si può usare clearRect: bucava il muro e mostrava il tile
+            // sottostante. Le finestre cieche sono mattoni incassati opachi.
+            const ww = 12 + ((R() * 14) | 0), wh = 12 + ((R() * 8) | 0);
+            px(x, nx, ny, ww, wh, '#6f6052'); px(x, nx + 2, ny + 2, ww - 4, wh - 4, '#4c433a');
+            px(x, nx + 2, ny + 2, ww - 4, 1, '#8e7e6b');
           }
           for (let ax = 18; ax < W - 30; ax += 58) {
             arch(ax, 62, 38, 62, '#8f6a55', '#51483f'); px(x, ax - 3, 124, 44, 3, '#a88b72');
@@ -1178,6 +1294,72 @@
       px(x, 55, 0, 3, 4, '#d4b04f');
       return this.cache[key] = c;
     },
+    _awning(col, w) {
+      // Tenda da negozio: telo a pieghe, orlo dentellato, staffe laterali e
+      // ombra portata. Nessun rettangolo piatto a due colori.
+      const c = cv(w, 20), x = ctx(c), dark = shade(col, -42), light = shade(col, 28);
+      for (let i = 0; i < w; i += 8) {
+        const fold = ((i / 8) | 0) % 2 === 0 ? col : shade(col, -12);
+        px(x, i, 0, 8, 13, fold);
+        px(x, i, 0, 1, 13, 'rgba(24,20,18,.20)');
+        px(x, i + 6, 0, 2, 13, 'rgba(24,20,18,.16)');
+        px(x, i + 2, 1, 1, 11, 'rgba(255,245,220,.20)');
+        x.fillStyle = shade(fold, -18);
+        x.beginPath(); x.arc(i + 4, 13, 4, 0, Math.PI); x.fill();
+        px(x, i + 3, 15, 2, 2, 'rgba(20,16,14,.22)');
+      }
+      px(x, 0, 11, w, 2, 'rgba(20,16,14,.18)');
+      px(x, 0, 0, w, 2, light);
+      px(x, 0, 2, w, 1, 'rgba(255,250,232,.22)');
+      px(x, 0, 18, w, 2, dark);
+      px(x, 2, 3, 2, 7, '#554d43'); px(x, w - 4, 3, 2, 7, '#554d43');
+      px(x, 1, 3, 4, 1, '#8a8072'); px(x, w - 5, 3, 4, 1, '#8a8072');
+      return c;
+    },
+
+    _trim(kind, w, col, pots) {
+      if (kind === 'cornice') {
+        const c = cv(w, 10), x = ctx(c);
+        px(x, 0, 3, w, 7, 'rgba(22,20,18,.20)');
+        px(x, 0, 0, w, 4, col);
+        px(x, 0, 0, w, 1, shade(col, 30));
+        px(x, 0, 4, w, 2, shade(col, -28));
+        px(x, 0, 6, w, 1, shade(col, -48));
+        for (let i = 2; i < w - 1; i += 6) px(x, i, 4, 3, 2, shade(col, -38));
+        return c;
+      }
+      if (kind === 'balcony') {
+        const c = cv(w, 18), x = ctx(c);
+        px(x, 2, 15, w - 4, 3, 'rgba(20,20,18,.24)');
+        px(x, 0, 12, w, 5, '#aca393');
+        px(x, 0, 12, w, 1, '#d3c9b6');
+        px(x, 0, 16, w, 2, '#6f6b62');
+        px(x, 1, 2, w - 2, 2, '#616b70');
+        px(x, 1, 4, w - 2, 1, '#9aa4a6');
+        for (let i = 2; i < w - 2; i += 4) {
+          px(x, i, 5, 1, 8, '#4f595e');
+          px(x, i + 1, 5, 1, 8, 'rgba(210,220,220,.22)');
+        }
+        px(x, 1, 11, w - 2, 2, '#59636a');
+        if (pots) for (let i = 5; i < w - 5; i += 13) {
+          px(x, i, 8, 5, 4, '#a45b45'); px(x, i + 1, 9, 3, 2, '#c27455');
+          px(x, i + 1, 5, 2, 3, '#3f7746'); px(x, i + 3, 4, 2, 4, '#4e8b50');
+          px(x, i + 2, 3, 1, 1, '#d95e52'); px(x, i + 4, 3, 1, 1, '#e4bd59');
+        }
+        return c;
+      }
+      const c = cv(w, 24), x = ctx(c);
+      // Margine di 3 px: anche con la scala metrica frazionaria gli angoli
+      // restano trasparenti e non appare il consueto sfondo quadrato.
+      px(x, 3, 18, w - 6, 6, shade(col, -32));
+      px(x, 4, 0, 4, 20, col); px(x, w - 8, 0, 4, 20, col);
+      px(x, 5, 0, 1, 20, shade(col, 24)); px(x, w - 7, 0, 1, 20, shade(col, 24));
+      x.fillStyle = shade(col, -18);
+      x.beginPath(); x.moveTo(4, 8); x.quadraticCurveTo(w / 2, -8, w - 6, 8);
+      x.lineTo(w - 6, 13); x.quadraticCurveTo(w / 2, -2, 4, 13); x.closePath(); x.fill();
+      return c;
+    },
+
     _propSprite(kind) {
       if (this.images[kind]) return this.images[kind];
       // M1 extracted image props mapped to generic kinds

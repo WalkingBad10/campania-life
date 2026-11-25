@@ -109,6 +109,28 @@ Tre audit paralleli (texture sovrapposte/muri, geografia/strade, interni/proporz
 
 `client/scripts/mobile-start.mjs` verifica ora esplicitamente quattro direzioni WASD, corsa con Shift, respiro idle, quattro direzioni del joystick touch, salvataggio e «CONTINUA» sia sulla build locale sia su quella CI-like.
 
+## Revisione qualitativa dopo il riscontro negativo (26 mappe)
+
+Checkpoint di ingresso: `checkpoint/pre-quality-review` / `backup/pre-quality-review` (`4cd0e35`), mai ripristinato. Nessuna mappa, missione, POI, save o portal è stato rimosso. La revisione è partita da Piazza del Gesù Nuovo ed è stata estesa a tutte le mappe.
+
+**Problemi risolti**
+- Collisioni dall'impronta a terra: `MAPS.blockedBox()` scansiona tutte le celle coperte dal corpo, non solo i quattro angoli; `MAPS.propBlocks()` usa impronte dichiarate per lampioni, panchine, piante, tavoli, sedie, carri, cartelli e colonne; `MAPS.doorClosed()` rende le porte chiuse uno stato logico (flag `closed` o `hours`), non un tile statico. `engine.canStand()`, `safePoint()`, `unstuckPlayer()`, NPC, veicoli e pathfinding usano la stessa funzione.
+- Righe murarie cancellate dal marciapiede ripristinate (Gesù riga 14 e Palazzo NE riga 13); Santa Chiara limitata alla riga 29; masse di `palazzo_sw`/`palazzo_banca` riallineate; piante, insegne e colonnoni con impronta reale; panni stesi riportati ai balconi di riga 40.
+- Profondità: facciate e arredo non sono più fissi dietro le entità; porte e soglie (`portalAt`, `doorClosed`, tile `Y`/`7`/`8`) passano davanti al prospetto, mentre chi è dietro un edificio resta correttamente coperto.
+- Personaggi e veicoli: idle/camminata/corsa distinti, quattro direzioni reali, modelli `car`/`taxi`/`van`/`bus`/`scooter`/`bike`, corsia destra, inversioni, ombre, impronta ruotata e traffico solo su strade `r`.
+- Scala sprite: `ART` disegna gli sprite mondo direttamente a `CL.WORLD_SCALE` (`cvRaw`, `ctxRaw`, `worldDrawScale`): niente doppio downscale, sfocatura o ancoraggi errati. L'adulto metrico è 9 × 14 px; non è più coperto da un rettangolo scuro notturno, ma usa `ART.nightCharacter()` con ombreggiatura `source-atop`.
+- Luci e finiture: alone del lampione centrato sulla lanterna, finestre notturne con vetro caldo/montanti, tende con pieghe e orlo dentellato, cornici con dentelli, balconi con ringhiera traforata e vasi, panni con pieghe, colonne scanalate, archi in pietra. Il `clearRect()` che bucava i muri è stato sostituito da mattoni incassati opachi.
+- Audit: `render-audit.mjs` verifica dimensioni reali, quattro angoli trasparenti di alberi/veicoli/panchine/lampioni/piante/archi e nuove finiture architettoniche. `visual-explore.mjs` usa una soglia di visibilità coerente con l'adulto da 9 × 14 px.
+
+**Asset esterni valutati ma non integrati** — Kenney *RPG Urban Pack* e *Tiny Town* (CC0, 486 + 132 tile 16 × 16) sono stati scaricati e ispezionati: contengono principalmente tile di terreno/muratura e non forniscono veicoli top-down a quattro direzioni né arredo urbano coerente con il sistema metrico 8 px/m e con le facciate M1 già autorevoli. Mescolarli avrebbe introdotto esattamente la stilistica incoerente segnalata. Le grafiche mancanti sono quindi state **generate ex novo** nel pipeline `ART` (sprite originali, deterministiche, con licenza di progetto), non assemblate da texture casuali.
+
+**Problemi residui / verifica ancora necessaria**
+- Le prestazioni e la resa finale su **MacBook e Pixel 9 Pro XL fisici** non sono state misurate in questa sessione: le evidenze sono emulazione Playwright/Chromium.
+- Il confronto estetico con fotografie reali resta una **revisione umana**: il modello corrente non può leggere le immagini. `confronto-visivo.jpg` e le screenshot aggiornate sono il materiale da rivedere.
+- Le facciate M1 di Napoli restano deliberatamente invariate perché sono la fonte autorevole; le loro imperfezioni fotografiche originali non sono state "riparate" con texture estranee.
+
+**Gate della revisione qualitativa** — regressione **37/37 PASS** (tre nuovi test: impronta completa/porte chiuse, veicoli orientati e corsie, profondità delle facciate); texture audit **50/50 PNG e 21/21 facciate**; render audit **0 errori**; visual-explore **52 visite, 0 errori, 0 occlusioni, 0 profondità naturali errate**; mobile-start **OK** su build locale e pubblica; build Vite **OK**; `git diff --check` **OK**.
+
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
 
@@ -125,19 +147,19 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
 - Debug player nascosto di default (`?debug=1` o `?dbg=1` per riattivarlo).
 
 ## Verifiche automatiche
-- Regressione deterministico: **34/34 PASS** (gate minimo richiesto 28/28; include scala metrica, nuove mappe, viaggi metro, ancoraggi, targhe geografiche, direzioni WASD, collisioni e continuità stradale).
+- Regressione deterministico: **37/37 PASS** (gate minimo richiesto 28/28; include scala metrica, nuove mappe, viaggi metro, ancoraggi, targhe geografiche, direzioni WASD, collisioni, impronte complete, porte chiuse, veicoli, profondità e continuità stradale).
 - Avvio mobile touch (`npm run test:mobile-start`, Pixel 9 Pro XL emulato): **OK** su build locale e CI-like; riproduce il percorso reale «NUOVA PARTITA» → ingresso in mappa → movimento → save → «CONTINUA».
 - Build locale Vite: **OK**.
 - Build CI-like `GH_PAGES_BASE=/campania-life/`: **OK**.
 - `client/scripts/visual-explore.mjs` con Playwright/Chromium:
   - 2 dispositivi emulati × 26 mappe = 52 visite;
   - errori console/page/HTTP: **0**;
-  - probe occlusione giocatore: **19 per dispositivo, 0 fallimenti**;
+  - probe occlusione giocatore: **19 per dispositivo, 0 fallimenti** (soglia ricalibrata sull'adulto 9 × 14 px);
   - profondità naturale davanti/dietro la guglia: **0 fallimenti**;
   - geometria metrica della guglia: **0 fallimenti**;
   - pannelli debug visibili: **0**;
   - screenshot complete in questa cartella (`macbook-*.png`, `pixel9proxl-*.png`), incluse le 8 inquadrature dedicate per dispositivo (4 storiche del Gesù + stadio, Tecchio, golfo nord di Baia, targa Etoile).
-- `client/scripts/render-audit.mjs`: dimensioni **effettivamente disegnate** dal motore — Guglia 126 × 240, campanile 112 × 384, Gesù 448 × 248, palazzo NE 288 × 160, facciate metriche delle nuove zone e stadio 208 × 160 — **0 errori**. I 39 anchor volutamente fuori bounds (arredi a muro, riempimento viewport, gronda del Gesù) sono documentati in `render-audit.json` e non sono architetture tagliate.
+- `client/scripts/render-audit.mjs`: dimensioni **effettivamente disegnate** dal motore — Guglia 126 × 240, campanile 112 × 384, Gesù 448 × 248, palazzo NE 288 × 160, facciate metriche delle nuove zone e stadio 208 × 160 — **0 errori**. I 34 anchor volutamente fuori bounds (arredi a muro, riempimento viewport, gronda del Gesù) sono documentati in `render-audit.json` e non sono architetture tagliate.
 - `client/scripts/texture-audit.mjs`: **50/50 PNG distribuiti referenziati**, 0 file inutilizzati, **21/21 facciate** alla dimensione metrica corretta e senza campate laterali vuote. I fogli estratti e gli asset M1 non usati sono stati spostati in `_source-sheets/` (esclusi dal build e da Git), non più nella cartella distribuita.
 
 ## Limiti dichiarati

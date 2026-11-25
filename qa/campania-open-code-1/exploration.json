@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-25T11:31:08.768Z",
+  "generatedAt": "2026-11-25T12:39:13.143Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "scope": "EMULAZIONE Playwright/Chromium. Non sostituisce test su MacBook e Pixel 9 Pro XL fisici.",
   "devices": [
@@ -9,9 +9,9 @@
       "debugPanels": 0,
       "metrics": {
         "napoli": {
-          "palette": 1490,
+          "palette": 1583,
           "edgeDensity": 0.142,
-          "contrast": 225,
+          "contrast": 224,
           "luminance": 130,
           "map": {
             "w": 72,
@@ -22,10 +22,10 @@
           "vehicles": 3
         },
         "costiera": {
-          "palette": 705,
+          "palette": 691,
           "edgeDensity": 0.131,
-          "contrast": 229,
-          "luminance": 128.7,
+          "contrast": 228,
+          "luminance": 128.8,
           "map": {
             "w": 72,
             "h": 40,
@@ -35,10 +35,10 @@
           "vehicles": 2
         },
         "vesuvio": {
-          "palette": 505,
-          "edgeDensity": 0.129,
+          "palette": 535,
+          "edgeDensity": 0.127,
           "contrast": 228,
-          "luminance": 117.3,
+          "luminance": 117.6,
           "map": {
             "w": 64,
             "h": 48,
@@ -48,10 +48,10 @@
           "vehicles": 0
         },
         "pompei": {
-          "palette": 301,
-          "edgeDensity": 0.096,
-          "contrast": 233,
-          "luminance": 148.2,
+          "palette": 319,
+          "edgeDensity": 0.097,
+          "contrast": 232,
+          "luminance": 148.1,
           "map": {
             "w": 56,
             "h": 40,
@@ -61,10 +61,10 @@
           "vehicles": 0
         },
         "capri": {
-          "palette": 645,
-          "edgeDensity": 0.129,
+          "palette": 651,
+          "edgeDensity": 0.128,
           "contrast": 220,
-          "luminance": 130.5,
+          "luminance": 130.6,
           "map": {
             "w": 30,
             "h": 24,
@@ -74,7 +74,7 @@
           "vehicles": 0
         },
         "bacoli": {
-          "palette": 833,
+          "palette": 890,
           "edgeDensity": 0.138,
           "contrast": 232,
           "luminance": 131.6,
@@ -87,9 +87,9 @@
           "vehicles": 1
         },
         "salerno": {
-          "palette": 378,
+          "palette": 391,
           "edgeDensity": 0.134,
-          "contrast": 224,
+          "contrast": 222,
           "luminance": 135.4,
           "map": {
             "w": 56,
@@ -101,9 +101,9 @@
         },
         "avellino": {
           "palette": 610,
-          "edgeDensity": 0.156,
-          "contrast": 223,
-          "luminance": 120.1,
+          "edgeDensity": 0.154,
+          "contrast": 222,
+          "luminance": 120.2,
           "map": {
             "w": 48,
             "h": 32,
@@ -113,7 +113,7 @@
           "vehicles": 1
         },
         "caserta": {
-          "palette": 351,
+          "palette": 429,
           "edgeDensity": 0.123,
           "contrast": 232,
           "luminance": 139,
@@ -126,10 +126,10 @@
           "vehicles": 1
         },
         "fuorigrotta": {
-          "palette": 598,
+          "palette": 514,
           "edgeDensity": 0.12,
           "contrast": 229,
-          "luminance": 144.9,
+          "luminance": 145.1,
           "map": {
             "w": 72,
             "h": 48,
@@ -139,10 +139,10 @@
           "vehicles": 2
         },
         "pianura": {
-          "palette": 590,
+          "palette": 552,
           "edgeDensity": 0.159,
           "contrast": 234,
-          "luminance": 141.5,
+          "luminance": 141.6,
           "map": {
             "w": 64,
             "h": 40,
@@ -152,10 +152,10 @@
           "vehicles": 1
         },
         "casa_nonna": {
-          "palette": 1820,
-          "edgeDensity": 0.121,
+          "palette": 2640,
+          "edgeDensity": 0.156,
           "contrast": 223,
-          "luminance": 144.6,
+          "luminance": 141.2,
           "map": {
             "w": 28,
             "h": 22,
@@ -165,126 +165,9 @@
           "vehicles": 0
         },
         "casa_giocatore": {
-          "palette": 555,
-          "edgeDensity": 0.152,
+          "palette": 603,
+          "edgeDensity": 0.15,
           "contrast": 236,
-          "luminance": 154.8,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "appartamento": {
-          "palette": 624,
-          "edgeDensity": 0.156,
-          "contrast": 236,
-          "luminance": 153.7,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "casa_amalfi": {
-          "palette": 611,
-          "edgeDensity": 0.154,
-          "contrast": 236,
-          "luminance": 153.9,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "bottega": {
-          "palette": 505,
-          "edgeDensity": 0.151,
-          "contrast": 235,
-          "luminance": 153.4,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 2,
-          "vehicles": 0
-        },
-        "souvenir": {
-          "palette": 491,
-          "edgeDensity": 0.147,
-          "contrast": 235,
-          "luminance": 154.4,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "bar": {
-          "palette": 1890,
-          "edgeDensity": 0.132,
-          "contrast": 240,
-          "luminance": 135.1,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 5,
-          "vehicles": 0
-        },
-        "pizzeria": {
-          "palette": 1821,
-          "edgeDensity": 0.134,
-          "contrast": 224,
-          "luminance": 133.9,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 4,
-          "vehicles": 0
-        },
-        "metro": {
-          "palette": 1323,
-          "edgeDensity": 0.143,
-          "contrast": 235,
-          "luminance": 148.3,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 2,
-          "vehicles": 0
-        },
-        "metro2": {
-          "palette": 1287,
-          "edgeDensity": 0.142,
-          "contrast": 236,
-          "luminance": 148.4,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "negozio": {
-          "palette": 481,
-          "edgeDensity": 0.151,
-          "contrast": 235,
           "luminance": 153.5,
           "map": {
             "w": 30,
@@ -294,11 +177,128 @@
           "npcs": 1,
           "vehicles": 0
         },
-        "banca": {
-          "palette": 481,
-          "edgeDensity": 0.162,
+        "appartamento": {
+          "palette": 682,
+          "edgeDensity": 0.154,
+          "contrast": 236,
+          "luminance": 152.5,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "casa_amalfi": {
+          "palette": 678,
+          "edgeDensity": 0.152,
+          "contrast": 236,
+          "luminance": 152.8,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bottega": {
+          "palette": 580,
+          "edgeDensity": 0.149,
           "contrast": 235,
-          "luminance": 158.5,
+          "luminance": 152.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "souvenir": {
+          "palette": 537,
+          "edgeDensity": 0.145,
+          "contrast": 235,
+          "luminance": 153.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bar": {
+          "palette": 2984,
+          "edgeDensity": 0.15,
+          "contrast": 234,
+          "luminance": 131.8,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 5,
+          "vehicles": 0
+        },
+        "pizzeria": {
+          "palette": 2668,
+          "edgeDensity": 0.154,
+          "contrast": 234,
+          "luminance": 130.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 4,
+          "vehicles": 0
+        },
+        "metro": {
+          "palette": 1741,
+          "edgeDensity": 0.165,
+          "contrast": 237,
+          "luminance": 141.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "metro2": {
+          "palette": 1727,
+          "edgeDensity": 0.164,
+          "contrast": 237,
+          "luminance": 141.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "negozio": {
+          "palette": 542,
+          "edgeDensity": 0.149,
+          "contrast": 235,
+          "luminance": 152.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "banca": {
+          "palette": 534,
+          "edgeDensity": 0.159,
+          "contrast": 235,
+          "luminance": 157.1,
           "map": {
             "w": 30,
             "h": 18,
@@ -308,10 +308,10 @@
           "vehicles": 0
         },
         "clinica": {
-          "palette": 504,
-          "edgeDensity": 0.15,
+          "palette": 573,
+          "edgeDensity": 0.148,
           "contrast": 235,
-          "luminance": 153.4,
+          "luminance": 152.2,
           "map": {
             "w": 30,
             "h": 18,
@@ -321,10 +321,10 @@
           "vehicles": 0
         },
         "ufficio": {
-          "palette": 497,
-          "edgeDensity": 0.149,
+          "palette": 565,
+          "edgeDensity": 0.147,
           "contrast": 235,
-          "luminance": 155.3,
+          "luminance": 154.1,
           "map": {
             "w": 30,
             "h": 18,
@@ -334,10 +334,10 @@
           "vehicles": 0
         },
         "grotta": {
-          "palette": 292,
-          "edgeDensity": 0.064,
+          "palette": 336,
+          "edgeDensity": 0.062,
           "contrast": 222,
-          "luminance": 67.4,
+          "luminance": 67.9,
           "map": {
             "w": 30,
             "h": 20,
@@ -368,7 +368,7 @@
             20,
             13
           ],
-          "visiblePixels": 121,
+          "visiblePixels": 157,
           "expectOccluded": false,
           "pass": true
         },
@@ -378,7 +378,7 @@
             18,
             38
           ],
-          "visiblePixels": 123,
+          "visiblePixels": 88,
           "expectOccluded": false,
           "pass": true
         },
@@ -388,7 +388,7 @@
             58,
             28
           ],
-          "visiblePixels": 116,
+          "visiblePixels": 156,
           "expectOccluded": false,
           "pass": true
         },
@@ -398,7 +398,7 @@
             44,
             15
           ],
-          "visiblePixels": 344,
+          "visiblePixels": 368,
           "expectOccluded": false,
           "pass": true
         },
@@ -408,7 +408,7 @@
             15,
             17
           ],
-          "visiblePixels": 125,
+          "visiblePixels": 156,
           "expectOccluded": false,
           "pass": true
         },
@@ -418,7 +418,7 @@
             36,
             24
           ],
-          "visiblePixels": 6,
+          "visiblePixels": 5,
           "expectOccluded": true,
           "pass": true
         },
@@ -428,7 +428,7 @@
             36,
             30
           ],
-          "visiblePixels": 122,
+          "visiblePixels": 157,
           "expectOccluded": false,
           "pass": true
         },
@@ -438,7 +438,7 @@
             11,
             26
           ],
-          "visiblePixels": 153,
+          "visiblePixels": 39,
           "expectOccluded": false,
           "pass": true
         },
@@ -448,7 +448,7 @@
             22,
             25
           ],
-          "visiblePixels": 98,
+          "visiblePixels": 38,
           "expectOccluded": false,
           "pass": true
         },
@@ -458,7 +458,7 @@
             50,
             25
           ],
-          "visiblePixels": 91,
+          "visiblePixels": 138,
           "expectOccluded": false,
           "pass": true
         },
@@ -468,7 +468,7 @@
             10,
             30
           ],
-          "visiblePixels": 240,
+          "visiblePixels": 280,
           "expectOccluded": false,
           "pass": true
         },
@@ -478,7 +478,7 @@
             25,
             21
           ],
-          "visiblePixels": 59,
+          "visiblePixels": 106,
           "expectOccluded": false,
           "pass": true
         },
@@ -488,7 +488,7 @@
             42,
             26
           ],
-          "visiblePixels": 57,
+          "visiblePixels": 105,
           "expectOccluded": false,
           "pass": true
         },
@@ -498,7 +498,7 @@
             5,
             14
           ],
-          "visiblePixels": 116,
+          "visiblePixels": 87,
           "expectOccluded": false,
           "pass": true
         },
@@ -508,7 +508,7 @@
             24,
             11
           ],
-          "visiblePixels": 115,
+          "visiblePixels": 154,
           "expectOccluded": false,
           "pass": true
         },
@@ -518,7 +518,7 @@
             10,
             10
           ],
-          "visiblePixels": 113,
+          "visiblePixels": 146,
           "expectOccluded": false,
           "pass": true
         },
@@ -528,7 +528,7 @@
             15,
             11
           ],
-          "visiblePixels": 113,
+          "visiblePixels": 149,
           "expectOccluded": false,
           "pass": true
         },
@@ -538,7 +538,7 @@
             12,
             8
           ],
-          "visiblePixels": 118,
+          "visiblePixels": 152,
           "expectOccluded": false,
           "pass": true
         },
@@ -548,7 +548,7 @@
             12,
             10
           ],
-          "visiblePixels": 114,
+          "visiblePixels": 153,
           "expectOccluded": false,
           "pass": true
         },
@@ -558,14 +558,14 @@
             12,
             10
           ],
-          "visiblePixels": 114,
+          "visiblePixels": 153,
           "expectOccluded": false,
           "pass": true
         }
       ],
       "depthOrder": {
-        "behind": 6,
-        "front": 122,
+        "behind": 5,
+        "front": 157,
         "pass": true
       }
     },
@@ -575,9 +575,9 @@
       "debugPanels": 0,
       "metrics": {
         "napoli": {
-          "palette": 1490,
+          "palette": 1583,
           "edgeDensity": 0.142,
-          "contrast": 225,
+          "contrast": 224,
           "luminance": 130,
           "map": {
             "w": 72,
@@ -588,10 +588,10 @@
           "vehicles": 3
         },
         "costiera": {
-          "palette": 705,
+          "palette": 691,
           "edgeDensity": 0.131,
-          "contrast": 229,
-          "luminance": 128.7,
+          "contrast": 228,
+          "luminance": 128.8,
           "map": {
             "w": 72,
             "h": 40,
@@ -601,10 +601,10 @@
           "vehicles": 2
         },
         "vesuvio": {
-          "palette": 505,
-          "edgeDensity": 0.129,
+          "palette": 535,
+          "edgeDensity": 0.127,
           "contrast": 228,
-          "luminance": 117.3,
+          "luminance": 117.6,
           "map": {
             "w": 64,
             "h": 48,
@@ -614,10 +614,10 @@
           "vehicles": 0
         },
         "pompei": {
-          "palette": 301,
-          "edgeDensity": 0.096,
-          "contrast": 233,
-          "luminance": 148.2,
+          "palette": 319,
+          "edgeDensity": 0.097,
+          "contrast": 232,
+          "luminance": 148.1,
           "map": {
             "w": 56,
             "h": 40,
@@ -627,10 +627,10 @@
           "vehicles": 0
         },
         "capri": {
-          "palette": 645,
-          "edgeDensity": 0.129,
+          "palette": 651,
+          "edgeDensity": 0.128,
           "contrast": 220,
-          "luminance": 130.5,
+          "luminance": 130.6,
           "map": {
             "w": 30,
             "h": 24,
@@ -640,7 +640,7 @@
           "vehicles": 0
         },
         "bacoli": {
-          "palette": 833,
+          "palette": 890,
           "edgeDensity": 0.138,
           "contrast": 232,
           "luminance": 131.6,
@@ -653,9 +653,9 @@
           "vehicles": 1
         },
         "salerno": {
-          "palette": 378,
+          "palette": 391,
           "edgeDensity": 0.134,
-          "contrast": 224,
+          "contrast": 222,
           "luminance": 135.4,
           "map": {
             "w": 56,
@@ -667,9 +667,9 @@
         },
         "avellino": {
           "palette": 610,
-          "edgeDensity": 0.156,
-          "contrast": 223,
-          "luminance": 120.1,
+          "edgeDensity": 0.154,
+          "contrast": 222,
+          "luminance": 120.2,
           "map": {
             "w": 48,
             "h": 32,
@@ -679,7 +679,7 @@
           "vehicles": 1
         },
         "caserta": {
-          "palette": 351,
+          "palette": 429,
           "edgeDensity": 0.123,
           "contrast": 232,
           "luminance": 139,
@@ -692,10 +692,10 @@
           "vehicles": 1
         },
         "fuorigrotta": {
-          "palette": 598,
+          "palette": 514,
           "edgeDensity": 0.12,
           "contrast": 229,
-          "luminance": 144.9,
+          "luminance": 145.1,
           "map": {
             "w": 72,
             "h": 48,
@@ -705,10 +705,10 @@
           "vehicles": 2
         },
         "pianura": {
-          "palette": 590,
+          "palette": 552,
           "edgeDensity": 0.159,
           "contrast": 234,
-          "luminance": 141.5,
+          "luminance": 141.6,
           "map": {
             "w": 64,
             "h": 40,
@@ -718,10 +718,10 @@
           "vehicles": 1
         },
         "casa_nonna": {
-          "palette": 1820,
-          "edgeDensity": 0.121,
+          "palette": 2640,
+          "edgeDensity": 0.156,
           "contrast": 223,
-          "luminance": 144.6,
+          "luminance": 141.2,
           "map": {
             "w": 28,
             "h": 22,
@@ -731,126 +731,9 @@
           "vehicles": 0
         },
         "casa_giocatore": {
-          "palette": 555,
-          "edgeDensity": 0.152,
+          "palette": 603,
+          "edgeDensity": 0.15,
           "contrast": 236,
-          "luminance": 154.8,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "appartamento": {
-          "palette": 624,
-          "edgeDensity": 0.156,
-          "contrast": 236,
-          "luminance": 153.7,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "casa_amalfi": {
-          "palette": 611,
-          "edgeDensity": 0.154,
-          "contrast": 236,
-          "luminance": 153.9,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "bottega": {
-          "palette": 505,
-          "edgeDensity": 0.151,
-          "contrast": 235,
-          "luminance": 153.4,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 2,
-          "vehicles": 0
-        },
-        "souvenir": {
-          "palette": 491,
-          "edgeDensity": 0.147,
-          "contrast": 235,
-          "luminance": 154.4,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "bar": {
-          "palette": 1890,
-          "edgeDensity": 0.132,
-          "contrast": 240,
-          "luminance": 135.1,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 5,
-          "vehicles": 0
-        },
-        "pizzeria": {
-          "palette": 1821,
-          "edgeDensity": 0.134,
-          "contrast": 224,
-          "luminance": 133.9,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 4,
-          "vehicles": 0
-        },
-        "metro": {
-          "palette": 1323,
-          "edgeDensity": 0.143,
-          "contrast": 235,
-          "luminance": 148.3,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 2,
-          "vehicles": 0
-        },
-        "metro2": {
-          "palette": 1287,
-          "edgeDensity": 0.142,
-          "contrast": 236,
-          "luminance": 148.4,
-          "map": {
-            "w": 30,
-            "h": 18,
-            "zone": "interno"
-          },
-          "npcs": 1,
-          "vehicles": 0
-        },
-        "negozio": {
-          "palette": 481,
-          "edgeDensity": 0.151,
-          "contrast": 235,
           "luminance": 153.5,
           "map": {
             "w": 30,
@@ -860,11 +743,128 @@
           "npcs": 1,
           "vehicles": 0
         },
-        "banca": {
-          "palette": 481,
-          "edgeDensity": 0.162,
+        "appartamento": {
+          "palette": 682,
+          "edgeDensity": 0.154,
+          "contrast": 236,
+          "luminance": 152.5,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "casa_amalfi": {
+          "palette": 678,
+          "edgeDensity": 0.152,
+          "contrast": 236,
+          "luminance": 152.8,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bottega": {
+          "palette": 580,
+          "edgeDensity": 0.149,
           "contrast": 235,
-          "luminance": 158.5,
+          "luminance": 152.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "souvenir": {
+          "palette": 537,
+          "edgeDensity": 0.145,
+          "contrast": 235,
+          "luminance": 153.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "bar": {
+          "palette": 2984,
+          "edgeDensity": 0.15,
+          "contrast": 234,
+          "luminance": 131.8,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 5,
+          "vehicles": 0
+        },
+        "pizzeria": {
+          "palette": 2668,
+          "edgeDensity": 0.154,
+          "contrast": 234,
+          "luminance": 130.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 4,
+          "vehicles": 0
+        },
+        "metro": {
+          "palette": 1741,
+          "edgeDensity": 0.165,
+          "contrast": 237,
+          "luminance": 141.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 2,
+          "vehicles": 0
+        },
+        "metro2": {
+          "palette": 1727,
+          "edgeDensity": 0.164,
+          "contrast": 237,
+          "luminance": 141.9,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "negozio": {
+          "palette": 542,
+          "edgeDensity": 0.149,
+          "contrast": 235,
+          "luminance": 152.2,
+          "map": {
+            "w": 30,
+            "h": 18,
+            "zone": "interno"
+          },
+          "npcs": 1,
+          "vehicles": 0
+        },
+        "banca": {
+          "palette": 534,
+          "edgeDensity": 0.159,
+          "contrast": 235,
+          "luminance": 157.1,
           "map": {
             "w": 30,
             "h": 18,
@@ -874,10 +874,10 @@
           "vehicles": 0
         },
         "clinica": {
-          "palette": 504,
-          "edgeDensity": 0.15,
+          "palette": 573,
+          "edgeDensity": 0.148,
           "contrast": 235,
-          "luminance": 153.4,
+          "luminance": 152.2,
           "map": {
             "w": 30,
             "h": 18,
@@ -887,10 +887,10 @@
           "vehicles": 0
         },
         "ufficio": {
-          "palette": 497,
-          "edgeDensity": 0.149,
+          "palette": 565,
+          "edgeDensity": 0.147,
           "contrast": 235,
-          "luminance": 155.3,
+          "luminance": 154.1,
           "map": {
             "w": 30,
             "h": 18,
@@ -900,10 +900,10 @@
           "vehicles": 0
         },
         "grotta": {
-          "palette": 292,
-          "edgeDensity": 0.064,
+          "palette": 336,
+          "edgeDensity": 0.062,
           "contrast": 222,
-          "luminance": 67.4,
+          "luminance": 67.9,
           "map": {
             "w": 30,
             "h": 20,
@@ -934,7 +934,7 @@
             20,
             13
           ],
-          "visiblePixels": 121,
+          "visiblePixels": 157,
           "expectOccluded": false,
           "pass": true
         },
@@ -944,7 +944,7 @@
             18,
             38
           ],
-          "visiblePixels": 123,
+          "visiblePixels": 88,
           "expectOccluded": false,
           "pass": true
         },
@@ -954,7 +954,7 @@
             58,
             28
           ],
-          "visiblePixels": 116,
+          "visiblePixels": 156,
           "expectOccluded": false,
           "pass": true
         },
@@ -964,7 +964,7 @@
             44,
             15
           ],
-          "visiblePixels": 344,
+          "visiblePixels": 368,
           "expectOccluded": false,
           "pass": true
         },
@@ -974,7 +974,7 @@
             15,
             17
           ],
-          "visiblePixels": 125,
+          "visiblePixels": 156,
           "expectOccluded": false,
           "pass": true
         },
@@ -984,7 +984,7 @@
             36,
             24
           ],
-          "visiblePixels": 6,
+          "visiblePixels": 5,
           "expectOccluded": true,
           "pass": true
         },
@@ -994,7 +994,7 @@
             36,
             30
           ],
-          "visiblePixels": 122,
+          "visiblePixels": 157,
           "expectOccluded": false,
           "pass": true
         },
@@ -1004,7 +1004,7 @@
             11,
             26
           ],
-          "visiblePixels": 153,
+          "visiblePixels": 39,
           "expectOccluded": false,
           "pass": true
         },
@@ -1014,7 +1014,7 @@
             22,
             25
           ],
-          "visiblePixels": 98,
+          "visiblePixels": 38,
           "expectOccluded": false,
           "pass": true
         },
@@ -1024,7 +1024,7 @@
             50,
             25
           ],
-          "visiblePixels": 91,
+          "visiblePixels": 138,
           "expectOccluded": false,
           "pass": true
         },
@@ -1034,7 +1034,7 @@
             10,
             30
           ],
-          "visiblePixels": 240,
+          "visiblePixels": 280,
           "expectOccluded": false,
           "pass": true
         },
@@ -1044,7 +1044,7 @@
             25,
             21
           ],
-          "visiblePixels": 59,
+          "visiblePixels": 106,
           "expectOccluded": false,
           "pass": true
         },
@@ -1054,7 +1054,7 @@
             42,
             26
           ],
-          "visiblePixels": 57,
+          "visiblePixels": 105,
           "expectOccluded": false,
           "pass": true
         },
@@ -1064,7 +1064,7 @@
             5,
             14
           ],
-          "visiblePixels": 116,
+          "visiblePixels": 87,
           "expectOccluded": false,
           "pass": true
         },
@@ -1074,7 +1074,7 @@
             24,
             11
           ],
-          "visiblePixels": 115,
+          "visiblePixels": 154,
           "expectOccluded": false,
           "pass": true
         },
@@ -1084,7 +1084,7 @@
             10,
             10
           ],
-          "visiblePixels": 113,
+          "visiblePixels": 146,
           "expectOccluded": false,
           "pass": true
         },
@@ -1094,7 +1094,7 @@
             15,
             11
           ],
-          "visiblePixels": 113,
+          "visiblePixels": 149,
           "expectOccluded": false,
           "pass": true
         },
@@ -1104,7 +1104,7 @@
             12,
             8
           ],
-          "visiblePixels": 118,
+          "visiblePixels": 152,
           "expectOccluded": false,
           "pass": true
         },
@@ -1114,7 +1114,7 @@
             12,
             10
           ],
-          "visiblePixels": 114,
+          "visiblePixels": 153,
           "expectOccluded": false,
           "pass": true
         },
@@ -1124,14 +1124,14 @@
             12,
             10
           ],
-          "visiblePixels": 114,
+          "visiblePixels": 153,
           "expectOccluded": false,
           "pass": true
         }
       ],
       "depthOrder": {
-        "behind": 6,
-        "front": 122,
+        "behind": 5,
+        "front": 157,
         "pass": true
       }
     }

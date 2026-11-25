@@ -137,7 +137,10 @@ async function playerVisibility(page, id, tileX, tileY) {
     }
     return {
       map: id, tile: [tileX, tileY], visiblePixels: diff, expectOccluded,
-      pass: expectOccluded ? diff < 40 : diff >= 40
+      // L'adulto e' passato da 16x24 a 9x14 px (1,70 m a 8 px/m): la soglia
+      // assoluta di 40 pix era tarata sul vecchio sprite e rigettava un
+      // giocatore perfettamente visibile. 24 pix e' il 19% dell'area.
+      pass: expectOccluded ? diff < 24 : diff >= 24
     };
   }, { id, tileX, tileY, expectOccluded });
 }
@@ -233,7 +236,8 @@ async function main() {
   };
   await writeFile(resolve(OUT, 'exploration.json'), JSON.stringify(report, null, 2) + '\n');
   const errors = results.flatMap(r => r.errors.map(e => `${r.device}: ${e.text}`));
-  const hidden = results.flatMap(r => r.visibility.filter(v => !v.pass).map(v => `${r.device}: ${v.map} ${v.tile}`));
+  const hidden = results.flatMap(r => r.visibility.filter(v => !v.pass)
+    .map(v => `${r.device}: ${v.map} ${v.tile} diff=${v.visiblePixels}${v.expectOccluded ? ' (expected occluded)' : ''}`));
   const depthFailures = results.filter(r => r.depthOrder && !r.depthOrder.pass)
     .map(r => `${r.device}: guglia dietro ${r.depthOrder.behind} >= davanti ${r.depthOrder.front}`);
   const debugFailures = results.filter(r => r.debugPanels > 0).map(r => `${r.device}: ${r.debugPanels} pannelli debug visibili`);

@@ -50,8 +50,8 @@
         else this.dir = ax.y < 0 ? 'up' : 'down';
         const nx = this.x + ax.x * sp * dt, ny = this.y + ax.y * sp * dt;
         let moved = false, blocked = [];
-        if (game.canMove(nx, this.y, this.w, this.h)) { this.x = nx; moved = true; } else if (ax.x) blocked.push('x');
-        if (game.canMove(this.x, ny, this.w, this.h)) { this.y = ny; moved = true; } else if (ax.y) blocked.push('y');
+        if (game.canStand(nx, this.y, this.w, this.h, this)) { this.x = nx; moved = true; } else if (ax.x) blocked.push('x');
+        if (game.canStand(this.x, ny, this.w, this.h, this)) { this.y = ny; moved = true; } else if (ax.y) blocked.push('y');
         if (game.dbg) game.dbg.blocked = moved ? '' : ('collision:' + blocked.join(','));
         // Corsa e camminata hanno animazioni diverse; la direzione resta
         // sempre quella dell'ultimo input, anche se il movimento è bloccato.
@@ -76,12 +76,10 @@
       if (this.vehicle) return;
       ctx.fillStyle = 'rgba(0,0,0,.22)';
       ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
-      const img = ART.character(this.look, this.dir, this.frame, this.mode);
+      const night = CL.systems.time.isNight();
+      const img = night ? ART.nightCharacter(this.look, this.dir, this.frame, this.mode)
+                        : ART.character(this.look, this.dir, this.frame, this.mode);
       ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
-      if (CL.systems.time.isNight()) {
-        ctx.fillStyle = 'rgba(10,18,36,.20)';
-        ctx.fillRect(Math.round(this.x - 7), Math.round(this.y - 18), 14, 18);
-      }
     }
     interact() { this.game.interactNear(this); }
   }
@@ -128,6 +126,24 @@
       return false;
     }
 
+    // Un PNG che occupa l'ingresso si scosta: le collisioni restano reali,
+    // ma le porte non vengono mai chiuse da un corpo fermo davanti alla soglia.
+    _yieldToPlayer() {
+      const pl = this.game.player;
+      if (!pl || !pl.alive || pl.vehicle) return false;
+      const d = U.dist(this.x, this.y, pl.x, pl.y);
+      if (d > 18 || d < .01) return false;
+      const ax = (this.x - pl.x) / d, ay = (this.y - pl.y) / d;
+      const dirs = [[ax, ay], [-ay, ax], [ay, -ax]];
+      for (const [dx, dy] of dirs) for (const step of [4, 8, 12]) {
+        const nx = this.x + dx * step, ny = this.y + dy * step;
+        if (!this.game.canStand(nx, ny, this.w, this.h, this)) continue;
+        if (this._nearReserved(nx, ny) && !this._nearReserved(this.x, this.y)) continue;
+        this.x = nx; this.y = ny; return true;
+      }
+      return false;
+    }
+
     _replan(hour) {
       this.path = []; this.pathIdx = 0;
       if (this.waitT > 0) return;
@@ -152,12 +168,14 @@
 
     update(dt) {
       this.anim += dt * 1.4;
+      this.moving = false;
       this.bob += dt;
       this.offsetY = Math.sin(this.bob * 1.6) * .8;
       this._stuckT = this._stuckT || 0;
       this._lastPos = this._lastPos || { x: this.x, y: this.y };
       this.planT = (this.planT == null ? U.rand(0, 3) : this.planT - dt);
       this.waitT = Math.max(0, (this.waitT || 0) - dt);
+      this._yieldToPlayer();
       this._replans = this._replans || 0;
       const hour = CL.systems && CL.systems.time ? CL.systems.time.hour() : 12;
       const night = CL.systems && CL.systems.time ? CL.systems.time.isNight() : false;
@@ -179,9 +197,7 @@
         const stepX = Math.cos(a) * sp * dt, stepY = Math.sin(a) * sp * dt;
         let moved = false;
         const tryMove = (nx, ny) => {
-          if (!this.game.canMove(nx, ny, this.w, this.h)) return false;
-          const pl = this.game.player;
-          if (pl && U.dist(nx, ny, pl.x, pl.y) < 14) return false;
+          if (!this.game.canStand(nx, ny, this.w, this.h, this)) return false;
           if (this._nearReserved(nx, ny) && !this._nearReserved(this.x, this.y)) return false;
           this.x = nx; this.y = ny; return true;
         };
@@ -193,6 +209,7 @@
           moved = tryMove(this.x + Math.cos(pa) * sp * dt, this.y + Math.sin(pa) * sp * dt);
         }
         if (moved) {
+          this.moving = true;
           this.dir = Math.abs(Math.cos(a)) > Math.abs(Math.sin(a)) ? (Math.cos(a) < 0 ? 'left' : 'right') : (Math.sin(a) < 0 ? 'up' : 'down');
           this.frame = Math.floor(this.anim * 2) % 4;
         } else {
@@ -215,7 +232,7 @@
     draw(ctx) {
       ctx.fillStyle = 'rgba(0,0,0,.18)';
       ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
-      const img = ART.character(this.look, this.dir, this.frame);
+      const img = ART.character(this.look, this.dir, this.frame, this.moving ? 'walk' : 'idle');
       ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
     }
     interact(player) {
@@ -227,24 +244,72 @@
   CL.NPC = NPC;
 
   /* ---------------------------------------------------------------- VEICOLI */
-  const VEHICLE_SPEED = { bike: 138, scooter: 186, car: 232, bus: 150 };
+  const VEHICLE_SPEED = { bike: 138, scooter: 186, car: 232, taxi: 220, van: 190, bus: 150 };
+  // Impronta reale: un'auto vista dal davanti e' stretta e lunga, non un
+  // rettangolo 22x10 ruotato. Usata da motore, pathfinding e test.
+  CL.vehicleFootprint = (type, dir) => {
+    const v = dir === 'up' || dir === 'down';
+    if (type === 'car' || type === 'taxi' || type === 'van') return v ? { w: 12, h: 22 } : { w: 22, h: 12 };
+    if (type === 'bus') return v ? { w: 12, h: 26 } : { w: 26, h: 12 };
+    return v ? { w: 10, h: 16 } : { w: 16, h: 10 };
+  };
+  // Senso di marcia a destra: chi va a destra usa la meta inferiore della
+  // carreggiata, chi torna indietro la superiore (e viceversa in verticale).
+  CL.laneOffset = dir => ({
+    right: { x: 0, y: 4 }, left: { x: 0, y: -4 },
+    down: { x: -4, y: 0 }, up: { x: 4, y: 0 }
+  })[dir] || { x: 0, y: 0 };
+  const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
   class Vehicle extends Entity {
     constructor(game, type, x, y, dir) {
       super(game, x, y);
       this.type = type; this.dir = dir || 'down';
-      this.w = type === 'car' ? 22 : 16; this.h = 10;
+      const fp = CL.vehicleFootprint(type, this.dir);
+      this.w = fp.w; this.h = fp.h;
+      this.lane = CL.laneOffset(this.dir);
       this.speed = VEHICLE_SPEED[type] || 130;
       this.fuel = 100; this.mounted = false; this.homeX = x; this.homeY = y;
+      this._turnCooldown = 0;
+    }
+    _face(dir) {
+      const old = this.lane, next = CL.laneOffset(dir);
+      const nx = this.x + next.x - old.x, ny = this.y + next.y - old.y;
+      const fp = CL.vehicleFootprint(this.type, dir);
+      if (!this.game.canStand(nx, ny, fp.w, fp.h, this)) return false;
+      this.dir = dir; this.lane = next; this.x = nx; this.y = ny;
+      this.w = fp.w; this.h = fp.h;
+      return true;
     }
     update(dt) {
       if (this.ambient && !this.mounted) {
+        this._turnCooldown = Math.max(0, (this._turnCooldown || 0) - dt);
         const ax = this.dir === 'left' ? -1 : this.dir === 'right' ? 1 : 0;
         const ay = this.dir === 'up' ? -1 : this.dir === 'down' ? 1 : 0;
         const nx = this.x + ax * this.speed * dt, ny = this.y + ay * this.speed * dt;
-        const tile = CL.maps.tile(this.game.map, Math.floor(nx / T), Math.floor(ny / T));
-        const blocked = tile !== 'r' || !this.game.canMove(nx, ny, this.w, this.h) || CL.maps.portalAt(this.game.map, nx, ny);
-        if (blocked) {
-          this.dir = this.dir === 'left' ? 'right' : this.dir === 'right' ? 'left' : this.dir === 'up' ? 'down' : 'up';
+        const tileAt = (px, py) => CL.maps.tile(this.game.map, Math.floor(px / T), Math.floor(py / T));
+        const usable = (px, py) => tileAt(px, py) === 'r' &&
+          this.game.canStand(px, py, this.w, this.h, this) && !CL.maps.portalAt(this.game.map, px, py);
+        // In prossimita' di un incrocio, svolta a destra quando la corsia
+        // perpendicolare e' libera: non asymptotes a muri invisibili.
+        if (this._turnCooldown <= 0) {
+          const ahead = ax ? nx + ax * T : ny + ay * T;
+          const crossRoad = ax ? tileAt(this.x, ahead) === 'r' : tileAt(ahead, this.y) === 'r';
+          if (crossRoad) {
+            const right = { right: 'down', down: 'left', left: 'up', up: 'right' }[this.dir];
+            const bx = ax ? nx + ax * T : this.x, by = ay ? ny + ay * T : this.y;
+            const lo = CL.laneOffset(right);
+            if (usable(bx + lo.x, by + lo.y) &&
+                (this.x % T < 3 || this.y % T < 3)) {
+              this._face(right); this._turnCooldown = 2.5;
+              return;
+            }
+          }
+        }
+        if (!usable(nx, ny)) {
+          // Fine corsia: inversione a U cambiando corsia, non through un muro.
+          const back = OPPOSITE[this.dir];
+          if (!this._face(back)) this.dir = back;
+          this._turnCooldown = .6;
         } else {
           this.x = nx; this.y = ny;
           this.offsetY = Math.sin(CL.state.time.total * .02) * .4;
@@ -258,19 +323,29 @@
         if (Math.abs(ax.x) > Math.abs(ax.y)) this.dir = ax.x < 0 ? 'left' : 'right';
         else this.dir = ax.y < 0 ? 'up' : 'down';
         const nx = this.x + ax.x * this.speed * dt, ny = this.y + ax.y * this.speed * dt;
-        if (this.game.canMove(nx, this.y, this.w, this.h)) this.x = nx;
-        if (this.game.canMove(this.x, ny, this.w, this.h)) this.y = ny;
+        if (this.game.canStand(nx, this.y, this.w, this.h, this)) this.x = nx;
+        if (this.game.canStand(this.x, ny, this.w, this.h, this)) this.y = ny;
         this.game.checkPortals(this);
         CL.state.stats.steps += dt * .2;
       }
     }
     draw(ctx) {
       const img = ART.vehicle(this.type, this.dir);
-      const dx = this.type === 'car' ? 15 : this.type === 'bus' ? 17 : 12;
-      ctx.drawImage(img, Math.round(this.x - dx), Math.round(this.y - 14 + this.offsetY));
+      const vertical = this.dir === 'up' || this.dir === 'down';
+      const shadowW = Math.max(5, Math.round(this.w * .45));
+      ctx.fillStyle = 'rgba(0,0,0,.2)';
+      ctx.beginPath();
+      ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), shadowW, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // L'ancora resta il centro dell'impronta a terra: l'immagine sale solo
+      // in altezza, senza spostare collisioni o portali.
+      const dx = Math.round(this.x - img.width / 2);
+      const dy = Math.round(this.y - img.height + (vertical ? 1 : -2) + this.offsetY);
+      ctx.drawImage(img, dx, dy);
       if (this.mounted) {
         const look = CL.state.profile.look;
-        ctx.drawImage(ART.character(look, this.dir, 0), Math.round(this.x - 8), Math.round(this.y - 26 + this.offsetY));
+        ctx.drawImage(ART.character(look, this.dir, 0, 'idle'),
+          Math.round(this.x - img.width / 2), Math.round(this.y - img.height - 6 + this.offsetY));
       }
     }
     interact(player) {
@@ -285,7 +360,7 @@
         CL.audio.sfx('door'); CL.ui.toast('Ora guidi il ' + this.label() + '. Premi E per scendere.', 'info');
       }
     }
-    label() { return ({ bike: 'bicicletta', scooter: 'Vespa', car: 'utilitaria', bus: 'battello' })[this.type] || 'veicolo'; }
+    label() { return ({ bike: 'bicicletta', scooter: 'Vespa', car: 'utilitaria', taxi: 'taxi', van: 'furgone', bus: 'battello' })[this.type] || 'veicolo'; }
   }
   CL.Vehicle = Vehicle;
 
@@ -308,12 +383,12 @@
       if (this.wanderT <= 0) {
         this.wanderT = U.rand(2.5, 6);
         const nx = this.x + U.randInt(-2, 2) * 12, ny = this.y + U.randInt(-1, 1) * 12;
-        if (this.game.canMove(nx, ny, this.w, this.h)) { this.tx = nx; this.ty = ny; }
+        if (this.game.canStand(nx, ny, this.w, this.h, this)) { this.tx = nx; this.ty = ny; }
       }
       if (U.dist(this.x, this.y, this.tx, this.ty) > 2) {
         const a = Math.atan2(this.ty - this.y, this.tx - this.x);
         const nx = this.x + Math.cos(a) * 10 * dt, ny = this.y + Math.sin(a) * 10 * dt;
-        if (this.game.canMove(nx, ny, this.w, this.h)) { this.x = nx; this.y = ny; }
+        if (this.game.canStand(nx, ny, this.w, this.h, this)) { this.x = nx; this.y = ny; }
       }
     }
     draw(ctx) {

@@ -53,10 +53,7 @@
   function blockedAt(map, tx, ty, fw, fh) {
     if (tx < 0 || ty < 0 || tx >= map.w || ty >= map.h) return true;
     const x = tx * T + T / 2, y = ty * T + T / 2;
-    return MAPS.solidAt(map, x - fw / 2, y - fh / 2) ||
-      MAPS.solidAt(map, x + fw / 2, y - fh / 2) ||
-      MAPS.solidAt(map, x - fw / 2, y + fh / 2) ||
-      MAPS.solidAt(map, x + fw / 2, y + fh / 2);
+    return MAPS.blockedBox(map, x, y, fw, fh);
   }
 
   const PATH = CL.path = {

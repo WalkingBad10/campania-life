@@ -1021,7 +1021,10 @@ async function main() {
     assert(napoli.spawn.x === 36 * T && napoli.spawn.y === 36 * T, 'Naples spawn unchanged');
     const look = { hair: '#2d2622', skin: '#d79c74', shirt: '#c75b3b', pants: '#3a4650' };
     const ch = CL.art.character(look, 'down', 0);
-    assert(ch.width === 16 && ch.height === 24, 'scaled character keeps original draw anchor');
+    // Il canvas conserva l'ancoraggio in basso-al centro, ma ora e' già alla
+    // scala metrica finale: nessun secondo downscale sfoca i dettagli.
+    assert(ch.width === Math.round(16 * CL.WORLD_SCALE) && ch.height === Math.round(24 * CL.WORLD_SCALE),
+      `character drawn at metric scale ${ch.width}x${ch.height}`);
     assert(CL.art.cache['w:c2:' + [look.hair, look.skin, look.shirt, look.pants, 'down', 0, 'walk'].join('|')],
       'character sprite was uniformly scaled through the world cache');
   }, ctx);
@@ -1274,6 +1277,69 @@ async function main() {
     assert(east > west, 'guglia is west of the pedestrian square centre, as in OSM');
     assert(napoli.decors.filter(d => d.type === 'laundry_line')
       .every(d => d.y >= 39 * T), 'laundry hangs from south facades, not across the square');
+  }, ctx);
+
+  await test('full footprint collision covers walls, props and closed doors', async ({game}) => {
+    newGame(ctx);
+    const CL = window.CL, m = game.map;
+    assert(CL.maps.tile(m, 36, 13) === 'b', 'restored solid base row stays solid');
+    // I quattro angoli di un corpo largo 40 px cadono fuori dal muro: solo
+    // la scansione completa dell'impronta puo' rilevare il blocco centrale.
+    assert(CL.maps.blockedBox(m, 36 * T + 8, 13 * T + 8, 40, 4), 'central wall blocks a wide footprint');
+    assert(!CL.maps.blockedBox(m, 36 * T + 8, 36 * T + 8, 4, 4), 'open square remains walkable');
+    const sign = m.decors.find(d => d.type === 'sign' && d.y === 37 * T);
+    assert(sign, 'square sign decor exists');
+    assert(CL.maps.propBlocks(m, sign.x + 4, sign.y - 4, 8, 8), 'sign has a real ground footprint');
+    assert(!CL.maps.propBlocks(m, sign.x + 240, sign.y, 8, 8), 'prop footprint does not leak into the square');
+    const q = { id: 'qa_closed', x: 36 * T + 8, y: 36 * T + 8, type: 'door', data: { closed: true } };
+    m.pois.push(q);
+    try {
+      assert(CL.maps.doorClosed(m, q.x, q.y), 'closed door is recognised');
+      assert(!game.canMove(q.x, q.y, 10, 8), 'closed door blocks movement');
+      assert(game.blockedInfo(q.x, q.y, 10, 8).hits.some(h => h.name === 'door'), 'closed door reported by debug info');
+    } finally { m.pois.pop(); }
+  }, ctx);
+
+  await test('vehicles have oriented sprites, footprints and right-hand lanes', async ({game}) => {
+    const CL = window.CL;
+    CL.art.init();
+    const side = CL.art.vehicle('car', 'right'), front = CL.art.vehicle('car', 'down');
+    assert(side.width === 18 && side.height === 12, `car side ${side.width}x${side.height}`);
+    assert(front.width === 12 && front.height === 18, `car front ${front.width}x${front.height}`);
+    assert(CL.art.cache['w:v:car:right'] !== CL.art.cache['w:v:car:down'], 'four directions are distinct sprites');
+    for (const type of ['car', 'taxi', 'van', 'scooter', 'bike']) {
+      const img = CL.art.vehicle(type, 'left');
+      assert(img && img.width > 0, `${type} has its own sprite`);
+    }
+    assert(CL.vehicleFootprint('car', 'right').w === 22 && CL.vehicleFootprint('car', 'down').h === 22,
+      'car footprint rotates with the facing');
+    assert(CL.laneOffset('right').y === 4 && CL.laneOffset('left').y === -4, 'right-hand horizontal lanes');
+    assert(CL.laneOffset('up').x === 4 && CL.laneOffset('down').x === -4, 'right-hand vertical lanes');
+    newGame(ctx);
+    const vehicles = game.entities.filter(e => e instanceof CL.Vehicle && e.ambient);
+    assert(vehicles.length >= 3, 'traffic spawned');
+    for (const v of vehicles) {
+      assert(CL.maps.tile(game.map, Math.floor(v.x / T), Math.floor(v.y / T)) === 'r', 'traffic stays off pedestrian streets');
+      assert(v.lane.x === CL.laneOffset(v.dir).x && v.lane.y === CL.laneOffset(v.dir).y, 'vehicle keeps its lane');
+      const fp = CL.vehicleFootprint(v.type, v.dir);
+      assert(v.w === fp.w && v.h === fp.h, 'collision footprint matches facing');
+    }
+    step(game, 480);
+    for (const v of vehicles) {
+      assert(CL.maps.tile(game.map, Math.floor(v.x / T), Math.floor(v.y / T)) === 'r', 'traffic still on road after intersections');
+    }
+  }, ctx);
+
+  await test('architectural depth sorts facades behind the square but over the rear', async ({game}) => {
+    newGame(ctx);
+    const m = game.map;
+    const facade = m.decors.find(d => d.type === 'gesu_facade');
+    const awning = m.decors.find(d => d.type === 'awning');
+    assert(facade && awning, 'facade and shop awning exist');
+    const fy = game.decorSortY(facade);
+    assert(fy >= 14 * T && fy <= 16 * T, `facade base depth ${fy}`);
+    assert(fy < game.player.y, 'facade is drawn before a player on the square');
+    assert(game.decorSortY(awning) > fy, 'shop awning is drawn in front of its facade');
   }, ctx);
 
   const results = ctx.results;

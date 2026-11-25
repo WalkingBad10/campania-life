@@ -390,7 +390,7 @@
     }
 
     safePoint(map, x, y, wid=10, hei=8, maxR=14) {
-      const ok = (px,py)=>!MAPS.solidAt(map,px-wid/2,py-hei/2)&&!MAPS.solidAt(map,px+wid/2,py-hei/2)&&!MAPS.solidAt(map,px-wid/2,py+hei/2)&&!MAPS.solidAt(map,px+wid/2,py+hei/2);
+      const ok = (px,py)=>!MAPS.blockedBox(map,px,py,wid,hei);
       if (ok(x,y)) return { x, y };
       const dirs=[[0,0],[0,8],[0,-8],[8,0],[-8,0],[8,8],[-8,8],[8,-8],[-8,-8],[0,16],[0,-16],[16,0],[-16,0]];
       for(let r=1;r<=maxR;r++) for(const [dx,dy] of dirs){ const nx=x+dx*r, ny=y+dy*r; if(ok(nx,ny)) return {x:nx,y:ny}; }
@@ -400,31 +400,38 @@
 
     unstuckPlayer(silent) {
       const p = this.player; if (!p || !this.map) return false;
-      if (this.canMove(p.x, p.y, p.w, p.h)) return false;
-      const s = this.safePoint(this.map, p.x, p.y, p.w, p.h);
-      if (s.x !== p.x || s.y !== p.y) { p.x=s.x; p.y=s.y; if(!silent) CL.ui.toast('Posizione corretta automaticamente.', 'info'); this.dbg.blocked='unstuck'; return true; }
+      const f = p.vehicle || p; // da dentro un'auto va verificata l'auto, non il piede
+      if (this.canMove(f.x, f.y, f.w, f.h)) return false;
+      const s = this.safePoint(this.map, f.x, f.y, f.w, f.h);
+      if (s.x !== f.x || s.y !== f.y) {
+        f.x=s.x; f.y=s.y;
+        if (p.vehicle) { p.x=s.x; p.y=s.y; }
+        if(!silent) CL.ui.toast('Posizione corretta automaticamente.', 'info');
+        this.dbg.blocked='unstuck'; return true;
+      }
       return false;
     }
 
     spawnCreatures() { /* disabilitato: simulatore vita reale */ }
 
     spawnAmbientVehicles() {
-      // Traffico leggero e parcheggi: entità non solide, senza toccare griglie o salvataggi.
+      // Traffico leggero su corsie reali: modelli diversi, senso di marcia a
+      // destra e impronta orientata. Mai su highway=pedestrian.
       const routes = {
         napoli: [
           // Solo vicoli residenziali: Spaccanapoli e Via Benedetto Croce sono pedonali.
-          { type: 'car', tx: 58, ty: 36, dir: 'up' },
+          { type: 'taxi', tx: 58, ty: 36, dir: 'up' },
           { type: 'scooter', tx: 58, ty: 44, dir: 'down' },
           { type: 'bike', tx: 26, ty: 42, dir: 'up' }
         ],
         costiera: [
-          { type: 'car', tx: 30, ty: 14, dir: 'right' },
+          { type: 'van', tx: 30, ty: 14, dir: 'right' },
           { type: 'scooter', tx: 55, ty: 14, dir: 'left' }
         ],
-        bacoli: [{ type: 'car', tx: 20, ty: 10, dir: 'right' }],
+        bacoli: [{ type: 'taxi', tx: 20, ty: 10, dir: 'right' }],
         salerno: [{ type: 'scooter', tx: 30, ty: 18, dir: 'right' }],
         avellino: [{ type: 'car', tx: 24, ty: 24, dir: 'up' }],
-        caserta: [{ type: 'car', tx: 28, ty: 32, dir: 'right' }],
+        caserta: [{ type: 'taxi', tx: 28, ty: 32, dir: 'right' }],
         fuorigrotta: [
           { type: 'car', tx: 30, ty: 19, dir: 'right' },
           { type: 'scooter', tx: 50, ty: 36, dir: 'left' }
@@ -433,8 +440,10 @@
       };
       const list = routes[this.map.id] || [];
       for (const r of list) {
-        const x = r.tx * T + T / 2, y = r.ty * T + T / 2;
-        if (!this.canMove(x, y, 16, 10) || MAPS.portalAt(this.map, x, y)) continue;
+        const lane = CL.laneOffset(r.dir);
+        const x = r.tx * T + T / 2 + lane.x, y = r.ty * T + T / 2 + lane.y;
+        const fp = CL.vehicleFootprint(r.type, r.dir);
+        if (!this.canMove(x, y, fp.w, fp.h) || MAPS.portalAt(this.map, x, y)) continue;
         const v = new CL.Vehicle(this, r.type, x, y, r.dir);
         v.ambient = true;
         v.speed *= .38;
@@ -476,6 +485,15 @@
         if (this.fadeT > 0.2) return;
         const p = MAPS.portalAt(this.map, ent.x, ent.y);
         if (!p) return;
+        if (MAPS.doorClosed(this.map, ent.x, ent.y)) {
+          if (!(this.portalGrace > 0 && this.entryPos && this.entryPos.map === this.map.id)) {
+            CL.ui.toast('La porta è chiusa.', 'bad');
+            CL.audio.sfx('fail');
+          }
+          this.portalGrace = .6;
+          this.entryPos = { map: this.map.id, x: ent.x, y: ent.y };
+          return;
+        }
         if (this.portalGrace > 0 && this.entryPos && this.entryPos.map === this.map.id) {
           const moved = U.dist(ent.x, ent.y, this.entryPos.x, this.entryPos.y);
           if (moved < 20) return; // evita uscita immediata allo spawn/ingresso
@@ -517,21 +535,34 @@
 
     canMove(x, y, wid, hei) {
       if (!this.map) return false;
-      const l = x - wid / 2, r = x + wid / 2, t = y - hei / 2, b = y + hei / 2;
-      return !MAPS.solidAt(this.map, l, t) && !MAPS.solidAt(this.map, r, t) &&
-        !MAPS.solidAt(this.map, l, b) && !MAPS.solidAt(this.map, r, b);
+      return !MAPS.blockedBox(this.map, x, y, wid, hei);
+    }
+    // Oltre alla griglia, giocatore/NPC/veicoli non possono sovrapporsi.
+    // Il veicolo montato e' una sola entita': il giocatore e' "a bordo".
+    canStand(x, y, wid, hei, mover) {
+      if (!this.canMove(x, y, wid, hei)) return false;
+      const a = { x: x - wid / 2, y: y - hei / 2, w: wid, h: hei };
+      for (const e of (this.entities || [])) {
+        if (!e || !e.alive || e === mover) continue;
+        if (mover && mover.vehicle === e) continue;
+        if (mover && mover instanceof CL.Vehicle && mover.mounted && e === this.player) continue;
+        if (e instanceof CL.Player && e.vehicle) continue;
+        const b = { x: e.x - e.w / 2, y: e.y - e.h / 2, w: e.w, h: e.h };
+        if (U.overlap(a, b)) return false;
+      }
+      return true;
     }
     blockedInfo(x, y, wid, hei) {
       if (!this.map) return { blocked: true, reason: 'no-map' };
-      const pts = [
-        ['tl', x - wid/2, y - hei/2], ['tr', x + wid/2, y - hei/2],
-        ['bl', x - wid/2, y + hei/2], ['br', x + wid/2, y + hei/2]
-      ];
-      const hits = pts.map(([name, px, py]) => {
-        const tx = Math.floor(px / T), ty = Math.floor(py / T);
+      const hits = [];
+      const x0 = Math.floor((x - wid / 2) / T), x1 = Math.floor((x + wid / 2) / T);
+      const y0 = Math.floor((y - hei / 2) / T), y1 = Math.floor((y + hei / 2) / T);
+      for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
         const ch = MAPS.tile(this.map, tx, ty);
-        return { name, tx, ty, ch, solid: !!MAPS.solidChar(ch) };
-      }).filter(h => h.solid);
+        if (MAPS.solidChar(ch)) hits.push({ name: 'cell', tx, ty, ch, solid: true });
+      }
+      if (MAPS.doorClosed(this.map, x, y)) hits.push({ name: 'door', ch: 'closed', solid: true });
+      if (MAPS.propBlocks(this.map, x, y, wid, hei)) hits.push({ name: 'prop', ch: 'furniture', solid: true });
       return { blocked: hits.length > 0, hits };
     }
 
@@ -539,6 +570,9 @@
     handleAction(a, data, src) {
       switch (a) {
         case 'enter': case 'door':
+          if (this.map && this.player && MAPS.doorClosed(this.map, this.player.x, this.player.y)) {
+            CL.ui.toast('La porta è chiusa.', 'bad'); CL.audio.sfx('fail'); break;
+          }
           if (data && data.to) this.enterMap(data.to);
           else if (src && src.data && src.data.to) this.enterMap(src.data.to);
           else this.enterMap('prev');
@@ -654,21 +688,24 @@
       // quadrato, tile e collisioni restano leggibili e allineati alla griglia.
       const bg = ART.backdropFor && ART.backdropFor(m.id);
       if (bg) this.drawScenicBackdrop(c, bg, m);
-      // I prospetti edilizi sono sf architettonico: vanno disegnati prima delle
-      // entità. Il sort per profondità li faceva passare sopra il giocatore quando
-      // cammina sul sagrato/marciapiede, facendolo "affondare" nelle facciate.
+      // I prospetti non sono piu' uno sfondo fisso: entrano nello stesso sort
+      // per profondita' di entita' e arredo. Con le impronte solide ripristinate
+      // chi cammina davanti alla facciata resta visibile, chi la aggira a nord
+      // viene correttamente coperto dall'edificio.
       const structureTypes = {
         gesu_facade: 1, palazzo_ne: 1, palazzo_sw: 1, palazzo_banca: 1,
         palazzo_bar: 1, palazzo_se: 1, palazzo_e: 1, campanile: 1,
         metric_facade: 1
       };
+      // oggetti alti + entità, ordinati per profondità
+      const items = [];
       for (const d of (m.decors || [])) {
         if (!structureTypes[d.type]) continue;
         if (d.x > CL.camera.x - 160 && d.x < CL.camera.x + CL.VIEW_W + 160 &&
-            d.y > CL.camera.y - 260 && d.y < CL.camera.y + CL.VIEW_H + 120) this.drawDecor(c, d);
+            d.y > CL.camera.y - 260 && d.y < CL.camera.y + CL.VIEW_H + 120) {
+          items.push({ y: this.decorSortY(d), decor: d });
+        }
       }
-      // oggetti alti + entità, ordinati per profondità
-      const items = [];
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
         const ch = m.g[ty][tx];
         if (ch === 'T' || ch === '^') items.push({ y: ty * T + 16, kind: ch, tx, ty });
@@ -685,7 +722,15 @@
           items.push({ y: dy, decor: d });
         }
       }
-      for (const e of this.entities) if (e.alive) items.push({ y: e.y + (e.offsetY || 0), ent: e });
+      for (const e of this.entities) if (e.alive) {
+        // Chi sta sulla soglia va davanti al prospetto: la porta e' un varco,
+        // non un muro. Dietro l'edificio (senza portal) resta correttamente
+        // coperto dalla facciata.
+        const tile = MAPS.tile(m, Math.floor(e.x / T), Math.floor(e.y / T));
+        const onThreshold = MAPS.portalAt(m, e.x, e.y) || MAPS.doorClosed(m, e.x, e.y) ||
+          tile === 'Y' || tile === '7' || tile === '8';
+        items.push({ y: e.y + (e.offsetY || 0) + (onThreshold ? 10000 : 0), ent: e });
+      }
       items.sort((a, b) => a.y - b.y);
       for (const it of items) {
         if (it.ent) it.ent.draw(c);
@@ -745,10 +790,12 @@
         const sx = d.x - cam.x, sy = d.y - cam.y;
         if (sx < -60 || sy < -60 || sx > CL.VIEW_W + 60 || sy > CL.VIEW_H + 60) continue;
         if (d.type === 'lamp' && (night || dusk)) {
-          const r = 34 * (.94 + Math.sin(this.animT * 3.1 + sx * .07) * .06);
-          const g = c.createRadialGradient(sx + 8, sy - 20, 2, sx + 8, sy - 20, r);
-          g.addColorStop(0, 'rgba(255,236,170,.28)'); g.addColorStop(1, 'rgba(255,220,120,0)');
-          c.fillStyle = g; c.fillRect(sx - r, sy - 20 - r, r * 2, r * 2);
+          // La lanterna disegnata sta a sy-14…-4: il centro del bagliore deve
+          // coincidere con essa, non con il vecchio sy-20 (6 px piu' in alto).
+          const r = 29 * (.94 + Math.sin(this.animT * 3.1 + sx * .07) * .06);
+          const g = c.createRadialGradient(sx + 8, sy - 10, 1, sx + 8, sy - 10, r);
+          g.addColorStop(0, 'rgba(255,236,170,.30)'); g.addColorStop(1, 'rgba(255,220,120,0)');
+          c.fillStyle = g; c.fillRect(sx + 8 - r, sy - 10 - r, r * 2, r * 2);
         }
         if ((d.type === 'candle_glow') && (indoors || night || dusk)) {
           const r = 22 * (.93 + Math.sin(this.animT * 4.2 + sx * .11) * .07);
@@ -766,11 +813,18 @@
           c.restore();
         }
         if (d.type === 'window_light' && (night || indoors || dusk)) {
-          c.fillStyle = d.data.color || 'rgba(255,220,150,.18)';
-          c.fillRect(sx, sy, d.data.w || 16, d.data.h || 10);
+          const ww = d.data.w || 16, wh = d.data.h || 10;
+          const g = c.createLinearGradient(sx, sy, sx + ww, sy + wh);
+          g.addColorStop(0, d.data.color || 'rgba(255,228,165,.24)');
+          g.addColorStop(1, 'rgba(180,110,50,.10)');
+          c.fillStyle = g; c.fillRect(sx, sy, ww, wh);
+          c.strokeStyle = 'rgba(70,52,38,.55)'; c.lineWidth = 1;
+          c.beginPath(); c.moveTo(sx + ww / 2, sy); c.lineTo(sx + ww / 2, sy + wh);
+          c.moveTo(sx, sy + wh / 2); c.lineTo(sx + ww, sy + wh / 2); c.stroke();
         }
       }
-      // lit windows at night outdoors
+      // Le finestre illuminate non sono rettangoli piatti: vetro caldo con
+      // montanti e riflesso, coerente con le facciate M1.
       if (!indoors && (night || dusk)) {
         const x0 = Math.max(0, Math.floor(cam.x / T) - 1), y0 = Math.max(0, Math.floor(cam.y / T) - 1);
         const x1 = Math.min(m.w - 1, Math.ceil((cam.x + CL.VIEW_W) / T) + 1);
@@ -778,8 +832,12 @@
         for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
           const ch = m.g[ty][tx];
           if (ch === 'L' || ch === '7') {
-            const sx = tx * T - cam.x, sy = ty * T - cam.y;
-            c.fillStyle = 'rgba(255,220,140,.16)'; c.fillRect(sx + 3, sy + 3, 10, 8);
+            const sx = tx * T - cam.x + 3, sy = ty * T - cam.y + 3;
+            const g = c.createLinearGradient(sx, sy, sx + 10, sy + 8);
+            g.addColorStop(0, 'rgba(255,231,168,.26)'); g.addColorStop(1, 'rgba(150,92,48,.10)');
+            c.fillStyle = g; c.fillRect(sx, sy, 10, 8);
+            c.fillStyle = 'rgba(90,68,48,.55)'; c.fillRect(sx + 5, sy, 1, 8);
+            c.fillStyle = 'rgba(255,245,210,.22)'; c.fillRect(sx + 1, sy + 1, 3, 1);
           }
         }
       }
@@ -947,33 +1005,18 @@
           break;
         }
         case 'awning': {
-          const W = d.data.w || 32; const col = d.data.color || '#b94a3a';
-          for (let i = 0; i < W; i += 8) { c.fillStyle = (i / 8) % 2 === 0 ? col : '#efe2c6'; c.fillRect(x + i, y, 8, 10); }
-          c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(x, y + 10, W, 2);
+          const img = ART.awningSprite(d.data.color || '#b94a3a', d.data.w || 32);
+          if (img) c.drawImage(img, x, y);
           break;
         }
         case 'facade_cornice': {
-          const W = d.data.w || 32, y0 = y + (d.data.oy || 0), col = d.data.color || '#b9b0a0';
-          c.fillStyle = 'rgba(0,0,0,.16)'; c.fillRect(x + 1, y0 + 4, W, 2);
-          c.fillStyle = col; c.fillRect(x, y0, W, 3);
-          c.fillStyle = 'rgba(255,255,255,.24)'; c.fillRect(x, y0, W, 1);
-          c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(x, y0 + 3, W, 1);
-          for (let i = 4; i < W; i += 8) { c.fillStyle = 'rgba(0,0,0,.13)'; c.fillRect(x + i, y0 + 2, 2, 2); }
+          const img = ART.trimSprite('cornice', d.data.w || 32, d.data.color || '#b9b0a0', false);
+          if (img) c.drawImage(img, x, y + (d.data.oy || 0));
           break;
         }
         case 'facade_balcony': {
-          const W = d.data.w || 40, y0 = y + (d.data.oy || 0);
-          c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(x + 2, y0 + 5, W, 2);
-          c.fillStyle = '#b7ae9d'; c.fillRect(x, y0, W, 3);
-          c.fillStyle = '#727a80'; c.fillRect(x + 2, y0 - 6, W - 4, 2);
-          for (let i = x + 3; i < x + W - 2; i += 4) { c.fillStyle = '#59636b'; c.fillRect(i, y0 - 5, 1, 5); }
-          if (d.data.pots !== false) {
-            for (let i = x + 6; i < x + W - 4; i += 14) {
-              c.fillStyle = '#3f6f45'; c.fillRect(i, y0 - 9, 5, 4);
-              c.fillStyle = '#c9584a'; c.fillRect(i + 1, y0 - 11, 2, 2);
-              c.fillStyle = '#e0b24a'; c.fillRect(i + 3, y0 - 11, 2, 2);
-            }
-          }
+          const img = ART.trimSprite('balcony', d.data.w || 40, '#b7ae9d', d.data.pots !== false);
+          if (img) c.drawImage(img, x, y + (d.data.oy || 0) - 12);
           break;
         }
         case 'laundry_line': {
@@ -986,10 +1029,18 @@
           const sway = Math.sin(this.animT * 1.1 + x * .01) * 1.2;
           for (let i = 0; i < 3; i++) {
             const t = (i + 1) / 4;
-            const px = Math.round(x + (x2 - x) * t);
-            const py = Math.round((1 - t) * (1 - t) * y + 2 * (1 - t) * t * low + t * t * y2);
-            c.fillStyle = colors[i % colors.length]; c.fillRect(px - 4 + sway, py, 8, 7);
-            c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(px - 4 + sway, py + 6, 8, 1);
+            const cx = Math.round(x + (x2 - x) * t) + sway;
+            const cy = Math.round((1 - t) * (1 - t) * y + 2 * (1 - t) * t * low + t * t * y2);
+            const col = colors[i % colors.length];
+            // Capo di vestito con pieghe e orlo irregolare, non un rettangolo.
+            c.fillStyle = col;
+            c.beginPath();
+            c.moveTo(cx - 5, cy); c.lineTo(cx + 5, cy);
+            c.lineTo(cx + 4, cy + 7); c.lineTo(cx + 2, cy + 6);
+            c.lineTo(cx, cy + 8); c.lineTo(cx - 2, cy + 6); c.lineTo(cx - 5, cy + 7);
+            c.closePath(); c.fill();
+            c.fillStyle = 'rgba(255,255,255,.22)'; c.fillRect(cx - 3, cy + 1, 2, 5);
+            c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(cx + 2, cy + 1, 1, 5);
           }
           break;
         }
@@ -1003,11 +1054,18 @@
           break;
         }
         case 'ruin_column': {
+          // Fusto scanalato, capitello scheggiato e base: la colonna resta
+          // ancorata a terra come le altre entità alte.
           const H = d.data.h || 18;
-          c.fillStyle = '#b9ad98'; c.fillRect(x, y - H + 4, 8, H - 4);
+          c.fillStyle = '#a99c87'; c.fillRect(x, y - H + 4, 8, H - 4);
+          c.fillStyle = '#c6b9a2'; c.fillRect(x + 1, y - H + 5, 2, H - 6);
+          c.fillStyle = '#8f8371'; c.fillRect(x + 4, y - H + 5, 1, H - 6);
+          c.fillStyle = 'rgba(40,32,24,.20)'; c.fillRect(x + 7, y - H + 5, 1, H - 6);
           c.fillStyle = '#d2c7b2'; c.fillRect(x - 2, y - H, 12, 4);
+          c.fillStyle = '#e2d8c4'; c.fillRect(x - 1, y - H, 10, 1);
           c.fillStyle = '#9c907d'; c.fillRect(x - 1, y, 10, 3);
-          c.fillStyle = 'rgba(0,0,0,.14)'; c.fillRect(x + 6, y - H + 5, 2, H - 6);
+          c.fillStyle = '#b8ac97'; c.fillRect(x, y + 1, 8, 1);
+          c.fillStyle = 'rgba(60,50,40,.26)'; c.fillRect(x + 3, y - H + 1, 2, 2);
           break;
         }
         case 'lamp': { const img = ART.propSprite('lamp'); if (img) c.drawImage(img, x - 4, y - 36); break; }
@@ -1055,7 +1113,8 @@
           break;
         }
         case 'portal_arch': {
-          c.fillStyle = '#7e858c'; c.fillRect(x - 2, y, 36, 4); c.fillRect(x, y + 4, 4, 20); c.fillRect(x + 28, y + 4, 4, 20);
+          const img = ART.trimSprite('portal_arch', 36, '#7e858c', false);
+          if (img) c.drawImage(img, x - 2, y - 6);
           break;
         }
         case 'candle_glow':

@@ -53,11 +53,19 @@ const AUDIT = `(() => {
     const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
     const cx = c.getContext('2d'); cx.drawImage(img, 0, 0);
     const d = cx.getImageData(0, 0, c.width, c.height).data;
-    let y0 = c.height, y1 = 0;
+    let y0 = c.height, y1 = 0, x0 = c.width, x1 = 0;
     for (let y = 0; y < c.height; y++) for (let xx = 0; xx < c.width; xx++) {
-      if (d[(y * c.width + xx) * 4 + 3] > 20) { y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      if (d[(y * c.width + xx) * 4 + 3] > 20) {
+        y0 = Math.min(y0, y); y1 = Math.max(y1, y); x0 = Math.min(x0, xx); x1 = Math.max(x1, xx);
+      }
     }
-    return { canvas: img.height, visible: y1 - y0 + 1 };
+    const alpha = (xx, yy) => d[(yy * c.width + xx) * 4 + 3];
+    return {
+      canvasW: img.width, canvasH: img.height,
+      visible: y1 - y0 + 1, visibleW: x1 - x0 + 1,
+      // Nessuno sprite puo' avere uno sfondo quadrato opaco agli angoli.
+      corners: [alpha(0, 0), alpha(c.width - 1, 0), alpha(0, c.height - 1), alpha(c.width - 1, c.height - 1)]
+    };
   };
   const look = { hair: '#2d2622', skin: '#d79c74', shirt: '#c75b3b', pants: '#3a4650' };
   return {
@@ -65,7 +73,19 @@ const AUDIT = `(() => {
     visible: {
       character: measure(CL.art.character(look, 'down', 0)),
       guglia: measure(CL.art.gugliaSprite()),
-      campanile: measure(CL.art.campanileSprite())
+      campanile: measure(CL.art.campanileSprite()),
+      tree: measure(CL.art.tree(0)),
+      lemonTree: measure(CL.art.lemonTree(0)),
+      carSide: measure(CL.art.vehicle('car', 'right')),
+      carFront: measure(CL.art.vehicle('car', 'down')),
+      scooter: measure(CL.art.vehicle('scooter', 'right')),
+      bench: measure(CL.art.propSprite('bench')),
+      lamp: measure(CL.art.propSprite('lamp')),
+      plant: measure(CL.art.propSprite('plant')),
+      awning: measure(CL.art.awningSprite('#b94a3a', 32)),
+      cornice: measure(CL.art.trimSprite('cornice', 32, '#b9b0a0', false)),
+      balcony: measure(CL.art.trimSprite('balcony', 40, '#b7ae9d', true)),
+      portalArch: measure(CL.art.trimSprite('portal_arch', 36, '#7e858c', false))
     }
   };
 })()`;
@@ -170,6 +190,27 @@ async function main() {
   for (const [k, [w, h]] of Object.entries(expected)) {
     const q = nap.draws[k] || {};
     if (q.dw !== w || q.dh !== h) issues.push(`${k} disegnato ${q.dw}x${q.dh}, atteso ${w}x${h}`);
+  }
+  // I quadri metrici finali, non i sorgenti legacy: il doppio downscale
+  // produceva sprite sfocati e ancoraggi errati.
+  const spriteDims = {
+    character: [9, 14], tree: [19, 24], lemonTree: [19, 24],
+    carSide: [18, 12], carFront: [12, 18], scooter: [15, 12],
+    bench: [21, 13], lamp: [14, 31], plant: [11, 13],
+    awning: [19, 12], cornice: [19, 6], balcony: [24, 11], portalArch: [21, 14]
+  };
+  for (const [k, [w, h]] of Object.entries(spriteDims)) {
+    const v = nap.visible[k] || {};
+    if (v.canvasW !== w || v.canvasH !== h) issues.push(`${k} canvas ${v.canvasW}x${v.canvasH}, atteso ${w}x${h}`);
+    // Il canvas include il margine necessario all'ancoraggio: il contenuto
+    // utile puo' essere piu' corto, ma non meno di 3/4 dell'altezza.
+    if (!v.visible || v.visible < Math.ceil(h * .75)) issues.push(`${k} altezza visibile ${v.visible} troppo piccola`);
+  }
+  // I quattro angoli devono essere trasparenti: nessuno sfondo quadrato
+  // sotto alberi, panchine, lampioni o veicoli.
+  for (const k of ['tree', 'lemonTree', 'carSide', 'carFront', 'scooter', 'bench', 'lamp', 'plant', 'portalArch']) {
+    const v = nap.visible[k] || {};
+    if ((v.corners || []).some(a => a > 20)) issues.push(`${k} ha uno sfondo opaco agli angoli: ${v.corners}`);
   }
   for (const [view, k, w, h] of [
     ['fuorigrotta-facciate', 'building:fuorigrotta_blocco', 192, 144],

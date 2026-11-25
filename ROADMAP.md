@@ -1,9 +1,10 @@
 # CAMPANIA LIFE / CAMPANIA OPEN CODE — ROADMAP di ripresa
 
-**Aggiornato:** 25 novembre 2026 — revisione strutturale e consolidamento completati, pubblicazione autonoma autorizzata.
+**Aggiornato:** 25 novembre 2026 — revisione qualitativa completata, pronta per la pubblicazione autonoma sullo stesso URL.
 **Repo:** `CampaniaLife` · branch locale `main` · remote `origin/main`.
-**Stato pubblico:** versione finale `c9fddbd`, bundle remoto `index-BK9wvC9o.js`, workflow `45606128039` `success` (build `139177320188`, deploy `139177739108`). Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta e chiave save presenti nel bundle remoto.
-**Nota:** la workflow `45513882269` era stata annullata deliberatamente prima della revisione visiva; la pubblicazione finale è avvenuta sullo stesso URL con la workflow `45606128039`.
+**Stato pubblico corrente (pre-pubblicazione qualitativa):** `c9fddbd`, bundle remoto `index-BK9wvC9o.js`, workflow `45606128039` `success`. Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta e chiave save presenti nel bundle remoto.
+**Checkpoint della revisione qualitativa:** `checkpoint/pre-quality-review` / `backup/pre-quality-review` su `4cd0e35`, con bundle `../backup/pre-quality-review/CampaniaLife-4cd0e35.bundle`.
+**Nota:** la workflow `45513882269` era stata annullata deliberatamente prima della revisione visiva; la pubblicazione finale precedente è avvenuta sullo stesso URL con la workflow `45606128039`.
 
 ---
 
@@ -56,24 +57,38 @@
 - [x] `git diff --check`: OK.
 - [x] Documentazione aggiornata: `qa/campania-open-code-1/README.md`, `PROPORTIONS.md`, `references/SOURCES.md`.
 
+### Revisione qualitativa CAMPANIA OPEN CODE 1 (dopo il riscontro negativo)
+- [x] Prese in carico le lamentele senza ripristinare checkpoint: corrette collisioni dall'impronta a terra, porte chiuse, profondità delle facciate, arredo, veicoli, edifici, luci e sprite.
+- [x] `MAPS.blockedBox()`, `MAPS.doorClosed()`, `MAPS.propBlocks()` e `engine.canStand()` usati da giocatore, NPC, veicoli, `safePoint()`, `unstuckPlayer()` e pathfinding.
+- [x] Righe murarie cancellate ripristinate, masse riallineate, Santa Chiara limitata alla riga 29, panni ancorati ai balconi, impronte dichiarate per arredo e cartelli.
+- [x] Traffico riscritto: sei modelli, quattro direzioni, corsia destra, impronta ruotata, ombre, solo su strade `r`.
+- [x] Pipeline `ART` riscritta per disegnare gli sprite mondo alla scala metrica finale: nessun doppio downscale, trasparenza verificata, nessun rettangolo scuro sul giocatore di notte.
+- [x] Finiture generate ex novo (tende pieghettate, cornici con dentelli, balconi traforati, colonne scanalate, archi, panni, luci notturne) invece di rettangoli piatti.
+- [x] Pacchetti CC0 Kenney *RPG Urban Pack* e *Tiny Town* valutati e scartati: tile di terreno/muratura, nessun veicolo top-down a quattro direzioni, stile incompatibile con le facciate M1 e il sistema 8 px/m.
+- [x] Regressione estesa a **37/37 PASS**: impronta completa e porte chiuse, veicoli orientati/corsie, profondità delle facciate.
+- [x] Render audit esteso a dimensioni metriche, angoli trasparenti e nuove finiture: **0 errori**.
+- [ ] Revisione estetica umana su MacBook/Pixel fisici: il modello corrente non legge immagini; le screenshot aggiornate restano il materiale per il riscontro finale.
+
 ---
 
 ## 2. Stato dei controlli
 
-- [x] Tutti i gate automatici rieseguiti dopo le patch finali: regressione `34/34`, texture audit `21/21` facciate e `50/50` PNG, render audit `0` dimensioni errate, visual explore `0` errori su 52 visite, `mobile-start` locale e CI-like `OK`, build Vite e CI-like `OK`, `git diff --check` `OK`.
-- [x] Checkpoint di pubblicazione creato su `e4271d2`: tag `checkpoint/pre-final-publish`, branch `backup/pre-final-publish` e bundle `../CampaniaLife-backup-2026-11-25-final.bundle` verificato.
+- [x] Tutti i gate automatici rieseguiti dopo la revisione qualitativa: regressione `37/37`, texture audit `21/21` facciate e `50/50` PNG, render audit `0` errori, visual explore `0` errori su 52 visite, `mobile-start` locale e pubblico `OK`, build Vite `OK`, `git diff --check` `OK`. Il gate CI-like con `GH_PAGES_BASE=/campania-life/` va ripetuto dopo il commit finale.
+- [x] Checkpoint qualitativo creato su `4cd0e35`: tag `checkpoint/pre-quality-review`, branch `backup/pre-quality-review` e bundle `../backup/pre-quality-review/CampaniaLife-4cd0e35.bundle`.
+- [x] Checkpoint storico di pubblicazione su `e4271d2`: tag `checkpoint/pre-final-publish`, branch `backup/pre-final-publish` e bundle `../CampaniaLife-backup-2026-11-25-final.bundle` verificato.
 - [ ] **Verifica estetica fisica non sostituibile dal modello.** Il modello corrente non supporta input immagine: gli screenshot (`qa/campania-open-code-1/macbook-*.png`, `pixel9proxl-*.png`) e le analisi programmatiche non equivalgono all'occhio umano. La pubblicazione procede su autorizzazione esplicita dell'utente; resta utile una revisione umana su MacBook/Pixel fisici.
 
 ---
 
 ## 3. Pubblicazione autonoma
 
-1. [x] Committato e pushato `main` senza attendere ulteriore conferma: autorizzazione esplicita dell'utente dopo il superamento dei controlli.
-2. [x] GitHub Actions `45606128039` completata: `build` `139177320188` e `deploy` `139177739108` entrambi `success`.
-3. [x] `npm run test:mobile-start` ripetuto sul sito pubblico: NUOVA PARTITA, WASD, joystick touch, save `campania_life_save_v1` e CONTINUA tutti OK.
-4. [x] Run ID finali e bundle remoto aggiornati in questo file e in `qa/campania-open-code-1/README.md`.
-5. Non ripristinare lo step CI `Install Playwright Chromium`: `mobile-start.mjs` usa il fallback al Chrome di sistema.
-6. Non ripristinare `checkpoint/pre-structural-review` (`51a22c0`): le correzioni successive sono la fonte autorevole.
+1. [x] Pubblicazione precedente completata senza attendere ulteriore conferma: workflow `45606128039`, bundle `index-BK9wvC9o.js`, smoke pubblico OK.
+2. [ ] Committare e pushare `main` con la revisione qualitativa, senza attendere ulteriore conferma: autorizzazione esplicita dell'utente dopo il superamento dei controlli.
+3. [ ] Verificare che la nuova GitHub Actions completi `build` e `deploy` con `success` sullo stesso URL.
+4. [ ] Ripetere `npm run test:mobile-start` sul sito pubblico: NUOVA PARTITA, WASD, joystick touch, save `campania_life_save_v1` e CONTINUA.
+5. [ ] Aggiornare run ID finali e bundle remoto in questo file e in `qa/campania-open-code-1/README.md`.
+6. Non ripristinare lo step CI `Install Playwright Chromium`: `mobile-start.mjs` usa il fallback al Chrome di sistema.
+7. Non ripristinare `checkpoint/pre-structural-review` (`51a22c0`) né `checkpoint/pre-quality-review` (`4cd0e35`): le correzioni successive sono la fonte autorevole.
 
 ---
 
@@ -111,6 +126,7 @@
 - Checkpoint storico: tag `checkpoint/pre-structural-review`, branch `backup/pre-structural-review`, commit `51a22c0`.
 - Checkpoint di spegnimento: tag `checkpoint/pre-shutdown-2026-11-25`, branch `backup/pre-shutdown-2026-11-25`.
 - Checkpoint pre-pubblicazione finale: tag `checkpoint/pre-final-publish`, branch `backup/pre-final-publish`, entrambi su `e4271d2`.
+- Checkpoint pre-revisione qualitativa: tag `checkpoint/pre-quality-review`, branch `backup/pre-quality-review`, entrambi su `4cd0e35`, con bundle `../backup/pre-quality-review/CampaniaLife-4cd0e35.bundle`.
 - Bundle di backup fuori dal repo: `../CampaniaLife-backup-2026-11-25.bundle` e `../CampaniaLife-backup-2026-11-25-final.bundle` (verificato).
 - Ripristino:
   ```bash

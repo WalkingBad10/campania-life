@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-25T11:30:18.034Z",
+  "generatedAt": "2026-11-25T12:38:26.386Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "maps": [
     {
@@ -7,13 +7,103 @@
       "mapH": 768,
       "draws": {
         "unknown": {
-          "count": 693,
+          "count": 695,
           "dw": 16,
           "dh": 16,
           "sw": 16,
           "sh": 16,
           "minY": 416,
           "maxY": 752
+        },
+        "prop:plant": {
+          "count": 6,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
+          "minY": -18,
+          "maxY": -5
+        },
+        "character": {
+          "count": 13,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 310,
+          "maxY": 676
+        },
+        "building:palazzo_e": {
+          "count": 1,
+          "dw": 160,
+          "dh": 80,
+          "sw": 160,
+          "sh": 80,
+          "minY": 256,
+          "maxY": 336
+        },
+        "campanileSprite": {
+          "count": 1,
+          "dw": 112,
+          "dh": 384,
+          "sw": 112,
+          "sh": 384,
+          "minY": 16,
+          "maxY": 400
+        },
+        "prop:edicola": {
+          "count": 1,
+          "dw": 28,
+          "dh": 31,
+          "sw": 28,
+          "sh": 31,
+          "minY": 544,
+          "maxY": 575
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 12,
+          "dh": 18,
+          "sw": 12,
+          "sh": 18,
+          "minY": 567,
+          "maxY": 713
+        },
+        "prop:cart": {
+          "count": 1,
+          "dw": 24,
+          "dh": 17,
+          "sw": 24,
+          "sh": 17,
+          "minY": 560,
+          "maxY": 577
+        },
+        "prop:table_out": {
+          "count": 1,
+          "dw": 17,
+          "dh": 12,
+          "sw": 17,
+          "sh": 12,
+          "minY": 566,
+          "maxY": 578
+        },
+        "prop:chair_out": {
+          "count": 2,
+          "dw": 8,
+          "dh": 11,
+          "sw": 8,
+          "sh": 11,
+          "minY": 566,
+          "maxY": 577
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 570,
+          "maxY": 590
         },
         "building:palazzo_banca": {
           "count": 1,
@@ -41,110 +131,188 @@
           "sh": 128,
           "minY": 608,
           "maxY": 736
-        },
-        "building:palazzo_e": {
-          "count": 1,
-          "dw": 160,
-          "dh": 80,
-          "sw": 160,
-          "sh": 80,
-          "minY": 256,
-          "maxY": 336
-        },
-        "campanileSprite": {
-          "count": 1,
-          "dw": 112,
-          "dh": 384,
-          "sw": 112,
-          "sh": 384,
-          "minY": 16,
-          "maxY": 400
-        },
-        "prop:plant": {
-          "count": 6,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
-          "minY": -18,
-          "maxY": 4
-        },
-        "character": {
-          "count": 13,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 310,
-          "maxY": 686
-        },
-        "prop:sign": {
-          "count": 2,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 426,
-          "maxY": 604
-        },
-        "prop:edicola": {
-          "count": 1,
-          "dw": 48,
-          "dh": 52,
-          "sw": 48,
-          "sh": 52,
-          "minY": 544,
-          "maxY": 596
-        },
-        "vehicle": {
-          "count": 3,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 570,
-          "maxY": 718
-        },
-        "prop:cart": {
-          "count": 1,
-          "dw": 40,
-          "dh": 28,
-          "sw": 40,
-          "sh": 28,
-          "minY": 560,
-          "maxY": 588
-        },
-        "prop:table_out": {
-          "count": 1,
-          "dw": 28,
-          "dh": 20,
-          "sw": 28,
-          "sh": 20,
-          "minY": 566,
-          "maxY": 586
-        },
-        "prop:chair_out": {
-          "count": 2,
-          "dw": 14,
-          "dh": 18,
-          "sw": 14,
-          "sh": 18,
-          "minY": 566,
-          "maxY": 584
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -163,62 +331,230 @@
         },
         "lemonTree": {
           "count": 4,
-          "dw": 32,
-          "dh": 40,
-          "sw": 32,
-          "sh": 40,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
           "minY": 104,
-          "maxY": 192
+          "maxY": 176
         },
         "prop:plant": {
           "count": 2,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         },
         "vehicle": {
           "count": 2,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 218,
-          "maxY": 238
+          "dw": 15,
+          "dh": 12,
+          "sw": 15,
+          "sh": 12,
+          "minY": 214,
+          "maxY": 234
         },
         "character": {
           "count": 4,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 268,
-          "maxY": 526
+          "maxY": 516
         },
         "rock": {
           "count": 1,
-          "dw": 20,
-          "dh": 14,
-          "sw": 20,
-          "sh": 14,
+          "dw": 12,
+          "dh": 8,
+          "sw": 12,
+          "sh": 8,
           "minY": 424,
-          "maxY": 438
+          "maxY": 432
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -237,44 +573,212 @@
         },
         "tree": {
           "count": 36,
-          "dw": 32,
-          "dh": 40,
-          "sw": 32,
-          "sh": 40,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
           "minY": 456,
-          "maxY": 768
+          "maxY": 752
         },
         "rock": {
           "count": 7,
-          "dw": 20,
-          "dh": 14,
-          "sw": 20,
-          "sh": 14,
+          "dw": 12,
+          "dh": 8,
+          "sw": 12,
+          "sh": 8,
           "minY": 520,
-          "maxY": 726
+          "maxY": 720
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 582,
-          "maxY": 732
+          "maxY": 722
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -293,26 +797,194 @@
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 358,
-          "maxY": 484
+          "maxY": 474
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -331,53 +1003,221 @@
         },
         "lemonTree": {
           "count": 8,
-          "dw": 32,
-          "dh": 40,
-          "sw": 32,
-          "sh": 40,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
           "minY": 72,
-          "maxY": 288
+          "maxY": 272
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 182,
-          "maxY": 276
+          "maxY": 266
         },
         "prop:sign": {
           "count": 1,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
           "minY": 250,
-          "maxY": 284
+          "maxY": 270
         },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -394,6 +1234,42 @@
           "minY": 64,
           "maxY": 400
         },
+        "prop:plant": {
+          "count": 2,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
+          "minY": -18,
+          "maxY": -5
+        },
+        "prop:sign": {
+          "count": 1,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 122,
+          "maxY": 142
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 18,
+          "dh": 12,
+          "sw": 18,
+          "sh": 12,
+          "minY": 158,
+          "maxY": 170
+        },
+        "character": {
+          "count": 3,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 204,
+          "maxY": 228
+        },
         "building:bacoli_casa": {
           "count": 2,
           "dw": 128,
@@ -402,56 +1278,188 @@
           "sh": 96,
           "minY": 192,
           "maxY": 320
-        },
-        "prop:plant": {
-          "count": 2,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
-          "minY": -18,
-          "maxY": 4
-        },
-        "prop:sign": {
-          "count": 1,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 122,
-          "maxY": 156
-        },
-        "vehicle": {
-          "count": 1,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 154,
-          "maxY": 174
-        },
-        "character": {
-          "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 204,
-          "maxY": 238
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -488,44 +1496,212 @@
         },
         "vehicle": {
           "count": 1,
-          "dw": 26,
-          "dh": 20,
-          "sw": 26,
-          "sh": 20,
-          "minY": 282,
-          "maxY": 302
+          "dw": 15,
+          "dh": 12,
+          "sw": 15,
+          "sh": 12,
+          "minY": 286,
+          "maxY": 298
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 284,
-          "maxY": 366
+          "maxY": 356
         },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -544,62 +1720,230 @@
         },
         "tree": {
           "count": 17,
-          "dw": 32,
-          "dh": 40,
-          "sw": 32,
-          "sh": 40,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
           "minY": 152,
-          "maxY": 448
+          "maxY": 432
         },
         "prop:sign": {
           "count": 1,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
           "minY": 170,
-          "maxY": 204
+          "maxY": 190
         },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 252,
-          "maxY": 366
+          "maxY": 356
         },
         "vehicle": {
           "count": 1,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 378,
-          "maxY": 398
+          "dw": 12,
+          "dh": 18,
+          "sw": 12,
+          "sh": 18,
+          "minY": 375,
+          "maxY": 393
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -618,44 +1962,212 @@
         },
         "prop:plant": {
           "count": 4,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 374,
-          "maxY": 580
+          "maxY": 570
         },
         "vehicle": {
           "count": 1,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 506,
-          "maxY": 526
+          "dw": 18,
+          "dh": 12,
+          "sw": 18,
+          "sh": 12,
+          "minY": 510,
+          "maxY": 522
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -671,6 +2183,24 @@
           "sh": 16,
           "minY": 256,
           "maxY": 592
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 18,
+          "dh": 12,
+          "sw": 18,
+          "sh": 12,
+          "minY": 302,
+          "maxY": 578
+        },
+        "character": {
+          "count": 3,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 390,
+          "maxY": 410
         },
         "building:fuorigrotta_mostra": {
           "count": 1,
@@ -699,64 +2229,214 @@
           "minY": 256,
           "maxY": 704
         },
-        "vehicle": {
-          "count": 2,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 298,
-          "maxY": 590
-        },
-        "character": {
-          "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 390,
-          "maxY": 420
-        },
         "tree": {
           "count": 5,
-          "dw": 32,
-          "dh": 40,
-          "sw": 32,
-          "sh": 40,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
           "minY": 520,
-          "maxY": 560
+          "maxY": 544
         },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         },
         "prop:sign": {
           "count": 1,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
           "minY": 602,
-          "maxY": 636
+          "maxY": 622
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -773,6 +2453,24 @@
           "minY": 320,
           "maxY": 640
         },
+        "prop:sign": {
+          "count": 4,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 234,
+          "maxY": 430
+        },
+        "character": {
+          "count": 3,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 326,
+          "maxY": 474
+        },
         "building:pianura_borgo": {
           "count": 2,
           "dw": 160,
@@ -782,55 +2480,205 @@
           "minY": 320,
           "maxY": 624
         },
-        "prop:sign": {
-          "count": 4,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 234,
-          "maxY": 444
-        },
-        "character": {
-          "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 326,
-          "maxY": 484
-        },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         },
         "vehicle": {
           "count": 1,
-          "dw": 26,
-          "dh": 20,
-          "sw": 26,
-          "sh": 20,
-          "minY": 602,
-          "maxY": 622
+          "dw": 15,
+          "dh": 12,
+          "sw": 15,
+          "sh": 12,
+          "minY": 606,
+          "maxY": 618
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -851,8 +2699,8 @@
           "count": 1,
           "dw": 96,
           "dh": 118,
-          "sw": 167,
-          "sh": 205,
+          "sw": 99,
+          "sh": 121,
           "minY": -38,
           "maxY": 80
         },
@@ -860,8 +2708,8 @@
           "count": 3,
           "dw": 56,
           "dh": 40,
-          "sw": 219,
-          "sh": 160,
+          "sw": 129,
+          "sh": 95,
           "minY": 56,
           "maxY": 112
         },
@@ -869,8 +2717,8 @@
           "count": 2,
           "dw": 12,
           "dh": 26,
-          "sw": 30,
-          "sh": 67,
+          "sw": 18,
+          "sh": 40,
           "minY": 70,
           "maxY": 96
         },
@@ -878,8 +2726,8 @@
           "count": 3,
           "dw": 28,
           "dh": 78,
-          "sw": 66,
-          "sh": 182,
+          "sw": 39,
+          "sh": 108,
           "minY": 34,
           "maxY": 160
         },
@@ -887,33 +2735,201 @@
           "count": 20,
           "dw": 48,
           "dh": 24,
-          "sw": 159,
-          "sh": 71,
+          "sw": 94,
+          "sh": 42,
           "minY": 104,
           "maxY": 256
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 260,
-          "maxY": 300
+          "maxY": 290
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -932,53 +2948,221 @@
         },
         "character": {
           "count": 2,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 116,
-          "maxY": 148
+          "maxY": 138
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 222
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -997,53 +3181,221 @@
         },
         "character": {
           "count": 2,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 132,
-          "maxY": 180
+          "maxY": 170
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 254
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1062,53 +3414,221 @@
         },
         "character": {
           "count": 2,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 116,
-          "maxY": 164
+          "maxY": 154
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 238
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1127,53 +3647,221 @@
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 116,
-          "maxY": 172
+          "maxY": 162
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 222
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1192,53 +3880,221 @@
         },
         "character": {
           "count": 2,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 108,
-          "maxY": 140
+          "maxY": 130
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 206
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1259,26 +4115,26 @@
           "count": 1,
           "dw": 132,
           "dh": 34,
-          "sw": 325,
-          "sh": 81,
+          "sw": 192,
+          "sh": 48,
           "minY": 14,
           "maxY": 48
         },
         "character": {
           "count": 6,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 52,
-          "maxY": 188
+          "maxY": 178
         },
         "prop:bar_counter": {
           "count": 1,
           "dw": 150,
           "dh": 38,
-          "sw": 500,
-          "sh": 123,
+          "sw": 296,
+          "sh": 73,
           "minY": 58,
           "maxY": 96
         },
@@ -1286,8 +4142,8 @@
           "count": 1,
           "dw": 48,
           "dh": 62,
-          "sw": 147,
-          "sh": 189,
+          "sw": 87,
+          "sh": 112,
           "minY": 50,
           "maxY": 112
         },
@@ -1295,8 +4151,8 @@
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 254
         },
@@ -1304,42 +4160,210 @@
           "count": 2,
           "dw": 48,
           "dh": 20,
-          "sw": 200,
-          "sh": 58,
+          "sw": 118,
+          "sh": 34,
           "minY": 140,
           "maxY": 160
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1358,19 +4382,19 @@
         },
         "character": {
           "count": 5,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 68,
-          "maxY": 204
+          "maxY": 194
         },
         "prop:pizzeria_oven": {
           "count": 1,
           "dw": 96,
           "dh": 80,
-          "sw": 254,
-          "sh": 336,
+          "sw": 150,
+          "sh": 199,
           "minY": 16,
           "maxY": 96
         },
@@ -1378,8 +4402,8 @@
           "count": 1,
           "dw": 110,
           "dh": 52,
-          "sw": 369,
-          "sh": 170,
+          "sw": 218,
+          "sh": 101,
           "minY": 60,
           "maxY": 112
         },
@@ -1387,8 +4411,8 @@
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 270
         },
@@ -1396,42 +4420,210 @@
           "count": 2,
           "dw": 60,
           "dh": 34,
-          "sw": 210,
-          "sh": 115,
+          "sw": 124,
+          "sh": 68,
           "minY": 142,
           "maxY": 176
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1452,8 +4644,8 @@
           "count": 1,
           "dw": 180,
           "dh": 90,
-          "sw": 404,
-          "sh": 260,
+          "sw": 239,
+          "sh": 154,
           "minY": -10,
           "maxY": 80
         },
@@ -1461,8 +4653,8 @@
           "count": 1,
           "dw": 150,
           "dh": 48,
-          "sw": 270,
-          "sh": 94,
+          "sw": 160,
+          "sh": 56,
           "minY": 80,
           "maxY": 128
         },
@@ -1470,60 +4662,228 @@
           "count": 1,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 158
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 148,
-          "maxY": 212
+          "maxY": 202
         },
         "prop:metro_platform": {
           "count": 1,
           "dw": 320,
           "dh": 44,
-          "sw": 491,
-          "sh": 97,
+          "sw": 290,
+          "sh": 57,
           "minY": 180,
           "maxY": 224
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1544,8 +4904,8 @@
           "count": 1,
           "dw": 180,
           "dh": 90,
-          "sw": 404,
-          "sh": 260,
+          "sw": 239,
+          "sh": 154,
           "minY": -10,
           "maxY": 80
         },
@@ -1553,8 +4913,8 @@
           "count": 1,
           "dw": 150,
           "dh": 48,
-          "sw": 270,
-          "sh": 94,
+          "sw": 160,
+          "sh": 56,
           "minY": 80,
           "maxY": 128
         },
@@ -1562,60 +4922,228 @@
           "count": 1,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 158
         },
         "character": {
           "count": 2,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 148,
-          "maxY": 212
+          "maxY": 202
         },
         "prop:metro_platform": {
           "count": 1,
           "dw": 320,
           "dh": 44,
-          "sw": 491,
-          "sh": 97,
+          "sw": 290,
+          "sh": 57,
           "minY": 180,
           "maxY": 224
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1634,53 +5162,221 @@
         },
         "character": {
           "count": 2,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 124,
-          "maxY": 156
+          "maxY": 146
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 222
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1699,53 +5395,221 @@
         },
         "character": {
           "count": 2,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 124,
-          "maxY": 156
+          "maxY": 146
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 222
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1764,53 +5628,221 @@
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 116,
-          "maxY": 156
+          "maxY": 146
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 222
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1829,53 +5861,221 @@
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 84,
-          "maxY": 172
+          "maxY": 162
         },
         "prop:home_rug": {
           "count": 2,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 222
         },
         "prop:home_plant": {
           "count": 1,
-          "dw": 24,
+          "dw": 14,
           "dh": 30,
-          "sw": 24,
-          "sh": 30,
+          "sw": 14,
+          "sh": 18,
           "minY": -30,
           "maxY": 0
         },
         "prop:home_lamp": {
           "count": 1,
-          "dw": 22,
+          "dw": 13,
           "dh": 52,
-          "sw": 22,
-          "sh": 52,
+          "sw": 13,
+          "sh": 31,
           "minY": 188,
           "maxY": 240
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1894,44 +6094,212 @@
         },
         "rock": {
           "count": 24,
-          "dw": 20,
-          "dh": 14,
-          "sw": 20,
-          "sh": 14,
+          "dw": 12,
+          "dh": 8,
+          "sw": 12,
+          "sh": 8,
           "minY": 24,
-          "maxY": 86
+          "maxY": 80
         },
         "prop:home_rug": {
           "count": 1,
           "dw": 64,
           "dh": 24,
-          "sw": 56,
-          "sh": 24,
+          "sw": 33,
+          "sh": 14,
           "minY": 134,
           "maxY": 158
         },
         "character": {
           "count": 1,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 252,
-          "maxY": 276
+          "maxY": 266
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       }
     },
@@ -1940,13 +6308,112 @@
       "mapH": 768,
       "draws": {
         "unknown": {
-          "count": 680,
+          "count": 682,
           "dw": 16,
           "dh": 16,
           "sw": 16,
           "sh": 16,
           "minY": 336,
-          "maxY": 656
+          "maxY": 716
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 202,
+          "maxY": 590
+        },
+        "prop:plant": {
+          "count": 6,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
+          "minY": -18,
+          "maxY": -5
+        },
+        "character": {
+          "count": 13,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 310,
+          "maxY": 676
+        },
+        "building:palazzo_e": {
+          "count": 1,
+          "dw": 160,
+          "dh": 80,
+          "sw": 160,
+          "sh": 80,
+          "minY": 256,
+          "maxY": 336
+        },
+        "campanileSprite": {
+          "count": 1,
+          "dw": 112,
+          "dh": 384,
+          "sw": 112,
+          "sh": 384,
+          "minY": 16,
+          "maxY": 400
+        },
+        "gugliaSprite": {
+          "count": 1,
+          "dw": 126,
+          "dh": 240,
+          "sw": 126,
+          "sh": 240,
+          "minY": 208,
+          "maxY": 448
+        },
+        "prop:edicola": {
+          "count": 1,
+          "dw": 28,
+          "dh": 31,
+          "sw": 28,
+          "sh": 31,
+          "minY": 544,
+          "maxY": 575
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 12,
+          "dh": 18,
+          "sw": 12,
+          "sh": 18,
+          "minY": 567,
+          "maxY": 713
+        },
+        "prop:cart": {
+          "count": 1,
+          "dw": 24,
+          "dh": 17,
+          "sw": 24,
+          "sh": 17,
+          "minY": 560,
+          "maxY": 577
+        },
+        "prop:table_out": {
+          "count": 1,
+          "dw": 17,
+          "dh": 12,
+          "sw": 17,
+          "sh": 12,
+          "minY": 566,
+          "maxY": 578
+        },
+        "prop:chair_out": {
+          "count": 2,
+          "dw": 8,
+          "dh": 11,
+          "sw": 8,
+          "sh": 11,
+          "minY": 566,
+          "maxY": 577
         },
         "building:palazzo_banca": {
           "count": 1,
@@ -1974,119 +6441,188 @@
           "sh": 128,
           "minY": 608,
           "maxY": 736
-        },
-        "building:palazzo_e": {
-          "count": 1,
-          "dw": 160,
-          "dh": 80,
-          "sw": 160,
-          "sh": 80,
-          "minY": 256,
-          "maxY": 336
-        },
-        "campanileSprite": {
-          "count": 1,
-          "dw": 112,
-          "dh": 384,
-          "sw": 112,
-          "sh": 384,
-          "minY": 16,
-          "maxY": 400
-        },
-        "prop:sign": {
-          "count": 3,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 202,
-          "maxY": 604
-        },
-        "prop:plant": {
-          "count": 6,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
-          "minY": -18,
-          "maxY": 4
-        },
-        "character": {
-          "count": 13,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 310,
-          "maxY": 686
-        },
-        "gugliaSprite": {
-          "count": 1,
-          "dw": 126,
-          "dh": 240,
-          "sw": 126,
-          "sh": 240,
-          "minY": 208,
-          "maxY": 448
-        },
-        "prop:edicola": {
-          "count": 1,
-          "dw": 48,
-          "dh": 52,
-          "sw": 48,
-          "sh": 52,
-          "minY": 544,
-          "maxY": 596
-        },
-        "vehicle": {
-          "count": 3,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 570,
-          "maxY": 718
-        },
-        "prop:cart": {
-          "count": 1,
-          "dw": 40,
-          "dh": 28,
-          "sw": 40,
-          "sh": 28,
-          "minY": 560,
-          "maxY": 588
-        },
-        "prop:table_out": {
-          "count": 1,
-          "dw": 28,
-          "dh": 20,
-          "sw": 28,
-          "sh": 20,
-          "minY": 566,
-          "maxY": 586
-        },
-        "prop:chair_out": {
-          "count": 2,
-          "dw": 14,
-          "dh": 18,
-          "sw": 14,
-          "sh": 18,
-          "minY": 566,
-          "maxY": 584
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "guglia"
@@ -2104,6 +6640,15 @@
           "minY": 48,
           "maxY": 368
         },
+        "building:palazzo_ne": {
+          "count": 1,
+          "dw": 288,
+          "dh": 160,
+          "sw": 288,
+          "sh": 160,
+          "minY": 64,
+          "maxY": 224
+        },
         "building:gesu": {
           "count": 1,
           "dw": 448,
@@ -2113,14 +6658,23 @@
           "minY": -8,
           "maxY": 240
         },
-        "building:palazzo_ne": {
-          "count": 1,
-          "dw": 288,
-          "dh": 160,
-          "sw": 288,
-          "sh": 160,
-          "minY": 64,
-          "maxY": 224
+        "prop:plant": {
+          "count": 4,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
+          "minY": -18,
+          "maxY": -5
+        },
+        "character": {
+          "count": 13,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 180,
+          "maxY": 676
         },
         "building:palazzo_sw": {
           "count": 1,
@@ -2131,46 +6685,196 @@
           "minY": 256,
           "maxY": 384
         },
-        "character": {
-          "count": 13,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 180,
-          "maxY": 686
-        },
-        "prop:plant": {
-          "count": 4,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
-          "minY": -18,
-          "maxY": 4
-        },
         "vehicle": {
           "count": 3,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 570,
-          "maxY": 718
+          "dw": 12,
+          "dh": 18,
+          "sw": 12,
+          "sh": 18,
+          "minY": 567,
+          "maxY": 713
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "facciate"
@@ -2197,6 +6901,24 @@
           "minY": 64,
           "maxY": 224
         },
+        "prop:sign": {
+          "count": 4,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 202,
+          "maxY": 590
+        },
+        "character": {
+          "count": 13,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 310,
+          "maxY": 676
+        },
         "building:palazzo_e": {
           "count": 1,
           "dw": 160,
@@ -2206,6 +6928,15 @@
           "minY": 256,
           "maxY": 336
         },
+        "prop:plant": {
+          "count": 4,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
+          "minY": -18,
+          "maxY": -5
+        },
         "campanileSprite": {
           "count": 1,
           "dw": 112,
@@ -2214,33 +6945,6 @@
           "sh": 384,
           "minY": 16,
           "maxY": 400
-        },
-        "prop:sign": {
-          "count": 4,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 202,
-          "maxY": 604
-        },
-        "character": {
-          "count": 13,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 310,
-          "maxY": 686
-        },
-        "prop:plant": {
-          "count": 4,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
-          "minY": -18,
-          "maxY": 4
         },
         "gugliaSprite": {
           "count": 1,
@@ -2253,53 +6957,221 @@
         },
         "prop:edicola": {
           "count": 1,
-          "dw": 48,
-          "dh": 52,
-          "sw": 48,
-          "sh": 52,
+          "dw": 28,
+          "dh": 31,
+          "sw": 28,
+          "sh": 31,
           "minY": 544,
-          "maxY": 596
+          "maxY": 575
         },
         "vehicle": {
           "count": 3,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 570,
-          "maxY": 718
+          "dw": 12,
+          "dh": 18,
+          "sw": 12,
+          "sh": 18,
+          "minY": 567,
+          "maxY": 713
         },
         "prop:table_out": {
           "count": 1,
-          "dw": 28,
-          "dh": 20,
-          "sw": 28,
-          "sh": 20,
+          "dw": 17,
+          "dh": 12,
+          "sw": 17,
+          "sh": 12,
           "minY": 566,
-          "maxY": 586
+          "maxY": 578
         },
         "prop:chair_out": {
           "count": 2,
-          "dw": 14,
-          "dh": 18,
-          "sw": 14,
-          "sh": 18,
+          "dw": 8,
+          "dh": 11,
+          "sw": 8,
+          "sh": 11,
           "minY": 566,
-          "maxY": 584
+          "maxY": 577
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "campanile"
@@ -2316,6 +7188,24 @@
           "sh": 16,
           "minY": 256,
           "maxY": 576
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 18,
+          "dh": 12,
+          "sw": 18,
+          "sh": 12,
+          "minY": 302,
+          "maxY": 578
+        },
+        "character": {
+          "count": 3,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 388,
+          "maxY": 404
         },
         "building:fuorigrotta_mostra": {
           "count": 1,
@@ -2344,64 +7234,214 @@
           "minY": 256,
           "maxY": 704
         },
-        "vehicle": {
-          "count": 2,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 298,
-          "maxY": 590
-        },
-        "character": {
-          "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 388,
-          "maxY": 414
-        },
         "tree": {
           "count": 5,
-          "dw": 32,
-          "dh": 40,
-          "sw": 32,
-          "sh": 40,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
           "minY": 520,
-          "maxY": 560
+          "maxY": 544
         },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         },
         "prop:sign": {
           "count": 1,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
           "minY": 602,
-          "maxY": 636
+          "maxY": 622
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "fuorigrotta-facciate"
@@ -2428,6 +7468,24 @@
           "minY": 0,
           "maxY": 280
         },
+        "character": {
+          "count": 3,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 292,
+          "maxY": 404
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 18,
+          "dh": 12,
+          "sw": 18,
+          "sh": 12,
+          "minY": 302,
+          "maxY": 578
+        },
         "building:fuorigrotta_mostra": {
           "count": 1,
           "dw": 320,
@@ -2455,46 +7513,196 @@
           "minY": 256,
           "maxY": 496
         },
-        "character": {
-          "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 292,
-          "maxY": 414
-        },
-        "vehicle": {
-          "count": 2,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 298,
-          "maxY": 590
-        },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "fuorigrotta-teatro"
@@ -2511,6 +7719,33 @@
           "sh": 16,
           "minY": 352,
           "maxY": 672
+        },
+        "vehicle": {
+          "count": 2,
+          "dw": 18,
+          "dh": 12,
+          "sw": 18,
+          "sh": 12,
+          "minY": 302,
+          "maxY": 578
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 282,
+          "maxY": 510
+        },
+        "character": {
+          "count": 3,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 390,
+          "maxY": 498
         },
         "building:fuorigrotta_torre": {
           "count": 2,
@@ -2530,64 +7765,205 @@
           "minY": 336,
           "maxY": 496
         },
-        "vehicle": {
-          "count": 2,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 298,
-          "maxY": 590
-        },
-        "prop:sign": {
-          "count": 2,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 282,
-          "maxY": 524
-        },
-        "character": {
-          "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 390,
-          "maxY": 508
-        },
         "tree": {
           "count": 4,
-          "dw": 32,
-          "dh": 40,
-          "sw": 32,
-          "sh": 40,
+          "dw": 19,
+          "dh": 24,
+          "sw": 19,
+          "sh": 24,
           "minY": 520,
-          "maxY": 560
+          "maxY": 544
         },
         "prop:plant": {
           "count": 1,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "fuorigrotta-stadio"
@@ -2605,14 +7981,14 @@
           "minY": 192,
           "maxY": 512
         },
-        "building:pianura_chiesa": {
-          "count": 1,
-          "dw": 320,
-          "dh": 248,
-          "sw": 320,
-          "sh": 248,
-          "minY": 24,
-          "maxY": 272
+        "building:pianura_borgo": {
+          "count": 4,
+          "dw": 160,
+          "dh": 112,
+          "sw": 160,
+          "sh": 112,
+          "minY": 80,
+          "maxY": 640
         },
         "building:pianura_municipio": {
           "count": 1,
@@ -2623,64 +7999,232 @@
           "minY": 56,
           "maxY": 256
         },
-        "building:pianura_borgo": {
-          "count": 4,
-          "dw": 160,
-          "dh": 112,
-          "sw": 160,
-          "sh": 112,
-          "minY": 80,
-          "maxY": 640
+        "building:pianura_chiesa": {
+          "count": 1,
+          "dw": 320,
+          "dh": 248,
+          "sw": 320,
+          "sh": 248,
+          "minY": 24,
+          "maxY": 272
         },
         "prop:sign": {
           "count": 4,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
           "minY": 234,
-          "maxY": 444
+          "maxY": 430
         },
         "character": {
           "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
           "minY": 324,
-          "maxY": 430
+          "maxY": 420
         },
         "prop:plant": {
           "count": 2,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
           "minY": -18,
-          "maxY": 4
+          "maxY": -5
         },
         "vehicle": {
           "count": 1,
-          "dw": 26,
-          "dh": 20,
-          "sw": 26,
-          "sh": 20,
-          "minY": 602,
-          "maxY": 622
+          "dw": 15,
+          "dh": 12,
+          "sw": 15,
+          "sh": 12,
+          "minY": 606,
+          "maxY": 618
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "pianura-facciate"
@@ -2698,6 +8242,42 @@
           "minY": 32,
           "maxY": 352
         },
+        "rock": {
+          "count": 13,
+          "dw": 12,
+          "dh": 8,
+          "sw": 12,
+          "sh": 8,
+          "minY": 24,
+          "maxY": 32
+        },
+        "prop:plant": {
+          "count": 2,
+          "dw": 11,
+          "dh": 13,
+          "sw": 11,
+          "sh": 13,
+          "minY": -18,
+          "maxY": -5
+        },
+        "prop:sign": {
+          "count": 2,
+          "dw": 17,
+          "dh": 20,
+          "sw": 17,
+          "sh": 20,
+          "minY": 122,
+          "maxY": 174
+        },
+        "vehicle": {
+          "count": 1,
+          "dw": 18,
+          "dh": 12,
+          "sw": 18,
+          "sh": 12,
+          "minY": 158,
+          "maxY": 170
+        },
         "building:bacoli_castello": {
           "count": 1,
           "dw": 288,
@@ -2707,6 +8287,15 @@
           "minY": 0,
           "maxY": 176
         },
+        "character": {
+          "count": 3,
+          "dw": 9,
+          "dh": 14,
+          "sw": 9,
+          "sh": 14,
+          "minY": 164,
+          "maxY": 228
+        },
         "building:bacoli_casa": {
           "count": 2,
           "dw": 128,
@@ -2715,65 +8304,188 @@
           "sh": 96,
           "minY": 192,
           "maxY": 320
-        },
-        "rock": {
-          "count": 13,
-          "dw": 20,
-          "dh": 14,
-          "sw": 20,
-          "sh": 14,
-          "minY": 24,
-          "maxY": 38
-        },
-        "prop:plant": {
-          "count": 2,
-          "dw": 18,
-          "dh": 22,
-          "sw": 18,
-          "sh": 22,
-          "minY": -18,
-          "maxY": 4
-        },
-        "prop:sign": {
-          "count": 2,
-          "dw": 28,
-          "dh": 34,
-          "sw": 28,
-          "sh": 34,
-          "minY": 122,
-          "maxY": 188
-        },
-        "vehicle": {
-          "count": 1,
-          "dw": 30,
-          "dh": 20,
-          "sw": 30,
-          "sh": 20,
-          "minY": 154,
-          "maxY": 174
-        },
-        "character": {
-          "count": 3,
-          "dw": 16,
-          "dh": 24,
-          "sw": 16,
-          "sh": 24,
-          "minY": 164,
-          "maxY": 238
         }
       },
       "visible": {
         "character": {
-          "canvas": 24,
-          "visible": 14
+          "canvasW": 9,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "guglia": {
-          "canvas": 240,
-          "visible": 240
+          "canvasW": 126,
+          "canvasH": 240,
+          "visible": 240,
+          "visibleW": 126,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         },
         "campanile": {
-          "canvas": 384,
-          "visible": 384
+          "canvasW": 112,
+          "canvasH": 384,
+          "visible": 384,
+          "visibleW": 112,
+          "corners": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "tree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lemonTree": {
+          "canvasW": 19,
+          "canvasH": 24,
+          "visible": 21,
+          "visibleW": 15,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carSide": {
+          "canvasW": 18,
+          "canvasH": 12,
+          "visible": 9,
+          "visibleW": 17,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "carFront": {
+          "canvasW": 12,
+          "canvasH": 18,
+          "visible": 16,
+          "visibleW": 12,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "scooter": {
+          "canvasW": 15,
+          "canvasH": 12,
+          "visible": 10,
+          "visibleW": 14,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "bench": {
+          "canvasW": 21,
+          "canvasH": 13,
+          "visible": 10,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "lamp": {
+          "canvasW": 14,
+          "canvasH": 31,
+          "visible": 29,
+          "visibleW": 9,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "plant": {
+          "canvasW": 11,
+          "canvasH": 13,
+          "visible": 11,
+          "visibleW": 8,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "awning": {
+          "canvasW": 19,
+          "canvasH": 12,
+          "visible": 12,
+          "visibleW": 19,
+          "corners": [
+            255,
+            254,
+            210,
+            210
+          ]
+        },
+        "cornice": {
+          "canvasW": 19,
+          "canvasH": 6,
+          "visible": 6,
+          "visibleW": 19,
+          "corners": [
+            255,
+            244,
+            47,
+            47
+          ]
+        },
+        "balcony": {
+          "canvasW": 24,
+          "canvasH": 11,
+          "visible": 10,
+          "visibleW": 24,
+          "corners": [
+            0,
+            0,
+            169,
+            169
+          ]
+        },
+        "portalArch": {
+          "canvasW": 21,
+          "canvasH": 14,
+          "visible": 14,
+          "visibleW": 19,
+          "corners": [
+            0,
+            0,
+            0,
+            0
+          ]
         }
       },
       "view": "bacoli-templi"
@@ -2784,55 +8496,55 @@
       "map": "napoli",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "costiera",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "capri",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "bacoli",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "salerno",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "avellino",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "caserta",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "fuorigrotta",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "pianura",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "casa_nonna",
@@ -2934,7 +8646,7 @@
       "map": "guglia",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "facciate",
@@ -2946,43 +8658,43 @@
       "map": "facciate",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "campanile",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "fuorigrotta-facciate",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "fuorigrotta-teatro",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "fuorigrotta-stadio",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "pianura-facciate",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     },
     {
       "map": "bacoli-templi",
       "kind": "prop:plant",
       "minY": -18,
-      "maxY": 4
+      "maxY": -5
     }
   ],
   "issues": []

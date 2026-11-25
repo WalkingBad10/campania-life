@@ -56,6 +56,24 @@
     return { id, zone, w, h, g: ground, portals: [], pois: [], decors: [], spawn: { x: w * T / 2, y: h * T / 2 }, name: id };
   }
   function decor(m, x, y, type, data) { m.decors.push({ x: x * T, y: y * T, type, data: data || {} }); }
+  // Impronta a terra degli arredi disegnati come decor: la grafica puo' essere
+  // piu' alta della cella, ma solo la base deve bloccare il passaggio.
+  const PROP_FOOTPRINTS = {
+    lamp: { x: 3, y: -6, w: 10, h: 12 },
+    bench: { x: 0, y: -2, w: 30, h: 12 },
+    plant: { x: 1, y: -6, w: 14, h: 12 },
+    table_out: { x: 0, y: -4, w: 24, h: 13 },
+    chair_out: { x: 0, y: -5, w: 12, h: 12 },
+    cart: { x: 0, y: -6, w: 32, h: 15 },
+    sign: { x: 0, y: -6, w: 20, h: 14 },
+    ruin_column: { x: -2, y: -5, w: 12, h: 10 }
+  };
+  function decorFootprint(d) {
+    const fp = PROP_FOOTPRINTS[d.type];
+    if (!fp) return null;
+    const ox = (d.data && d.data.ox) || 0, oy = (d.data && d.data.oy) || 0;
+    return { x: d.x + fp.x + ox, y: d.y + fp.y + oy, w: fp.w, h: fp.h };
+  }
   function portal(m, x, y, ww, hh, to, spawn, label) {
     m.portals.push({ x: x * T, y: y * T, w: (ww || 1) * T, h: (hh || 1) * T, to, spawn: spawn || { x: 0, y: 0 }, label: label || 'Vai' });
   }
@@ -103,16 +121,22 @@
     mass(g, 8, 2, 28, 13);
     rect(g, 19, 11, 2, 4, 'Y'); rect(g, 19, 10, 2, 1, 'b');
     rect(g, 13, 5, 2, 3, 'I'); rect(g, 25, 5, 2, 3, 'I');
-    rect(g, 9, 2, 26, 1, '='); rect(g, 8, 14, 28, 1, 'p');
+    rect(g, 9, 2, 26, 1, '=');
+    // L'ultima riga della facciata resta solida: prima veniva riscritta a 'p',
+    // lasciando 16 px di bugnato attraversabile. Il solo varco e' il portale.
+    for (let x = 8; x < 36; x++) if (!(x >= 19 && x < 21)) setTile(g, x, 14, 'b');
 
     // Palazzo delle Congregazioni / istituti scolastici, a nord-est.
     mass(g, 36, 2, 18, 12);
-    rect(g, 43, 12, 2, 2, 'Y'); rect(g, 36, 13, 18, 1, 'p');
+    // La porta resta Y; la riga 13 non viene piu' cancellata dal marciapiede.
+    rect(g, 43, 12, 2, 2, 'Y');
+    for (let x = 36; x < 54; x++) if (!(x >= 43 && x < 45)) setTile(g, x, 13, 'b');
 
     // Santa Chiara: fronte est compatto e campanile innestato nella massa, non isolato.
     // OSM way 261250167: il complesso e' a ESE della guglia, non a NNE.
-    // La massa viene estesa a sud (fino alla riga 33) mantenendo l'ingresso storico.
-    mass(g, 55, 16, 10, 18);
+    // La massa si ferma alla riga 29: le righe 30-33 sono il basolato pedonale
+    // di Via Benedetto Croce, non un muro invisibile sotto l'edificio.
+    mass(g, 55, 16, 10, 14);
     // Campanile: 17,6 x 17,3 m (OSM way 150562144) = 9x9 celle, non 3x8.
     mass(g, 58, 16, 9, 9);
     setTile(g, 60, 14, 'b'); setTile(g, 60, 17, 'b');
@@ -120,9 +144,9 @@
 
     // Fronte sud: masse continue coperte dalle facciate M1; il vicolo sta nel
     // varco reale tra gli isolati (x26-27), non taglia un palazzo a meta'.
-    mass(g, 10, 39, 15, 7);
+    mass(g, 10, 39, 14, 7);
     rect(g, 17, 44, 2, 2, 'Y');
-    mass(g, 29, 39, 9, 7);
+    mass(g, 28, 39, 10, 7);
     rect(g, 31, 44, 2, 2, 'Y');
     mass(g, 40, 39, 8, 7);
     rect(g, 43, 44, 2, 2, 'Y');
@@ -171,7 +195,7 @@
     rect(g, 38, 34, 3, 3, 'K'); setTile(g, 39, 36, 'p');
 
     // ---- 3) Arredo urbano: filari ai bordi e ai lati degli assi ----
-    [[16,17],[16,21],[16,25],[16,29],[16,35],[52,18],[52,22],[52,27],[52,35],
+    [[16,21],[16,29],[16,35],[52,18],[52,27],
      [22,37],[46,37],[31,25],[41,25],[31,29],[41,29]].forEach(([x,y]) => place(x,y,'P'));
     [[21,20],[36,23],[50,24],[17,33],[52,33]].forEach(([x,y]) => place(x,y,'U'));
     [[22,27],[39,27],[22,35],[42,35],[46,29]].forEach(([x,y]) => place(x,y,'E'));
@@ -199,13 +223,13 @@
     decor(m, 48, 36, 'table_out', { h: 12 });
     decor(m, 46, 36, 'chair_out', { h: 10 }); decor(m, 50, 36, 'chair_out', { h: 10 });
     decor(m, 33, 37, 'sign', { h: 20 });
-    decor(m, 58, 28, 'sign', { h: 20 });
+    decor(m, 62, 28, 'sign', { h: 20 });
     [[16,17],[16,25],[52,22],[52,35],[27,29],[36,29]].forEach(([x,y]) => decor(m, x, y, 'plant', { h: 12 }));
 
     // Cornicioni e balconi sono già parte dell'asset M1: nessun decor duplicato.
     // I panni pendono dai balconi del fronte sud (riga 39), non attraverso la piazza.
-    decor(m, 22, 40 * T, 'laundry_line', { x2: 30 * T, y2: 40 * T, sag: 9 });
-    decor(m, 45, 40 * T, 'laundry_line', { x2: 53 * T, y2: 40 * T, sag: 7, colors: ['#f0e6d2', '#5f8fa8', '#d2a24a'] });
+    decor(m, 22, 40, 'laundry_line', { x2: 30 * T, y2: 40 * T, sag: 9 });
+    decor(m, 45, 40, 'laundry_line', { x2: 53 * T, y2: 40 * T, sag: 7, colors: ['#f0e6d2', '#5f8fa8', '#d2a24a'] });
 
     // Portali interni / servizi: ancoraggi invariati.
     portal(m, 19, 14, 2, 1, 'casa_nonna', { x: 14 * T, y: 18 * T + 8 }, 'Ingresso Gesù Nuovo');
@@ -1134,6 +1158,45 @@
     solidAt(m, x, y) {
       const tx = Math.floor(x / T), ty = Math.floor(y / T);
       return SOLID[this.tile(m, tx, ty)] || false;
+    },
+    //porte chiuse: uno stato vero, non un tile solido statico. POI con
+    //data.closed=true oppure data.hours=[apertura,chiusura] sono invalicabili.
+    doorClosed(m, x, y) {
+      if (!m || !m.pois) return false;
+      const tx = Math.floor(x / T), ty = Math.floor(y / T);
+      for (const q of m.pois) {
+        if (q.type !== 'door' || Math.floor(q.x / T) !== tx || Math.floor(q.y / T) !== ty) continue;
+        if (q.data && q.data.closed === true) return true;
+        const hours = q.data && q.data.hours;
+        if (hours && CL.systems && CL.systems.time && CL.systems.time.hour) {
+          const h = CL.systems.time.hour();
+          if (h < hours[0] || h >= hours[1]) return true;
+        }
+      }
+      return false;
+    },
+    propBlocks(m, x, y, wid, hei) {
+      if (!m || !m.decors) return false;
+      const a = { x: x - wid / 2, y: y - hei / 2, w: wid, h: hei };
+      for (const d of m.decors) {
+        const fp = decorFootprint(d);
+        if (!fp) continue;
+        if (U.overlap(a, fp)) return true;
+      }
+      return false;
+    },
+    // Scansione completa dell'impronta: i 4 angoli non bastano per entita'
+    // larghe piu' di una cella (auto 22 px) e nascondono i muri centrali.
+    blockedBox(m, x, y, wid, hei) {
+      if (!m) return true;
+      const l = x - wid / 2, r = x + wid / 2, t = y - hei / 2, b = y + hei / 2;
+      const x0 = Math.floor(l / T), x1 = Math.floor(r / T);
+      const y0 = Math.floor(t / T), y1 = Math.floor(b / T);
+      for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
+        if (SOLID[this.tile(m, tx, ty)]) return true;
+      }
+      if (this.doorClosed(m, x, y)) return true;
+      return this.propBlocks(m, x, y, wid, hei);
     },
     walkable(m, tx, ty) { return !SOLID[this.tile(m, tx, ty)]; },
     portalAt(m, x, y) { return m.portals.find(p => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h) || null; },
