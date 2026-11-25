@@ -1,8 +1,8 @@
 # CAMPANIA LIFE / CAMPANIA OPEN CODE — ROADMAP di ripresa
 
-**Aggiornato:** 25 novembre 2026 — revisione qualitativa completata, pronta per la pubblicazione autonoma sullo stesso URL.
+**Aggiornato:** 25 novembre 2026 — revisione qualitativa completata e pubblicata sullo stesso URL.
 **Repo:** `CampaniaLife` · branch locale `main` · remote `origin/main`.
-**Stato pubblico corrente (pre-pubblicazione qualitativa):** `c9fddbd`, bundle remoto `index-BK9wvC9o.js`, workflow `45606128039` `success`. Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta e chiave save presenti nel bundle remoto.
+**Stato pubblico corrente:** revisione qualitativa `b7f2716`, bundle remoto `index-CWJT4Ahe.js`, workflow `45616242811` `success` (build `139212256590`, deploy `139212645019`). Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta, chiave save, `blockedBox`, `doorClosed` e `awningSprite` presenti nel bundle remoto. Pubblicazione precedente: `c9fddbd`, bundle `index-BK9wvC9o.js`, workflow `45606128039`.
 **Checkpoint della revisione qualitativa:** `checkpoint/pre-quality-review` / `backup/pre-quality-review` su `4cd0e35`, con bundle `../backup/pre-quality-review/CampaniaLife-4cd0e35.bundle`.
 **Nota:** la workflow `45513882269` era stata annullata deliberatamente prima della revisione visiva; la pubblicazione finale precedente è avvenuta sullo stesso URL con la workflow `45606128039`.
 
@@ -73,7 +73,7 @@
 
 ## 2. Stato dei controlli
 
-- [x] Tutti i gate automatici rieseguiti dopo la revisione qualitativa: regressione `37/37`, texture audit `21/21` facciate e `50/50` PNG, render audit `0` errori, visual explore `0` errori su 52 visite, `mobile-start` locale e pubblico `OK`, build Vite `OK`, `git diff --check` `OK`. Il gate CI-like con `GH_PAGES_BASE=/campania-life/` va ripetuto dopo il commit finale.
+- [x] Tutti i gate automatici rieseguiti dopo la revisione qualitativa: regressione `37/37`, texture audit `21/21` facciate e `50/50` PNG, render audit `0` errori, visual explore `0` errori su 52 visite, `mobile-start` locale, CI-like e pubblico `OK`, build Vite e CI-like `OK`, `git diff --check` `OK`.
 - [x] Checkpoint qualitativo creato su `4cd0e35`: tag `checkpoint/pre-quality-review`, branch `backup/pre-quality-review` e bundle `../backup/pre-quality-review/CampaniaLife-4cd0e35.bundle`.
 - [x] Checkpoint storico di pubblicazione su `e4271d2`: tag `checkpoint/pre-final-publish`, branch `backup/pre-final-publish` e bundle `../CampaniaLife-backup-2026-11-25-final.bundle` verificato.
 - [ ] **Verifica estetica fisica non sostituibile dal modello.** Il modello corrente non supporta input immagine: gli screenshot (`qa/campania-open-code-1/macbook-*.png`, `pixel9proxl-*.png`) e le analisi programmatiche non equivalgono all'occhio umano. La pubblicazione procede su autorizzazione esplicita dell'utente; resta utile una revisione umana su MacBook/Pixel fisici.
@@ -83,10 +83,10 @@
 ## 3. Pubblicazione autonoma
 
 1. [x] Pubblicazione precedente completata senza attendere ulteriore conferma: workflow `45606128039`, bundle `index-BK9wvC9o.js`, smoke pubblico OK.
-2. [ ] Committare e pushare `main` con la revisione qualitativa, senza attendere ulteriore conferma: autorizzazione esplicita dell'utente dopo il superamento dei controlli.
-3. [ ] Verificare che la nuova GitHub Actions completi `build` e `deploy` con `success` sullo stesso URL.
-4. [ ] Ripetere `npm run test:mobile-start` sul sito pubblico: NUOVA PARTITA, WASD, joystick touch, save `campania_life_save_v1` e CONTINUA.
-5. [ ] Aggiornare run ID finali e bundle remoto in questo file e in `qa/campania-open-code-1/README.md`.
+2. [x] Committato e pushato `main` con la revisione qualitativa (`b7f2716`), senza attendere ulteriore conferma: autorizzazione esplicita dell'utente dopo il superamento dei controlli.
+3. [x] GitHub Actions `45616242811` completata: `build` `139212256590` e `deploy` `139212645019` entrambi `success`.
+4. [x] `npm run test:mobile-start` ripetuto sul sito pubblico: NUOVA PARTITA, WASD, joystick touch, save `campania_life_save_v1` e CONTINUA tutti OK.
+5. [x] Run ID finali e bundle remoto aggiornati in questo file e in `qa/campania-open-code-1/README.md`.
 6. Non ripristinare lo step CI `Install Playwright Chromium`: `mobile-start.mjs` usa il fallback al Chrome di sistema.
 7. Non ripristinare `checkpoint/pre-structural-review` (`51a22c0`) né `checkpoint/pre-quality-review` (`4cd0e35`): le correzioni successive sono la fonte autorevole.
 

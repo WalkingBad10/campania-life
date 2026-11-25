@@ -129,7 +129,9 @@ Checkpoint di ingresso: `checkpoint/pre-quality-review` / `backup/pre-quality-re
 - Il confronto estetico con fotografie reali resta una **revisione umana**: il modello corrente non può leggere le immagini. `confronto-visivo.jpg` e le screenshot aggiornate sono il materiale da rivedere.
 - Le facciate M1 di Napoli restano deliberatamente invariate perché sono la fonte autorevole; le loro imperfezioni fotografiche originali non sono state "riparate" con texture estranee.
 
-**Gate della revisione qualitativa** — regressione **37/37 PASS** (tre nuovi test: impronta completa/porte chiuse, veicoli orientati e corsie, profondità delle facciate); texture audit **50/50 PNG e 21/21 facciate**; render audit **0 errori**; visual-explore **52 visite, 0 errori, 0 occlusioni, 0 profondità naturali errate**; mobile-start **OK** su build locale e pubblica; build Vite **OK**; `git diff --check` **OK**.
+**Gate della revisione qualitativa** — regressione **37/37 PASS** (tre nuovi test: impronta completa/porte chiuse, veicoli orientati e corsie, profondità delle facciate); texture audit **50/50 PNG e 21/21 facciate**; render audit **0 errori**; visual-explore **52 visite, 0 errori, 0 occlusioni, 0 profondità naturali errate**; mobile-start **OK** su build locale, CI-like e pubblica; build Vite e CI-like **OK**; `git diff --check` **OK**.
+
+**Pubblicazione** — commit `b7f2716` su `main`, workflow `45616242811` `success` (build `139212256590`, deploy `139212645019`), bundle remoto `index-CWJT4Ahe.js`, URL invariato `https://walkingbad10.github.io/campania-life/`. Marker beta e chiave save verificati nel bundle remoto; smoke test pubblico ripetuto con esito OK.
 
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
@@ -140,7 +142,7 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
 - Save key `campania_life_save_v1`, forma `{ v:1, t, data }`, nessun nuovo campo top-level.
 - Marker beta invariato: `BETA PUBBLICA · Richiede verifica manuale su MacBook e smartphone`.
 - URL pubblico: `https://walkingbad10.github.io/campania-life/` (invariato).
-- Deploy finale verificato: run `45606128039` `success` (build `139177320188` e deploy `139177739108` entrambi `success`), commit `c9fddbd`, bundle remoto `index-BK9wvC9o.js`. Sul sito pubblico `npm run test:mobile-start` entra in `napoli` a `240,272`, verifica WASD quattro direzioni con corsa e idle e joystick quattro direzioni, muove il giocatore a `229,272`, salva in `campania_life_save_v1` e ripristina con «CONTINUA». Marker beta e chiave save presenti nel bundle remoto.
+- Deploy finale verificato: run `45616242811` `success` (build `139212256590` e deploy `139212645019` entrambi `success`), commit `b7f2716`, bundle remoto `index-CWJT4Ahe.js`. Sul sito pubblico `npm run test:mobile-start` entra in `napoli` a `240,272`, verifica WASD quattro direzioni con corsa e idle e joystick quattro direzioni, muove il giocatore a `229,272`, salva in `campania_life_save_v1` e ripristina con «CONTINUA». Marker beta, chiave save, `blockedBox`, `doorClosed` e `awningSprite` presenti nel bundle remoto. Deploy precedente: `45606128039`, commit `c9fddbd`, bundle `index-BK9wvC9o.js`.
 - Spawn Napoli `240,272`; guglia base `34,25,4x3` e POI `36,26`; edicola `38,34`; `palazzo_e` altezza `5*T`; corridoio metro `56,21..28` percorribile.
 - `U` lampione e `E` panchina solidi; `G`, `Y`, `D`, `d`, `e` attraversabili.
 - Portali, POI, missioni, negozi, interazioni e formato salvataggi invariati.
