@@ -16,7 +16,7 @@
     floor: '#d8c7a6', floorD: '#c4b190', floorL: '#e6d8b9',
     wood: '#8b6244', woodD: '#65432e', woodL: '#a97a53',
     stone: '#7c7b71', stoneL: '#96958a', stoneD: '#5e5e57',
-    cave: '#3b3640', caveL: '#4b4550', lava: '#e8613c', lavaL: '#f7a33d',
+    cave: '#56505e', caveL: '#6d6575', lava: '#e8613c', lavaL: '#f7a33d',
     dark: '#241f26', white: '#f5f0df', ink: '#1b2730'
   };
 
@@ -186,6 +186,12 @@
     /* --------------------------------------------------------- tiles 16x16 */
     buildTiles() {
       for (const ch of ".TDderpSW~#b=fcoXBo^gkPCVZOH'LFKQYIUENJAMRZhjlnqstuvwxyz1234567890") this.tiles[ch] = this.tile(ch);
+      // Varianti di suolo: il marker albero non disegna piu' un quadrato verde
+      // sotto la chioma; le zone urbane mostrano la pavimentazione reale e le
+      // rovine di Pompei usano tufo instead of laterizio.
+      this.tiles.Pext = this.tile('Pext');
+      this.tiles.Turban = this.tile('Turban');
+      this.tiles.tufo = this.tile('tufo');
       // Varianti deterministiche: la griglia resta invariata, cambia solo il disegno.
       for (let v = 0; v < 4; v++) {
         this.tiles['D' + v] = this.variantTile('D', v);
@@ -243,6 +249,13 @@
       return c;
     },
     tileFor(ch, tx, ty, map) {
+      const urban = map && map.zone && map.zone !== 'interno' && !['costiera', 'vesuvio', 'napoli'].includes(map.zone);
+      // I marcatori albero non devono lasciare un quadrato verde sul selciato:
+      // il suolo resta continuo e la chioma e' un'entita' con trasparenza.
+      if (ch === 'P' && map && map.zone !== 'interno') return this.tiles.Pext || this.tiles.P;
+      if (ch === 'T' && urban) return this.tiles.Turban || this.tiles.T;
+      // Le rovine pompeiane sono in tufo, non in mattone rosso da palazzo.
+      if (ch === '#' && map && map.zone === 'pompei') return this.tiles.tufo || this.tiles['#'];
       if ((ch === 'D' || ch === 'p' || ch === 'd' || ch === 'e') && this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)]) {
         return this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)];
       }
@@ -262,6 +275,14 @@
       switch (ch) {
         case '.': px(x, 0, 0, 16, 16, P.grass); dot(P.grassD, 14); dot(P.grassL, 8); break;
         case 'T': px(x, 0, 0, 16, 16, P.grass); dot(P.grassD, 6); break;
+        // Suolo urbano sotto un albero: non piu' un quadrato verde incollato
+        // sul marciapiede. La chioma viene disegnata come entita' alta.
+        case 'Turban':
+          px(x, 0, 0, 16, 16, '#b8b1a2');
+          for (let xx = 0; xx < 16; xx += 4) px(x, xx, 0, 1, 16, '#a9a293');
+          for (let yy = 0; yy < 16; yy += 8) px(x, 0, yy, 16, 1, '#a9a293');
+          ell(x, 8, 10, 6, 3, '#8f887b'); ell(x, 8, 9, 5, 2, '#a29784');
+          dot('#ccc5b5', 4); break;
         case 'D': // basolato piazza
           px(x, 0, 0, 16, 16, '#8f8a80');
           for (let yy = 0; yy < 16; yy += 4) for (let xx = (yy % 8 === 0 ? 0 : 2); xx < 16; xx += 4) {
@@ -340,10 +361,31 @@
         case 'g':
           px(x, 0, 0, 16, 16, '#b9ae91'); dot('#a99c7e', 12); px(x, 3, 4, 10, 1, '#9c8f72'); px(x, 4, 4, 1, 8, '#9c8f72'); break;
         case 'k':
-          px(x, 0, 0, 16, 16, P.cave); dot(P.caveL, 18); px(x, 0, 0, 16, 1, '#2a2630'); break;
+          // Rovera lavica leggibile: non un rettangolo nero, ma stratificazione
+          // e riflessi caldi che rendono visibile l'ala della grotta.
+          px(x, 0, 0, 16, 16, P.cave);
+          for (let yy = 3; yy < 16; yy += 5) {
+            px(x, 0, yy, 16, 1, 'rgba(24,20,28,.24)');
+            px(x, 2 + (yy % 3), yy + 1, 9, 1, 'rgba(150,132,118,.16)');
+          }
+          dot(P.caveL, 20); dot('#8b765f', 5);
+          px(x, 0, 0, 16, 1, '#37333e'); px(x, 0, 15, 16, 1, '#403a46'); break;
         case 'P':
           px(x, 0, 0, 16, 16, P.floor); px(x, 6, 9, 4, 6, P.woodD);
           ell(x, 8, 6, 5, 5, '#4f8a4c'); ell(x, 5, 5, 3, 3, '#6fa85a'); ell(x, 11, 6, 3, 3, '#3f7843'); break;
+        case 'Pext': // albero urbano: pavimento continuo + sola conca d'ombra
+          px(x, 0, 0, 16, 16, '#b8b1a2');
+          for (let xx = 0; xx < 16; xx += 4) px(x, xx, 0, 1, 16, '#a9a293');
+          for (let yy = 0; yy < 16; yy += 8) px(x, 0, yy, 16, 1, '#a9a293');
+          ell(x, 8, 11, 6, 3, '#8e877a'); ell(x, 8, 10, 5, 2, '#a49b8a'); break;
+        case 'tufo': // Pompei: tufo grigio irregolare, non laterizio rosso
+          px(x, 0, 0, 16, 16, '#9d9a8d');
+          px(x, 0, 0, 16, 2, '#b3afa1'); px(x, 0, 14, 16, 2, '#77756c');
+          for (let y = 3; y < 14; y += 5) {
+            px(x, 0, y, 16, 1, '#7f7d73');
+            for (let xx = (y / 5 % 2) * 5; xx < 16; xx += 10) px(x, xx, y, 1, 5, '#858278');
+          }
+          dot('#c2beb0', 6); break;
         case 'C':
           px(x, 0, 0, 16, 16, P.floor); px(x, 2, 3, 12, 9, P.woodD); px(x, 3, 4, 10, 7, '#5b8fa6');
           px(x, 4, 5, 4, 1, '#bfe0e4'); px(x, 5, 11, 6, 2, P.woodD); break;
@@ -474,13 +516,26 @@
     /* ------------------------------------------------------- oggetti alti */
     _treeRaw(variant) {
       const key = 'raw:tree' + variant; if (this.cache[key]) return this.cache[key];
-      const c = cvRaw(32, 40), x = ctxRaw(c), R = U.rng(variant * 977 + 13);
-      px(x, 14, 28, 5, 12, P.woodD); px(x, 15, 28, 3, 12, P.wood);
-      const base = variant % 3 === 0 ? '#4d8146' : variant % 3 === 1 ? '#5d944f' : '#437a45';
-      ell(x, 16, 18, 13, 11, P.dark); ell(x, 16, 17, 12, 10, base);
-      ell(x, 10, 14, 6, 6, shade(base, 18)); ell(x, 22, 16, 6, 6, shade(base, -14));
-      ell(x, 16, 10, 7, 5, shade(base, 26));
-      for (let i = 0; i < 26; i++) px(x, 5 + (R() * 22 | 0), 8 + (R() * 19 | 0), 1, 1, R() > .5 ? shade(base, 32) : shade(base, -22));
+      const v = variant % 7, c = cvRaw(32, 40), x = ctxRaw(c), R = U.rng(v * 977 + 13);
+      const palette = ['#4d8146', '#5d944f', '#437a45', '#6b914b', '#3f7a52', '#578a43', '#487f57'];
+      const base = palette[v];
+      const lean = [0, 1, -1, 0, 2, -1, 1][v];
+      const crownX = 16 + lean, crownY = [17, 18, 16, 19, 17, 16, 18][v];
+      const rx = [12, 13, 11, 12, 13, 11, 12][v], ry = [10, 11, 10, 9, 11, 10, 12][v];
+      // Ombra ellittica a contatto col suolo: niente basamento quadrato.
+      ell(x, 16 + lean / 2, 36, 12, 3, 'rgba(28,26,22,.20)');
+      ell(x, 16 + lean / 2, 35, 9, 2, 'rgba(28,26,22,.10)');
+      px(x, 14 + lean, 27, 5, 11, P.woodD); px(x, 15 + lean, 27, 3, 11, P.wood);
+      px(x, 12 + lean, 36, 3, 2, '#5e442f'); px(x, 18 + lean, 36, 3, 2, '#5e442f');
+      ell(x, crownX, crownY + 1, rx + 1, ry, P.dark);
+      ell(x, crownX, crownY, rx, ry - 1, base);
+      ell(x, crownX - 6, crownY - 4, 6, 6, shade(base, 18));
+      ell(x, crownX + 6, crownY - 2, 6, 5, shade(base, -14));
+      ell(x, crownX + (v % 2 ? 2 : -1), crownY - 8, 6, 4, shade(base, 26));
+      // Rami corti che rompono la silhouette circolare identica tra alberi.
+      px(x, 11 + lean, 23 + (v % 2), 4, 1, '#6b4d33');
+      px(x, 19 + lean, 21 - (v % 3), 4, 1, '#6b4d33');
+      for (let i = 0; i < 30; i++) px(x, 5 + (R() * 22 | 0), 8 + (R() * 20 | 0), 1, 1, R() > .5 ? shade(base, 32) : shade(base, -22));
       return this.cache[key] = c;
     },
     _tree(variant) {
@@ -494,7 +549,11 @@
       const key = 'lemon' + variant;
       if (this.cache[key]) return this.cache[key];
       const n = cv(32, 40), x = ctx(n); x.drawImage(this._treeRaw(variant), 0, 0);
-      [[9, 16], [22, 21], [15, 10], [25, 13]].forEach(([a, b]) => { px(x, a, b, 2, 3, '#f2d24f'); px(x, a, b, 1, 1, '#fff0a0'); });
+      const v = variant % 7;
+      [[9, 16], [22, 21], [15, 10], [25, 13]].forEach(([a, b], i) => {
+        const ax = a + [0, 1, -1, 2, 0, -2, 1][v], by = b + (i % 2 ? v % 2 : -(v % 2));
+        px(x, ax, by, 2, 3, '#f2d24f'); px(x, ax, by, 1, 1, '#fff0a0');
+      });
       return this.cache[key] = n;
     },
     _rock(variant) {

@@ -71,7 +71,7 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
 /* --------------------------------------------------------------- HUD */
 .hud{font-size:clamp(9px,1.35vmin,13px)}
 .hud-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:1.2vmin 1.6vmin;gap:1vmin}
-.hud-place,.hud-clock,.hud-money{background:rgba(12,20,28,.78);border:1px solid #e9b84a88;padding:.5vmin .9vmin;box-shadow:0 2px 8px #0007}
+.hud-place,.hud-clock,.hud-money{background:rgba(12,20,28,.70);border:1px solid #e9b84a88;padding:.45vmin .8vmin;box-shadow:0 2px 8px #0007}
 .hud-place small,.hud-money small{display:block;color:#a8bbb8;font-size:.85em}
 .hud-clock{text-align:center;min-width:90px}
 .hud-clock b{display:block;color:var(--gold);font-size:1.35em;letter-spacing:.08em}
@@ -79,12 +79,12 @@ p{line-height:1.5;font-size:clamp(11px,1.6vmin,15px)}
 .hud-money{text-align:right}
 .hud-money b{color:#f2d06b;font-size:1.15em}
 .pin{color:var(--gold)}
-.hud-needs{position:absolute;left:1.2vmin;top:9vmin;display:flex;flex-direction:column;gap:4px;background:rgba(12,20,28,.62);padding:.6vmin;border:1px solid #ffffff22}
+.hud-needs{position:absolute;left:1.2vmin;top:9vmin;display:flex;flex-direction:column;gap:4px;background:rgba(12,20,28,.55);padding:.5vmin;border:1px solid #ffffff22}
 .need{display:flex;align-items:center;gap:5px}
 .need>span{width:12px;color:#d7e2dd;font-size:.85em}
 .need-bar{width:58px;height:6px;background:#0e161e;border:1px solid #4a5a62}
 .need-bar i{display:block;height:100%;transition:width .2s}
-.hud-quest{position:absolute;right:1.2vmin;top:11vmin;width:min(30vw,230px);background:rgba(12,20,28,.8);border-left:3px solid var(--gold);padding:.6vmin .9vmin;box-shadow:0 2px 8px #0007}
+.hud-quest{position:absolute;right:1.2vmin;top:10vmin;width:min(24vw,200px);background:rgba(12,20,28,.70);border-left:3px solid var(--gold);padding:.5vmin .8vmin;box-shadow:0 2px 8px #0007}
 .hq-title{color:var(--gold);font-weight:800;letter-spacing:.05em;font-size:.9em}
 .hq-text{margin-top:3px;line-height:1.3}
 .hq-prog{color:#9fd8b0;font-size:.85em}

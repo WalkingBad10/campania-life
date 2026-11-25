@@ -74,8 +74,8 @@
     }
     draw(ctx) {
       if (this.vehicle) return;
-      ctx.fillStyle = 'rgba(0,0,0,.22)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(24,22,20,.26)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 7, 3, 0, 0, Math.PI * 2); ctx.fill();
       const night = CL.systems.time.isNight();
       const img = night ? ART.nightCharacter(this.look, this.dir, this.frame, this.mode)
                         : ART.character(this.look, this.dir, this.frame, this.mode);
@@ -230,8 +230,8 @@
       if (U.dist(this.x, this.y, this._lastPos.x, this._lastPos.y) > 0.5) { this._stuckT = 0; this._lastPos.x = this.x; this._lastPos.y = this.y; }
     }
     draw(ctx) {
-      ctx.fillStyle = 'rgba(0,0,0,.18)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(24,22,20,.24)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x), Math.round(this.y + 2), 7, 3, 0, 0, Math.PI * 2); ctx.fill();
       const img = ART.character(this.look, this.dir, this.frame, this.moving ? 'walk' : 'idle');
       ctx.drawImage(img, Math.round(this.x - 8), Math.round(this.y - 20 + this.offsetY));
     }

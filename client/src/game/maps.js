@@ -1015,6 +1015,15 @@
     decor(m, 8, oh + 2, 'warm_light', { r: 22, color: 'rgba(255,205,150,.10)' });
     // Finitura uniforme delle ali esterne: stesso vocabolario visivo in tutti gli interni.
     if (m.id === 'grotta') {
+      // L'ala storica resta scura, ma non e' un vuoto piatto: una lanterna
+      // visibile e due bagliori caldi separano le rocce dal selciato laterale.
+      decor(m, 4, 6, 'lamp', { h: 52 });
+      decor(m, 4, 6, 'warm_light', { r: 30, color: 'rgba(255,168,78,.16)' });
+      decor(m, 10, 13, 'warm_light', { r: 24, color: 'rgba(255,120,52,.11)' });
+      decor(m, 7, 10, 'ruin_column', { h: 22, oy: 0 });
+      decor(m, 12, 5, 'ruin_column', { h: 18, oy: 0 });
+      decor(m, 3, 13, 'ruin_column', { h: 20, oy: 0 });
+      decor(m, 16, 15, 'ruin_column', { h: 16, oy: 0 });
       decor(m, targetW - 4, targetH - 4, 'warm_light', { r: 26, color: 'rgba(255,150,70,.15)' });
     } else {
       decor(m, targetW - 4, targetH - 4, 'home_plant', { h: 30 });

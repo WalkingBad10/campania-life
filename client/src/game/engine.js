@@ -421,19 +421,19 @@
         napoli: [
           // Solo vicoli residenziali: Spaccanapoli e Via Benedetto Croce sono pedonali.
           { type: 'taxi', tx: 58, ty: 36, dir: 'up' },
-          { type: 'scooter', tx: 58, ty: 44, dir: 'down' },
+          { type: 'scooter', tx: 59, ty: 44, dir: 'down' },
           { type: 'bike', tx: 26, ty: 42, dir: 'up' }
         ],
         costiera: [
           { type: 'van', tx: 30, ty: 14, dir: 'right' },
-          { type: 'scooter', tx: 55, ty: 14, dir: 'left' }
+          { type: 'scooter', tx: 55, ty: 15, dir: 'left' }
         ],
-        bacoli: [{ type: 'taxi', tx: 20, ty: 10, dir: 'right' }],
+        bacoli: [{ type: 'taxi', tx: 20, ty: 11, dir: 'right' }],
         salerno: [{ type: 'scooter', tx: 30, ty: 18, dir: 'right' }],
         avellino: [{ type: 'car', tx: 24, ty: 24, dir: 'up' }],
         caserta: [{ type: 'taxi', tx: 28, ty: 32, dir: 'right' }],
         fuorigrotta: [
-          { type: 'car', tx: 30, ty: 19, dir: 'right' },
+          { type: 'car', tx: 30, ty: 18, dir: 'right' },
           { type: 'scooter', tx: 50, ty: 36, dir: 'left' }
         ],
         pianura: [{ type: 'scooter', tx: 30, ty: 38, dir: 'right' }]
@@ -708,7 +708,11 @@
       }
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
         const ch = m.g[ty][tx];
-        if (ch === 'T' || ch === '^') items.push({ y: ty * T + 16, kind: ch, tx, ty });
+        // 'P' e' un albero nelle mappe esterne (nelle stanze resta una pianta
+        // in vaso). Viene disegnato come entita' alta: niente sfondo quadrato.
+        const treeTile = ch === 'T' || ch === '^' ||
+          (ch === 'P' && m.zone && m.zone !== 'interno');
+        if (treeTile) items.push({ y: ty * T + 16, kind: ch, tx, ty });
         if (ch === 'O') {
           const up = ty > 0 ? m.g[ty - 1][tx] : '';
           const left = tx > 0 ? m.g[ty][tx - 1] : '';
@@ -735,8 +739,10 @@
       for (const it of items) {
         if (it.ent) it.ent.draw(c);
         else if (it.decor) this.drawDecor(c, it.decor);
-        else if (it.kind === 'T') {
-          const variant = (it.tx * 13 + it.ty * 7) % 3;
+        else if (it.kind === 'T' || it.kind === 'P') {
+          // Sette varianti deterministiche: la chioma non e' sempre la stessa
+          // sagoma, e il tile sotto resta pavimento continuo con sola ombra.
+          const variant = U.hash('tree:' + m.id + ':' + it.tx + ':' + it.ty) % 7;
           const img = m.zone === 'costiera' ? ART.lemonTree(variant) : ART.tree(variant);
           c.drawImage(img, it.tx * T - 8, it.ty * T - 24);
         } else if (it.kind === 'O') {
@@ -967,7 +973,28 @@
       const fw = 4 * T, fh = 3 * T;
       const dx = x + Math.round((fw - img.width) / 2);
       const dy = y + fh - img.height;
+      // Il basamento poggia sul selciato: ombra a contatto e due giunti di
+      // pavimento interrotti dal piedistallo, non un rettangolo incollato.
+      c.save();
+      c.fillStyle = 'rgba(30,28,24,.20)';
+      c.beginPath(); c.ellipse(x + fw / 2, y + fh - 2, fw * .40, 3, 0, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = 'rgba(92,84,72,.34)'; c.lineWidth = 1;
+      c.beginPath();
+      c.moveTo(x + 2, y + fh - 3); c.lineTo(dx + 5, y + fh - 3);
+      c.moveTo(dx + img.width - 5, y + fh - 3); c.lineTo(x + fw - 2, y + fh - 3);
+      c.stroke();
+      c.restore();
       c.drawImage(img, dx, dy);
+    }
+
+    softShadow(c, x, y, rx, ry) {
+      c.save();
+      const r = Math.max(4, rx || 8), g = c.createRadialGradient(x, y, 1, x, y, r);
+      g.addColorStop(0, 'rgba(28,26,22,.24)');
+      g.addColorStop(1, 'rgba(28,26,22,0)');
+      c.fillStyle = g;
+      c.beginPath(); c.ellipse(x, y, r, Math.max(2, ry || 3), 0, 0, Math.PI * 2); c.fill();
+      c.restore();
     }
 
     drawDecor(c, d) {
@@ -1001,6 +1028,7 @@
           break;
         }
         case 'edicola': {
+          this.softShadow(c, x + 24, y + 50, 22, 3);
           const img = ART.propSprite('edicola'); if (img) c.drawImage(img, x, y);
           break;
         }
@@ -1068,9 +1096,16 @@
           c.fillStyle = 'rgba(60,50,40,.26)'; c.fillRect(x + 3, y - H + 1, 2, 2);
           break;
         }
-        case 'lamp': { const img = ART.propSprite('lamp'); if (img) c.drawImage(img, x - 4, y - 36); break; }
-        case 'bench': { const img = ART.propSprite('bench'); if (img) c.drawImage(img, x - 6, y - 10); break; }
+        case 'lamp': {
+          this.softShadow(c, x + 8, y + 15, 12, 3);
+          const img = ART.propSprite('lamp'); if (img) c.drawImage(img, x - 4, y - 36); break;
+        }
+        case 'bench': {
+          this.softShadow(c, x + 12, y + 11, 18, 3);
+          const img = ART.propSprite('bench'); if (img) c.drawImage(img, x - 6, y - 10); break;
+        }
         case 'plant': {
+          this.softShadow(c, x + 8, y + 2, 10, 2);
           const img = ART.propSprite('plant');
           if (img) {
             c.translate(x + 8, y);
@@ -1084,16 +1119,29 @@
           if (img) {
             const dw = d.data.w || img.width, dh = d.data.h || img.height;
             const oy = d.data.oy !== undefined ? d.data.oy : (16 - dh);
+            this.softShadow(c, x + (d.data.ox || 0) + dw / 2, y + oy + dh - 1, Math.min(dw * .42, 12), 3);
             c.translate(x + (d.data.ox || 0) + dw / 2, y + oy + dh);
             c.rotate(Math.sin(this.animT * 1.1 + x * .03) * .03);
             c.drawImage(img, -dw / 2, -dh, dw, dh);
           }
           break;
         }
-        case 'cart': { const img = ART.propSprite('cart'); if (img) c.drawImage(img, x - 4, y - 16); break; }
-        case 'sign': { const img = ART.propSprite('sign'); if (img) c.drawImage(img, x - 6, y - 22); break; }
-        case 'table_out': { const img = ART.propSprite('table_out'); if (img) c.drawImage(img, x - 6, y - 10); break; }
-        case 'chair_out': { const img = ART.propSprite('chair_out'); if (img) c.drawImage(img, x - 3, y - 10); break; }
+        case 'cart': {
+          this.softShadow(c, x + 16, y + 11, 19, 3);
+          const img = ART.propSprite('cart'); if (img) c.drawImage(img, x - 4, y - 16); break;
+        }
+        case 'sign': {
+          this.softShadow(c, x + 8, y + 11, 12, 3);
+          const img = ART.propSprite('sign'); if (img) c.drawImage(img, x - 6, y - 22); break;
+        }
+        case 'table_out': {
+          this.softShadow(c, x + 8, y + 9, 14, 3);
+          const img = ART.propSprite('table_out'); if (img) c.drawImage(img, x - 6, y - 10); break;
+        }
+        case 'chair_out': {
+          this.softShadow(c, x + 4, y + 7, 8, 2);
+          const img = ART.propSprite('chair_out'); if (img) c.drawImage(img, x - 3, y - 10); break;
+        }
         case 'church_pew': case 'church_column': case 'church_arch': case 'church_altar': case 'church_altar2':
         case 'church_painting1': case 'church_candle': case 'church_statue':
         case 'bar_counter': case 'bar_shelf': case 'bar_table': case 'bar_detail': case 'piazza_strip':
@@ -1108,6 +1156,14 @@
             // Bottom-anchor by default for prop decor; data.oy/ox allow fine tuning.
             const ox = d.data.ox || 0;
             const oy = d.data.oy !== undefined ? d.data.oy : (16 - dh);
+            // Solo gli arredi che poggiano a terra ricevono un'ombra di contatto:
+            // quadri e tende restano privi di ombra, così non sembrano ritagli.
+            const grounded = ['church_pew', 'church_column', 'church_altar', 'church_altar2',
+              'church_statue', 'bar_counter', 'bar_table', 'pizzeria_oven',
+              'pizzeria_counter', 'pizzeria_table', 'metro_gate', 'home_books', 'home_lamp'];
+            if (grounded.includes(d.type)) {
+              this.softShadow(c, x + ox + dw / 2, y + oy + dh - 1, Math.min(dw * .42, 26), 3);
+            }
             c.drawImage(img, x + ox, y + oy, dw, dh);
           }
           break;

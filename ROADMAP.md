@@ -1,8 +1,9 @@
 # CAMPANIA LIFE / CAMPANIA OPEN CODE — ROADMAP di ripresa
 
-**Aggiornato:** 25 novembre 2026 — revisione qualitativa completata e pubblicata sullo stesso URL.
+**Aggiornato:** 25 novembre 2026 — revisione visiva con modello multimodale completata, in attesa di pubblicazione sullo stesso URL.
 **Repo:** `CampaniaLife` · branch locale `main` · remote `origin/main`.
-**Stato pubblico corrente:** revisione qualitativa `b7f2716`, bundle remoto `index-CWJT4Ahe.js`, workflow `45616242811` `success` (build `139212256590`, deploy `139212645019`). Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta, chiave save, `blockedBox`, `doorClosed` e `awningSprite` presenti nel bundle remoto. Pubblicazione precedente: `c9fddbd`, bundle `index-BK9wvC9o.js`, workflow `45606128039`.
+**Stato pubblico corrente:** revisione qualitativa `b7f2716` (documentazione `2243cbc`), bundle remoto `index-CWJT4Ahe.js`, workflow `45616242811` `success` (build `139212256590`, deploy `139212645019`). Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta, chiave save, `blockedBox`, `doorClosed` e `awningSprite` presenti nel bundle remoto. Pubblicazione precedente: `c9fddbd`, bundle `index-BK9wvC9o.js`, workflow `45606128039`.
+**Checkpoint della revisione visiva:** `checkpoint/pre-visual-review` / `backup/pre-visual-review` su `2243cbc`, con bundle `../backup/pre-visual-review/CampaniaLife-2243cbc.bundle`, mai ripristinato.
 **Checkpoint della revisione qualitativa:** `checkpoint/pre-quality-review` / `backup/pre-quality-review` su `4cd0e35`, con bundle `../backup/pre-quality-review/CampaniaLife-4cd0e35.bundle`.
 **Nota:** la workflow `45513882269` era stata annullata deliberatamente prima della revisione visiva; la pubblicazione finale precedente è avvenuta sullo stesso URL con la workflow `45606128039`.
 
@@ -67,7 +68,18 @@
 - [x] Pacchetti CC0 Kenney *RPG Urban Pack* e *Tiny Town* valutati e scartati: tile di terreno/muratura, nessun veicolo top-down a quattro direzioni, stile incompatibile con le facciate M1 e il sistema 8 px/m.
 - [x] Regressione estesa a **37/37 PASS**: impronta completa e porte chiuse, veicoli orientati/corsie, profondità delle facciate.
 - [x] Render audit esteso a dimensioni metriche, angoli trasparenti e nuove finiture: **0 errori**.
-- [ ] Revisione estetica umana su MacBook/Pixel fisici: il modello corrente non legge immagini; le screenshot aggiornate restano il materiale per il riscontro finale.
+- [ ] Revisione estetica umana su MacBook/Pixel fisici resta consigliata; la revisione visiva automatica con modello multimodale è però stata completata (vedi sotto).
+
+### Revisione visiva effettiva con modello multimodale
+- [x] Modello VL verificato: `opencode/nemotron-3.5-super-vl-free`. Il modello testuale principale non legge immagini. Analisi eseguite su singola immagine o gruppi da 2–4 pannelli: l'analisi parallela massiva aveva restituito `Endpoint is unavailable`.
+- [x] Alberi: sette varianti deterministiche, chioma non identica, tronco radicato, ombra ellittica trasparente, nessun quadrato opaco. Corretto il doppio downscale `tree()` → `lemonTree()`. `P`/`T` disegnati come entità alta, non più nel ramo `rock`.
+- [x] Ombre di contatto radiale su panchine, tavoli, sedie, lampioni, carri, cartelli, edicola, piante e arredi a terra; ombre NPC/veicoli irrobustite senza spostare collisioni o ancore.
+- [x] Guglia e Gesù Nuovo: ritocco deterministico (`retouch_m1.py`) su PNG M1; verifica VL su ingrandimento ravvicinato: **risolto**. `drawGuglia()` aggiunge ombra e giunture interrotte sul selciato.
+- [x] Grotta: il vuoto nero era buio intenzionale ma illeggibile; aggiunte lanterna, bagliori, colonne, rovera stratificata. Seconda verifica VL: **risolto**. Bool non era trasparenza rotta.
+- [x] Bar: vetro ad arco integro; HUD reso più trasparente/compatto; verifica VL: **risolto**.
+- [x] Traffico: quattro veicoli spostati su tile `r`; regressione estesa all'impronta a quattro angoli.
+- [x] Falsi positivi scartati: spawn `macbook-napoli` (guglia fuori viewport), viewpoint `guglia-dietro`, «personaggio coperto dal tappeto» (tile `R` è suolo, 0 occlusioni), panche da 6 m in scala reale.
+- [x] Gate rieseguiti: regressione PASS (con nuovo test footprint), texture audit 50/50 e 21/21, render audit 0 errori, visual-explore 0 errori/occlusioni, build OK, mobile-start locale e pubblico OK, `git diff --check` OK.
 
 ---
 
@@ -76,7 +88,7 @@
 - [x] Tutti i gate automatici rieseguiti dopo la revisione qualitativa: regressione `37/37`, texture audit `21/21` facciate e `50/50` PNG, render audit `0` errori, visual explore `0` errori su 52 visite, `mobile-start` locale, CI-like e pubblico `OK`, build Vite e CI-like `OK`, `git diff --check` `OK`.
 - [x] Checkpoint qualitativo creato su `4cd0e35`: tag `checkpoint/pre-quality-review`, branch `backup/pre-quality-review` e bundle `../backup/pre-quality-review/CampaniaLife-4cd0e35.bundle`.
 - [x] Checkpoint storico di pubblicazione su `e4271d2`: tag `checkpoint/pre-final-publish`, branch `backup/pre-final-publish` e bundle `../CampaniaLife-backup-2026-11-25-final.bundle` verificato.
-- [ ] **Verifica estetica fisica non sostituibile dal modello.** Il modello corrente non supporta input immagine: gli screenshot (`qa/campania-open-code-1/macbook-*.png`, `pixel9proxl-*.png`) e le analisi programmatiche non equivalgono all'occhio umano. La pubblicazione procede su autorizzazione esplicita dell'utente; resta utile una revisione umana su MacBook/Pixel fisici.
+- [x] **Verifica estetica con modello multimodale completata.** `opencode/nemotron-3.5-super-vl-free` ha analizzato direttamente gli screenshot (`qa/campania-open-code-1/macbook-*.png`, `pixel9proxl-*.png`) e confermato la risoluzione dei difetti. Resta utile, ma non bloccante, una revisione umana su MacBook/Pixel fisici.
 
 ---
 

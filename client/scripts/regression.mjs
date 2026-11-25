@@ -887,6 +887,20 @@ async function main() {
     assert(roadCheck(), 'traffic starts on road tiles');
     step(game, 360);
     assert(roadCheck(), 'traffic remains on road tiles after movement');
+    // L'ombra/e' centrata sull'impronta: controllare solo il tile centrale non
+    // basta. Ogni angolo dell'auto deve restare sulla carreggiata, non sul
+    // marciapiede o su una corsia pedonale.
+    for (const id of ['napoli', 'costiera', 'bacoli', 'salerno', 'avellino', 'caserta', 'fuorigrotta', 'pianura']) {
+      game.enterMap(id, undefined, undefined, true);
+      step(game, 1);
+      for (const v of game.entities.filter(e => e instanceof CL.Vehicle && e.ambient)) {
+        const fp = CL.vehicleFootprint(v.type, v.dir);
+        const corners = [[v.x - fp.w / 2, v.y - fp.h / 2], [v.x + fp.w / 2, v.y - fp.h / 2],
+          [v.x - fp.w / 2, v.y + fp.h / 2], [v.x + fp.w / 2, v.y + fp.h / 2]];
+        assert(corners.every(([px, py]) => CL.maps.tile(game.map, Math.floor(px / T), Math.floor(py / T)) === 'r'),
+          `${id} ${v.type} footprint stays on the carriageway`);
+      }
+    }
     for (const id of ['bar', 'pizzeria', 'metro', 'metro2', 'negozio', 'banca', 'clinica', 'ufficio', 'bottega', 'souvenir', 'casa_giocatore', 'appartamento', 'casa_amalfi', 'casa_nonna', 'capri', 'fuorigrotta', 'pianura']) {
       game.enterMap(id, undefined, undefined, true);
       step(game, 2);

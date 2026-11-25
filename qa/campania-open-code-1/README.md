@@ -126,17 +126,38 @@ Checkpoint di ingresso: `checkpoint/pre-quality-review` / `backup/pre-quality-re
 
 **Problemi residui / verifica ancora necessaria**
 - Le prestazioni e la resa finale su **MacBook e Pixel 9 Pro XL fisici** non sono state misurate in questa sessione: le evidenze sono emulazione Playwright/Chromium.
-- Il confronto estetico con fotografie reali resta una **revisione umana**: il modello corrente non può leggere le immagini. `confronto-visivo.jpg` e le screenshot aggiornate sono il materiale da rivedere.
-- Le facciate M1 di Napoli restano deliberatamente invariate perché sono la fonte autorevole; le loro imperfezioni fotografiche originali non sono state "riparate" con texture estranee.
+- **Risolto il limite del modello**: per questa tornata è stato usato il modello multimodale verificato `opencode/nemotron-3.5-super-vl-free`, che legge direttamente le immagini. Le analisi VL sono state eseguite su singola immagine o gruppi di 2–4 pannelli, non in parallelo massivo (che aveva restituito `Endpoint is unavailable`).
+- Le facciate M1 di Napoli restano la fonte autorevole, ma **non più esenti da controllo**: la loro integrazione architettonica nella mappa e i dettagli fotografici sono stati verificati visivamente e ritoccati con lo script deterministico `retouch_m1.py` (nessuna texture estranea).
 
 **Gate della revisione qualitativa** — regressione **37/37 PASS** (tre nuovi test: impronta completa/porte chiuse, veicoli orientati e corsie, profondità delle facciate); texture audit **50/50 PNG e 21/21 facciate**; render audit **0 errori**; visual-explore **52 visite, 0 errori, 0 occlusioni, 0 profondità naturali errate**; mobile-start **OK** su build locale, CI-like e pubblica; build Vite e CI-like **OK**; `git diff --check` **OK**.
 
 **Pubblicazione** — commit `b7f2716` su `main`, workflow `45616242811` `success` (build `139212256590`, deploy `139212645019`), bundle remoto `index-CWJT4Ahe.js`, URL invariato `https://walkingbad10.github.io/campania-life/`. Marker beta e chiave save verificati nel bundle remoto; smoke test pubblico ripetuto con esito OK.
 
+## Revisione visiva effettiva con modello multimodale (CAMPANIA OPEN CODE 1)
+
+Checkpoint di ingresso `checkpoint/pre-visual-review` / `backup/pre-visual-review` su `2243cbc` (bundle `../backup/pre-visual-review/CampaniaLife-2243cbc.bundle`), mai ripristinato. Il modello testuale principale non legge immagini; la revisione è stata quindi affidata a `opencode/nemotron-3.5-super-vl-free`, verificato come disponibile e multimodale. Il tentativo di analizzare tutti i pannelli in parallelo ha fallito con `Endpoint is unavailable`: la revisione è stata ripetuta su **una sola immagine per volta** o in pannelli da quattro.
+
+**Difetti confermati visivamente e corretti**
+- **Alberi e vegetazione** — chiome identiche e basamento quadrato opaco. Invalidata la cache che riutilizzava il canvas di `tree()` per `lemonTree()` (doppio downscale, albero visibile 14 px). Ora `_treeRaw()` genera **sette varianti deterministiche** con chioma/rami/tones differenti, tronco radicato e **ombra ellittica trasparente**; niente quadrato agli angoli. In `engine.js` gli alberi esterni `T`/`P` sono disegnati come entità alta (prima finivano nel ramo `rock`), con variante hashata per mappa/coordinate.
+- **Ombre di contatto** — panchine, tavolini, sedie, lampioni, carri, cartelli, edicola, piante e arredi a terra ricevono un'ombra radiale morbida (`Engine.softShadow`), ancorata senza spostare collisioni. NPC e veicoli usano ombre ellittiche coerenti in `entities.js`.
+- **Guglia dell'Immacolata** — il ritocco M1 aggiunge nicchie/statue intermedie, cornici in rilievo, colonne tortili e balaustra sul basamento; `drawGuglia()` ora disegna un'ombra a contatto sul selciato e interrompe le giunture del pavimento sotto il piedistallo. Verifica VL: **risolto**.
+- **Gesù Nuovo** — il bugnato in piperno è stato scurito in modo deterministico (`retouch_m1.py`) su `gesu-facade.png` e `m1-gesu_facade_ref.png`, preservando vetri, dorature e cornici chiare. Verifica VL: **risolto**.
+- **Grotta** — il vuoto nero uniforme su metà schermo era buio intenzionale ma senza sorgente leggibile. Aggiunte lanterna visibile, bagliori caldi, colonne, rovera lavica stratificata e riflessi. Seconda verifica VL: **risolto**.
+- **Bar / HUD** — il vetro ad arco è risultato integro (non un difetto). I pannelli HUD sono stati resi più trasparenti e compatti per non coprire la scena. Verifica VL: **risolto**.
+- **Traffico ambientale** — quattro veicoli crossavano marciapiedi/corsie pedonali (`bacoli` taxi `20,10`, `napoli` scooter `58,44`, `costiera` scooter `55,14`, `fuorigrotta` auto `30,19`). Riposizionati su tile `r`; la regressione verifica ora l'**impronta completa a quattro angoli**, non solo il tile centrale.
+
+**Falsi positivi scartati con verifica puntuale**
+- `macbook-napoli.png` mostra lo spawn `(15,17)`: la guglia `(34,25)` è fuori viewport, non un monumento mancante.
+- `napoli-guglia-dietro` è un viewpoint volutamente dietro il monumento e può tagliarne la sommità.
+- «Casa nonna: personaggio coperto dal tappeto» — il tile `R` è pavimento disegnato prima delle entità: non può coprire uno sprite; `visual-explore` conferma 0 occlusioni. Le panche da 48 px (6 m) sono arredo realistico a fronte di un adulto di 14 px.
+- La grotta non era trasparenza rotta né overlay UI: il pattern di rovera era presente sotto il buio.
+
+**Gate della revisione visiva** — regressione **PASS** (incluso il nuovo test footprint veicoli), texture audit **50/50 PNG e 21/21 facciate**, render audit **0 errori**, visual-explore **26 mappe × 2 dispositivi, 0 errori/occlusioni/profondità**, build Vite **OK**, mobile-start locale e pubblico **OK**, `git diff --check` **OK**.
+
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
 
-Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-free`) ha raggiunto il limite gratuito e il modello corrente non legge immagini. Il confronto è quindi stato fatto con OSM/satellite, misure documentate e analisi programmatica dei canvas: `confronto-visivo.jpg` affianca sette inquadrature di gioco (guglia davanti/dietro, prospetto del Gesù, campanile, stadio Maradona, golfo di Baia e San Giorgio) alle foto reali e all'ortofoto. **La revisione estetica finale resta umana**.
+Il confronto geografico è stato fatto con OSM/satellite, misure documentate e analisi programmatica dei canvas: `confronto-visivo.jpg` affianca sette inquadrature di gioco (guglia davanti/dietro, prospetto del Gesù, campanile, stadio Maradona, golfo di Baia e San Giorgio) alle foto reali e all'ortofoto. La revisione estetica effettiva delle immagini è stata completata in questa tornata con `opencode/nemotron-3.5-super-vl-free` (vedi sezione «Revisione visiva effettiva»); resta consigliata, ma non bloccante, una conferma finale umana su dispositivi fisici.
 
 ## Invarianti preservate
 - Save key `campania_life_save_v1`, forma `{ v:1, t, data }`, nessun nuovo campo top-level.
@@ -166,6 +187,6 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
 
 ## Limiti dichiarati
 - Le schermate e le metriche sono **emulazione Playwright/Chromium**, non test su dispositivi fisici.
-- Il confronto visivo automatico è limitato: il modello corrente non legge direttamente le immagini. `confronto-visivo.jpg` (rigenerato con la Guglia a 30 m) e le screenshot sono conservate per la revisione umana.
+- Il confronto visivo automatico di questa tornata usa `opencode/nemotron-3.5-super-vl-free`, che legge direttamente le immagini. `confronto-visivo.jpg` (rigenerato con la Guglia a 30 m) e le screenshot sono conservate anche per l'eventuale revisione umana.
 - La distinzione finale tra 30 e 34 m per il monumento completo resta documentata in `PROPORTIONS.md`: il gioco usa 30 m, valore cauto e direttamente attestato dal Comune di Napoli.
 - La verifica manuale finale su **MacBook e Google Pixel 9 Pro XL fisici** resta richiesta all'utente. Nessuna stabilità finale viene dichiarata prima del suo riscontro.
