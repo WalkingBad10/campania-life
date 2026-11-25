@@ -77,7 +77,7 @@ Correzioni applicate:
 
 **Correzione** — i listener globali sono attivi solo con i controlli di gioco visibili; il `preventDefault()` non viene più usato fuori dal joystick attivo; la gestione dello scorrimento è lasciata a `touch-action: none/manipulation` nel CSS. Nessuna mappa, proporzione, texture, collisione, salvataggio o POI è stato rimosso.
 
-`client/scripts/mobile-start.mjs` (`npm run test:mobile-start`) usa veri tap e un trascinamento touch del joystick, poi verifica: ingresso effettivo in `napoli`, HUD e giocatore presenti, movimento delle coordinate, save `v1` con posizione aggiornata, «CONTINUA» dopo reload e backend opzionale offline. Il test è eseguito anche nella workflow Pages sulla build pubblicata.
+`client/scripts/mobile-start.mjs` (`npm run test:mobile-start`) usa veri tap e veri trascinamenti touch del joystick, poi verifica: ingresso effettivo in `napoli`, HUD e giocatore presenti, W/A/S/D nelle quattro direzioni con corsa e respiro idle, joystick nelle quattro direzioni, movimento delle coordinate, save `v1` con posizione aggiornata, «CONTINUA» dopo reload e backend opzionale offline. Il test è eseguito anche nella workflow Pages sulla build pubblicata.
 
 I due workflow falliti notificati (`45510849895`, 24 s, e `45511020367`, 26 s) avevano la stessa annotazione sullo step `Install Playwright Chromium`: exit code 1. L'analisi degli artifact/run ha mostrato che il download/installazione del browser nella CI era l'unico passo in errore: build Vite e test locale erano già verdi. Non è stato disabilitato il test: è stata rimossa l'installazione esplicita di Chromium e `mobile-start.mjs` usa il Chromium bundlato quando presente, con fallback al Chrome di sistema dell'runner GitHub. Il run finale `45511188531` ha completato build e deploy con successo.
 
@@ -98,6 +98,16 @@ Eseguita a partire dal checkpoint `checkpoint/pre-structural-review` (`51a22c0`)
 **Personaggio** — tre set di sprite distinti per inattività (respiro a due fotogrammi), camminata (4 fotogrammi) e corsa (falcata e braceggio ampliati), per tutte e quattro le direzioni. W/A/S/D e frecce producono gli stessi assi del joystick touch; la direzione viene conservata da fermo e anche quando il movimento è bloccato da una collisione.
 
 **Gate aggiuntivi** — la regressione include ora tre test: quattro direzioni W/A/S/D + frecce + animazioni distinte, footprint di collisione ancorato all'impronta della guglia, continuità delle superfici stradali su 11 mappe e coerenza OSM della piazza.
+
+## Consolidamento finale (26 mappe, dopo la revisione strutturale)
+
+Tre audit paralleli (texture sovrapposte/muri, geografia/strade, interni/proporzioni) hanno prodotto difetti concreti, corretti con patch minime:
+
+- **Facciate e texture** — nuovo tile solido neutro `b` e helper `mass()` sotto le facciate M1: non affiorano più mattoni o finestre ai bordi degli sprite. Reggia di Caserta, Castello di Arechi e palazzo del lungomare di Salerno hanno facciate procedurali metriche dedicate (`caserta_reggia` 384 × 224, `salerno_arechi` 224 × 128, `salerno_palazzo` 160 × 96) invece di finestre random.
+- **Strade da OSM** — Via Benedetto Croce/Spaccanapoli è `highway=pedestrian`, `surface=sett` (way `27179695`, verificato via API OSM): basolato pedonale e traffico ambientale solo sui vicoli residenziali. Ricomposti gli incroci di Fuorigrotta, Via Spiaggia/Via Ortensio a Bacoli, gli assi di Pianura, la carreggiata continua a Caserta e gli spunti pedonali a Avellino; aggiunti passaggi pedonali, ingressi dello stadio e targhe viarie.
+- **Interni e proporzioni** — portale della chiesa allineato alla porta, panche sulle collisioni, forno e tornelli allineati, nuove ali con fascia muraria e soglie `Y`, decori specifici non cancellati dalla repaint, passo di piano 26 px (3,25 m) entro il limite documentato.
+
+`client/scripts/mobile-start.mjs` verifica ora esplicitamente quattro direzioni WASD, corsa con Shift, respiro idle, quattro direzioni del joystick touch, salvataggio e «CONTINUA» sia sulla build locale sia su quella CI-like.
 
 ## Esito del confronto
 Il testo di Wikipedia conferma l'impianto usato dalla graybox: obelisco al centro dello spiazzale, palazzi nobiliari a ovest (Pandola / Pignatelli di Monteleone), Gesù Nuovo e Santa Chiara sui lati opposti, Palazzo delle Congregazioni presso il Gesù. La facciata del Gesù è riconoscibile per il bugnato a punta di diamante in piperno; la guglia è in marmo bianco e bardiglio.
@@ -128,7 +138,7 @@ Il modello con capacità vision-language disponibile (`nemotron-3.5-super-vl-fre
   - pannelli debug visibili: **0**;
   - screenshot complete in questa cartella (`macbook-*.png`, `pixel9proxl-*.png`), incluse le 8 inquadrature dedicate per dispositivo (4 storiche del Gesù + stadio, Tecchio, golfo nord di Baia, targa Etoile).
 - `client/scripts/render-audit.mjs`: dimensioni **effettivamente disegnate** dal motore — Guglia 126 × 240, campanile 112 × 384, Gesù 448 × 248, palazzo NE 288 × 160, facciate metriche delle nuove zone e stadio 208 × 160 — **0 errori**. I 39 anchor volutamente fuori bounds (arredi a muro, riempimento viewport, gronda del Gesù) sono documentati in `render-audit.json` e non sono architetture tagliate.
-- `client/scripts/texture-audit.mjs`: **50/50 PNG distribuiti referenziati**, 0 file inutilizzati, **18/18 facciate** alla dimensione metrica corretta e senza campate laterali vuote. I fogli estratti e gli asset M1 non usati sono stati spostati in `_source-sheets/` (esclusi dal build e da Git), non più nella cartella distribuita.
+- `client/scripts/texture-audit.mjs`: **50/50 PNG distribuiti referenziati**, 0 file inutilizzati, **21/21 facciate** alla dimensione metrica corretta e senza campate laterali vuote. I fogli estratti e gli asset M1 non usati sono stati spostati in `_source-sheets/` (esclusi dal build e da Git), non più nella cartella distribuita.
 
 ## Limiti dichiarati
 - Le schermate e le metriche sono **emulazione Playwright/Chromium**, non test su dispositivi fisici.

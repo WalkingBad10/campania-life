@@ -177,7 +177,7 @@ derivate da OSM:
 
 | Zona | Elemento | Dimensione reale | Sprite |
 |---|---|---|---|
-|Fuorigrotta|Teatro Mediterraneo|99 × 79 m|560 × 280 px (volume parziale)|
+|Fuorigrotta|Teatro Mediterraneo|99 × 79 m reali; volume parziale 70 × 35 m = 560 × 280 px|560 × 280 px|
 |Fuorigrotta|Isolato razionalista|24 × 18 m, 4-5 piani|192 × 144 px|
 |Fuorigrotta|Torre Viale Augusto|20 × 30 m|160 × 240 px|
 |Fuorigrotta|Stadio Maradona|232 × 287 m reali; 26 × 20 m logici (macro-griglia anamorfica)|208 × 160 px|

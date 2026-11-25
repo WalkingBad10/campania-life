@@ -1,8 +1,8 @@
 /* CAMPANIA OPEN CODE 1 — avvio mobile con input touch.
  *
  * Verifica il percorso reale dell'utente su Pixel 9 Pro XL emulato:
- * NUOVA PARTITA -> creazione -> ingresso nella prima mappa -> movimento
- * con joystick touch -> salvataggio -> CONTINUA dopo ricaricamento.
+ * NUOVA PARTITA -> creazione -> ingresso nella prima mappa -> WASD e joystick
+ * touch nelle quattro direzioni -> salvataggio -> CONTINUA dopo ricaricamento.
  *
  * Usa CL_BASE_URL per testare la build locale o il sito pubblicato.
  */
@@ -54,7 +54,10 @@ function readState() {
     return {
       hasGame: !!G,
       map: G && G.map && G.map.id,
-      player: G && G.player && { x: Math.round(G.player.x), y: Math.round(G.player.y) },
+      player: G && G.player && {
+        x: Math.round(G.player.x), y: Math.round(G.player.y),
+        dir: G.player.dir, mode: G.player.mode, frame: G.player.frame
+      },
       api: CL && { ready: CL.api.ready, token: CL.api.token },
       hud: !!document.querySelector('.hud'),
       screenCount: document.querySelectorAll('.screen').length,
@@ -90,6 +93,7 @@ async function touchDrag(selector, dx, dy, holdMs) {
     }, { x, y, dx, dy });
   }
   await page.waitForTimeout(holdMs);
+  const held = await readState();
   await page.evaluate(({ x, y, dx, dy }) => {
     const el = document.querySelector('.mc-joy');
     const t = new Touch({ identifier: 7, target: el, clientX: x + dx, clientY: y + dy });
@@ -97,6 +101,27 @@ async function touchDrag(selector, dx, dy, holdMs) {
       touches: [], targetTouches: [], changedTouches: [t], bubbles: true, cancelable: true
     }));
   }, { x, y, dx, dy });
+  return held;
+}
+
+async function resetPlayer() {
+  await page.evaluate(() => {
+    const CL = window.CL;
+    CL.input.down = {}; CL.input.pressed = {}; CL.input.released = {};
+    const p = CL.game.player;
+    p.x = 240; p.y = 272; p.dir = 'down'; p.mode = 'idle'; p.idleT = 0; p.frame = 0;
+  });
+  await page.waitForTimeout(80);
+}
+
+async function keyHold(key, ms) {
+  await page.keyboard.down(key);
+  await page.waitForTimeout(ms);
+  const held = await readState();
+  await page.keyboard.up(key);
+  await page.waitForTimeout(80);
+  const released = await readState();
+  return { held, released };
 }
 
 try {
@@ -131,16 +156,48 @@ try {
   assert.equal(started.save && started.save.map, 'napoli', 'save points to the first map');
   await page.screenshot({ path: resolve(OUT, 'mobile-start-3-game.png'), fullPage: true });
 
-  // Movimento con vero joystick touch: prova le quattro direzioni perché
-  // lo spawn può essere vicino a un muro o a una porta.
+  // WASD reale: quattro direzioni, cambio da fermo, ultima direzione
+  // conservata e distinzione tra camminata, corsa e inattività.
+  const keymap = await page.evaluate(() => window.CL.input.KEYMAP);
+  for (const [key, dir] of [['w', 'up'], ['a', 'left'], ['s', 'down'], ['d', 'right']]) {
+    assert.equal(keymap[`Key${key.toUpperCase()}`], dir, `${key} maps to ${dir}`);
+    await resetPlayer();
+    const { held, released } = await keyHold(key, 360);
+    assert.equal(held.player.dir, dir, `${key} holds facing ${dir}, got ${held.player.dir}`);
+    assert.equal(held.player.mode, 'walk', `${key} uses walk animation`);
+    assert.equal(released.player.dir, dir, `${key} keeps facing ${dir} when standing still`);
+    assert.equal(released.player.mode, 'idle', `${key} returns to idle animation`);
+  }
+  await resetPlayer();
+  const walking = await keyHold('w', 360);
+  assert.equal(walking.held.player.mode, 'walk', 'walk mode is the default');
+  await resetPlayer();
+  await page.keyboard.down('Shift');
+  await page.waitForTimeout(60);
+  const running = await keyHold('w', 320);
+  await page.keyboard.up('Shift');
+  assert.equal(running.held.player.mode, 'run', 'Shift runs with the same facing');
+  assert.equal(running.held.player.dir, 'up', 'running keeps the WASD facing');
+  const f0 = (await readState()).player.frame;
+  // Il respiro e' a due fotogrammi (~0,67 s): campionare piu' volte evita
+  // che un singolo campione cada sulla stessa fase in ambienti lenti.
+  let f1 = f0;
+  for (let i = 0; i < 10 && f1 === f0; i++) {
+    await page.waitForTimeout(250);
+    f1 = (await readState()).player.frame;
+  }
+  assert.notEqual(f0, f1, 'idle breathing animation advances on the published build');
+
+  // Joystick touch: ripete le quattro direzioni dal punto di spawn, verificando
+  // che ciascun asse raggiunga l'animazione e la direzione attese.
   let moved = null;
-  for (const [dx, dy] of [[0, -34], [34, 0], [0, 34], [-34, 0]]) {
-    await touchDrag('.mc-joy', dx, dy, 900);
-    const s = await readState();
-    if (Math.abs(s.player.x - started.player.x) + Math.abs(s.player.y - started.player.y) > 4) {
-      moved = s;
-      break;
-    }
+  const joyDirs = [[0, -34, 'up'], [34, 0, 'right'], [0, 34, 'down'], [-34, 0, 'left']];
+  for (const [dx, dy, dir] of joyDirs) {
+    await resetPlayer();
+    const held = await touchDrag('.mc-joy', dx, dy, 700);
+    assert.equal(held.player.dir, dir, `joystick ${dir} faces ${dir}, got ${held.player.dir}`);
+    assert.equal(held.player.mode, 'walk', `joystick ${dir} uses walk animation`);
+    if (!moved || Math.abs(held.player.x - started.player.x) + Math.abs(held.player.y - started.player.y) > 4) moved = held;
   }
   assert(moved, 'touch joystick moves the character in the first map');
 
@@ -169,6 +226,8 @@ try {
   console.log('Mobile start (Pixel 9 Pro XL emulato): OK');
   console.log(`  base: ${BASE}`);
   console.log(`  ingresso: ${started.map}, giocatore ${started.player.x},${started.player.y}`);
+  console.log('  WASD: 4 direzioni, corsa e idle verificati');
+  console.log('  joystick touch: 4 direzioni verificate');
   console.log(`  movimento touch: ${moved.player.x},${moved.player.y}`);
   console.log(`  salvataggio v1: ${saved.save.map} ${saved.save.x},${saved.save.y}`);
   console.log(`  continua: ${resumed.map} ${resumed.player.x},${resumed.player.y}`);

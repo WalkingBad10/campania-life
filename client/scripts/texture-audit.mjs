@@ -24,7 +24,8 @@ const EXPECTED = {
   pianura_chiesa: [320, 248], pianura_borgo: [160, 112],
   pianura_municipio: [312, 200],
   bacoli_terme: [312, 144], bacoli_castello: [288, 176],
-  bacoli_casa: [128, 96]
+  bacoli_casa: [128, 96],
+  caserta_reggia: [384, 224], salerno_arechi: [224, 128], salerno_palazzo: [160, 96]
 };
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--disable-dev-shm-usage'] });

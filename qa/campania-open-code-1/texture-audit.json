@@ -244,6 +244,45 @@
       "rightQuietPx": 0,
       "maxQuietPx": 15,
       "pass": true
+    },
+    {
+      "kind": "caserta_reggia",
+      "width": 384,
+      "height": 224,
+      "expected": [
+        384,
+        224
+      ],
+      "leftQuietPx": 11,
+      "rightQuietPx": 14,
+      "maxQuietPx": 46,
+      "pass": true
+    },
+    {
+      "kind": "salerno_arechi",
+      "width": 224,
+      "height": 128,
+      "expected": [
+        224,
+        128
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 8,
+      "maxQuietPx": 27,
+      "pass": true
+    },
+    {
+      "kind": "salerno_palazzo",
+      "width": 160,
+      "height": 96,
+      "expected": [
+        160,
+        96
+      ],
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
+      "maxQuietPx": 19,
+      "pass": true
     }
   ]
 }

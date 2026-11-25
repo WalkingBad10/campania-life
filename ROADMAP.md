@@ -1,9 +1,9 @@
 # CAMPANIA LIFE / CAMPANIA OPEN CODE — ROADMAP di ripresa
 
-**Aggiornato:** 25 novembre 2026 — punto di spegnimento sicuro.
+**Aggiornato:** 25 novembre 2026 — revisione strutturale e consolidamento completati, pubblicazione autonoma autorizzata.
 **Repo:** `CampaniaLife` · branch locale `main` · remote `origin/main`.
-**Stato pubblico:** online la versione funzionante precedente, commit `3609be9`, bundle remoto `index-DnHhzGjX.js`. Smoke test touch pubblico **OK** (`NUOVA PARTITA` → `napoli` `240,272` → movimento `240,228` → save `campania_life_save_v1` → `CONTINUA`).
-**Importante:** il commit di revisione strutturale `4cf9f88` è stato pushato su `origin/main`, ma il deploy della workflow `45513882269` è stato **annullato deliberatamente** prima della pubblicazione. Non ripubblicare finché non è completata la verifica visiva finale.
+**Stato pubblico:** precedente build funzionante `3609be9` / `index-DnHhzGjX.js`. Dopo la pubblicazione finale verificare bundle e smoke test sul sito pubblico, poi aggiornare i run ID in `qa/campania-open-code-1/README.md`.
+**Nota:** la workflow `45513882269` era stata annullata deliberatamente prima della revisione visiva; il nuovo push su `main` genera una workflow sostitutiva sullo stesso URL.
 
 ---
 
@@ -38,9 +38,17 @@
 - [x] `CL.input.KEYMAP` esposto ai test; W/A/S/D e frecce producono gli stessi assi del joystick touch.
 - [x] Bug touch «NUOVA PARTITA» già corretto in `MobileControls.jsx`: listener globali `touchend` con `preventDefault()` bloccavano il click React; ora gating su `visible` e rimozione dei `preventDefault()` passivi.
 
+### Consolidamento finale sulle 26 mappe
+- [x] Audit paralleli completati: texture/muri sovrapposti, geografia/strade, interni/proporzioni. Difetti concreti trasformati in patch minime.
+- [x] Corpi edilizi sotto le facciate M1: nuovo tile solido neutro `b` e helper `mass()`, nessun laterizio o finestra finta affiora ai bordi degli sprite.
+- [x] Reggia di Caserta, Castello di Arechi e palazzo del lungomare di Salerno usano facciate metriche dedicate invece di finestre random sul muro.
+- [x] Viabilità OSM: Via Benedetto Croce/Spaccanapoli pedonali (`highway=pedestrian`, `surface=sett`), traffico ambientale solo sui vicoli residenziali; incroci restaurati a Fuorigrotta, Via Spiaggia e Via Ortensio a Bacoli, assi residenziali di Pianura, carreggiata continua a Caserta, spunti pedonali a Avellino.
+- [x] Accessi e interni: portale della chiesa allineato alla porta, panche sulle collisioni, forno e tornelli allineati, nuove ali con fascia muraria e soglie `Y`, decor dell'appartamento/Casetta di Amalfi non più cancellati, passo di piano 26 px (3,25 m).
+- [x] `mobile-start.mjs` verifica esplicitamente su build locale e CI-like: nuove partita, WASD quattro direzioni, corsa, idle, joystick quattro direzioni, salvataggio e «CONTINUA».
+
 ### Test e documentazione
 - [x] Regressione deterministico: **34/34 PASS**. Nuovi test: quattro direzioni W/A/S/D + frecce + animazioni distinte, footprint della guglia e collisioni, continuità stradale su 11 mappe e coerenza OSM della piazza.
-- [x] Texture audit: 50 PNG referenziati / 50 distribuiti, 18/18 facciate senza campate vuote, 0 errori.
+- [x] Texture audit: 50 PNG referenziati / 50 distribuiti, 21/21 facciate senza campate vuote, 0 errori.
 - [x] Render audit: 0 dimensioni errate, ancoraggi documentati.
 - [x] Visual explore Playwright: 2 dispositivi × 26 mappe, 0 errori console/page, 0 occlusioni giocatore, 0 errori profondità, 0 errori geometria metrica.
 - [x] `npm run test:mobile-start` su build locale: OK.
@@ -50,27 +58,22 @@
 
 ---
 
-## 2. In corso / interrotto allo spegnimento
+## 2. Stato dei controlli
 
-- [ ] **Verifica estetica finale non completata.** Il modello corrente non supporta input immagine: gli screenshot nuovi (`qa/campania-open-code-1/macbook-*.png`, `pixel9proxl-*.png`) sono stati rigenerati, ma il confronto visivo con fotografie/OSM richiede occhio umano o strumento multimodale esterno. **Non dichiarare superato il controllo grafico solo con metriche numeriche.**
-- [ ] Workflow `45513882269` annullata (`cancelled`) per evitare il deploy del commit non ancora verificato visivamente. Non riavviare finché non si decide di pubblicare `4cf9f88`.
-- [ ] `origin/main` è su `4cf9f88`; il sito pubblico resta però sulla build `3609be9` / `index-DnHhzGjX.js`. Il commit del `ROADMAP.md` è locale e nel branch/tag di backup: **non è stato pushato su `main`** per non innescare la workflow.
+- [x] Tutti i gate automatici rieseguiti dopo le patch finali: regressione `34/34`, texture audit `21/21` facciate e `50/50` PNG, render audit `0` dimensioni errate, visual explore `0` errori su 52 visite, `mobile-start` locale e CI-like `OK`, build Vite e CI-like `OK`, `git diff --check` `OK`.
+- [x] Checkpoint di pubblicazione creato su `e4271d2`: tag `checkpoint/pre-final-publish`, branch `backup/pre-final-publish` e bundle `../CampaniaLife-backup-2026-11-25-final.bundle` verificato.
+- [ ] **Verifica estetica fisica non sostituibile dal modello.** Il modello corrente non supporta input immagine: gli screenshot (`qa/campania-open-code-1/macbook-*.png`, `pixel9proxl-*.png`) e le analisi programmatiche non equivalgono all'occhio umano. La pubblicazione procede su autorizzazione esplicita dell'utente; resta utile una revisione umana su MacBook/Pixel fisici.
 
 ---
 
-## 3. Da fare alla riapertura — riprendere esattamente da qui
+## 3. Pubblicazione autonoma
 
-1. Verificare che la workflow annullata sia ancora `cancelled` e che il sito pubblico mostri ancora `index-DnHhzGjX.js`.
-2. Rivedere visivamente, su MacBook e Pixel 9 Pro XL reali, le nuove screenshot di Piazza del Gesù, Gesù/Guglia/Campanile, bar/metro e almeno due mappe per zona. Cercare specificamente:
-   - rettangoli opachi sotto alberi, panchine o lampioni;
-   - texture vecchie sovrapposte, muri in mattoni senza funzione, finestre isolate, muri interrotti, facciate duplicate, pavimentazioni incoerenti;
-   - edifici usati come adesivi sopra strutture preesistenti;
-   - personaggio che attraversa, sprofonda o scompare nelle strutture;
-   - luci attenuate dalla velatura e salti di prospettiva.
-3. Se la verifica visiva è positiva: pushare `main` (che include il commit del `ROADMAP.md`), attendere la nuova GitHub Actions, confermare build/deploy e ripetere `npm run test:mobile-start` sul sito pubblico. Aggiornare i run ID finali nel `qa/campania-open-code-1/README.md`.
-4. Se la verifica visiva trova difetti: correggere partendo dal branch `backup/pre-shutdown-2026-11-25`, rieseguire tutti i gate e solo poi pubblicare. Non ripristinare il checkpoint `51a22c0` a meno che la revisione non risulti irreparabile.
+1. Committare e pushare `main` senza attendere ulteriore conferma: l'utente ha autorizzato esplicitamente la pubblicazione dopo il superamento dei controlli.
+2. Attendere la GitHub Actions (`Deploy Campania Life to GitHub Pages`) e verificare `build` + `deploy` `success`.
+3. Ripetere `npm run test:mobile-start` sul sito pubblico: NUOVA PARTITA, WASD, joystick touch, save `campania_life_save_v1` e CONTINUA.
+4. Aggiornare i run ID finali e il bundle remoto in `qa/campania-open-code-1/README.md` e in questo file.
 5. Non ripristinare lo step CI `Install Playwright Chromium`: `mobile-start.mjs` usa il fallback al Chrome di sistema.
-6. Aggiornare `README.md` / documentazione con il run di deploy finale effettivo, dopo la pubblicazione.
+6. Non ripristinare `checkpoint/pre-structural-review` (`51a22c0`): le correzioni successive sono la fonte autorevole.
 
 ---
 
@@ -107,7 +110,8 @@
 
 - Checkpoint storico: tag `checkpoint/pre-structural-review`, branch `backup/pre-structural-review`, commit `51a22c0`.
 - Checkpoint di spegnimento: tag `checkpoint/pre-shutdown-2026-11-25`, branch `backup/pre-shutdown-2026-11-25`.
-- Bundle di backup fuori dal repo: `../CampaniaLife-backup-2026-11-25.bundle`.
+- Checkpoint pre-pubblicazione finale: tag `checkpoint/pre-final-publish`, branch `backup/pre-final-publish`, entrambi su `e4271d2`.
+- Bundle di backup fuori dal repo: `../CampaniaLife-backup-2026-11-25.bundle` e `../CampaniaLife-backup-2026-11-25-final.bundle` (verificato).
 - Ripristino:
   ```bash
   git fetch --all --tags

@@ -138,7 +138,7 @@
 
     /* --------------------------------------------------------- tiles 16x16 */
     buildTiles() {
-      for (const ch of ".TDderpSW~#=fcoXBo^gkPCVZOH'LFKQYIUENJAMRZhjlnqstuvwxyz1234567890") this.tiles[ch] = this.tile(ch);
+      for (const ch of ".TDderpSW~#b=fcoXBo^gkPCVZOH'LFKQYIUENJAMRZhjlnqstuvwxyz1234567890") this.tiles[ch] = this.tile(ch);
       // Varianti deterministiche: la griglia resta invariata, cambia solo il disegno.
       for (let v = 0; v < 4; v++) {
         this.tiles['D' + v] = this.variantTile('D', v);
@@ -262,6 +262,10 @@
           px(x, 0, 0, 16, 16, P.wall);
           px(x, 0, 0, 16, 2, P.wallL); px(x, 0, 14, 16, 2, P.wallD);
           for (let y = 3; y < 14; y += 5) { px(x, 0, y, 16, 1, P.wallD); for (let xx = (y / 5 % 2) * 4; xx < 16; xx += 8) px(x, xx, y, 1, 5, P.wallD); }
+          break;
+        case 'b': // muro neutro sotto le facciate: nessun laterizio o finestra finti
+          px(x, 0, 0, 16, 16, P.wall);
+          px(x, 0, 0, 16, 2, P.wallL); px(x, 0, 14, 16, 2, P.wallD);
           break;
         case '=':
           px(x, 0, 0, 16, 16, P.roof);
@@ -680,6 +684,9 @@
         bacoli_terme:{ w:312, h:144, wall:'#b98d70', trim:'#8f6a55', roof:'#8a6450', proc:'terme' },
         bacoli_castello:{ w:288, h:176, wall:'#c8b592', trim:'#8e7b60', roof:'#7d6a52', proc:'castello' },
         bacoli_casa:{ w:128, h:96, wall:'#cbb895', trim:'#8d7758', roof:'#8e6b4d', proc:'casa' },
+        caserta_reggia:{ w:384, h:224, wall:'#d8cdb7', trim:'#9a9285', roof:'#7d7569', proc:'reggia' },
+        salerno_arechi:{ w:224, h:128, wall:'#c9b69b', trim:'#8d765b', roof:'#7f6d55', proc:'arechi' },
+        salerno_palazzo:{ w:160, h:96, wall:'#ddd0b8', trim:'#8d6f52', roof:'#8a5840', proc:'palazzo' },
       }[kind];
       if (!S) return null;
       const H = S.clipH || S.h, W = S.w;
@@ -831,12 +838,13 @@
         }
         case 'fuorigrotta_torre': {
           // Torre razionalista: 8 piani, finestre più alte e marcapiani stretti.
-          grid(6, 8, 8, 16, 24, 27, 13, 17, (wx, wy, ww, wh, r, c) => {
+          // Passo di piano 26 px = 3,25 m: dentro il limite documentato di 3,3 m.
+          grid(6, 8, 8, 16, 24, 26, 13, 17, (wx, wy, ww, wh, r, c) => {
             if (r === 7 && (c === 2 || c === 3)) return;
             win(wx, wy, ww, wh, '#78746a', '#6f8a97');
           });
-          for (const yy of [39, 66, 93, 120, 147, 174, 201]) cornice(yy, 2, '#c1beb3');
-          door(72, 203, 16, 25);
+          for (const yy of [38, 64, 90, 116, 142, 168, 194]) cornice(yy, 2, '#c1beb3');
+          door(72, 196, 16, 25);
           cornice(0, 8, S.roof);
           plinth(12, '#8b887f');
           break;
@@ -951,12 +959,13 @@
         }
         case 'pianura_municipio': {
           // Municipio sobrio: sei assi di finestre e portale centrale.
-          grid(11, 6, 15, 18, 27, 27, 14, 16, (wx, wy, ww, wh, r, c) => {
+          // Anche qui il passo di piano e' 26 px = 3,25 m.
+          grid(11, 6, 15, 18, 27, 26, 14, 16, (wx, wy, ww, wh, r, c) => {
             if (r === 5 && (c === 5 || c === 6)) return;
             win(wx, wy, ww, wh, '#8c887c', '#718994');
           });
-          for (const yy of [40, 67, 94, 121, 148]) cornice(yy, 3, '#bdb6a6');
-          door(142, 150, 28, 36, '#6d6250');
+          for (const yy of [39, 65, 91, 117, 143]) cornice(yy, 3, '#bdb6a6');
+          door(142, 144, 28, 36, '#6d6250');
           cornice(0, 10, S.roof); px(x, 112, 4, 88, 6, '#e6dfcd');
           plinth(14, '#868277');
           break;
@@ -1004,6 +1013,48 @@
             px(x, wx - 1, yy + 12, 10, 2, '#a08d6e');
           }
           arch(132, 112, 24, 52, '#8e7b60', '#3b3630'); plinth(12, '#7d6a52');
+          break;
+        }
+        case 'caserta_reggia': {
+          // Reggia di Caserta: 14 assi regolari, cornicioni continui e portale
+          // centrale. Stesso passo di piano metrico del municipio (26 px = 3,25 m).
+          grid(14, 6, 14, 18, 26, 26, 16, 16, (wx, wy, ww, wh, r, c) => {
+            if (r === 5 && (c === 6 || c === 7)) return;
+            win(wx, wy, ww, wh, '#a8a094', '#7894a1');
+          });
+          for (const yy of [39, 65, 91, 117, 143]) cornice(yy, 3, '#bdb5a6');
+          door(178, 144, 28, 36, '#6d6250');
+          cornice(0, 10, S.roof); px(x, 132, 4, 120, 6, '#e6dfcd');
+          plinth(14, '#8f887b');
+          break;
+        }
+        case 'salerno_arechi': {
+          // Castello di Arechi: tufo, merli guelfi e monofore strette.
+          px(x, 0, 26, W, H - 38, S.wall);
+          for (let yy = 38; yy < H - 10; yy += 11) {
+            px(x, 0, yy, W, 1, 'rgba(110,92,66,.26)');
+            for (let bx = (yy / 11 % 2) * 10; bx < W; bx += 20) px(x, bx, yy, 1, 10, 'rgba(110,92,66,.18)');
+          }
+          for (let mx = 2; mx < W - 10; mx += 20) {
+            px(x, mx, 8, 14, 18, S.wall); px(x, mx, 8, 14, 2, '#dfcfae');
+          }
+          px(x, 0, 24, W, 5, '#b6a07c');
+          for (const ax of [38, 108, 178]) {
+            px(x, ax, 52, 10, 16, '#5e5548'); px(x, ax + 1, 53, 8, 14, '#3b3630');
+          }
+          arch(94, 60, 36, 58, S.trim, '#3b3630'); plinth(12, '#7d6a52');
+          break;
+        }
+        case 'salerno_palazzo': {
+          // Palazzo del lungomare: tre piani, persiane e coronamento continuo.
+          cornice(0, 8, S.roof);
+          grid(5, 3, 12, 16, 28, 24, 14, 16, (wx, wy, ww, wh, r, c) => {
+            if (r === 2 && c === 2) return;
+            win(wx, wy, ww, wh, '#8d6f52', '#5f8291');
+            px(x, wx - 3, wy + 2, 3, 12, '#4f6f5a'); px(x, wx + ww, wy + 2, 3, 12, '#4f6f5a');
+          });
+          for (const yy of [38, 62]) cornice(yy, 2, S.trim);
+          door(70, 62, 20, 26, '#6b4b33'); plinth(12, '#7c6b54');
           break;
         }
         case 'bacoli_casa': {

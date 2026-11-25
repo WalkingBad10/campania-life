@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T23:51:23.651Z",
+  "generatedAt": "2026-11-25T11:30:18.034Z",
   "baseUrl": "http://127.0.0.1:3000/",
   "maps": [
     {
@@ -87,15 +87,6 @@
           "minY": 426,
           "maxY": 604
         },
-        "vehicle": {
-          "count": 3,
-          "dw": 26,
-          "dh": 20,
-          "sw": 26,
-          "sh": 20,
-          "minY": 490,
-          "maxY": 686
-        },
         "prop:edicola": {
           "count": 1,
           "dw": 48,
@@ -104,6 +95,15 @@
           "sh": 52,
           "minY": 544,
           "maxY": 596
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 570,
+          "maxY": 718
         },
         "prop:cart": {
           "count": 1,
@@ -386,7 +386,7 @@
       "mapH": 480,
       "draws": {
         "unknown": {
-          "count": 663,
+          "count": 664,
           "dw": 16,
           "dh": 16,
           "sw": 16,
@@ -400,8 +400,8 @@
           "dh": 96,
           "sw": 128,
           "sh": 96,
-          "minY": 224,
-          "maxY": 352
+          "minY": 192,
+          "maxY": 320
         },
         "prop:plant": {
           "count": 2,
@@ -468,14 +468,23 @@
           "minY": 144,
           "maxY": 480
         },
-        "rock": {
-          "count": 4,
-          "dw": 20,
-          "dh": 14,
-          "sw": 20,
-          "sh": 14,
-          "minY": 136,
-          "maxY": 166
+        "building:salerno_arechi": {
+          "count": 1,
+          "dw": 224,
+          "dh": 128,
+          "sw": 224,
+          "sh": 128,
+          "minY": 64,
+          "maxY": 192
+        },
+        "building:salerno_palazzo": {
+          "count": 1,
+          "dw": 160,
+          "dh": 96,
+          "sw": 160,
+          "sh": 96,
+          "minY": 96,
+          "maxY": 192
         },
         "vehicle": {
           "count": 1,
@@ -678,8 +687,8 @@
           "dh": 144,
           "sw": 192,
           "sh": 144,
-          "minY": 304,
-          "maxY": 720
+          "minY": 352,
+          "maxY": 704
         },
         "building:fuorigrotta_torre": {
           "count": 2,
@@ -687,8 +696,8 @@
           "dh": 240,
           "sw": 160,
           "sh": 240,
-          "minY": 208,
-          "maxY": 720
+          "minY": 256,
+          "maxY": 704
         },
         "vehicle": {
           "count": 2,
@@ -875,13 +884,13 @@
           "maxY": 160
         },
         "prop:church_pew": {
-          "count": 8,
-          "dw": 54,
+          "count": 20,
+          "dw": 48,
           "dh": 24,
           "sw": 159,
           "sh": 71,
-          "minY": 168,
-          "maxY": 240
+          "minY": 104,
+          "maxY": 256
         },
         "character": {
           "count": 3,
@@ -1359,10 +1368,10 @@
         "prop:pizzeria_oven": {
           "count": 1,
           "dw": 96,
-          "dh": 110,
+          "dh": 80,
           "sw": 254,
           "sh": 336,
-          "minY": -14,
+          "minY": 16,
           "maxY": 96
         },
         "prop:pizzeria_counter": {
@@ -1454,8 +1463,8 @@
           "dh": 48,
           "sw": 270,
           "sh": 94,
-          "minY": 96,
-          "maxY": 144
+          "minY": 80,
+          "maxY": 128
         },
         "prop:home_rug": {
           "count": 1,
@@ -1546,8 +1555,8 @@
           "dh": 48,
           "sw": 270,
           "sh": 94,
-          "minY": 96,
-          "maxY": 144
+          "minY": 80,
+          "maxY": 128
         },
         "prop:home_rug": {
           "count": 1,
@@ -2020,15 +2029,6 @@
           "minY": 208,
           "maxY": 448
         },
-        "vehicle": {
-          "count": 3,
-          "dw": 26,
-          "dh": 20,
-          "sw": 26,
-          "sh": 20,
-          "minY": 490,
-          "maxY": 686
-        },
         "prop:edicola": {
           "count": 1,
           "dw": 48,
@@ -2037,6 +2037,15 @@
           "sh": 52,
           "minY": 544,
           "maxY": 596
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 570,
+          "maxY": 718
         },
         "prop:cart": {
           "count": 1,
@@ -2142,12 +2151,12 @@
         },
         "vehicle": {
           "count": 3,
-          "dw": 26,
+          "dw": 30,
           "dh": 20,
-          "sw": 26,
+          "sw": 30,
           "sh": 20,
-          "minY": 490,
-          "maxY": 686
+          "minY": 570,
+          "maxY": 718
         }
       },
       "visible": {
@@ -2242,15 +2251,6 @@
           "minY": 208,
           "maxY": 448
         },
-        "vehicle": {
-          "count": 3,
-          "dw": 26,
-          "dh": 20,
-          "sw": 26,
-          "sh": 20,
-          "minY": 490,
-          "maxY": 686
-        },
         "prop:edicola": {
           "count": 1,
           "dw": 48,
@@ -2259,6 +2259,15 @@
           "sh": 52,
           "minY": 544,
           "maxY": 596
+        },
+        "vehicle": {
+          "count": 3,
+          "dw": 30,
+          "dh": 20,
+          "sw": 30,
+          "sh": 20,
+          "minY": 570,
+          "maxY": 718
         },
         "prop:table_out": {
           "count": 1,
@@ -2323,8 +2332,8 @@
           "dh": 144,
           "sw": 192,
           "sh": 144,
-          "minY": 304,
-          "maxY": 720
+          "minY": 352,
+          "maxY": 704
         },
         "building:fuorigrotta_torre": {
           "count": 2,
@@ -2332,8 +2341,8 @@
           "dh": 240,
           "sw": 160,
           "sh": 240,
-          "minY": 208,
-          "maxY": 720
+          "minY": 256,
+          "maxY": 704
         },
         "vehicle": {
           "count": 2,
@@ -2434,8 +2443,8 @@
           "dh": 144,
           "sw": 192,
           "sh": 144,
-          "minY": 304,
-          "maxY": 448
+          "minY": 352,
+          "maxY": 496
         },
         "building:fuorigrotta_torre": {
           "count": 1,
@@ -2443,8 +2452,8 @@
           "dh": 240,
           "sw": 160,
           "sh": 240,
-          "minY": 208,
-          "maxY": 448
+          "minY": 256,
+          "maxY": 496
         },
         "character": {
           "count": 3,
@@ -2509,8 +2518,8 @@
           "dh": 240,
           "sw": 160,
           "sh": 240,
-          "minY": 208,
-          "maxY": 720
+          "minY": 256,
+          "maxY": 704
         },
         "building:fuorigrotta_stadio": {
           "count": 1,
@@ -2681,7 +2690,7 @@
       "mapH": 480,
       "draws": {
         "unknown": {
-          "count": 668,
+          "count": 670,
           "dw": 16,
           "dh": 16,
           "sw": 16,
@@ -2704,8 +2713,8 @@
           "dh": 96,
           "sw": 128,
           "sh": 96,
-          "minY": 224,
-          "maxY": 352
+          "minY": 192,
+          "maxY": 320
         },
         "rock": {
           "count": 13,
@@ -2866,12 +2875,6 @@
       "kind": "prop:home_plant",
       "minY": -30,
       "maxY": 0
-    },
-    {
-      "map": "pizzeria",
-      "kind": "prop:pizzeria_oven",
-      "minY": -14,
-      "maxY": 96
     },
     {
       "map": "pizzeria",

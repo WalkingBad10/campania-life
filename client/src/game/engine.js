@@ -412,9 +412,10 @@
       // Traffico leggero e parcheggi: entità non solide, senza toccare griglie o salvataggi.
       const routes = {
         napoli: [
-          { type: 'scooter', tx: 60, ty: 31, dir: 'left' },
-          { type: 'car', tx: 58, ty: 42, dir: 'up' },
-          { type: 'bike', tx: 8, ty: 31, dir: 'right' }
+          // Solo vicoli residenziali: Spaccanapoli e Via Benedetto Croce sono pedonali.
+          { type: 'car', tx: 58, ty: 36, dir: 'up' },
+          { type: 'scooter', tx: 58, ty: 44, dir: 'down' },
+          { type: 'bike', tx: 26, ty: 42, dir: 'up' }
         ],
         costiera: [
           { type: 'car', tx: 30, ty: 14, dir: 'right' },
@@ -858,16 +859,23 @@
     drawCrosswalks(c, m) {
       const rules = {
         napoli: [
-          { x: 7, y: 31, w: 4, h: 2, dir: 'h' },
-          { x: 60, y: 31, w: 5, h: 2, dir: 'h' },
-          { x: 12, y: 46, w: 2, h: 2, dir: 'h' },
-          { x: 59, y: 38, w: 2, h: 4, dir: 'v' }
+          { x: 58, y: 42, w: 2, h: 4, dir: 'v' },
+          { x: 26, y: 46, w: 2, h: 2, dir: 'h' }
         ],
         costiera: [{ x: 20, y: 14, w: 5, h: 2, dir: 'h' }, { x: 50, y: 14, w: 5, h: 2, dir: 'h' }],
-        bacoli: [{ x: 18, y: 10, w: 5, h: 2, dir: 'h' }],
+        bacoli: [{ x: 18, y: 12, w: 5, h: 2, dir: 'h' }],
         salerno: [{ x: 28, y: 18, w: 5, h: 2, dir: 'h' }],
         avellino: [{ x: 24, y: 21, w: 2, h: 4, dir: 'v' }],
-        caserta: [{ x: 28, y: 32, w: 5, h: 2, dir: 'h' }]
+        caserta: [{ x: 28, y: 32, w: 5, h: 2, dir: 'h' }],
+        fuorigrotta: [
+          { x: 19, y: 18, w: 4, h: 2, dir: 'v' },
+          { x: 54, y: 18, w: 4, h: 2, dir: 'v' },
+          { x: 19, y: 32, w: 4, h: 2, dir: 'v' },
+          { x: 54, y: 35, w: 4, h: 2, dir: 'v' },
+          { x: 30, y: 19, w: 4, h: 2, dir: 'h' },
+          { x: 50, y: 36, w: 4, h: 2, dir: 'h' }
+        ],
+        pianura: [{ x: 30, y: 38, w: 5, h: 2, dir: 'h' }, { x: 48, y: 18, w: 2, h: 2, dir: 'h' }]
       };
       for (const r of (rules[m.id] || [])) {
         if (CL.maps.tile(m, r.x, r.y) !== 'r') continue;

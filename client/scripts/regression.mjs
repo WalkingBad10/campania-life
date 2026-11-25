@@ -412,7 +412,7 @@ async function main() {
     assert(ch.spawnDir === 'up', 'church spawnDir');
     assert(CL.maps.tile(ch, 14, 18) === 'R' || CL.maps.tile(ch, 14, 18) === 'r' || CL.maps.tile(ch, 14,18) !== '#', 'church spawn tile not wall-check-soft');
     const exitP = ch.portals.find(p=>p.to==='prev'||p.to==='napoli');
-    assert(exitP && exitP.y === 20*T, 'church exit portal row 20');
+    assert(exitP && exitP.y === 21*T, 'church exit portal aligns with door row 21');
 
     walkRoute(game, [[36*T,28*T],[20*T,28*T],[20*T,16*T]]);
     const ent = enterDoor(game, 'casa_nonna', 'up', 700);
@@ -906,12 +906,12 @@ async function main() {
     }
     const napoli = CL.maps.get('napoli');
     assert(CL.art.tileFor('D', 12, 30, napoli) === CL.art.tileFor('D', 12, 30, napoli), 'D variant deterministic');
-    const roadTile = CL.art.tileFor('r', 60, 31, napoli);
+    const roadTile = CL.art.tileFor('r', 58, 42, napoli);
     assert(roadTile === CL.art.tiles.r_h0 || roadTile === CL.art.tiles.r_h1 ||
            roadTile === CL.art.tiles.r_v0 || roadTile === CL.art.tiles.r_v1, 'road uses oriented variant');
     const crosswalks = {
-      napoli: [[7,31],[60,31],[12,46],[59,38]],
-      costiera: [[20,14],[50,14]], bacoli: [[18,10]], salerno: [[28,18]],
+      napoli: [[58,42],[26,46]],
+      costiera: [[20,14],[50,14]], bacoli: [[18,12]], salerno: [[28,18]],
       avellino: [[24,21]], caserta: [[28,32]],
       fuorigrotta: [[30,19],[50,36]], pianura: [[30,38]]
     };
