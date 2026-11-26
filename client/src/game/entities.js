@@ -99,9 +99,9 @@
       // e' leggermente sfalsata in basso-destra per una luce coerente da NO.
       const footY = Math.round(this.y + this.h / 2 + this.offsetY) - 1;
       ctx.save();
-      ctx.fillStyle = 'rgba(18,15,13,.42)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = 'rgba(18,15,13,.22)';
+      ctx.fillStyle = 'rgba(18,15,13,.55)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 9, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(18,15,13,.34)';
       ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 5, 2, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
       ctx.drawImage(img, Math.round(this.x - img.width / 2), footY - img.height + 1);
@@ -259,8 +259,8 @@
       // Stesso ancoraggio del giocatore: piedi sul fondo della hitbox.
       const footY = Math.round(this.y + this.h / 2 + this.offsetY) - 1;
       ctx.save();
-      ctx.fillStyle = 'rgba(18,15,13,.36)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 7, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(18,15,13,.48)';
+      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 9, 5, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
       ctx.drawImage(img, Math.round(this.x - img.width / 2), footY - img.height + 1);
     }

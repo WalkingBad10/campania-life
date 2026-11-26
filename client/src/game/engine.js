@@ -1003,25 +1003,64 @@
       c.restore();
     }
 
+    /* Ombra di appoggio per i corpi edilizi: radiale, non un rettangolo scuro.
+     * È disegnata prima della facciata, quindi non copre porte o finestre. */
+    groundShadow(c, x, y, rx, ry) {
+      c.save();
+      const r = Math.max(8, rx || 24), g = c.createRadialGradient(x, y, 2, x, y, r);
+      g.addColorStop(0, 'rgba(24,22,20,.30)');
+      g.addColorStop(.55, 'rgba(24,22,20,.13)');
+      g.addColorStop(1, 'rgba(24,22,20,0)');
+      c.fillStyle = g;
+      c.beginPath(); c.ellipse(x, y, r, Math.max(3, ry || 5), 0, 0, Math.PI * 2); c.fill();
+      c.restore();
+    }
+
+    /* Ombra di appoggio + facciata: un unico helpers tiene M1 e facciate
+     * procedurali sulla stessa pipeline. La radiale è disegnata prima dell'asset,
+     * quindi non può coprire finestre, portali o balconi. */
+    drawFacade(c, d, kind) {
+      const img = ART.buildingSprite(kind);
+      if (!img) return;
+      const dx = d.x + (d.data.ox || 0);
+      const dy = d.y + (d.data.oy !== undefined ? d.data.oy : 0);
+      // Il centro dell'ellisse è sotto il piede della facciata, non dentro
+      // l'immagine: così l'ombra è visibile sul selciato invece di essere
+      // coperta proprio dal prospetto che dovrebbe ancorare.
+      const rx = Math.min(img.width * 0.50, 120);
+      const ry = Math.max(8, Math.min(16, Math.round(img.height * 0.075)));
+      const baseY = dy + img.height;
+      // Proiezione SE: luce da nord-ovest. Il corpo dell'edificio copre la
+      // parte alta del poligono, quindi resta visibile solo la fascia a terra.
+      c.save();
+      c.fillStyle = 'rgba(22,20,18,.22)';
+      c.beginPath();
+      c.moveTo(dx, baseY - 2);
+      c.lineTo(dx + img.width, baseY - 2);
+      c.lineTo(dx + img.width + 20, baseY + 14);
+      c.lineTo(dx + 20, baseY + 14);
+      c.closePath(); c.fill();
+      c.restore();
+      this.groundShadow(c, dx + img.width * 0.54, baseY + Math.round(ry * 0.2), rx, ry);
+      c.drawImage(img, dx, dy);
+    }
+
     drawDecor(c, d) {
       const x = d.x, y = d.y;
       c.save();
       switch (d.type) {
         case 'gesu_facade': {
-          const img = ART.buildingSprite('gesu');
-          if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy !== undefined ? d.data.oy : 0));
+          this.drawFacade(c, d, 'gesu');
           break;
         }
         case 'palazzo_ne': case 'palazzo_sw': case 'palazzo_banca': case 'palazzo_bar': case 'palazzo_se': case 'palazzo_e': {
-          const img = ART.buildingSprite(d.type);
-          if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy !== undefined ? d.data.oy : 0));
+          this.drawFacade(c, d, d.type);
           break;
         }
         case 'metric_facade': {
           // Facciate metriche delle nuove zone: sfondo architettonico, non entità.
           // Il tipo architettonico e' in data.type (d.type e' il decor 'metric_facade').
-          const img = ART.buildingSprite(d.data.type);
-          if (img) c.drawImage(img, x + (d.data.ox || 0), y + (d.data.oy !== undefined ? d.data.oy : 0));
+          this.drawFacade(c, d, d.data.type);
           break;
         }
         case 'guglia_overlay': {

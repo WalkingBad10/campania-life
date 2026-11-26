@@ -228,8 +228,10 @@
       this.tiles.Turban = this.tile('Turban');
       this.tiles.tufo = this.tile('tufo');
       // Varianti deterministiche: la griglia resta invariata, cambia solo il disegno.
-      for (let v = 0; v < 4; v++) {
-        this.tiles['D' + v] = this.variantTile('D', v);
+      // Sedici varianti per il basolato del centro storico, otto per marciapiedi
+      // e lastroni: la ripetizione della cella non è più leggibile a colpo d'occhio.
+      for (let v = 0; v < 16; v++) this.tiles['D' + v] = this.variantTile('D', v);
+      for (let v = 0; v < 8; v++) {
         this.tiles['p' + v] = this.variantTile('p', v);
         this.tiles['d' + v] = this.variantTile('d', v);
         this.tiles['e' + v] = this.variantTile('e', v);
@@ -245,8 +247,16 @@
       const R = U.rng(U.hash('tile-variant:' + ch + ':' + variant + ':' + (orient || '')));
       if (ch === 'D' || ch === 'd' || ch === 'e') {
         // Niente linee rette a 16 px: formavano colonne e righe perfette.
-        // Ogni variante taglia le lastre in modo diverso, con giunti corti e
-        // sfalsati, così la ripetizione della cella non legge come griglia.
+        // Ogni variante ha tono e usura propri, oltre ai giunti sfalsati:
+        // anche su grandi piazze la cella non si legge più come un clone.
+        const wash = ['rgba(255,248,235,.07)', 'rgba(30,28,25,.06)',
+                      'rgba(255,250,240,.04)', 'rgba(40,38,34,.08)'][variant % 4];
+        x.fillStyle = wash; x.fillRect(0, 0, 16, 16);
+        for (let i = 0; i < 4; i++) {
+          const wx = (R() * 14) | 0, wy = (R() * 14) | 0;
+          const ww = 2 + ((R() * 4) | 0), hh = 1 + ((R() * 3) | 0);
+          px(x, wx, wy, ww, hh, variant % 2 ? 'rgba(35,32,28,.08)' : 'rgba(255,252,245,.09)');
+        }
         const dark = ch === 'd' ? 'rgba(74,74,72,.30)' : 'rgba(45,42,38,.30)';
         for (let i = 0; i < 7; i++) {
           const yy = (i * 4 + variant * 3 + (R() * 3 | 0)) % 16;
@@ -288,8 +298,10 @@
       if (ch === 'T' && urban) return this.tiles.Turban || this.tiles.T;
       // Le rovine pompeiane sono in tufo, non in mattone rosso da palazzo.
       if (ch === '#' && map && map.zone === 'pompei') return this.tiles.tufo || this.tiles['#'];
-      if ((ch === 'D' || ch === 'p' || ch === 'd' || ch === 'e') && this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)]) {
-        return this.tiles[ch + (U.hash(ch + ':' + tx + ':' + ty) % 4)];
+      if (ch === 'D' || ch === 'p' || ch === 'd' || ch === 'e') {
+        const n = ch === 'D' ? 16 : 8;
+        const key = ch + (U.hash(ch + ':' + tx + ':' + ty) % n);
+        if (this.tiles[key]) return this.tiles[key];
       }
       if (ch === 'r' && map && CL.maps && CL.maps.tile) {
         const at = (xx, yy) => CL.maps.tile(map, xx, yy) === 'r';
@@ -739,8 +751,9 @@
       const crownX = 16 + lean, crownY = [17, 18, 16, 19, 17, 16, 18][v];
       const rx = [12, 13, 11, 12, 13, 11, 12][v], ry = [10, 11, 10, 9, 11, 10, 12][v];
       // Ombra di contatto: due ellissi e piccoli ciuffi d'erba, mai un quadrato.
-      ell(x, 16 + lean / 2, 37, 12, 3, 'rgba(28,26,22,.16)');
-      ell(x, 16 + lean / 2, 36, 10, 2, 'rgba(28,26,22,.22)');
+      // Più marcata del passaggio precedente: l'albero poggia sul selciato.
+      ell(x, 16 + lean / 2, 37, 13, 4, 'rgba(28,26,22,.24)');
+      ell(x, 16 + lean / 2, 36, 10, 2, 'rgba(28,26,22,.32)');
       px(x, 8 + lean, 36, 2, 1, '#668f46'); px(x, 22 + lean, 37, 3, 1, '#6f994c');
       // Fusto rastremato con corteccia e biforcazioni: la chioma non e' un pallone piatto.
       poly(x, [[13 + lean, 38], [19 + lean, 38], [18 + lean, 25], [14 + lean, 25]], '#5e442f');
@@ -1324,9 +1337,14 @@
         }
         x.imageSmoothingEnabled = false;
         x.drawImage(low, 0, 0, W, H);
+        // Reveal laterale minimo: l'asset M1 resta autorevole, ma il corpo non
+        // finisce a filo quadrato. Nessun tetto inventato sopra il prospetto.
+        this._m1Reveal(S, x, W, H);
       } else if (S.proc) {
-        // Nuove zone senza asset M1: facciata procedurale con architettura regolare.
+        // Nuove zone senza asset M1: facciata procedurale con architettura regolare,
+        // poi tetto/parete laterale/ombra di contatto nella stessa immagine.
         this._facadeProcedural(kind, S, x, W, H, R);
+        this._depthOverlay(S, x, W, H);
       } else {
         // Fallback senza duplicazioni: solo portone in scala, nessuna finestra generated.
         const dx = Math.floor(W / 2) - 9;
@@ -1795,6 +1813,61 @@
           break;
         }
       }
+    },
+    /* Prospetti M1: solo un reveal laterale e l'ombra a terra. L'immagine
+     * estratta resta l'unica fonte di finestre, portali e decorazioni. */
+    _m1Reveal(S, x, W, H) {
+      const side = Math.max(4, Math.min(10, Math.round(W * 0.022)));
+      const sx = W - side;
+      px(x, sx, 0, side, H, shade(S.wall, -26));
+      px(x, sx, 0, 1, H, shade(S.wall, -42));
+      for (let yy = 16; yy < H - 10; yy += 24) {
+        px(x, sx + 1, yy, side - 2, 1, 'rgba(20,20,18,.18)');
+        px(x, sx + 2, yy + 4, Math.max(2, side - 4), 6, 'rgba(20,20,18,.22)');
+      }
+      px(x, 0, H - 3, W, 3, 'rgba(20,20,18,.16)');
+    },
+    /* Profondità architettonica per le facciate senza asset M1: la facciata
+     * resta l'autorità, ma il corpo non è più un'immagine piatta incollata.
+     * La parete laterale è in ombra, il tetto ha coppi e comignoli, e il
+     * basamento riceve un'ombra di contatto. Dimensioni e ancore invariate. */
+    _depthOverlay(S, x, W, H) {
+      // 2,5–4,5 m di rientro e 1,2–2,2 m di copertura: a 8 px/m sono valori
+      // leggibili sulla scena, non una rifinitura sub-pixel.
+      const side = Math.max(32, Math.min(56, Math.round(W * 0.14)));
+      const roofH = Math.max(10, Math.min(18, Math.round(H * 0.07)));
+      const sx = W - side;
+      // Rientro laterale inclinato: il bordo destro arretra di 4 px, così lo
+      // spessore si legge come volume e non come banda piatta in ombra.
+      poly(x, [[sx, roofH + 2], [W, roofH + 6], [W, H - 10], [sx, H - 12]], shade(S.wall, -52));
+      poly(x, [[sx, roofH + 2], [sx + 2, roofH + 3], [sx + 2, H - 11], [sx, H - 12]], shade(S.wall, -70));
+      px(x, sx, H - 12, side, 2, shade(S.wall, -62));
+      for (let yy = roofH + 14; yy < H - 16; yy += 24) {
+        px(x, sx, yy, side, 1, 'rgba(20,20,18,.20)');
+        px(x, sx + 2, yy + 4, Math.max(3, side - 5), 7, 'rgba(20,20,18,.34)');
+        px(x, sx + 3, yy + 5, Math.max(2, side - 7), 5, '#6a8490');
+        px(x, sx + 3, yy + 5, Math.max(2, side - 7), 1, 'rgba(255,255,255,.24)');
+      }
+      // Tetto a coppi, cornice e ombra sotto la gronda.
+      px(x, 0, 0, W, roofH, S.roof);
+      poly(x, [[sx, roofH], [W, roofH + 4], [W, roofH + 10], [sx, roofH + 3]], shade(S.roof, -26));
+      for (let i = 2; i < W - 2; i += 10) {
+        px(x, i, 2, 2, roofH - 3, shade(S.roof, -32));
+        px(x, i + 4, roofH - 4, 4, 2, shade(S.roof, 28));
+      }
+      px(x, 0, roofH, W, 2, shade(S.roof, 22));
+      px(x, 0, roofH + 2, W, 2, 'rgba(20,20,18,.16)');
+      for (const cxp of [Math.round(W * 0.18), Math.round(W * 0.72)]) {
+        px(x, cxp, 2, 6, Math.max(3, roofH - 3), shade(S.wall, -18));
+        px(x, cxp - 1, 2, 8, 2, shade(S.wall, -34));
+        px(x, cxp + 2, 4, 2, Math.max(2, roofH - 5), 'rgba(20,20,18,.26)');
+      }
+      const ax = Math.round(W * 0.46);
+      px(x, ax, 1, 1, Math.max(3, roofH - 2), '#55585a');
+      px(x, ax - 2, 3, 5, 1, '#7d8285');
+      // Contatto a terra: il palazzo poggia, non galleggia sul marciapiede.
+      px(x, 0, H - 3, W, 3, 'rgba(20,20,18,.18)');
+      px(x, 0, H - 3, W, 1, 'rgba(20,20,18,.24)');
     },
     gugliaSprite() {
       // I 22 m documentati riguardavano solo l'obelisco: l'intera Guglia

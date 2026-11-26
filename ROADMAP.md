@@ -81,6 +81,14 @@
 - [x] Falsi positivi scartati: spawn `macbook-napoli` (guglia fuori viewport), viewpoint `guglia-dietro`, «personaggio coperto dal tappeto» (tile `R` è suolo, 0 occlusioni), panche da 6 m in scala reale.
 - [x] Gate rieseguiti: regressione PASS (con nuovo test footprint), texture audit 50/50 e 21/21, render audit 0 errori, visual-explore 0 errori/occlusioni, build OK, mobile-start locale e pubblico OK, `git diff --check` OK.
 
+### Revisione artistica professionale (26 novembre 2026)
+- [x] Checkpoint `checkpoint/pre-art-professional-pass` / `backup/pre-art-professional-pass` su `5c6e8bb`, mai ripristinato.
+- [x] **Decisione renderer**: scena di prova reale su Pixel 9 Pro XL emulato, build pubblicata, Piazza del Gesù Nuovo: 59,8 FPS a riposo e 60,0 FPS in movimento, p95 16,7 ms, 0 frame oltre 20 ms in movimento.Canvas 2D confermato; Phaser/PixiJS/Godot/Excalibur/Matter/Tiled valutati e scartati perché non risolvono la qualità artistica. Dettagli in `docs/RENDERER_DECISION.md`.
+- [x] **Asset `art.js` recuperati e completati**: `_depthOverlay()` per le facciate procedurali (tetto a coppi, comignoli, parete laterale, aperture di fianco, ombra di contatto), `_m1Reveal()` per i prospetti M1 (reveal laterale e ombra a terra), 16 varianti del basolato e 8 di marciapiedi/lastroni, ombre degli alberi rafforzate.
+- [x] **Ombre coerenti**: `engine.js` disegna una `groundShadow()` radiale prima di ogni facciata M1/procedurale tramite `drawFacade()`; `entities.js` rafforza l'ombra di giocatore e NPC senza alterare l'ancoraggio dei piedi. I difetti residui di prospettiva 3/4 restano un limite dell'asset M1, non una regressione funzionale.
+- [x] Confronto VL su screenshot `*-nohud` prima/dopo con `opencode/nemotron-3.5-super-vl-free`: risolti pavimento seriale e tetto piatto, rientro laterale parzialmente volumetrico. La VL non legge ancora l'ombra proiettata dei prospetti M1 come coerente; un probe pixel conferma che l'ombra è disegnata (4.970 pixel, Δ max 51). Il limite di prospettiva 3/4 resta legato all'asset M1 ed è documentato come artistico, non come regressione.
+- [x] Gate dopo l'intervento: regressione **42/42**, Playwright **6/6**, texture audit **50/50 e 21/21**, render audit **0 errori**, visual-explore **0 errori**, build CI-like OK.
+
 ---
 
 ## 2. Stato dei controlli

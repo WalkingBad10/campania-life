@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-const OUT = resolve('..', 'qa', 'campania-open-code-1');
+const OUT = process.env.CL_QA_OUT || resolve('..', 'qa', 'campania-open-code-1');
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--disable-dev-shm-usage'] });
 const page = await browser.newPage({ viewport: { width: 1512, height: 982 }, deviceScaleFactor: 2 });

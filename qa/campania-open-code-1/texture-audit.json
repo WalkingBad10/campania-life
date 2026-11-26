@@ -20,7 +20,7 @@
         248
       ],
       "leftQuietPx": 0,
-      "rightQuietPx": 0,
+      "rightQuietPx": 9,
       "maxQuietPx": 54,
       "pass": true
     },
@@ -33,7 +33,7 @@
         160
       ],
       "leftQuietPx": 0,
-      "rightQuietPx": 1,
+      "rightQuietPx": 0,
       "maxQuietPx": 35,
       "pass": true
     },
@@ -85,7 +85,7 @@
         128
       ],
       "leftQuietPx": 0,
-      "rightQuietPx": 3,
+      "rightQuietPx": 0,
       "maxQuietPx": 15,
       "pass": true
     },
@@ -111,7 +111,7 @@
         144
       ],
       "leftQuietPx": 1,
-      "rightQuietPx": 4,
+      "rightQuietPx": 2,
       "maxQuietPx": 23,
       "pass": true
     },
@@ -123,8 +123,8 @@
         160,
         240
       ],
-      "leftQuietPx": 1,
-      "rightQuietPx": 4,
+      "leftQuietPx": 0,
+      "rightQuietPx": 2,
       "maxQuietPx": 19,
       "pass": true
     },
@@ -136,8 +136,8 @@
         560,
         280
       ],
-      "leftQuietPx": 16,
-      "rightQuietPx": 12,
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
       "maxQuietPx": 67,
       "pass": true
     },
@@ -162,8 +162,8 @@
         208,
         160
       ],
-      "leftQuietPx": 1,
-      "rightQuietPx": 2,
+      "leftQuietPx": 0,
+      "rightQuietPx": 0,
       "maxQuietPx": 25,
       "pass": true
     },
@@ -175,7 +175,7 @@
         320,
         248
       ],
-      "leftQuietPx": 4,
+      "leftQuietPx": 0,
       "rightQuietPx": 0,
       "maxQuietPx": 38,
       "pass": true
@@ -188,8 +188,8 @@
         160,
         112
       ],
-      "leftQuietPx": 6,
-      "rightQuietPx": 10,
+      "leftQuietPx": 2,
+      "rightQuietPx": 0,
       "maxQuietPx": 19,
       "pass": true
     },
@@ -201,7 +201,7 @@
         312,
         200
       ],
-      "leftQuietPx": 1,
+      "leftQuietPx": 0,
       "rightQuietPx": 1,
       "maxQuietPx": 37,
       "pass": true
@@ -214,8 +214,8 @@
         312,
         144
       ],
-      "leftQuietPx": 10,
-      "rightQuietPx": 7,
+      "leftQuietPx": 0,
+      "rightQuietPx": 2,
       "maxQuietPx": 37,
       "pass": true
     },
@@ -228,7 +228,7 @@
         176
       ],
       "leftQuietPx": 2,
-      "rightQuietPx": 3,
+      "rightQuietPx": 2,
       "maxQuietPx": 35,
       "pass": true
     },
@@ -253,8 +253,8 @@
         384,
         224
       ],
-      "leftQuietPx": 1,
-      "rightQuietPx": 1,
+      "leftQuietPx": 0,
+      "rightQuietPx": 2,
       "maxQuietPx": 46,
       "pass": true
     },
@@ -267,7 +267,7 @@
         128
       ],
       "leftQuietPx": 0,
-      "rightQuietPx": 13,
+      "rightQuietPx": 2,
       "maxQuietPx": 27,
       "pass": true
     },
@@ -279,8 +279,8 @@
         160,
         96
       ],
-      "leftQuietPx": 1,
-      "rightQuietPx": 1,
+      "leftQuietPx": 0,
+      "rightQuietPx": 2,
       "maxQuietPx": 19,
       "pass": true
     }
