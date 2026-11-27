@@ -232,8 +232,61 @@ Il confronto geografico è stato fatto con OSM/satellite, misure documentate e a
 - **VL dedicata**: screenshot `*-nohud` acquisiti prima/dopo con `CL_QA_OUT` e analizzati singolarmente con `opencode/nemotron-3.5-super-vl-free`, confrontando con `photo-refs/`. Il confronto conferma minore ripetitività del selciato (tono/usura per variante), tetto a coppi leggibile e rientro laterale parzialmente volumetrico. La VL non legge ancora l'ombra proiettata dei prospetti M1 a Piazza del Gesù come coerente: un probe pixel conferma che l'ombra è disegnata (4.970 pixel, Δ massimo 51), quindi il residuo è di leggibilità artistica, non di assenza nel renderer. La prospettiva 3/4 resta limitata dalla natura sprite dell'asset M1 ed è dichiarata come limite, non come difetto funzionale.
 - **Gate**: regressione `42/42`, Playwright `6/6`, texture audit `50/50` PNG e `21/21` facciate, render audit `0 errori`, visual-explore `0 errori`, build CI-like OK. Checkpoint `checkpoint/pre-art-professional-pass` / `backup/pre-art-professional-pass` su `5c6e8bb`.
 
+## Revisione avanzata: acquisizione before/after e confronto (27 novembre 2026)
+
+La baseline storica `qa/campania-open-code-1/art-review/before/` contiene 26 PNG a h12 ed è conservata come documentazione del primo ciclo, ma **non è la baseline autoritativa**: l'harness originale non possedeva gli immobili e non mascherava `#toasts`, quindi le quattro mappe private catturavano la stanza precedente con avvisi sovrapposti. La baseline corretta è `before-v2/`, rigenerata dal commit `f13bc66` con lo stesso harness corretto e con h12+h18. Gli script non avviano server: l'URL deve essere già servito (es. build locale/CI-like su `http://127.0.0.1:4180/campania-life/`). Comandi esatti dalla root del repo:
+
+```bash
+# 0) Baseline autoritativa gia' rigenerata da f13bc66 in before-v2/. Solo per una NUOVA baseline:
+CL_QA_OUT=qa/campania-open-code-1/art-review/before-v3 \
+CL_BASE_URL=http://127.0.0.1:4180/campania-life/ \
+CL_QA_HOUR=12 CL_QA_HOUR_EXTRA=18 \
+node client/scripts/art-review.mjs
+
+# 1) Cattura dopo l'intervento (cartella nuova; seconda ora opzionale)
+CL_QA_OUT=qa/campania-open-code-1/art-review/after \
+CL_BASE_URL=http://127.0.0.1:4180/campania-life/ \
+CL_QA_HOUR=12 CL_QA_HOUR_EXTRA=18 \
+node client/scripts/art-review.mjs
+
+# 2) Confronto: scrive solo in compare/, non tocca before/ né after/
+node client/scripts/art-review-compare.mjs \
+  qa/campania-open-code-1/art-review/before-v2 \
+  qa/campania-open-code-1/art-review/after \
+  qa/campania-open-code-1/art-review/compare
+```
+
+Se si acquista una nuova baseline, sostituire `before-v2` con la cartella nuova nel passaggio 2. Vengono confrontati solo gli orari presenti in entrambe le cartelle: `before-v2` e `after` contengono h12 e h18, quindi il confronto produce sheet per entrambi gli orari. L'harness corretto aggiunge temporaneamente le quattro mappe private a `CL.state.properties` e maschera `#toasts`; non modifica il salvataggio su disco né il codice di gioco.
+
+Formati di output:
+
+- un solo orario: `CL_QA_OUT/*.png` più `report.json` con `base`, `hour`, `errors`, `maps` (forma della baseline);
+- orario aggiuntivo: `CL_QA_OUT/h18/*.png` e `h18/report.json`; il `report.json` principale aggiunge `hours: [12, 18]` e `captures`;
+- confronto: `compare/diff.json`, `compare/contact-sheet.png` e `compare/sheets/<id>-h<hour>.png` (before a sinistra, after a destra).
+
+Il `diff.json` riporta per ogni mappa i delta di `palette` (assoluto e percentuale), `edgeDensity`, `luminance` e il diff degli errori console/page (`added`/`removed`). `underThresholdMaps` elenca le mappe entro tutte le soglie: palette ≤ 5% di variazione relativa, `edgeDensity` ≤ 0,01 assoluto, luminanza ≤ 2,0 assoluti e zero nuovi errori. Le soglie si modificano con `CL_QA_TOL_PALETTE_PCT`, `CL_QA_TOL_EDGE_ABS`, `CL_QA_TOL_LUM_ABS`; `CL_QA_FAIL_ON_DELTA=1` rende il confronto non verde in presenza di differenze. `pixel.mae` e `pixel.changedRatio` sono informativi e calcolati dopo normalizzazione a `480 × 270`: la baseline contiene infatti 23 PNG a `3024 × 1704` (DPR 2) e 3 a `1512 × 852` (DPR 1). Per sovrascrivere deliberatamente catture esistenti serve `CL_QA_FORCE=1`.
+
+**Limite emulazione vs dispositivi fisici**: PNG, metriche e contact sheet sono emulazione Playwright/Chromium headless, non misure su MacBook o Google Pixel 9 Pro XL fisici. Il benchmark sulla scena di Piazza del Gesù Nuovo (Pixel 9 Pro XL emulato, canvas `480×270`) dà **60/60 FPS** sia idle sia in movimento, p95 `16,8/16,7 ms`, 0 frame oltre 20 ms. Il confronto numerico non sostituisce la verifica umana finale richiesta dal marker `BETA PUBBLICA · Richiede verifica manuale su MacBook e smartphone`: resa percepita e stabilità sui dispositivi reali restano sospese fino al riscontro dell'utente.
+
+### Giudizi VL sul confronto before/after (modello `opencode/nemotron-3.5-super-vl-free`)
+
+Le recensioni sono state eseguite su immagini singole o gruppi piccoli, non in parallelo massivo. Sintesi dei cinque lotti:
+
+- **Napoli, Fuorigrotta, Pianura** — diminuzione delle strade anonime, comparsa di arredo urbano, segnaletica e micro-dettagli murari (decori Napoli 29→86, Fuorigrotta 13→52, Pianura 16→88). Restano deboli le ombre direzionali percepite, la profondità dei prospetti e la regolarità della vegetazione; a Pianura l'asfalto risulta ancora troppo «autostradale» per il borgo.
+- **Costiera, Capri, Bacoli, Salerno, Caserta** — insegne, lampioni, panchine, cassonetti, aiuole e veicoli aggiunti; ombre degli arredi più marcate. Restano tetti semplici, finestre poche, marciapiedi discontinui e vuoti urbani troppo ampi a Salerno/Caserta.
+- **Vesuvio, Pompei, Avellino** — nuova segnaletica, strisce pedonali, panchine, cestini e mezzi; a Pompei compaiono targhe e nuove aperture. Restano sentieri lineari, vegetazione a griglia e ombre da mezzogiorno che schiacciano i volumi.
+- **Interni sociali** — miglioramenti chiari solo in `metro`/`metro2` (segnali H, tornelli, lampade accese). `casa_nonna`, `bar` e `pizzeria` restano sostanzialmente invariati nella resa a h12.
+- **Interni di lavoro/casa** — una prima VL aveva giudicato le quattro mappe cloni, ma le catture erano invalidate dal harness (possesso e toast). Con `before-v2/` e arredi dedicati grandi e leggibili la VL finale conferma differenze marcate e buona distinguibilità: libreria colorata in `casa_giocatore`, grande quadro in `appartamento`, pianta in vaso dominante in `casa_amalfi`, libreria più insegne `PIZZA`/`MENU` in `bottega`. Resta solo il minore difetto della libreria ricorrente in due stanze, differenziata dal contesto commerciale.
+
+Azioni intraprese dopo la VL: bucket di luce che include `dark`/`warm`/`shadowLen`, proiezione a terra e ombreggiatura laterale rafforzate, pareti interne con velatura/patch/crepe, dettagli disegnati 1:1 senza scaling non uniforme e arredi grandi non solidi per le quattro stanze private. I difetti residui non risolti restano dichiarati esplicitamente nella sezione «Limiti dichiarati».
+
+Risultati numerici del confronto autoritativo (`before-v2/` vs `after/`): **52 coppie mappa/orario**, 26 mappe × h12 e h18; **6 sotto soglia** (`napoli`, `bar`, `pizzeria` a h12; `capri`, `bar`, `pizzeria` a h18) e **46 oltre soglia**; **0 errori console/page** su entrambi i lati; 0 mappe mancanti. Il confronto della sola baseline storica `before/` era invece limitato a h12 con 3 mappe sotto soglia. FPS finali su emulazione: **60/60**, 0 frame persi.
+
 ## Limiti dichiarati
 - Le schermate e le metriche sono **emulazione Playwright/Chromium**, non test su dispositivi fisici.
+- I prospetti M1 di Piazza del Gesù Nuovo restano sprite bidimensionali autorevoli: l'ombra proiettata è disegnata, ma la VL non la legge sempre come volume architettonico coerente. Nessun tetto nuovo è stato inventato sopra di essi.
+- Restano stilizzazioni evidenti in vegetazione a griglia, marciapiedi generici e tetti semplici su alcune mappe moderne; a Pianura l'asfalto risulta ancora troppo «autostradale» per il borgo.
+- `casa_nonna`, `bar` e `pizzeria` non mostrano miglioramenti percepibili a h12; i guadagni principali negli interni sono in `metro`/`metro2`.
 - Il confronto visivo automatico di questa tornata usa `opencode/nemotron-3.5-super-vl-free`, che legge direttamente le immagini. `confronto-visivo.jpg` (rigenerato con la Guglia a 30 m) e le screenshot sono conservate anche per l'eventuale revisione umana.
 - La distinzione finale tra 30 e 34 m per il monumento completo resta documentata in `PROPORTIONS.md`: il gioco usa 30 m, valore cauto e direttamente attestato dal Comune di Napoli.
 - La verifica manuale finale su **MacBook e Google Pixel 9 Pro XL fisici** resta richiesta all'utente. Nessuna stabilità finale viene dichiarata prima del suo riscontro.

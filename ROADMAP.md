@@ -1,6 +1,6 @@
 # CAMPANIA LIFE / CAMPANIA OPEN CODE — ROADMAP di ripresa
 
-**Aggiornato:** 25 novembre 2026 — revisione visiva con modello multimodale completata e pubblicata sullo stesso URL.
+**Aggiornato:** 27 novembre 2026 — avviata la fase di revisione avanzata (luce direzionale e confronto before/after su 26 mappe); esiti e numeri finali **da compilare dopo QA**. La revisione visiva con modello multimodale resta completata e pubblicata sullo stesso URL.
 **Repo:** `CampaniaLife` · branch locale `main` · remote `origin/main`.
 **Stato pubblico corrente:** revisione visiva `f08ed04`, bundle remoto `index-Cuk6AnYj.js`, workflow `45621222465` `success` (build `139229576528`, deploy `139229978970`, step `Mobile start smoke (touch)` `success`). Smoke test pubblico **OK**: `NUOVA PARTITA` → `napoli` `240,272` → WASD quattro direzioni + corsa + idle → joystick quattro direzioni → movimento `229,272` → save `campania_life_save_v1` → `CONTINUA` `229,272`. Marker beta, chiave save, `blockedBox`, `doorClosed`, `softShadow`, `tufo` e `Pext` presenti nel bundle remoto. Pubblicazione precedente: `b7f2716` / `2243cbc`, bundle `index-CWJT4Ahe.js`, workflow `45616242811`.
 **Checkpoint della revisione visiva:** `checkpoint/pre-visual-review` / `backup/pre-visual-review` su `2243cbc`, con bundle `../backup/pre-visual-review/CampaniaLife-2243cbc.bundle`, mai ripristinato.
@@ -88,6 +88,17 @@
 - [x] **Ombre coerenti**: `engine.js` disegna una `groundShadow()` radiale prima di ogni facciata M1/procedurale tramite `drawFacade()`; `entities.js` rafforza l'ombra di giocatore e NPC senza alterare l'ancoraggio dei piedi. I difetti residui di prospettiva 3/4 restano un limite dell'asset M1, non una regressione funzionale.
 - [x] Confronto VL su screenshot `*-nohud` prima/dopo con `opencode/nemotron-3.5-super-vl-free`: risolti pavimento seriale e tetto piatto, rientro laterale parzialmente volumetrico. La VL non legge ancora l'ombra proiettata dei prospetti M1 come coerente; un probe pixel conferma che l'ombra è disegnata (4.970 pixel, Δ max 51). Il limite di prospettiva 3/4 resta legato all'asset M1 ed è documentato come artistico, non come regressione.
 - [x] Gate dopo l'intervento: regressione **42/42**, Playwright **6/6**, texture audit **50/50 e 21/21**, render audit **0 errori**, visual-explore **0 errori**, build CI-like OK.
+
+## Fase di revisione avanzata — luce direzionale e confronto 26 mappe (in corso)
+
+Il contratto della luce direzionale è in `docs/RENDERER_DECISION.md` §7; gli asset M1 restano autorevoli e il renderer Canvas 2D non viene sostituito.
+
+- [x] Baseline visiva acquisita in `qa/campania-open-code-1/art-review/before/`: 26 PNG senza HUD a `CL_QA_HOUR=12`, meteo `sole`, camera e `animT` fissati, più `report.json`. Risulta però invalida per le quattro mappe private: l'harness non ne possedeva gli immobili e non mascherava `#toasts`. Baseline autoritativa rigenerata in `before-v2/` dal commit `f13bc66` con harness corretto, h12+h18 e 0 errori. Nessun sorgente di gioco modificato.
+- [x] Harness `client/scripts/art-review.mjs` aggiornato: `CL_QA_OUT`, `CL_BASE_URL`, `CL_QA_HOUR`, secondo orario opzionale `CL_QA_HOUR_EXTRA` (alias `CL_QA_HOUR2`, es. 18), HUD disattivato sia nel DOM sia nel canvas e guardia anti-sovrascrittura.
+- [x] `client/scripts/art-review-compare.mjs` creato: `diff.json` con delta di palette, `edgeDensity`, luminanza ed errori console/page, elenco `underThresholdMaps`, contact sheet affiancate per mappa/orario e `contact-sheet.png` riepilogativo.
+- [x] Cattura `after/` a h12 e h18 dopo l'intervento sulla luce: 26 mappe per orario, HUD disattivato, camera, tempo e meteo fissati; la cartella `h18/` contiene le 26 immagini serali. Errori console/page: **0**.
+- [x] Confronto before/after e revisione VL delle sheet: `compare/diff.json` e 26 contact sheet affiancate. La VL ha confermato più arredo e segnaletica su tutte le mappe esteriori; difetti residui (facciate M1 ancora bidimensionali, vegetazione regolare, interni inizialmente cloni) sono documentati in `qa/campania-open-code-1/README.md`.
+- [x] Gate automatici finali: regressione **42/42**, Playwright **6/6**, texture **50/50 PNG e 21/21 facciate**, render audit e visual-explore **0 errori**, mobile-start **OK**, benchmark **60/60 FPS** su emulazione Pixel 9 Pro XL, build CI-like e `git diff --check` **OK**. Confronto autoritativo `before-v2/` ↔ `after/`: 52 coppie, 46 oltre soglia, 0 errori. La verifica umana su MacBook/Pixel fisici resta bloccata dal riscontro utente; marker beta, chiave save e attribuzioni ODbL/CC invariati. Pubblicazione solo sullo stesso URL.
 
 ---
 

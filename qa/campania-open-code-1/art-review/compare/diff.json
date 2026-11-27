@@ -1,0 +1,3215 @@
+{
+  "before": {
+    "dir": "/Users/armandosantucci/Documents/Max 8/Palettes/CampaniaLife/qa/campania-open-code-1/art-review/before-v2",
+    "hours": [
+      12,
+      18
+    ]
+  },
+  "after": {
+    "dir": "/Users/armandosantucci/Documents/Max 8/Palettes/CampaniaLife/qa/campania-open-code-1/art-review/after",
+    "hours": [
+      12,
+      18
+    ]
+  },
+  "hours": [
+    12,
+    18
+  ],
+  "hoursMissing": {
+    "before": [],
+    "after": []
+  },
+  "thresholds": {
+    "paletteRelPct": 5,
+    "edgeDensityAbs": 0.01,
+    "luminanceAbs": 2
+  },
+  "notes": [
+    "Sotto soglia = palette/variazione relativa, edgeDensity e luminanza entro le tolleranze e zero nuovi errori console/page.",
+    "pixel.mae e pixel.changedRatio sono informativi, calcolati dopo normalizzazione a 480x270; non entrano nella classificazione.",
+    "Gli errori console/page sono quelli del report di corsa quando la singola mappa non ne dichiara di propri."
+  ],
+  "maps": [
+    {
+      "id": "napoli",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 1552,
+        "edgeDensity": 0.25,
+        "luminance": 112.3,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 1564,
+        "edgeDensity": 0.253,
+        "luminance": 112,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 1552,
+          "after": 1564,
+          "abs": 12,
+          "pct": 0.77
+        },
+        "edgeDensity": {
+          "before": 0.25,
+          "after": 0.253,
+          "abs": 0.003,
+          "pct": 1.2
+        },
+        "luminance": {
+          "before": 112.3,
+          "after": 112,
+          "abs": -0.3,
+          "pct": -0.27
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.623,
+        "changedRatio": 0.0481,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/napoli-h12.png",
+      "underThreshold": true,
+      "reasons": []
+    },
+    {
+      "id": "costiera",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 515,
+        "edgeDensity": 0.115,
+        "luminance": 116.4,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 626,
+        "edgeDensity": 0.119,
+        "luminance": 116.2,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 515,
+          "after": 626,
+          "abs": 111,
+          "pct": 21.55
+        },
+        "edgeDensity": {
+          "before": 0.115,
+          "after": 0.119,
+          "abs": 0.004,
+          "pct": 3.48
+        },
+        "luminance": {
+          "before": 116.4,
+          "after": 116.2,
+          "abs": -0.2,
+          "pct": -0.17
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.889,
+        "changedRatio": 0.0157,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/costiera-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 21.55% oltre 5%"
+      ]
+    },
+    {
+      "id": "vesuvio",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 535,
+        "edgeDensity": 0.114,
+        "luminance": 119.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 563,
+        "edgeDensity": 0.116,
+        "luminance": 118.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 535,
+          "after": 563,
+          "abs": 28,
+          "pct": 5.23
+        },
+        "edgeDensity": {
+          "before": 0.114,
+          "after": 0.116,
+          "abs": 0.002,
+          "pct": 1.75
+        },
+        "luminance": {
+          "before": 119.2,
+          "after": 118.3,
+          "abs": -0.9,
+          "pct": -0.76
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.815,
+        "changedRatio": 0.0104,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/vesuvio-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 5.23% oltre 5%"
+      ]
+    },
+    {
+      "id": "pompei",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 318,
+        "edgeDensity": 0.137,
+        "luminance": 130.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 341,
+        "edgeDensity": 0.142,
+        "luminance": 130.1,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 318,
+          "after": 341,
+          "abs": 23,
+          "pct": 7.23
+        },
+        "edgeDensity": {
+          "before": 0.137,
+          "after": 0.142,
+          "abs": 0.005,
+          "pct": 3.65
+        },
+        "luminance": {
+          "before": 130.7,
+          "after": 130.1,
+          "abs": -0.6,
+          "pct": -0.46
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.856,
+        "changedRatio": 0.0095,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/pompei-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 7.23% oltre 5%"
+      ]
+    },
+    {
+      "id": "capri",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 849,
+        "edgeDensity": 0.12,
+        "luminance": 136.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 937,
+        "edgeDensity": 0.121,
+        "luminance": 135.6,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 849,
+          "after": 937,
+          "abs": 88,
+          "pct": 10.37
+        },
+        "edgeDensity": {
+          "before": 0.12,
+          "after": 0.121,
+          "abs": 0.001,
+          "pct": 0.83
+        },
+        "luminance": {
+          "before": 136.7,
+          "after": 135.6,
+          "abs": -1.1,
+          "pct": -0.8
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.293,
+        "changedRatio": 0.0174,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/capri-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 10.37% oltre 5%"
+      ]
+    },
+    {
+      "id": "bacoli",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 675,
+        "edgeDensity": 0.121,
+        "luminance": 118.1,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 858,
+        "edgeDensity": 0.128,
+        "luminance": 117.8,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 675,
+          "after": 858,
+          "abs": 183,
+          "pct": 27.11
+        },
+        "edgeDensity": {
+          "before": 0.121,
+          "after": 0.128,
+          "abs": 0.007,
+          "pct": 5.79
+        },
+        "luminance": {
+          "before": 118.1,
+          "after": 117.8,
+          "abs": -0.3,
+          "pct": -0.25
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.975,
+        "changedRatio": 0.0642,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/bacoli-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 27.11% oltre 5%"
+      ]
+    },
+    {
+      "id": "salerno",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 300,
+        "edgeDensity": 0.123,
+        "luminance": 139.1,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 388,
+        "edgeDensity": 0.154,
+        "luminance": 138.7,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 300,
+          "after": 388,
+          "abs": 88,
+          "pct": 29.33
+        },
+        "edgeDensity": {
+          "before": 0.123,
+          "after": 0.154,
+          "abs": 0.031,
+          "pct": 25.2
+        },
+        "luminance": {
+          "before": 139.1,
+          "after": 138.7,
+          "abs": -0.4,
+          "pct": -0.29
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.127,
+        "changedRatio": 0.0795,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/salerno-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 29.33% oltre 5%",
+        "edgeDensity Δ0.031 oltre 0.01"
+      ]
+    },
+    {
+      "id": "avellino",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 559,
+        "edgeDensity": 0.133,
+        "luminance": 109.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 708,
+        "edgeDensity": 0.137,
+        "luminance": 109.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 559,
+          "after": 708,
+          "abs": 149,
+          "pct": 26.65
+        },
+        "edgeDensity": {
+          "before": 0.133,
+          "after": 0.137,
+          "abs": 0.004,
+          "pct": 3.01
+        },
+        "luminance": {
+          "before": 109.7,
+          "after": 109.3,
+          "abs": -0.4,
+          "pct": -0.36
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.886,
+        "changedRatio": 0.0208,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/avellino-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 26.65% oltre 5%"
+      ]
+    },
+    {
+      "id": "caserta",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 388,
+        "edgeDensity": 0.182,
+        "luminance": 128.3,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 564,
+        "edgeDensity": 0.206,
+        "luminance": 128.2,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 388,
+          "after": 564,
+          "abs": 176,
+          "pct": 45.36
+        },
+        "edgeDensity": {
+          "before": 0.182,
+          "after": 0.206,
+          "abs": 0.024,
+          "pct": 13.19
+        },
+        "luminance": {
+          "before": 128.3,
+          "after": 128.2,
+          "abs": -0.1,
+          "pct": -0.08
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.005,
+        "changedRatio": 0.0548,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/caserta-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 45.36% oltre 5%",
+        "edgeDensity Δ0.024 oltre 0.01"
+      ]
+    },
+    {
+      "id": "fuorigrotta",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 530,
+        "edgeDensity": 0.154,
+        "luminance": 139.4,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 685,
+        "edgeDensity": 0.171,
+        "luminance": 138.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 530,
+          "after": 685,
+          "abs": 155,
+          "pct": 29.25
+        },
+        "edgeDensity": {
+          "before": 0.154,
+          "after": 0.171,
+          "abs": 0.017,
+          "pct": 11.04
+        },
+        "luminance": {
+          "before": 139.4,
+          "after": 138.3,
+          "abs": -1.1,
+          "pct": -0.79
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 4.171,
+        "changedRatio": 0.1066,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/fuorigrotta-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 29.25% oltre 5%",
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "pianura",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 542,
+        "edgeDensity": 0.15,
+        "luminance": 121.5,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 810,
+        "edgeDensity": 0.174,
+        "luminance": 119.6,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 542,
+          "after": 810,
+          "abs": 268,
+          "pct": 49.45
+        },
+        "edgeDensity": {
+          "before": 0.15,
+          "after": 0.174,
+          "abs": 0.024,
+          "pct": 16
+        },
+        "luminance": {
+          "before": 121.5,
+          "after": 119.6,
+          "abs": -1.9,
+          "pct": -1.56
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 14.671,
+        "changedRatio": 0.3819,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/pianura-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 49.45% oltre 5%",
+        "edgeDensity Δ0.024 oltre 0.01"
+      ]
+    },
+    {
+      "id": "casa_nonna",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 3177,
+        "edgeDensity": 0.201,
+        "luminance": 138.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 3610,
+        "edgeDensity": 0.209,
+        "luminance": 139,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 3177,
+          "after": 3610,
+          "abs": 433,
+          "pct": 13.63
+        },
+        "edgeDensity": {
+          "before": 0.201,
+          "after": 0.209,
+          "abs": 0.008,
+          "pct": 3.98
+        },
+        "luminance": {
+          "before": 138.2,
+          "after": 139,
+          "abs": 0.8,
+          "pct": 0.58
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.553,
+        "changedRatio": 0.1033,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/casa_nonna-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 13.63% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_giocatore",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 608,
+        "edgeDensity": 0.282,
+        "luminance": 145.5,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 855,
+        "edgeDensity": 0.286,
+        "luminance": 143,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 608,
+          "after": 855,
+          "abs": 247,
+          "pct": 40.63
+        },
+        "edgeDensity": {
+          "before": 0.282,
+          "after": 0.286,
+          "abs": 0.004,
+          "pct": 1.42
+        },
+        "luminance": {
+          "before": 145.5,
+          "after": 143,
+          "abs": -2.5,
+          "pct": -1.72
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.809,
+        "changedRatio": 0.0887,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/casa_giocatore-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 40.63% oltre 5%",
+        "luminanza Δ-2.5 oltre 2"
+      ]
+    },
+    {
+      "id": "appartamento",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 664,
+        "edgeDensity": 0.28,
+        "luminance": 144.4,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 936,
+        "edgeDensity": 0.284,
+        "luminance": 142.8,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 664,
+          "after": 936,
+          "abs": 272,
+          "pct": 40.96
+        },
+        "edgeDensity": {
+          "before": 0.28,
+          "after": 0.284,
+          "abs": 0.004,
+          "pct": 1.43
+        },
+        "luminance": {
+          "before": 144.4,
+          "after": 142.8,
+          "abs": -1.6,
+          "pct": -1.11
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.362,
+        "changedRatio": 0.0878,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/appartamento-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 40.96% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_amalfi",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 640,
+        "edgeDensity": 0.281,
+        "luminance": 144.6,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 834,
+        "edgeDensity": 0.286,
+        "luminance": 143.1,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 640,
+          "after": 834,
+          "abs": 194,
+          "pct": 30.31
+        },
+        "edgeDensity": {
+          "before": 0.281,
+          "after": 0.286,
+          "abs": 0.005,
+          "pct": 1.78
+        },
+        "luminance": {
+          "before": 144.6,
+          "after": 143.1,
+          "abs": -1.5,
+          "pct": -1.04
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.868,
+        "changedRatio": 0.075,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/casa_amalfi-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 30.31% oltre 5%"
+      ]
+    },
+    {
+      "id": "bottega",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 629,
+        "edgeDensity": 0.283,
+        "luminance": 143.6,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 789,
+        "edgeDensity": 0.289,
+        "luminance": 142,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 629,
+          "after": 789,
+          "abs": 160,
+          "pct": 25.44
+        },
+        "edgeDensity": {
+          "before": 0.283,
+          "after": 0.289,
+          "abs": 0.006,
+          "pct": 2.12
+        },
+        "luminance": {
+          "before": 143.6,
+          "after": 142,
+          "abs": -1.6,
+          "pct": -1.11
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.907,
+        "changedRatio": 0.0701,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/bottega-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 25.44% oltre 5%"
+      ]
+    },
+    {
+      "id": "souvenir",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 557,
+        "edgeDensity": 0.284,
+        "luminance": 144.5,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 636,
+        "edgeDensity": 0.291,
+        "luminance": 143.4,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 557,
+          "after": 636,
+          "abs": 79,
+          "pct": 14.18
+        },
+        "edgeDensity": {
+          "before": 0.284,
+          "after": 0.291,
+          "abs": 0.007,
+          "pct": 2.46
+        },
+        "luminance": {
+          "before": 144.5,
+          "after": 143.4,
+          "abs": -1.1,
+          "pct": -0.76
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.825,
+        "changedRatio": 0.0486,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/souvenir-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 14.18% oltre 5%"
+      ]
+    },
+    {
+      "id": "bar",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 3048,
+        "edgeDensity": 0.274,
+        "luminance": 127.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 3132,
+        "edgeDensity": 0.278,
+        "luminance": 127.4,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 3048,
+          "after": 3132,
+          "abs": 84,
+          "pct": 2.76
+        },
+        "edgeDensity": {
+          "before": 0.274,
+          "after": 0.278,
+          "abs": 0.004,
+          "pct": 1.46
+        },
+        "luminance": {
+          "before": 127.7,
+          "after": 127.4,
+          "abs": -0.3,
+          "pct": -0.23
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.752,
+        "changedRatio": 0.0499,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/bar-h12.png",
+      "underThreshold": true,
+      "reasons": []
+    },
+    {
+      "id": "pizzeria",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 2709,
+        "edgeDensity": 0.268,
+        "luminance": 128.1,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 2761,
+        "edgeDensity": 0.275,
+        "luminance": 127.6,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 2709,
+          "after": 2761,
+          "abs": 52,
+          "pct": 1.92
+        },
+        "edgeDensity": {
+          "before": 0.268,
+          "after": 0.275,
+          "abs": 0.007,
+          "pct": 2.61
+        },
+        "luminance": {
+          "before": 128.1,
+          "after": 127.6,
+          "abs": -0.5,
+          "pct": -0.39
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.871,
+        "changedRatio": 0.0551,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/pizzeria-h12.png",
+      "underThreshold": true,
+      "reasons": []
+    },
+    {
+      "id": "metro",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 1828,
+        "edgeDensity": 0.163,
+        "luminance": 141.6,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 1908,
+        "edgeDensity": 0.18,
+        "luminance": 141.1,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 1828,
+          "after": 1908,
+          "abs": 80,
+          "pct": 4.38
+        },
+        "edgeDensity": {
+          "before": 0.163,
+          "after": 0.18,
+          "abs": 0.017,
+          "pct": 10.43
+        },
+        "luminance": {
+          "before": 141.6,
+          "after": 141.1,
+          "abs": -0.5,
+          "pct": -0.35
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.869,
+        "changedRatio": 0.0706,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/metro-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "metro2",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 1833,
+        "edgeDensity": 0.162,
+        "luminance": 141.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 1930,
+        "edgeDensity": 0.179,
+        "luminance": 141.2,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 1833,
+          "after": 1930,
+          "abs": 97,
+          "pct": 5.29
+        },
+        "edgeDensity": {
+          "before": 0.162,
+          "after": 0.179,
+          "abs": 0.017,
+          "pct": 10.49
+        },
+        "luminance": {
+          "before": 141.7,
+          "after": 141.2,
+          "abs": -0.5,
+          "pct": -0.35
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.872,
+        "changedRatio": 0.0711,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/metro2-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 5.29% oltre 5%",
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "negozio",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 594,
+        "edgeDensity": 0.283,
+        "luminance": 143.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 675,
+        "edgeDensity": 0.289,
+        "luminance": 142.7,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 594,
+          "after": 675,
+          "abs": 81,
+          "pct": 13.64
+        },
+        "edgeDensity": {
+          "before": 0.283,
+          "after": 0.289,
+          "abs": 0.006,
+          "pct": 2.12
+        },
+        "luminance": {
+          "before": 143.7,
+          "after": 142.7,
+          "abs": -1,
+          "pct": -0.7
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.829,
+        "changedRatio": 0.0496,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/negozio-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 13.64% oltre 5%"
+      ]
+    },
+    {
+      "id": "banca",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 533,
+        "edgeDensity": 0.15,
+        "luminance": 156.8,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 591,
+        "edgeDensity": 0.157,
+        "luminance": 155.2,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 533,
+          "after": 591,
+          "abs": 58,
+          "pct": 10.88
+        },
+        "edgeDensity": {
+          "before": 0.15,
+          "after": 0.157,
+          "abs": 0.007,
+          "pct": 4.67
+        },
+        "luminance": {
+          "before": 156.8,
+          "after": 155.2,
+          "abs": -1.6,
+          "pct": -1.02
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.816,
+        "changedRatio": 0.0796,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/banca-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 10.88% oltre 5%"
+      ]
+    },
+    {
+      "id": "clinica",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 621,
+        "edgeDensity": 0.28,
+        "luminance": 143.8,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 677,
+        "edgeDensity": 0.286,
+        "luminance": 142.8,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 621,
+          "after": 677,
+          "abs": 56,
+          "pct": 9.02
+        },
+        "edgeDensity": {
+          "before": 0.28,
+          "after": 0.286,
+          "abs": 0.006,
+          "pct": 2.14
+        },
+        "luminance": {
+          "before": 143.8,
+          "after": 142.8,
+          "abs": -1,
+          "pct": -0.7
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.724,
+        "changedRatio": 0.0481,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/clinica-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 9.02% oltre 5%"
+      ]
+    },
+    {
+      "id": "ufficio",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 601,
+        "edgeDensity": 0.282,
+        "luminance": 145.3,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 656,
+        "edgeDensity": 0.288,
+        "luminance": 144.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 601,
+          "after": 656,
+          "abs": 55,
+          "pct": 9.15
+        },
+        "edgeDensity": {
+          "before": 0.282,
+          "after": 0.288,
+          "abs": 0.006,
+          "pct": 2.13
+        },
+        "luminance": {
+          "before": 145.3,
+          "after": 144.3,
+          "abs": -1,
+          "pct": -0.69
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.698,
+        "changedRatio": 0.0476,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/ufficio-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 9.15% oltre 5%"
+      ]
+    },
+    {
+      "id": "grotta",
+      "hour": 12,
+      "status": "ok",
+      "before": {
+        "palette": 362,
+        "edgeDensity": 0.159,
+        "luminance": 83,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 417,
+        "edgeDensity": 0.159,
+        "luminance": 83.4,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 362,
+          "after": 417,
+          "abs": 55,
+          "pct": 15.19
+        },
+        "edgeDensity": {
+          "before": 0.159,
+          "after": 0.159,
+          "abs": 0,
+          "pct": 0
+        },
+        "luminance": {
+          "before": 83,
+          "after": 83.4,
+          "abs": 0.4,
+          "pct": 0.48
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 0.519,
+        "changedRatio": 0.0107,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/grotta-h12.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 15.19% oltre 5%"
+      ]
+    },
+    {
+      "id": "napoli",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 1066,
+        "edgeDensity": 0.204,
+        "luminance": 105.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 968,
+        "edgeDensity": 0.191,
+        "luminance": 108.2,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 1066,
+          "after": 968,
+          "abs": -98,
+          "pct": -9.19
+        },
+        "edgeDensity": {
+          "before": 0.204,
+          "after": 0.191,
+          "abs": -0.013,
+          "pct": -6.37
+        },
+        "luminance": {
+          "before": 105.2,
+          "after": 108.2,
+          "abs": 3,
+          "pct": 2.85
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 5.544,
+        "changedRatio": 0.2895,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/napoli-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette -9.19% oltre 5%",
+        "edgeDensity Δ-0.013 oltre 0.01",
+        "luminanza Δ3 oltre 2"
+      ]
+    },
+    {
+      "id": "costiera",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 442,
+        "edgeDensity": 0.083,
+        "luminance": 108.6,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 550,
+        "edgeDensity": 0.082,
+        "luminance": 111.4,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 442,
+          "after": 550,
+          "abs": 108,
+          "pct": 24.43
+        },
+        "edgeDensity": {
+          "before": 0.083,
+          "after": 0.082,
+          "abs": -0.001,
+          "pct": -1.2
+        },
+        "luminance": {
+          "before": 108.6,
+          "after": 111.4,
+          "abs": 2.8,
+          "pct": 2.58
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.858,
+        "changedRatio": 0.2019,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/costiera-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 24.43% oltre 5%",
+        "luminanza Δ2.8 oltre 2"
+      ]
+    },
+    {
+      "id": "vesuvio",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 441,
+        "edgeDensity": 0.046,
+        "luminance": 111.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 408,
+        "edgeDensity": 0.046,
+        "luminance": 112.9,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 441,
+          "after": 408,
+          "abs": -33,
+          "pct": -7.48
+        },
+        "edgeDensity": {
+          "before": 0.046,
+          "after": 0.046,
+          "abs": 0,
+          "pct": 0
+        },
+        "luminance": {
+          "before": 111.2,
+          "after": 112.9,
+          "abs": 1.7,
+          "pct": 1.53
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.661,
+        "changedRatio": 0.1202,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/vesuvio-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette -7.48% oltre 5%"
+      ]
+    },
+    {
+      "id": "pompei",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 265,
+        "edgeDensity": 0.115,
+        "luminance": 120.1,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 261,
+        "edgeDensity": 0.102,
+        "luminance": 122,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 265,
+          "after": 261,
+          "abs": -4,
+          "pct": -1.51
+        },
+        "edgeDensity": {
+          "before": 0.115,
+          "after": 0.102,
+          "abs": -0.013,
+          "pct": -11.3
+        },
+        "luminance": {
+          "before": 120.1,
+          "after": 122,
+          "abs": 1.9,
+          "pct": 1.58
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.787,
+        "changedRatio": 0.0453,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/pompei-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "edgeDensity Δ-0.013 oltre 0.01"
+      ]
+    },
+    {
+      "id": "capri",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 719,
+        "edgeDensity": 0.058,
+        "luminance": 125.1,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 703,
+        "edgeDensity": 0.056,
+        "luminance": 126.1,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 719,
+          "after": 703,
+          "abs": -16,
+          "pct": -2.23
+        },
+        "edgeDensity": {
+          "before": 0.058,
+          "after": 0.056,
+          "abs": -0.002,
+          "pct": -3.45
+        },
+        "luminance": {
+          "before": 125.1,
+          "after": 126.1,
+          "abs": 1,
+          "pct": 0.8
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.811,
+        "changedRatio": 0.2025,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/capri-h18.png",
+      "underThreshold": true,
+      "reasons": []
+    },
+    {
+      "id": "bacoli",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 533,
+        "edgeDensity": 0.085,
+        "luminance": 110,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 693,
+        "edgeDensity": 0.088,
+        "luminance": 111.9,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 533,
+          "after": 693,
+          "abs": 160,
+          "pct": 30.02
+        },
+        "edgeDensity": {
+          "before": 0.085,
+          "after": 0.088,
+          "abs": 0.003,
+          "pct": 3.53
+        },
+        "luminance": {
+          "before": 110,
+          "after": 111.9,
+          "abs": 1.9,
+          "pct": 1.73
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 4.829,
+        "changedRatio": 0.1869,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/bacoli-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 30.02% oltre 5%"
+      ]
+    },
+    {
+      "id": "salerno",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 252,
+        "edgeDensity": 0.087,
+        "luminance": 126.9,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 357,
+        "edgeDensity": 0.089,
+        "luminance": 127.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 252,
+          "after": 357,
+          "abs": 105,
+          "pct": 41.67
+        },
+        "edgeDensity": {
+          "before": 0.087,
+          "after": 0.089,
+          "abs": 0.002,
+          "pct": 2.3
+        },
+        "luminance": {
+          "before": 126.9,
+          "after": 127.3,
+          "abs": 0.4,
+          "pct": 0.32
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 4.336,
+        "changedRatio": 0.1309,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/salerno-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 41.67% oltre 5%"
+      ]
+    },
+    {
+      "id": "avellino",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 469,
+        "edgeDensity": 0.096,
+        "luminance": 103.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 532,
+        "edgeDensity": 0.095,
+        "luminance": 106.1,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 469,
+          "after": 532,
+          "abs": 63,
+          "pct": 13.43
+        },
+        "edgeDensity": {
+          "before": 0.096,
+          "after": 0.095,
+          "abs": -0.001,
+          "pct": -1.04
+        },
+        "luminance": {
+          "before": 103.2,
+          "after": 106.1,
+          "abs": 2.9,
+          "pct": 2.81
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.646,
+        "changedRatio": 0.1282,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/avellino-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 13.43% oltre 5%",
+        "luminanza Δ2.9 oltre 2"
+      ]
+    },
+    {
+      "id": "caserta",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 341,
+        "edgeDensity": 0.141,
+        "luminance": 118.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 450,
+        "edgeDensity": 0.141,
+        "luminance": 120.5,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 341,
+          "after": 450,
+          "abs": 109,
+          "pct": 31.96
+        },
+        "edgeDensity": {
+          "before": 0.141,
+          "after": 0.141,
+          "abs": 0,
+          "pct": 0
+        },
+        "luminance": {
+          "before": 118.2,
+          "after": 120.5,
+          "abs": 2.3,
+          "pct": 1.95
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 4.046,
+        "changedRatio": 0.0984,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/caserta-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 31.96% oltre 5%",
+        "luminanza Δ2.3 oltre 2"
+      ]
+    },
+    {
+      "id": "fuorigrotta",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 436,
+        "edgeDensity": 0.118,
+        "luminance": 127.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 472,
+        "edgeDensity": 0.11,
+        "luminance": 125.4,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 436,
+          "after": 472,
+          "abs": 36,
+          "pct": 8.26
+        },
+        "edgeDensity": {
+          "before": 0.118,
+          "after": 0.11,
+          "abs": -0.008,
+          "pct": -6.78
+        },
+        "luminance": {
+          "before": 127.2,
+          "after": 125.4,
+          "abs": -1.8,
+          "pct": -1.42
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 7.038,
+        "changedRatio": 0.418,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/fuorigrotta-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 8.26% oltre 5%"
+      ]
+    },
+    {
+      "id": "pianura",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 437,
+        "edgeDensity": 0.089,
+        "luminance": 112.9,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 637,
+        "edgeDensity": 0.119,
+        "luminance": 112.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 437,
+          "after": 637,
+          "abs": 200,
+          "pct": 45.77
+        },
+        "edgeDensity": {
+          "before": 0.089,
+          "after": 0.119,
+          "abs": 0.03,
+          "pct": 33.71
+        },
+        "luminance": {
+          "before": 112.9,
+          "after": 112.3,
+          "abs": -0.6,
+          "pct": -0.53
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 13.576,
+        "changedRatio": 0.5544,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/pianura-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 45.77% oltre 5%",
+        "edgeDensity Δ0.03 oltre 0.01"
+      ]
+    },
+    {
+      "id": "casa_nonna",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 3177,
+        "edgeDensity": 0.201,
+        "luminance": 138.2,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 3633,
+        "edgeDensity": 0.209,
+        "luminance": 138.9,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 3177,
+          "after": 3633,
+          "abs": 456,
+          "pct": 14.35
+        },
+        "edgeDensity": {
+          "before": 0.201,
+          "after": 0.209,
+          "abs": 0.008,
+          "pct": 3.98
+        },
+        "luminance": {
+          "before": 138.2,
+          "after": 138.9,
+          "abs": 0.7,
+          "pct": 0.51
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.753,
+        "changedRatio": 0.1064,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/casa_nonna-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 14.35% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_giocatore",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 608,
+        "edgeDensity": 0.282,
+        "luminance": 145.5,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 854,
+        "edgeDensity": 0.286,
+        "luminance": 142.9,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 608,
+          "after": 854,
+          "abs": 246,
+          "pct": 40.46
+        },
+        "edgeDensity": {
+          "before": 0.282,
+          "after": 0.286,
+          "abs": 0.004,
+          "pct": 1.42
+        },
+        "luminance": {
+          "before": 145.5,
+          "after": 142.9,
+          "abs": -2.6,
+          "pct": -1.79
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.957,
+        "changedRatio": 0.0899,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/casa_giocatore-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 40.46% oltre 5%",
+        "luminanza Δ-2.6 oltre 2"
+      ]
+    },
+    {
+      "id": "appartamento",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 664,
+        "edgeDensity": 0.28,
+        "luminance": 144.4,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 950,
+        "edgeDensity": 0.283,
+        "luminance": 142.7,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 664,
+          "after": 950,
+          "abs": 286,
+          "pct": 43.07
+        },
+        "edgeDensity": {
+          "before": 0.28,
+          "after": 0.283,
+          "abs": 0.003,
+          "pct": 1.07
+        },
+        "luminance": {
+          "before": 144.4,
+          "after": 142.7,
+          "abs": -1.7,
+          "pct": -1.18
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.504,
+        "changedRatio": 0.0883,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/appartamento-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 43.07% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_amalfi",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 640,
+        "edgeDensity": 0.281,
+        "luminance": 144.6,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 834,
+        "edgeDensity": 0.285,
+        "luminance": 143,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 640,
+          "after": 834,
+          "abs": 194,
+          "pct": 30.31
+        },
+        "edgeDensity": {
+          "before": 0.281,
+          "after": 0.285,
+          "abs": 0.004,
+          "pct": 1.42
+        },
+        "luminance": {
+          "before": 144.6,
+          "after": 143,
+          "abs": -1.6,
+          "pct": -1.11
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.012,
+        "changedRatio": 0.0757,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/casa_amalfi-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 30.31% oltre 5%"
+      ]
+    },
+    {
+      "id": "bottega",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 629,
+        "edgeDensity": 0.283,
+        "luminance": 143.6,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 819,
+        "edgeDensity": 0.288,
+        "luminance": 142,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 629,
+          "after": 819,
+          "abs": 190,
+          "pct": 30.21
+        },
+        "edgeDensity": {
+          "before": 0.283,
+          "after": 0.288,
+          "abs": 0.005,
+          "pct": 1.77
+        },
+        "luminance": {
+          "before": 143.6,
+          "after": 142,
+          "abs": -1.6,
+          "pct": -1.11
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 3.079,
+        "changedRatio": 0.0756,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/bottega-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 30.21% oltre 5%"
+      ]
+    },
+    {
+      "id": "souvenir",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 557,
+        "edgeDensity": 0.284,
+        "luminance": 144.5,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 636,
+        "edgeDensity": 0.29,
+        "luminance": 143.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 557,
+          "after": 636,
+          "abs": 79,
+          "pct": 14.18
+        },
+        "edgeDensity": {
+          "before": 0.284,
+          "after": 0.29,
+          "abs": 0.006,
+          "pct": 2.11
+        },
+        "luminance": {
+          "before": 144.5,
+          "after": 143.3,
+          "abs": -1.2,
+          "pct": -0.83
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.972,
+        "changedRatio": 0.0495,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/souvenir-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 14.18% oltre 5%"
+      ]
+    },
+    {
+      "id": "bar",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 3048,
+        "edgeDensity": 0.274,
+        "luminance": 127.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 3134,
+        "edgeDensity": 0.278,
+        "luminance": 127.3,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 3048,
+          "after": 3134,
+          "abs": 86,
+          "pct": 2.82
+        },
+        "edgeDensity": {
+          "before": 0.274,
+          "after": 0.278,
+          "abs": 0.004,
+          "pct": 1.46
+        },
+        "luminance": {
+          "before": 127.7,
+          "after": 127.3,
+          "abs": -0.4,
+          "pct": -0.31
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.872,
+        "changedRatio": 0.0496,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/bar-h18.png",
+      "underThreshold": true,
+      "reasons": []
+    },
+    {
+      "id": "pizzeria",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 2709,
+        "edgeDensity": 0.268,
+        "luminance": 128.1,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 2775,
+        "edgeDensity": 0.275,
+        "luminance": 127.6,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 2709,
+          "after": 2775,
+          "abs": 66,
+          "pct": 2.44
+        },
+        "edgeDensity": {
+          "before": 0.268,
+          "after": 0.275,
+          "abs": 0.007,
+          "pct": 2.61
+        },
+        "luminance": {
+          "before": 128.1,
+          "after": 127.6,
+          "abs": -0.5,
+          "pct": -0.39
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.997,
+        "changedRatio": 0.0549,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/pizzeria-h18.png",
+      "underThreshold": true,
+      "reasons": []
+    },
+    {
+      "id": "metro",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 1828,
+        "edgeDensity": 0.163,
+        "luminance": 141.6,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 1907,
+        "edgeDensity": 0.179,
+        "luminance": 141,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 1828,
+          "after": 1907,
+          "abs": 79,
+          "pct": 4.32
+        },
+        "edgeDensity": {
+          "before": 0.163,
+          "after": 0.179,
+          "abs": 0.016,
+          "pct": 9.82
+        },
+        "luminance": {
+          "before": 141.6,
+          "after": 141,
+          "abs": -0.6,
+          "pct": -0.42
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.009,
+        "changedRatio": 0.0728,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/metro-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "edgeDensity Δ0.016 oltre 0.01"
+      ]
+    },
+    {
+      "id": "metro2",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 1833,
+        "edgeDensity": 0.162,
+        "luminance": 141.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 1932,
+        "edgeDensity": 0.179,
+        "luminance": 141,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 1833,
+          "after": 1932,
+          "abs": 99,
+          "pct": 5.4
+        },
+        "edgeDensity": {
+          "before": 0.162,
+          "after": 0.179,
+          "abs": 0.017,
+          "pct": 10.49
+        },
+        "luminance": {
+          "before": 141.7,
+          "after": 141,
+          "abs": -0.7,
+          "pct": -0.49
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 2.018,
+        "changedRatio": 0.0733,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/metro2-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 5.4% oltre 5%",
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "negozio",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 594,
+        "edgeDensity": 0.283,
+        "luminance": 143.7,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 682,
+        "edgeDensity": 0.289,
+        "luminance": 142.6,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 594,
+          "after": 682,
+          "abs": 88,
+          "pct": 14.81
+        },
+        "edgeDensity": {
+          "before": 0.283,
+          "after": 0.289,
+          "abs": 0.006,
+          "pct": 2.12
+        },
+        "luminance": {
+          "before": 143.7,
+          "after": 142.6,
+          "abs": -1.1,
+          "pct": -0.77
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.982,
+        "changedRatio": 0.051,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/negozio-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 14.81% oltre 5%"
+      ]
+    },
+    {
+      "id": "banca",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 533,
+        "edgeDensity": 0.15,
+        "luminance": 156.8,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 594,
+        "edgeDensity": 0.156,
+        "luminance": 155.1,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 533,
+          "after": 594,
+          "abs": 61,
+          "pct": 11.44
+        },
+        "edgeDensity": {
+          "before": 0.15,
+          "after": 0.156,
+          "abs": 0.006,
+          "pct": 4
+        },
+        "luminance": {
+          "before": 156.8,
+          "after": 155.1,
+          "abs": -1.7,
+          "pct": -1.08
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.975,
+        "changedRatio": 0.0801,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/banca-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 11.44% oltre 5%"
+      ]
+    },
+    {
+      "id": "clinica",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 621,
+        "edgeDensity": 0.28,
+        "luminance": 143.8,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 687,
+        "edgeDensity": 0.286,
+        "luminance": 142.7,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 621,
+          "after": 687,
+          "abs": 66,
+          "pct": 10.63
+        },
+        "edgeDensity": {
+          "before": 0.28,
+          "after": 0.286,
+          "abs": 0.006,
+          "pct": 2.14
+        },
+        "luminance": {
+          "before": 143.8,
+          "after": 142.7,
+          "abs": -1.1,
+          "pct": -0.76
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.869,
+        "changedRatio": 0.0495,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/clinica-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 10.63% oltre 5%"
+      ]
+    },
+    {
+      "id": "ufficio",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 601,
+        "edgeDensity": 0.282,
+        "luminance": 145.3,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 655,
+        "edgeDensity": 0.288,
+        "luminance": 144.2,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 601,
+          "after": 655,
+          "abs": 54,
+          "pct": 8.99
+        },
+        "edgeDensity": {
+          "before": 0.282,
+          "after": 0.288,
+          "abs": 0.006,
+          "pct": 2.13
+        },
+        "luminance": {
+          "before": 145.3,
+          "after": 144.2,
+          "abs": -1.1,
+          "pct": -0.76
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 1.839,
+        "changedRatio": 0.0487,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/ufficio-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 8.99% oltre 5%"
+      ]
+    },
+    {
+      "id": "grotta",
+      "hour": 18,
+      "status": "ok",
+      "before": {
+        "palette": 424,
+        "edgeDensity": 0.16,
+        "luminance": 83.4,
+        "consoleErrors": []
+      },
+      "after": {
+        "palette": 484,
+        "edgeDensity": 0.158,
+        "luminance": 83.8,
+        "consoleErrors": []
+      },
+      "delta": {
+        "palette": {
+          "before": 424,
+          "after": 484,
+          "abs": 60,
+          "pct": 14.15
+        },
+        "edgeDensity": {
+          "before": 0.16,
+          "after": 0.158,
+          "abs": -0.002,
+          "pct": -1.25
+        },
+        "luminance": {
+          "before": 83.4,
+          "after": 83.8,
+          "abs": 0.4,
+          "pct": 0.48
+        },
+        "consoleErrors": {
+          "beforeCount": 0,
+          "afterCount": 0,
+          "added": [],
+          "removed": []
+        }
+      },
+      "pixel": {
+        "mae": 0.624,
+        "changedRatio": 0.0106,
+        "beforeSize": "3024x1704",
+        "afterSize": "3024x1704"
+      },
+      "sheet": "sheets/grotta-h18.png",
+      "underThreshold": false,
+      "reasons": [
+        "palette 14.15% oltre 5%"
+      ]
+    }
+  ],
+  "underThresholdMaps": [
+    {
+      "id": "napoli",
+      "hour": 12
+    },
+    {
+      "id": "bar",
+      "hour": 12
+    },
+    {
+      "id": "pizzeria",
+      "hour": 12
+    },
+    {
+      "id": "capri",
+      "hour": 18
+    },
+    {
+      "id": "bar",
+      "hour": 18
+    },
+    {
+      "id": "pizzeria",
+      "hour": 18
+    }
+  ],
+  "changedMaps": [
+    {
+      "id": "costiera",
+      "hour": 12,
+      "reasons": [
+        "palette 21.55% oltre 5%"
+      ]
+    },
+    {
+      "id": "vesuvio",
+      "hour": 12,
+      "reasons": [
+        "palette 5.23% oltre 5%"
+      ]
+    },
+    {
+      "id": "pompei",
+      "hour": 12,
+      "reasons": [
+        "palette 7.23% oltre 5%"
+      ]
+    },
+    {
+      "id": "capri",
+      "hour": 12,
+      "reasons": [
+        "palette 10.37% oltre 5%"
+      ]
+    },
+    {
+      "id": "bacoli",
+      "hour": 12,
+      "reasons": [
+        "palette 27.11% oltre 5%"
+      ]
+    },
+    {
+      "id": "salerno",
+      "hour": 12,
+      "reasons": [
+        "palette 29.33% oltre 5%",
+        "edgeDensity Δ0.031 oltre 0.01"
+      ]
+    },
+    {
+      "id": "avellino",
+      "hour": 12,
+      "reasons": [
+        "palette 26.65% oltre 5%"
+      ]
+    },
+    {
+      "id": "caserta",
+      "hour": 12,
+      "reasons": [
+        "palette 45.36% oltre 5%",
+        "edgeDensity Δ0.024 oltre 0.01"
+      ]
+    },
+    {
+      "id": "fuorigrotta",
+      "hour": 12,
+      "reasons": [
+        "palette 29.25% oltre 5%",
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "pianura",
+      "hour": 12,
+      "reasons": [
+        "palette 49.45% oltre 5%",
+        "edgeDensity Δ0.024 oltre 0.01"
+      ]
+    },
+    {
+      "id": "casa_nonna",
+      "hour": 12,
+      "reasons": [
+        "palette 13.63% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_giocatore",
+      "hour": 12,
+      "reasons": [
+        "palette 40.63% oltre 5%",
+        "luminanza Δ-2.5 oltre 2"
+      ]
+    },
+    {
+      "id": "appartamento",
+      "hour": 12,
+      "reasons": [
+        "palette 40.96% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_amalfi",
+      "hour": 12,
+      "reasons": [
+        "palette 30.31% oltre 5%"
+      ]
+    },
+    {
+      "id": "bottega",
+      "hour": 12,
+      "reasons": [
+        "palette 25.44% oltre 5%"
+      ]
+    },
+    {
+      "id": "souvenir",
+      "hour": 12,
+      "reasons": [
+        "palette 14.18% oltre 5%"
+      ]
+    },
+    {
+      "id": "metro",
+      "hour": 12,
+      "reasons": [
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "metro2",
+      "hour": 12,
+      "reasons": [
+        "palette 5.29% oltre 5%",
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "negozio",
+      "hour": 12,
+      "reasons": [
+        "palette 13.64% oltre 5%"
+      ]
+    },
+    {
+      "id": "banca",
+      "hour": 12,
+      "reasons": [
+        "palette 10.88% oltre 5%"
+      ]
+    },
+    {
+      "id": "clinica",
+      "hour": 12,
+      "reasons": [
+        "palette 9.02% oltre 5%"
+      ]
+    },
+    {
+      "id": "ufficio",
+      "hour": 12,
+      "reasons": [
+        "palette 9.15% oltre 5%"
+      ]
+    },
+    {
+      "id": "grotta",
+      "hour": 12,
+      "reasons": [
+        "palette 15.19% oltre 5%"
+      ]
+    },
+    {
+      "id": "napoli",
+      "hour": 18,
+      "reasons": [
+        "palette -9.19% oltre 5%",
+        "edgeDensity Δ-0.013 oltre 0.01",
+        "luminanza Δ3 oltre 2"
+      ]
+    },
+    {
+      "id": "costiera",
+      "hour": 18,
+      "reasons": [
+        "palette 24.43% oltre 5%",
+        "luminanza Δ2.8 oltre 2"
+      ]
+    },
+    {
+      "id": "vesuvio",
+      "hour": 18,
+      "reasons": [
+        "palette -7.48% oltre 5%"
+      ]
+    },
+    {
+      "id": "pompei",
+      "hour": 18,
+      "reasons": [
+        "edgeDensity Δ-0.013 oltre 0.01"
+      ]
+    },
+    {
+      "id": "bacoli",
+      "hour": 18,
+      "reasons": [
+        "palette 30.02% oltre 5%"
+      ]
+    },
+    {
+      "id": "salerno",
+      "hour": 18,
+      "reasons": [
+        "palette 41.67% oltre 5%"
+      ]
+    },
+    {
+      "id": "avellino",
+      "hour": 18,
+      "reasons": [
+        "palette 13.43% oltre 5%",
+        "luminanza Δ2.9 oltre 2"
+      ]
+    },
+    {
+      "id": "caserta",
+      "hour": 18,
+      "reasons": [
+        "palette 31.96% oltre 5%",
+        "luminanza Δ2.3 oltre 2"
+      ]
+    },
+    {
+      "id": "fuorigrotta",
+      "hour": 18,
+      "reasons": [
+        "palette 8.26% oltre 5%"
+      ]
+    },
+    {
+      "id": "pianura",
+      "hour": 18,
+      "reasons": [
+        "palette 45.77% oltre 5%",
+        "edgeDensity Δ0.03 oltre 0.01"
+      ]
+    },
+    {
+      "id": "casa_nonna",
+      "hour": 18,
+      "reasons": [
+        "palette 14.35% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_giocatore",
+      "hour": 18,
+      "reasons": [
+        "palette 40.46% oltre 5%",
+        "luminanza Δ-2.6 oltre 2"
+      ]
+    },
+    {
+      "id": "appartamento",
+      "hour": 18,
+      "reasons": [
+        "palette 43.07% oltre 5%"
+      ]
+    },
+    {
+      "id": "casa_amalfi",
+      "hour": 18,
+      "reasons": [
+        "palette 30.31% oltre 5%"
+      ]
+    },
+    {
+      "id": "bottega",
+      "hour": 18,
+      "reasons": [
+        "palette 30.21% oltre 5%"
+      ]
+    },
+    {
+      "id": "souvenir",
+      "hour": 18,
+      "reasons": [
+        "palette 14.18% oltre 5%"
+      ]
+    },
+    {
+      "id": "metro",
+      "hour": 18,
+      "reasons": [
+        "edgeDensity Δ0.016 oltre 0.01"
+      ]
+    },
+    {
+      "id": "metro2",
+      "hour": 18,
+      "reasons": [
+        "palette 5.4% oltre 5%",
+        "edgeDensity Δ0.017 oltre 0.01"
+      ]
+    },
+    {
+      "id": "negozio",
+      "hour": 18,
+      "reasons": [
+        "palette 14.81% oltre 5%"
+      ]
+    },
+    {
+      "id": "banca",
+      "hour": 18,
+      "reasons": [
+        "palette 11.44% oltre 5%"
+      ]
+    },
+    {
+      "id": "clinica",
+      "hour": 18,
+      "reasons": [
+        "palette 10.63% oltre 5%"
+      ]
+    },
+    {
+      "id": "ufficio",
+      "hour": 18,
+      "reasons": [
+        "palette 8.99% oltre 5%"
+      ]
+    },
+    {
+      "id": "grotta",
+      "hour": 18,
+      "reasons": [
+        "palette 14.15% oltre 5%"
+      ]
+    }
+  ],
+  "missingMaps": [],
+  "sheets": {
+    "dir": "sheets",
+    "overview": "contact-sheet.png"
+  }
+}

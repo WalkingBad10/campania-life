@@ -443,7 +443,14 @@
         const lane = CL.laneOffset(r.dir);
         const x = r.tx * T + T / 2 + lane.x, y = r.ty * T + T / 2 + lane.y;
         const fp = CL.vehicleFootprint(r.type, r.dir);
-        if (!this.canMove(x, y, fp.w, fp.h) || MAPS.portalAt(this.map, x, y)) continue;
+        // Rotte ambientali solo sulla carreggiata: angoli dell'impronta inclusi,
+        // mai su marciapiedi, piazze pedonali o portali.
+        const corners = [
+          [x - fp.w / 2, y - fp.h / 2], [x + fp.w / 2, y - fp.h / 2],
+          [x - fp.w / 2, y + fp.h / 2], [x + fp.w / 2, y + fp.h / 2]
+        ];
+        const onRoad = corners.every(p => MAPS.tile(this.map, Math.floor(p[0] / T), Math.floor(p[1] / T)) === 'r');
+        if (!onRoad || !this.canMove(x, y, fp.w, fp.h) || MAPS.portalAt(this.map, x, y)) continue;
         const v = new CL.Vehicle(this, r.type, x, y, r.dir);
         v.ambient = true;
         v.speed *= .38;
@@ -659,6 +666,104 @@
       });
     }
 
+    /* Stato luce uniforme per ombre, facciate, dettagli e atmosfera.
+     * hour e' frazionario (0..24); azimuth e' in radianti: -PI/4 = sole da NO,
+     * 0 = zenit, +PI/4 = sole da NE. elevation e' in gradi (0..78, negativa di
+     * notte), come si aspetta art.js. dirX/dirY sono la direzione dell'ombra in
+     * screen-space (SE al mattino, SO nel pomeriggio), gia' normalizzata.
+     * Nessun salto: i nodi sono continui e l'azimuth non avvolge mai (di notte
+     * rientra da NE verso NO). */
+    lightState() {
+      const t = this.state && this.state.time;
+      const fallback = (this.state && S.time && S.time.hour) ? S.time.hour() : 12;
+      const raw = t && typeof t.hour === 'function' ? t.hour()
+        : (t && Number.isFinite(t.min) ? t.min / 60 : fallback);
+      const h = ((Number(raw) || 0) % 24 + 24) % 24;
+      const key = Math.round(h * 100) + ':' + ((this.state && this.state.weather) || '');
+      const cache = this._lightCache;
+      if (cache && cache.key === key) return cache.value;
+
+      const smooth = v => { const x = U.clamp(v, 0, 1); return x * x * (3 - 2 * x); };
+      const ah = h < 6 ? h + 24 : h;
+      const azKeys = [[6, -Math.PI / 4], [12, 0], [18, Math.PI / 4], [24, 0], [30, -Math.PI / 4]];
+      let azimuth = -Math.PI / 4;
+      for (let i = 0; i < azKeys.length - 1; i++) {
+        if (ah <= azKeys[i + 1][0]) {
+          const f = smooth((ah - azKeys[i][0]) / (azKeys[i + 1][0] - azKeys[i][0]));
+          azimuth = U.lerp(azKeys[i][1], azKeys[i + 1][1], f);
+          break;
+        }
+      }
+      // +78° a mezzogiorno, 0 all'alba/tramonto, negativa di notte: continuo.
+      const elevRad = Math.sin(Math.PI * (h - 6) / 12) * (78 * Math.PI / 180);
+      const elevation = elevRad * 180 / Math.PI;
+      const night = h >= 19 || h < 6;
+
+      let dark;
+      if (h < 5) dark = .48;
+      else if (h < 7) dark = U.lerp(.48, .04, smooth((h - 5) / 2));
+      else if (h < 17) dark = .02;
+      else if (h < 19) dark = U.lerp(.02, .26, smooth((h - 17) / 2));
+      else if (h < 21) dark = U.lerp(.26, .46, smooth((h - 19) / 2));
+      else dark = U.lerp(.46, .48, smooth((h - 21) / 3));
+
+      let warm = Math.max(0, 1 - Math.abs(h - 6) / 3) * .13
+        + Math.max(0, 1 - Math.abs(h - 18) / 3) * .13;
+      const wi = (this.state && S.weather && S.weather.info && S.weather.info()) || {};
+      const overcast = wi.id === 'temporale' ? 1 : wi.id === 'pioggia' ? .8 : wi.id === 'nuvole' ? .45 : 0;
+      dark = U.clamp(dark + (wi.dark || 0) * .85, 0, .56);
+      warm *= (1 - overcast * .6);
+
+      const tanE = Math.tan(Math.max(.12, Math.abs(elevRad)));
+      // Fade continuo fra regime notturno e diurno: nessun salto all'alba.
+      const dayMix = smooth((Math.sin(Math.PI * (h - 6) / 12) + .08) / .16);
+      const base = U.lerp(9, 20, dayMix);
+      const maxLen = U.lerp(26, 52, dayMix);
+      const shadowLen = Math.round(U.clamp(base / tanE, 5, maxLen) * (1 - overcast * .22));
+
+      const value = {
+        hour: h,
+        azimuth,
+        elevation,
+        dirX: -Math.sin(azimuth),
+        dirY: Math.cos(azimuth),
+        shadowLen,
+        dark,
+        warm,
+        night
+      };
+      this._lightCache = { key, value };
+      return value;
+    }
+
+    /* Gradienti cached in coordinate locali: il caller applica translate. */
+    _cachedGradient(key, build) {
+      if (!this._gradients) { this._gradients = Object.create(null); this._gradCount = 0; }
+      let g = this._gradients[key];
+      if (!g) {
+        if (this._gradCount > 96) { this._gradients = Object.create(null); this._gradCount = 0; }
+        g = this._gradients[key] = build();
+        this._gradCount++;
+      }
+      return g;
+    }
+    _lightKey(light) {
+      return [Math.round(light.azimuth * 80), Math.round(light.elevation * 80),
+        light.shadowLen, Math.round(light.dark * 100), Math.round(light.warm * 100)].join(':');
+    }
+    _glow(c, key, x, y, r, inner, outer, alpha) {
+      const rr = Math.max(2, Math.round(r));
+      const g = this._cachedGradient('glow:' + key + ':' + rr, () => {
+        const gr = c.createRadialGradient(0, 0, 1, 0, 0, rr);
+        gr.addColorStop(0, inner); gr.addColorStop(1, outer); return gr;
+      });
+      c.save();
+      if (alpha !== undefined) c.globalAlpha *= alpha;
+      c.translate(Math.round(x), Math.round(y));
+      c.fillStyle = g; c.fillRect(-rr, -rr, rr * 2, rr * 2);
+      c.restore();
+    }
+
     /* --------------------------------------------------------------- render */
     render() {
       const c = this.ctx;
@@ -791,8 +896,9 @@
     drawLights(c) {
       if (!this.map) return;
       const m = this.map, cam = CL.camera;
-      const h = S.time.hour();
-      const night = h >= 19 || h < 6;
+      const light = this.lightState();
+      const h = light.hour;
+      const night = light.night;
       const dusk = h >= 17 && h < 20;
       const indoors = m.zone === 'interno';
       c.save();
@@ -801,6 +907,8 @@
       for (const d of (m.decors || [])) {
         const sx = d.x - cam.x, sy = d.y - cam.y;
         if (sx < -60 || sy < -60 || sx > CL.VIEW_W + 60 || sy > CL.VIEW_H + 60) continue;
+        // I nuovi dettagli portano il tipo funzionale in data.kind.
+        const kind = (d.data && d.data.kind) || d.type;
         if (d.type === 'lamp' && (night || dusk)) {
           // La lanterna disegnata sta a sy-14…-4: il centro del bagliore deve
           // coincidere con essa, non con il vecchio sy-20 (6 px piu' in alto).
@@ -808,6 +916,21 @@
           const g = c.createRadialGradient(sx + 8, sy - 10, 1, sx + 8, sy - 10, r);
           g.addColorStop(0, 'rgba(255,236,170,.30)'); g.addColorStop(1, 'rgba(255,220,120,0)');
           c.fillStyle = g; c.fillRect(sx + 8 - r, sy - 10 - r, r * 2, r * 2);
+        }
+        // Nuove sorgenti M1: lampade da muro/soffitto e insegne dei negozi.
+        // Il bagliore e' un gradiente radiale cacheato, non un rettangolo opaco.
+        if (kind === 'wall_lamp' && (night || dusk || indoors)) {
+          const r = 25 * (.95 + Math.sin(this.animT * 2.8 + sx * .09) * .05);
+          this._glow(c, 'wall', sx + (d.data.ox || 0) + 4, sy + (d.data.oy || 0) + 6, r, 'rgba(255,232,176,.28)', 'rgba(255,196,110,0)', .92);
+        }
+        if (kind === 'ceiling_lamp' && (indoors || night)) {
+          const r = d.data.r || 28;
+          this._glow(c, 'ceil', sx + (d.data.ox || 0) + 7, sy + (d.data.oy || 0) + 3, r, 'rgba(255,238,190,.24)', 'rgba(255,210,130,0)', indoors ? .78 : .9);
+        }
+        if (kind === 'shop_sign' && (night || dusk)) {
+          const sw = d.data.w || 32, sh = d.data.h || 12;
+          const r = Math.max(sw, sh) * .82;
+          this._glow(c, 'sign', sx + (d.data.ox || 0) + sw / 2, sy + (d.data.oy || 0) + sh / 2, r, 'rgba(255,190,104,.24)', 'rgba(255,126,62,0)', .9);
         }
         if ((d.type === 'candle_glow') && (indoors || night || dusk)) {
           const r = 22 * (.93 + Math.sin(this.animT * 4.2 + sx * .11) * .07);
@@ -857,27 +980,34 @@
     }
 
     drawAtmosphere(c) {
-      const st = this.state;
-      const h = S.time.hour();
+      const light = this.lightState();
       const indoors = this.map && this.map.zone === 'interno';
-      let dark = 0, warm = 0, cool = 0;
-      if (indoors) {
-        dark = (h >= 19 || h < 6) ? .18 : .08;
-        warm = .06;
-      } else {
-        if (h < 5) { dark = .58; cool = .08; }
-        else if (h < 7) { dark = .42 - (h - 5) * .18; warm = .08; }
-        else if (h < 17) { dark = 0; }
-        else if (h < 19) { dark = (h - 17) * .12; warm = .10 - (h - 17) * .02; }
-        else if (h < 21) { dark = .24 + (h - 19) * .10; cool = .04; }
-        else { dark = .46; cool = .06; }
-        const wi = S.weather.info(); dark += wi.dark;
-      }
-      if (dark > 0) { c.fillStyle = (cool > 0 ? 'rgba(10,18,42,' : 'rgba(10,16,38,') + U.clamp(dark, 0, .72) + ')'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H); }
+      // Stessi valori di lightState: niente scale orarie diverse fra ombre e velo.
+      const dark = U.clamp(indoors ? (light.night ? .18 : .08) : light.dark, 0, .48);
+      const warm = indoors ? .06 : light.warm;
+      if (dark > 0) { c.fillStyle = 'rgba(10,16,38,' + dark + ')'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H); }
       if (warm > 0) { c.fillStyle = 'rgba(255,170,90,' + warm + ')'; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H); }
-      const gr = c.createRadialGradient(240, 135, 80, 240, 135, 290);
-      gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(4,8,14,' + (indoors ? '.22' : '.34') + ')');
-      c.fillStyle = gr; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
+      // Velatura direzionale coerente con l'ombra: lato del sole più caldo,
+      // lato dell'ombra più freddo. Semi-trasparente, non nasconde tile né HUD.
+      const key = 'atmo:' + this._lightKey(light) + (indoors ? ':in' : '');
+      const veil = this._cachedGradient(key, () => {
+        const cx = CL.VIEW_W / 2, cy = CL.VIEW_H / 2;
+        const R = Math.hypot(CL.VIEW_W, CL.VIEW_H) * .55;
+        const gr = c.createLinearGradient(cx - light.dirX * R, cy - light.dirY * R,
+          cx + light.dirX * R, cy + light.dirY * R);
+        gr.addColorStop(0, 'rgba(255,236,196,' + (indoors ? .015 : .035) + ')');
+        gr.addColorStop(.5, 'rgba(128,138,160,0)');
+        gr.addColorStop(1, 'rgba(16,24,44,' + (.035 + dark * .075) + ')');
+        return gr;
+      });
+      c.fillStyle = veil; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
+      const vig = this._cachedGradient('vignette:' + (indoors ? 'in' : 'out'), () => {
+        const gr = c.createRadialGradient(240, 135, 80, 240, 135, 290);
+        gr.addColorStop(0, 'rgba(0,0,0,0)');
+        gr.addColorStop(1, 'rgba(4,8,14,' + (indoors ? '.22' : '.30') + ')');
+        return gr;
+      });
+      c.fillStyle = vig; c.fillRect(0, 0, CL.VIEW_W, CL.VIEW_H);
     }
 
     drawHud(c) {
@@ -910,18 +1040,29 @@
 
     drawTileTransitions(c, m, x0, y0, x1, y1) {
       const at = (tx, ty) => CL.maps.tile(m, tx, ty);
+      const curb = 'rgba(18,20,24,.16)';
+      const indoor = { A: 1, M: 1, R: 1, h: 1 }; // solo pavimenti calpestabili
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
         const px = tx * T, py = ty * T, ch = at(tx, ty);
         if (ch === 'p') {
+          // Giunti di basolato solo sul marciapiede esistente.
+          c.fillStyle = 'rgba(86,80,70,.10)';
+          c.fillRect(px, py + 8, T, 1); c.fillRect(px + 8, py, 1, 8);
+          c.fillStyle = 'rgba(255,255,255,.05)'; c.fillRect(px, py + 9, T, 1);
           if (at(tx, ty - 1) === 'r') { c.fillStyle = '#d8d0c0'; c.fillRect(px, py, T, 2); c.fillStyle = '#918a7c'; c.fillRect(px, py + 2, T, 1); }
           if (at(tx, ty + 1) === 'r') { c.fillStyle = '#9a9284'; c.fillRect(px, py + T - 2, T, 2); c.fillStyle = '#d8d0c0'; c.fillRect(px, py + T - 3, T, 1); }
           if (at(tx - 1, ty) === 'r') { c.fillStyle = '#d8d0c0'; c.fillRect(px, py, 2, T); c.fillStyle = '#918a7c'; c.fillRect(px + 2, py, 1, T); }
           if (at(tx + 1, ty) === 'r') { c.fillStyle = '#9a9284'; c.fillRect(px + T - 2, py, 2, T); c.fillStyle = '#d8d0c0'; c.fillRect(px + T - 3, py, 1, T); }
         } else if (ch === 'r') {
-          if (at(tx, ty - 1) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px, py, T, 1); }
-          if (at(tx, ty + 1) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px, py + T - 1, T, 1); }
-          if (at(tx - 1, ty) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px, py, 1, T); }
-          if (at(tx + 1, ty) === 'p') { c.fillStyle = '#6b7075'; c.fillRect(px + T - 1, py, 1, T); }
+          // Ombra di cordolo lato strada, solo dove il marciapiede confina.
+          if (at(tx, ty - 1) === 'p') { c.fillStyle = curb; c.fillRect(px, py, T, 3); c.fillStyle = '#6b7075'; c.fillRect(px, py, T, 1); }
+          if (at(tx, ty + 1) === 'p') { c.fillStyle = curb; c.fillRect(px, py + T - 3, T, 3); c.fillStyle = '#6b7075'; c.fillRect(px, py + T - 1, T, 1); }
+          if (at(tx - 1, ty) === 'p') { c.fillStyle = curb; c.fillRect(px, py, 3, T); c.fillStyle = '#6b7075'; c.fillRect(px, py, 1, T); }
+          if (at(tx + 1, ty) === 'p') { c.fillStyle = curb; c.fillRect(px + T - 3, py, 3, T); c.fillStyle = '#6b7075'; c.fillRect(px + T - 1, py, 1, T); }
+        } else if (indoor[ch]) {
+          // Giunti di pavimento: solo superfici già calpestabili, niente porte.
+          c.fillStyle = 'rgba(70,60,48,.07)';
+          c.fillRect(px, py + T - 1, T, 1); c.fillRect(px + T - 1, py, 1, T);
         }
       }
     }
@@ -962,6 +1103,9 @@
     }
 
     decorSortY(d) {
+      // I dettagli montati sulle facciate forzano la loro profondità: devono
+      // passare davanti al prospetto senza spostare l'ancoraggio del sprite.
+      if (d.data && d.data.sortY !== undefined) return d.data.sortY;
       if (d.type === 'lamp') return d.y + 16;
       if (d.type === 'bench') return d.y + 10;
       // Le tende dei negozi devono restare sopra le facciate M1 che le coprivano.
@@ -1017,32 +1161,77 @@
     }
 
     /* Ombra di appoggio + facciata: un unico helpers tiene M1 e facciate
-     * procedurali sulla stessa pipeline. La radiale è disegnata prima dell'asset,
-     * quindi non può coprire finestre, portali o balconi. */
+     * procedurali sulla stessa pipeline. Tutte le ombre sono disegnate prima
+     * dell'asset; le occlusioni successive sono limitate a gronda e bordi,
+     * quindi non coprono porte, finestre o balconi. */
     drawFacade(c, d, kind) {
-      const img = ART.buildingSprite(kind);
+      const light = this.lightState();
+      const img = ART.buildingSprite(kind, light);
       if (!img) return;
       const dx = d.x + (d.data.ox || 0);
       const dy = d.y + (d.data.oy !== undefined ? d.data.oy : 0);
-      // Il centro dell'ellisse è sotto il piede della facciata, non dentro
-      // l'immagine: così l'ombra è visibile sul selciato invece di essere
-      // coperta proprio dal prospetto che dovrebbe ancorare.
-      const rx = Math.min(img.width * 0.50, 120);
-      const ry = Math.max(8, Math.min(16, Math.round(img.height * 0.075)));
-      const baseY = dy + img.height;
-      // Proiezione SE: luce da nord-ovest. Il corpo dell'edificio copre la
-      // parte alta del poligono, quindi resta visibile solo la fascia a terra.
+      const w = img.width, h = img.height;
+      const baseY = dy + h;
+      const rx = Math.min(w * 0.50, 120);
+      const ry = Math.max(8, Math.min(16, Math.round(h * 0.075)));
+      const L = light.shadowLen, vx = light.dirX, vy = light.dirY;
+      const lk = this._lightKey(light);
+
+      // Proiezione a terra: il poligono parte dal piede della facciata e segue
+      // la direzione uniforme dell'ombra. Lunghezza e verso variano con l'ora,
+      // alpha diminuisce verso l'esterno. Nessun rettangolo fisso.
       c.save();
-      c.fillStyle = 'rgba(22,20,18,.22)';
+      c.translate(dx, baseY - 1);
+      c.fillStyle = this._cachedGradient('ground:' + kind + ':' + lk, () => {
+        const gr = c.createLinearGradient(0, 0, vx * L, vy * L);
+        const a = (light.night ? .14 : .32) * (1 - light.dark * .35);
+        gr.addColorStop(0, 'rgba(20,18,16,' + a.toFixed(3) + ')');
+        gr.addColorStop(.55, 'rgba(20,18,16,' + (a * .45).toFixed(3) + ')');
+        gr.addColorStop(1, 'rgba(20,18,16,0)');
+        return gr;
+      });
       c.beginPath();
-      c.moveTo(dx, baseY - 2);
-      c.lineTo(dx + img.width, baseY - 2);
-      c.lineTo(dx + img.width + 20, baseY + 14);
-      c.lineTo(dx + 20, baseY + 14);
+      c.moveTo(0, 0); c.lineTo(w, 0);
+      c.lineTo(w + vx * L, vy * L);
+      c.lineTo(vx * L, vy * L);
       c.closePath(); c.fill();
       c.restore();
-      this.groundShadow(c, dx + img.width * 0.54, baseY + Math.round(ry * 0.2), rx, ry);
+
+      // Contatto radiale sotto il piede, non dentro il prospetto.
+      this.groundShadow(c, dx + w * .5 + vx * 3, baseY + Math.max(2, vy * 3), rx, ry);
       c.drawImage(img, dx, dy);
+
+      // Profondità 2D: ombreggiatura laterale del volume (lato in ombra in
+      // base al segno di dirX) e occlusione ambientale sotto la gronda.
+      // I gradienti sono trasparenti al centro: aperture e portali restano
+      // leggibili. Tutto e' in coordinate locali, quindi riusabile.
+      const sw = Math.max(4, Math.min(18, Math.round(w * .06)));
+      const th = Math.max(4, Math.min(12, Math.round(h * .05)));
+      const sidePower = .14 + light.dark * .18;
+      const leftA = vx >= 0 ? sidePower * .35 : sidePower;
+      const rightA = vx >= 0 ? sidePower : sidePower * .35;
+      const sKey = 'facside:' + kind + ':' + lk + ':' + leftA.toFixed(2) + ':' + rightA.toFixed(2);
+      const tKey = 'factop:' + kind + ':' + lk + ':' + th;
+      const topA = (.10 + .12 * (1 - U.clamp(light.elevation / 78, 0, 1))) * (1 + light.dark * .4);
+      c.save();
+      c.translate(dx, dy);
+      c.fillStyle = this._cachedGradient(sKey, () => {
+        const gr = c.createLinearGradient(0, 0, w, 0);
+        gr.addColorStop(0, 'rgba(12,16,24,' + leftA.toFixed(3) + ')');
+        gr.addColorStop(sw / w, 'rgba(12,16,24,0)');
+        gr.addColorStop(1 - sw / w, 'rgba(12,16,24,0)');
+        gr.addColorStop(1, 'rgba(12,16,24,' + rightA.toFixed(3) + ')');
+        return gr;
+      });
+      c.fillRect(0, 0, w, h);
+      c.fillStyle = this._cachedGradient(tKey, () => {
+        const gr = c.createLinearGradient(0, 0, 0, th);
+        gr.addColorStop(0, 'rgba(10,14,22,' + topA.toFixed(3) + ')');
+        gr.addColorStop(1, 'rgba(10,14,22,0)');
+        return gr;
+      });
+      c.fillRect(0, 0, w, th);
+      c.restore();
     }
 
     drawDecor(c, d) {
@@ -1092,28 +1281,63 @@
           if (img) c.drawImage(img, x, y + (d.data.oy || 0) - 12);
           break;
         }
+        /* Micro-dettagli non solidi M1: same anchor rule for all five families. */
+        case 'street_detail': case 'facade_detail': case 'interior_detail':
+        case 'rail_detail': case 'shop_sign':
+        case 'wall_lamp': case 'ceiling_lamp': {
+          const data = d.data || {};
+          const img = ART.detailSprite
+            ? ART.detailSprite(data.kind || d.type, data.variant || 0)
+            : (ART.propSprite ? ART.propSprite(data.kind || d.type) : null);
+          if (!img) break;
+          const dw = data.w || img.width, dh = data.h || img.height;
+          const px = x + (data.ox || 0), py = y + (data.oy || 0);
+          if (data.shadow === true) this.softShadow(c, px + dw / 2, py + dh - 1, Math.min(dw * .42, 20), 3);
+          c.drawImage(img, px, py, dw, dh);
+          break;
+        }
+        case 'parked_vehicle': {
+          const data = d.data || {};
+          const img = ART.vehicle(data.type || 'car', data.dir || 'right');
+          if (!img) break;
+          const px = x + (data.ox || 0), py = y + (data.oy || 0);
+          const dw = data.w || img.width, dh = data.h || img.height;
+          this.softShadow(c, px + dw / 2, py + dh - 2, Math.max(6, dw * .4), 3);
+          c.drawImage(img, px, py, dw, dh);
+          break;
+        }
         case 'laundry_line': {
           const x2 = d.data.x2 !== undefined ? d.data.x2 : x + 48;
           const y2 = d.data.y2 !== undefined ? d.data.y2 : y;
           const sag = d.data.sag || 8, colors = d.data.colors || ['#e9e2d0', '#b94a3a', '#6f93ad'];
-          const low = Math.max(y, y2) + sag;
+          // Fase deterministica: dipende solo dalla posa, mai da Math.random.
+          const phase = x * .013 + y * .007 + (d.data.phase || 0);
+          const t = this.animT;
+          const low = Math.max(y, y2) + sag + Math.sin(t * .8 + phase) * .8;
+          const sway = Math.sin(t * 1.15 + phase) * 1.4;
           c.strokeStyle = 'rgba(60,55,50,.55)'; c.lineWidth = 1;
           c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo((x + x2) / 2, low, x2, y2); c.stroke();
-          const sway = Math.sin(this.animT * 1.1 + x * .01) * 1.2;
           for (let i = 0; i < 3; i++) {
-            const t = (i + 1) / 4;
-            const cx = Math.round(x + (x2 - x) * t) + sway;
-            const cy = Math.round((1 - t) * (1 - t) * y + 2 * (1 - t) * t * low + t * t * y2);
-            const col = colors[i % colors.length];
-            // Capo di vestito con pieghe e orlo irregolare, non un rettangolo.
-            c.fillStyle = col;
-            c.beginPath();
-            c.moveTo(cx - 5, cy); c.lineTo(cx + 5, cy);
-            c.lineTo(cx + 4, cy + 7); c.lineTo(cx + 2, cy + 6);
-            c.lineTo(cx, cy + 8); c.lineTo(cx - 2, cy + 6); c.lineTo(cx - 5, cy + 7);
-            c.closePath(); c.fill();
-            c.fillStyle = 'rgba(255,255,255,.22)'; c.fillRect(cx - 3, cy + 1, 2, 5);
-            c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(cx + 2, cy + 1, 1, 5);
+            const f = (i + 1) / 4;
+            const bend = Math.sin(Math.PI * f);
+            const cx = Math.round(x + (x2 - x) * f + sway * bend + Math.sin(t * 1.7 + phase + i) * .5);
+            const cy = Math.round((1 - f) * (1 - f) * y + 2 * (1 - f) * f * low + f * f * y2
+              + Math.sin(t * 1.9 + phase + i * 1.7) * .6);
+            // Passata 0 = ombra del panno, passata 1 = panno: stessa sagoma.
+            for (let pass = 0; pass < 2; pass++) {
+              const ox = pass === 0 ? 1.5 : 0, oy = pass === 0 ? 2 : 0;
+              c.fillStyle = pass === 0 ? 'rgba(24,22,20,.18)' : colors[i % colors.length];
+              c.beginPath();
+              c.moveTo(cx - 5 + ox, cy + oy); c.lineTo(cx + 5 + ox, cy + oy);
+              c.lineTo(cx + 4 + ox, cy + 7 + oy); c.lineTo(cx + 2 + ox, cy + 6 + oy);
+              c.lineTo(cx + ox, cy + 8 + oy); c.lineTo(cx - 2 + ox, cy + 6 + oy);
+              c.lineTo(cx - 5 + ox, cy + 7 + oy);
+              c.closePath(); c.fill();
+              if (pass === 1) {
+                c.fillStyle = 'rgba(255,255,255,.22)'; c.fillRect(cx - 3, cy + 1, 2, 5);
+                c.fillStyle = 'rgba(0,0,0,.15)'; c.fillRect(cx + 2, cy + 1, 1, 5);
+              }
+            }
           }
           break;
         }

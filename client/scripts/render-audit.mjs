@@ -111,7 +111,7 @@ async function main() {
       'palmTree', 'rock', 'flower', 'fountain'].forEach(n => tag(n, n));
     tag('propSprite', k => 'prop:' + k);
     const bs = CL.art.buildingSprite.bind(CL.art);
-    CL.art.buildingSprite = k => { const im = bs(k); if (im) im.__clKind = 'building:' + k; return im; };
+    CL.art.buildingSprite = (k, light) => { const im = bs(k, light); if (im) im.__clKind = 'building:' + k; return im; };
   });
 
   const results = [];

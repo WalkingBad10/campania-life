@@ -4,6 +4,109 @@
 (function (w) {
   'use strict';
   const CL = w.CL, U = CL.util, D = CL.data, ART = CL.art, T = CL.TILE;
+  const TAU = Math.PI * 2;
+  // Ciclo passo/appoggio/passoopposto/appoggio: il fotogramma neutro fra i due
+  // contatti rende più leggibile l'oscillazione di braccia e gambe.
+  const WALK_CYCLE = [1, 0, 3, 0];
+  const TURN_TIME = .14;
+
+  function hash32(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function unitHash(id, salt) { return (hash32(id + '|' + salt) % 10000) / 10000; }
+  function posedFrame(step) { return WALK_CYCLE[step % WALK_CYCLE.length]; }
+
+  // Luce da NO: l'ombra cade sempre a SE, qualunque sia la direzione del
+  // personaggio. Si accorcia appena il piede si solleva, senza mai cambiare
+  // l'ancoraggio (footY resta il fondo della hitbox).
+  function drawContactShadow(ctx, x, footY, base, lift) {
+    const sx = Math.round(x) + 2, sy = footY + 1;
+    const a = base - lift * .10, rx = 9 - lift * 1.2, ry = 5 - lift * .8;
+    ctx.fillStyle = 'rgba(18,15,13,' + a.toFixed(3) + ')';
+    ctx.beginPath(); ctx.ellipse(sx, sy, rx, ry, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = 'rgba(18,15,13,' + (a * .62).toFixed(3) + ')';
+    ctx.beginPath(); ctx.ellipse(sx, sy, rx * .56, Math.max(1, ry * .4), 0, 0, TAU); ctx.fill();
+  }
+
+  function drawFigure(ctx, look, dir, frame, mode, x, footY, night, bob) {
+    const img = night ? ART.nightCharacter(look, dir, frame, mode)
+                      : ART.character(look, dir, frame, mode);
+    ctx.drawImage(img, Math.round(x - img.width / 2), footY - img.height + 1 - Math.round(bob));
+  }
+
+  // Breve dissolvenza tra due facing: nessuna collisione o hitbox coinvolta.
+  function drawFacing(ctx, look, dir, prevDir, turnT, frame, mode, x, footY, night, bob) {
+    if (prevDir && prevDir !== dir && turnT > 0) {
+      const t = Math.min(1, turnT / TURN_TIME);
+      ctx.globalAlpha = t;
+      drawFigure(ctx, look, prevDir, frame, mode, x, footY, night, bob);
+      ctx.globalAlpha = 1 - t;
+      drawFigure(ctx, look, dir, frame, mode, x, footY, night, bob);
+      ctx.globalAlpha = 1;
+      return;
+    }
+    drawFigure(ctx, look, dir, frame, mode, x, footY, night, bob);
+  }
+
+  function drawProps(ctx, npc, x, footY) {
+    const p = npc.props;
+    if (!p) return;
+    const dir = npc.dir;
+    const side = dir === 'left' ? -1 : dir === 'right' ? 1
+      : (unitHash(npc.id, 'propSide') < .5 ? -1 : 1);
+    const fx = Math.round(x), fy = Math.round(footY);
+    ctx.save();
+    if (p.dog) {
+      const dx = fx + side * 12;
+      ctx.fillStyle = 'rgba(18,15,13,.30)';
+      ctx.beginPath(); ctx.ellipse(dx, fy + 1, 7, 2, 0, 0, TAU); ctx.fill();
+      // Guinzaglio: dalla mano all'altezza del collare, non dal centro del corpo.
+      ctx.strokeStyle = '#8a6a4d'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(fx + side * 3, fy - 9);
+      ctx.quadraticCurveTo(fx + side * 8, fy - 5, dx - side * 3, fy - 5); ctx.stroke();
+      ctx.fillStyle = '#8a6a4d'; ctx.fillRect(dx - 4, fy - 6, 8, 4);
+      ctx.fillStyle = '#a07c58'; ctx.fillRect(dx + side * 3, fy - 8, 4, 4);
+      ctx.fillStyle = '#5e4935';
+      ctx.fillRect(dx + side * 3, fy - 9, 1, 2);
+      ctx.fillRect(dx + side * 5, fy - 9, 1, 2);
+      ctx.fillRect(dx - 3, fy - 2, 2, 2);
+      ctx.fillRect(dx + 2, fy - 2, 2, 2);
+      ctx.fillStyle = '#c8a37a'; ctx.fillRect(dx + side * 6, fy - 6, 2, 1);
+      ctx.beginPath(); ctx.moveTo(dx - side * 4, fy - 5);
+      ctx.lineTo(dx - side * 6, fy - 8); ctx.stroke();
+    }
+    if (p.bag) {
+      const bx = fx + side * 7, by = fy - 8;
+      ctx.fillStyle = 'rgba(18,15,13,.24)'; ctx.fillRect(bx, by + 6, 6, 2);
+      ctx.strokeStyle = '#6f573f'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(bx + 1, by); ctx.lineTo(bx + 1, by - 3);
+      ctx.lineTo(bx + 5, by - 3); ctx.lineTo(bx + 5, by); ctx.stroke();
+      ctx.fillStyle = '#b08a5c'; ctx.fillRect(bx, by, 6, 6);
+      ctx.fillStyle = '#8a6a4d'; ctx.fillRect(bx + 1, by + 1, 4, 2);
+    }
+    if (p.umbrella) {
+      const ux = fx + side * 8, uy = fy - 12;
+      ctx.fillStyle = 'rgba(18,15,13,.22)'; ctx.fillRect(ux, uy + 12, 3, 1);
+      ctx.strokeStyle = '#39434b'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(ux, uy); ctx.lineTo(ux + 1, uy + 12); ctx.stroke();
+      ctx.fillStyle = '#4b6274';
+      ctx.beginPath(); ctx.moveTo(ux - 2, uy + 2); ctx.lineTo(ux + 1, uy - 1);
+      ctx.lineTo(ux + 3, uy + 3); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#8a6a4d';
+      ctx.beginPath(); ctx.moveTo(ux + 1, uy + 6); ctx.lineTo(ux + 2, uy + 7); ctx.stroke();
+    }
+    if (p.coffee) {
+      const cx = fx + side * 7, cy = fy - 12;
+      ctx.fillStyle = 'rgba(18,15,13,.20)'; ctx.fillRect(cx, cy + 5, 5, 1);
+      ctx.fillStyle = '#f2efe6'; ctx.fillRect(cx, cy, 5, 4);
+      ctx.fillStyle = '#8b5a3c'; ctx.fillRect(cx + 1, cy, 3, 1);
+      ctx.strokeStyle = '#f2efe6'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(cx + 5, cy + 2, 2, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+    }
+    ctx.restore();
+  }
 
   class Entity {
     constructor(game, x, y) {
@@ -30,6 +133,7 @@
       this.vehicle = null;
       this.look = null;
       this.mode = 'idle'; this.idleT = 0;
+      this.prevDir = null; this.turnT = 0;
     }
     refreshLook() {
       const p = CL.state.profile; this.look = Object.assign({}, p.look);
@@ -38,6 +142,7 @@
     }
     update(dt, opts) {
       this.refreshLook();
+      this.turnT = Math.max(0, (this.turnT || 0) - dt);
       const game = this.game;
       if (this.vehicle) { this.anim += dt * 6; return; }
       if (opts && opts.modal) { this.moving = false; if (game.dbg) game.dbg.blocked = 'modal'; return; }
@@ -46,8 +151,9 @@
       let sp = this.speed * CL.systems.needs.speedFactor();
       if (CL.input.isDown('run')) sp *= 1.3;
       if (ax.x || ax.y) {
-        if (Math.abs(ax.x) > Math.abs(ax.y)) this.dir = ax.x < 0 ? 'left' : 'right';
-        else this.dir = ax.y < 0 ? 'up' : 'down';
+        const next = Math.abs(ax.x) > Math.abs(ax.y) ? (ax.x < 0 ? 'left' : 'right')
+                                                     : (ax.y < 0 ? 'up' : 'down');
+        if (next !== this.dir) { this.prevDir = this.dir; this.dir = next; this.turnT = TURN_TIME; }
         const x0 = this.x, y0 = this.y;
         let moved = false, blocked = [];
         // Sottopassi: anche con dt elevato o Corsa il passo resta < 4 px,
@@ -67,8 +173,8 @@
         // L'animazione avanza in base allo spazio REALMENTE percorso: quando
         // un muro blocca il passo il personaggio non "scivola" sul posto.
         const walked = Math.hypot(this.x - x0, this.y - y0);
-        this.anim += walked / 5.5;
-        this.frame = Math.floor(this.anim) % 4;
+        this.anim += walked / 6.2;
+        this.frame = posedFrame(Math.floor(this.anim));
         if (!moved) {
           // Fermo davanti a un ostacolo: respiroidtà, ultima direzione conservata.
           this.idleT += dt;
@@ -92,19 +198,15 @@
     draw(ctx) {
       if (this.vehicle) return;
       const night = CL.systems.time.isNight();
-      const img = night ? ART.nightCharacter(this.look, this.dir, this.frame, this.mode)
-                        : ART.character(this.look, this.dir, this.frame, this.mode);
       // y e' il CENTRO della hitbox (canStand usa y-h/2 .. y+h/2): i piedi
-      // devono coincidere con il fondo della hitbox, non 10 px sopra. L'ombra
-      // e' leggermente sfalsata in basso-destra per una luce coerente da NO.
+      // devono coincidere con il fondo della hitbox, non 10 px sopra.
       const footY = Math.round(this.y + this.h / 2 + this.offsetY) - 1;
-      ctx.save();
-      ctx.fillStyle = 'rgba(18,15,13,.55)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 9, 5, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = 'rgba(18,15,13,.34)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 5, 2, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-      ctx.drawImage(img, Math.round(this.x - img.width / 2), footY - img.height + 1);
+      const lift = this.moving ? Math.abs(Math.sin(this.anim * Math.PI / 2)) : 0;
+      const bob = this.moving ? lift * .6
+        : (Math.floor(this.idleT * 1.5) % 2 ? .4 : 0);
+      drawContactShadow(ctx, this.x, footY, .55, lift);
+      drawFacing(ctx, this.look, this.dir, this.prevDir, this.turnT, this.frame,
+        this.mode, this.x, footY, night, bob);
     }
     interact() { this.game.interactNear(this); }
   }
@@ -117,9 +219,15 @@
     constructor(game, id, def) {
       super(game, def.x * T + 8, def.y * T + 10);
       this.id = id; this.name = def.name; this.look = def.look; this.role = def.role;
+      this.props = def.props || null;
       this.homeX = this.x; this.homeY = this.y;
-      this.wanderT = U.rand(0, 4); this.tx = this.x; this.ty = this.y;
-      this.bob = U.rand(0, 6);
+      // Fasi derivate dall'id: stessa ora di gioco => stessa posa e stessa
+      // sequenza di decisioni, senza rand() fra sessioni diverse.
+      this.wanderT = unitHash(id, 'wander') * 4;
+      this.tx = this.x; this.ty = this.y;
+      this.bob = unitHash(id, 'bob') * 6;
+      this.planT = unitHash(id, 'plan') * 3;
+      this.prevDir = null; this.turnT = 0; this._walked = 0;
     }
     _dynamicBlocked() {
       const set = new Set(), map = this.game.map;
@@ -174,10 +282,13 @@
       if (this.waitT > 0) return;
       const map = this.game.map;
       if (!map || !CL.path) { this.tx = this.homeX; this.ty = this.homeY; return; }
-      let goal = CL.routines ? CL.routines.goalFor(this, map, hour) : null;
+      const h = Number.isFinite(hour) ? hour : 12;
+      let goal = CL.routines ? CL.routines.goalFor(this, map, h) : null;
       if (!goal) {
-        // fallback: vecchio vagare locale, compatibile con mappe senza routine
-        const gx = this.homeX + U.randInt(-2, 2) * T, gy = this.homeY + U.randInt(-1, 1) * T;
+        // fallback: vagare locale, compatibile con mappe senza routine.
+        // Gli offset vengono dall'hash dell'id e dell'ora, non da rand().
+        const gx = this.homeX + (Math.floor(unitHash(this.id + '|' + Math.floor(h), 'gx') * 5) - 2) * T;
+        const gy = this.homeY + (Math.floor(unitHash(this.id + '|' + Math.floor(h), 'gy') * 3) - 1) * T;
         goal = CL.path.nearestTile(map, gx, gy, { w: this.w, h: this.h, maxR: 6 });
       }
       if (!goal) { this.tx = this.homeX; this.ty = this.homeY; return; }
@@ -187,18 +298,21 @@
         allowPartial: true, maxNodes: 1400
       }) || [];
       this.pathIdx = 0;
-      this.planT = U.rand(3.2, 6.5);
-      if (!this.path.length) this.waitT = U.rand(.6, 1.4);
+      // Stessa ora + stesso obiettivo => stessi timer di ripianificazione.
+      const key = this.id + '|' + Math.floor(h) + '|' + goal.tx + ',' + goal.ty;
+      this.planT = 3.2 + unitHash(key, 'plan') * 3.3;
+      if (!this.path.length) this.waitT = .6 + unitHash(key, 'wait') * .8;
     }
 
     update(dt) {
       this.anim += dt * 1.4;
       this.moving = false;
+      this.turnT = Math.max(0, (this.turnT || 0) - dt);
       this.bob += dt;
       this.offsetY = Math.sin(this.bob * 1.6) * .8;
       this._stuckT = this._stuckT || 0;
       this._lastPos = this._lastPos || { x: this.x, y: this.y };
-      this.planT = (this.planT == null ? U.rand(0, 3) : this.planT - dt);
+      this.planT = (this.planT == null ? unitHash(this.id, 'plan') * 3 : this.planT - dt);
       this.waitT = Math.max(0, (this.waitT || 0) - dt);
       this._yieldToPlayer();
       this._replans = this._replans || 0;
@@ -212,11 +326,16 @@
         this.tx = wp.x; this.ty = wp.y;
         if (U.dist(this.x, this.y, wp.x, wp.y) < 5) {
           this.pathIdx++;
-          if (this.pathIdx >= this.path.length) { this.path = []; this.waitT = U.rand(1.2, 3.4); this.planT = 0.4; }
+          if (this.pathIdx >= this.path.length) {
+            this.path = [];
+            this.waitT = 1.2 + unitHash(this.id + '|' + Math.floor(hour) + '|arrive', 'wait') * 2.2;
+            this.planT = 0.4;
+          }
         }
       }
 
       if (U.dist(this.x, this.y, this.tx, this.ty) > 2) {
+        const stepX0 = this.x, stepY0 = this.y;
         const a = Math.atan2(this.ty - this.y, this.tx - this.x);
         const sp = 17;
         const stepX = Math.cos(a) * sp * dt, stepY = Math.sin(a) * sp * dt;
@@ -235,8 +354,14 @@
         }
         if (moved) {
           this.moving = true;
-          this.dir = Math.abs(Math.cos(a)) > Math.abs(Math.sin(a)) ? (Math.cos(a) < 0 ? 'left' : 'right') : (Math.sin(a) < 0 ? 'up' : 'down');
-          this.frame = Math.floor(this.anim * 2) % 4;
+          const next = Math.abs(Math.cos(a)) > Math.abs(Math.sin(a))
+            ? (Math.cos(a) < 0 ? 'left' : 'right')
+            : (Math.sin(a) < 0 ? 'up' : 'down');
+          if (next !== this.dir) { this.prevDir = this.dir; this.dir = next; this.turnT = TURN_TIME; }
+          // Il passo segue la distanza reale percorsa: più leggibile e non
+          // legato al frame rate, senza toccare la velocità (sp = 17).
+          this._walked += Math.hypot(this.x - stepX0, this.y - stepY0);
+          this.frame = posedFrame(Math.floor(this._walked / 6));
         } else {
           this.frame = 0;
           this._stuckT += dt;
@@ -255,14 +380,16 @@
       if (U.dist(this.x, this.y, this._lastPos.x, this._lastPos.y) > 0.5) { this._stuckT = 0; this._lastPos.x = this.x; this._lastPos.y = this.y; }
     }
     draw(ctx) {
-      const img = ART.character(this.look, this.dir, this.frame, this.moving ? 'walk' : 'idle');
       // Stesso ancoraggio del giocatore: piedi sul fondo della hitbox.
       const footY = Math.round(this.y + this.h / 2 + this.offsetY) - 1;
-      ctx.save();
-      ctx.fillStyle = 'rgba(18,15,13,.48)';
-      ctx.beginPath(); ctx.ellipse(Math.round(this.x) + 2, footY + 1, 9, 5, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.restore();
-      ctx.drawImage(img, Math.round(this.x - img.width / 2), footY - img.height + 1);
+      const lift = this.moving ? Math.abs(Math.sin(this._walked ? this._walked / 6 * Math.PI / 2 : this.anim)) : 0;
+      const bob = this.moving ? lift * .5 : (Math.floor(this.anim * 1.5) % 2 ? .4 : 0);
+      const night = this.game.map && this.game.map.zone === 'interno' ? false
+        : !!(CL.systems && CL.systems.time && CL.systems.time.isNight());
+      drawContactShadow(ctx, this.x, footY, .48, lift);
+      drawFacing(ctx, this.look, this.dir, this.prevDir, this.turnT, this.frame,
+        this.moving ? 'walk' : 'idle', this.x, footY, night, bob);
+      drawProps(ctx, this, this.x, footY);
     }
     interact(player) {
       CL.systems.relations.talk(this.id);

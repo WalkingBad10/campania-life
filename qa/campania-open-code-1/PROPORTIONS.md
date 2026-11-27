@@ -213,3 +213,15 @@ ai loro cache di sprite. I tile di suolo restano 16 × 16 px.
 
 Fino al punto 5 il sito resta `BETA PUBBLICA · Richiede verifica manuale su
 MacBook e smartphone`: non viene dichiarata stabilità finale.
+
+## 9. Dimensioni verificate dei fotogrammi QA
+
+Dettaglio nuovo, letto direttamente dall'header PNG e dal canvas di gioco (non una stima):
+
+| Elemento | Dimensione verificata | Note |
+|---|---|---|
+|Canvas logico|`480 × 270` px|`CL.VIEW_W` / `CL.VIEW_H`; `TILE = 16 px = 2,0 m`, `PX_PER_M = 8` invariati|
+|Fotogramma `art-review.mjs` a DPR 2|`3024 × 1704` px|viewport Playwright `1512 × 982`, `deviceScaleFactor = 2`, screenshot dell'elemento canvas|
+|Baseline `art-review/before/`|23 PNG `3024 × 1704`, 3 PNG `1512 × 852` (`bacoli`, `pompei`, `vesuvio`)|i tre differiscono per DPR 1; la baseline resta invariata e non viene riscritta|
+
+`art-review-compare.mjs` normalizza entrambe le immagini a `480 × 270` prima di calcolare `pixel.mae` / `pixel.changedRatio`, e usa pannelli `480 × 270` nelle contact sheet. Queste dimensioni riguardano solo l'acquisizione QA: non modificano le proporzioni metriche, le dimensioni degli asset M1 né le collisioni.

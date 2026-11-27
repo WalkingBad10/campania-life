@@ -161,10 +161,10 @@
     guardiano:{ name: 'Guardiano del vulcano', look: { hair: '#8a8378', skin: '#b57755', shirt: '#6b7a4a', pants: '#3e4238' }, home: 'vesuvio', x: 17, y: 37, role: 'quest' },
     archeologo:{name: 'Prof. Rovelli', look: { hair: '#aaa39a', skin: '#dfa97f', shirt: '#8a6a4b', pants: '#3a3a35' }, home: 'pompei', x: 29, y: 23, role: 'job' },
     fidanzata:{name: 'Giulia', look: { hair: '#3a211a', skin: '#e8b389', shirt: '#d96f8b', pants: '#4c4358' }, home: 'napoli', x: 28, y: 31, role: 'social' },
-    passante1:{name: 'Studente', look: { hair: '#2a2018', skin: '#dba67e', shirt: '#4a87b8', pants: '#3f4550' }, home: 'napoli', x: 25, y: 28, role: 'ambient' },
+    passante1:{name: 'Studente', look: { hair: '#2a2018', skin: '#dba67e', shirt: '#4a87b8', pants: '#3f4550' }, home: 'napoli', x: 25, y: 28, role: 'ambient', schedule: 'school' },
     passante2:{name: 'Signora Lucia', look: { hair: '#8b5a3c', skin: '#e0b088', shirt: '#7a9a5a', pants: '#5a4a58' }, home: 'napoli', x: 42, y: 29, role: 'ambient' },
     turista_piazza:{name:'Claire', look:{hair:'#d7b06a',skin:'#f0c8a0',shirt:'#5aa7d6',pants:'#6a6f7a'}, home:'napoli', x:33, y:27, role:'ambient'},
-    studente: {name:'Luca', look:{hair:'#3a2f2a',skin:'#dcae84',shirt:'#3f7a5a',pants:'#404854'}, home:'napoli', x:47, y:29, role:'ambient'},
+    studente: {name:'Luca', look:{hair:'#3a2f2a',skin:'#dcae84',shirt:'#3f7a5a',pants:'#404854'}, home:'napoli', x:47, y:29, role:'ambient', schedule:'school'},
     fioraia:  {name:'Rosa la fioraia', look:{hair:'#7b3b3b',skin:'#e0b08a',shirt:'#d96b8b',pants:'#5a4b52'}, home:'napoli', x:27, y:35, role:'ambient'},
     vigile:   {name:'Agente Esposito', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'napoli', x:52, y:32, role:'ambient'},
     cliente_bar1:{name:'Gennaro', look:{hair:'#5b4a3d',skin:'#d5a276',shirt:'#7a5b44',pants:'#4a4f58'}, home:'bar', x:4, y:9, role:'ambient'},
@@ -175,7 +175,7 @@
     salerno_barista:{name:'Enzo il salernitano', look:{hair:'#2d2622',skin:'#dda97e',shirt:'#e8e2d2',pants:'#3b4650'}, home:'salerno', x:34, y:22, role:'shop'},
     avellino_contadino:{name:'Pasquale il vignaiolo', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:28, y:22, role:'job'},
     caserta_guardia:{name:'Guardia della Reggia', look:{hair:'#2b2b2b',skin:'#cf996e',shirt:'#2f4f7a',pants:'#2f3a4a'}, home:'caserta', x:30, y:24, role:'ambient'},
-    fuorigrotta_studente:{name:'Studente della Mostra', look:{hair:'#2f2723',skin:'#dbaa80',shirt:'#4a76ac',pants:'#3d4550'}, home:'fuorigrotta', x:50, y:25, role:'ambient'},
+    fuorigrotta_studente:{name:'Studente della Mostra', look:{hair:'#2f2723',skin:'#dbaa80',shirt:'#4a76ac',pants:'#3d4550'}, home:'fuorigrotta', x:50, y:25, role:'ambient', schedule:'school'},
     fuorigrotta_tecnico:{name:'Tecnico del Teatro', look:{hair:'#585048',skin:'#c78d62',shirt:'#d8a13c',pants:'#424a4e'}, home:'fuorigrotta', x:22, y:24, role:'ambient'},
     pianura_residente:{name:'Residente del borgo', look:{hair:'#7a4a32',skin:'#dcaa80',shirt:'#8a9a62',pants:'#4d4a42'}, home:'pianura', x:25, y:21, role:'ambient'},
     pianura_fornaio:{name:'Fornaio di Piazza San Giorgio', look:{hair:'#c4b49a',skin:'#d7a074',shirt:'#efe6d2',pants:'#5b5048'}, home:'pianura', x:42, y:26, role:'ambient'},
@@ -207,7 +207,29 @@
     bacoli_pescatore:{name:'Pescatore di Baia', look:{hair:'#3a2b22',skin:'#c98d64',shirt:'#4f8f8a',pants:'#3f4a55'}, home:'bacoli', x:10, y:14, role:'ambient'},
     salerno_turista:{name:'Passeggero del lungomare', look:{hair:'#8d8579',skin:'#e0b18b',shirt:'#e0c273',pants:'#514658'}, home:'salerno', x:30, y:19, role:'ambient'},
     avellino_vignaiolo2:{name:'Contadino irpino', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:26, y:18, role:'ambient'},
-    caserta_turista:{name:'Visitatore della Reggia', look:{hair:'#5c5148',skin:'#d7a47c',shirt:'#7b6b8a',pants:'#3f4750'}, home:'caserta', x:28, y:27, role:'ambient'}
+    caserta_turista:{name:'Visitatore della Reggia', look:{hair:'#5c5148',skin:'#d7a47c',shirt:'#7b6b8a',pants:'#3f4750'}, home:'caserta', x:28, y:27, role:'ambient'},
+
+    /* ------------------------------------------------- popolazione di quartiere
+     * Posizioni fisse su superfici pedonali documentate (Piazza del Gesù Nuovo,
+     * Viale Augusto, Piazza San Giorgio, Viale del Re, lungomare e moli).
+     * Nessun nuovo quest giver: questi PNG usano i dialoghi generici per ruolo.
+     * I props sono solo grafica ancorata ai piedi, mai hitbox o collisione.
+     */
+    napoli_turista_guglia:{name:'Turista alla Guglia', look:{hair:'#c9a75f',skin:'#f0c8a0',shirt:'#c46d55',pants:'#596874'}, home:'napoli', x:39, y:24, role:'quest', props:{ umbrella:true }},
+    napoli_mamma_guglia:{name:'Mamma con il cane', look:{hair:'#5a3a2c',skin:'#e3b088',shirt:'#8a9a62',pants:'#4d5260'}, home:'napoli', x:44, y:33, role:'family', props:{ dog:true, bag:true }},
+    napoli_barista_terrazza:{name:'Barista della piazza', look:{hair:'#2f2723',skin:'#d9a77d',shirt:'#efe8d8',pants:'#43494f'}, home:'napoli', x:47, y:34, role:'shop', props:{ coffee:true }},
+    fuorigrotta_pendolare:{name:'Pendolare della Mostra', look:{hair:'#39312b',skin:'#d7a47c',shirt:'#55789a',pants:'#39424c'}, home:'fuorigrotta', x:14, y:24, role:'transport', props:{ bag:true }},
+    fuorigrotta_passeggiatore:{name:'Passeggiatore di Viale Augusto', look:{hair:'#8a8176',skin:'#dfab81',shirt:'#7a9a5a',pants:'#4b5058'}, home:'fuorigrotta', x:66, y:31, role:'social', props:{ dog:true }},
+    pianura_mamma_piazza:{name:'Mamma del borgo', look:{hair:'#6b3a2a',skin:'#e0b08a',shirt:'#c07a62',pants:'#514a58'}, home:'pianura', x:31, y:23, role:'family', props:{ dog:true }},
+    pianura_fornaio_aiuto:{name:'Aiuto del forno', look:{hair:'#c4b49a',skin:'#d7a074',shirt:'#efe6d2',pants:'#5b5048'}, home:'pianura', x:48, y:30, role:'shop', props:{ bag:true }},
+    caserta_visitatore_viale:{name:'Visitatore del Viale del Re', look:{hair:'#7a6a58',skin:'#e0b08a',shirt:'#5aa7d6',pants:'#636d7a'}, home:'caserta', x:35, y:25, role:'quest', props:{ umbrella:true }},
+    bacoli_facchino_porto:{name:'Facchino del porto', look:{hair:'#2d2622',skin:'#c58b63',shirt:'#4f8f8a',pants:'#394f59'}, home:'bacoli', x:26, y:21, role:'transport', props:{ bag:true }},
+    salerno_passeggera:{name:'Passeggera del lungomare', look:{hair:'#6b432c',skin:'#dfae87',shirt:'#e0c273',pants:'#505a66'}, home:'salerno', x:35, y:29, role:'social', props:{ dog:true }},
+    costiera_turista_chiosco:{name:'Turista al chiosco', look:{hair:'#d6b45c',skin:'#efc49f',shirt:'#d8664c',pants:'#5b6d7a'}, home:'costiera', x:42, y:13, role:'quest', props:{ coffee:true }},
+    pompei_visitatore_ombrello:{name:'Visitatore con ombrello', look:{hair:'#8d8579',skin:'#d7a37d',shirt:'#8fa9c4',pants:'#4e4755'}, home:'pompei', x:46, y:30, role:'ambient', props:{ umbrella:true }},
+    avellino_contadina_spesa:{name:'Contadina della spesa', look:{hair:'#4a3325',skin:'#c98d64',shirt:'#7a9a5a',pants:'#4b4a3f'}, home:'avellino', x:23, y:19, role:'family', props:{ bag:true }},
+    vesuvio_escursionista_zaino:{name:'Escursionista con zaino', look:{hair:'#4a3225',skin:'#d09a70',shirt:'#c46a45',pants:'#4b5259'}, home:'vesuvio', x:36, y:41, role:'ambient', props:{ bag:true }},
+    capri_turista_valigia:{name:'Turista con borsa', look:{hair:'#c9a75f',skin:'#f0c8a0',shirt:'#4aa7c4',pants:'#d9d2c0'}, home:'capri', x:20, y:17, role:'quest', props:{ bag:true }}
   };
 
   /* --------------------------------------------------------------- quest */

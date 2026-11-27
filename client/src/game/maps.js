@@ -84,6 +84,55 @@
   // senza mattoni o finestre finte che affiorino ai bordi dell'asset.
   function mass(g, x, y, ww, hh) { rect(g, x, y, ww, hh, 'b'); }
 
+  /* ------------------------------------------------ DETTAGLI NON SOLIDI
+   * Contratto con motore/arte: ogni dettaglio e' un decor puro. Le dimensioni
+   * di default sono in pixel, ancorate alla cella (ox/oy). I dettagli montati
+   * su una facciata ricevono sortY = base_facciata + 1, cosi' vengono disegnati
+   * dopo l'asset architettonico. Nessuna di queste voci entra in SOLID o nelle
+   * impronte di collisione.
+   */
+  /* w/h riportano le dimensioni native di ART.detailSprite: il disegno avviene
+   * 1:1, senza scaling non uniforme e senza perdita di pixel sulla griglia. */
+  const DETAIL_METRIC = {
+    manhole: [10, 10, 1, 1], drain: [12, 8, 2, 9],
+    trash_bin: [10, 14, 3, 0], planter_box: [16, 10, -1, 2],
+    flower_box: [12, 8, 1, -8], bollard: [8, 14, 5, 2],
+    traffic_sign: [12, 26, 2, -18], parking_sign: [12, 26, 2, -16],
+    shop_sign: [24, 10, -4, -14], awning_sign: [28, 12, -7, -12],
+    ac_unit: [14, 10, 2, -12], tv_antenna: [18, 16, 2, -18],
+    intercom: [6, 12, 5, -12], satellite: [14, 14, 3, -14],
+    pigeon: [12, 10, 4, -6], parked_scooter: [22, 14, 3, 0],
+    bench_wood: [24, 12, -3, 2], lamp_post: [12, 32, 4, -32],
+    rail_fence: [18, 14, 0, 0], platform_edge: [24, 8, 0, 9],
+    street_line: [16, 4, 2, 7], mosaic_step: [16, 6, 0, 11],
+    wall_lamp: [10, 14, 4, -12], ceiling_lamp: [14, 10, 1, -10],
+    menu_board: [16, 20, -1, -16], espresso_machine: [18, 18, 1, -14],
+    sack_flour: [10, 14, 3, 2], bar_glass: [8, 12, 4, -8],
+    flower_vase: [10, 12, 3, 2], desk_lamp: [14, 16, 3, -10],
+    file_stack: [14, 10, 2, 4], exam_bed: [24, 14, -6, 1],
+    bank_counter: [32, 16, -6, 0], metro_poster: [16, 22, 0, -20],
+    metro_column: [14, 26, 2, -26], stair_rail: [24, 16, 0, -8],
+    guide_strip: [16, 4, 0, 11], dog: [18, 12, 2, 4],
+    laundry_bundle: [14, 10, 2, 4]
+  };
+  function detail(m, type, x, y, kind, variant, extra) {
+    const s = DETAIL_METRIC[kind] || [12, 12, 2, 0];
+    decor(m, x, y, type, Object.assign({
+      kind, variant, w: s[0], h: s[1], ox: s[2], oy: s[3]
+    }, extra || {}));
+  }
+  function streetDetail(m, x, y, kind, variant, extra) { detail(m, 'street_detail', x, y, kind, variant, extra); }
+  function facadeDetail(m, x, y, kind, variant, extra) { detail(m, 'facade_detail', x, y, kind, variant, extra); }
+  function interiorDetail(m, x, y, kind, variant, extra) { detail(m, 'interior_detail', x, y, kind, variant, extra); }
+  function railDetail(m, x, y, kind, variant, extra) { detail(m, 'rail_detail', x, y, kind, variant, extra); }
+  function shopSign(m, x, y, kind, variant, extra) { detail(m, 'shop_sign', x, y, kind, variant, extra); }
+  function parked(m, x, y, type, dir, extra) {
+    decor(m, x, y, 'parked_vehicle', Object.assign({
+      kind: type === 'scooter' ? 'parked_scooter' : 'parked_vehicle',
+      type, dir, ox: 0, oy: 0
+    }, extra || {}));
+  }
+
   function building(m, x, y, ww, hh, to, label, action) {
     rect(m.g, x, y, ww, hh, '='); border(m.g, x, y, ww, hh, '#');
     const dx = x + (ww >> 1), dy = y + hh - 1;
@@ -428,6 +477,47 @@
     poi(m, 39, 47, 'pizzeria_sign', 'sign', 'Pizzeria', 'flavor');
     // La stazione piu' vicina alla piazza e' Dante (Toledo e' piu' a ovest).
     poi(m, 56, 28, 'metro_sign', 'sign', 'Metro Dante', 'flavor');
+
+    // ---- 5) Dettagli urbani ancorati agli assi reali e alle facciate ----
+    // Basolato di Via Benedetto Croce e assi dell'obelisco: tombini e griglie
+    // stanno solo dove la pavimentazione e' lastricata o sul bordo del marciapiede.
+    [[24, 19, 0], [31, 23, 1], [38, 32, 0], [20, 31, 1], [50, 31, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[51, 15, 0], [16, 38, 1], [51, 38, 0], [57, 31, 1], [18, 30, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    // Porte, edicola e fermate: cassonetti sempre a lato dell'ingresso, non davanti.
+    [[19, 46, 0], [33, 46, 1], [45, 46, 0], [55, 46, 1], [40, 47, 0], [60, 30, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'trash_bin', v));
+    [[17, 18, 0], [52, 17, 1], [27, 33, 0], [45, 33, 1], [30, 38, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    [[46, 32, 0], [23, 38, 1], [56, 37, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[64, 31, 0], [15, 31, 1], [48, 37, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    [[14, 19, 0], [62, 31, 1], [51, 33, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'bollard', v));
+    streetDetail(m, 67, 32, 'traffic_sign', 1, { label: '→ Spaccanapoli' });
+    streetDetail(m, 55, 15, 'traffic_sign', 2, { label: '↑ Via dei Tribunali' });
+    [[27, 40], [59, 35]].forEach(([x, y]) => streetDetail(m, x, y, 'parking_sign', 0));
+    parked(m, 27, 42, 'scooter', 'down');
+    parked(m, 59, 36, 'car', 'up');
+    [[30, 15, 0], [44, 37, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'street_line', v));
+    facadeDetail(m, 39, 35, 'pigeon', 0, { sortY: 593 }); // cornicione dell'edicola (base 592)
+    streetDetail(m, 25, 36, 'laundry_bundle', 0);
+    streetDetail(m, 45, 38, 'laundry_bundle', 1);
+    // Base sprite: Gesu' 240, palazzo NE 224, fronte sud 736, palazzo E 336.
+    facadeDetail(m, 14, 14, 'ac_unit', 0, { sortY: 241 });
+    facadeDetail(m, 20, 14, 'intercom', 0, { sortY: 241 });
+    facadeDetail(m, 25, 14, 'wall_lamp', 0, { sortY: 241 });
+    facadeDetail(m, 32, 3, 'tv_antenna', 0, { sortY: 241 });
+    [[38, 13, 0], [48, 13, 1]].forEach(([x, y, v]) => facadeDetail(m, x, y, 'ac_unit', v, { sortY: 225 }));
+    facadeDetail(m, 44, 13, 'satellite', 0, { sortY: 225 });
+    facadeDetail(m, 5, 16, 'flower_box', 0, { sortY: 481 });
+    [[18, 46, 0], [32, 46, 1], [44, 46, 2], [54, 46, 3]]
+      .forEach(([x, y, v]) => shopSign(m, x, y, 'shop_sign', v, { sortY: 737 }));
+    facadeDetail(m, 41, 46, 'awning_sign', 0, { sortY: 737 });
+    [[56, 21, 0], [61, 21, 1]].forEach(([x, y, v]) => facadeDetail(m, x, y, 'flower_box', v, { sortY: 337 }));
+    facadeDetail(m, 61, 24, 'pigeon', 0, { sortY: 337 });
     return m;
   }
 
@@ -475,6 +565,25 @@
     decor(m, 22, 29, 'fishing_net', { w: 20, h: 18, oy: 0 });
     decor(m, 36, 12, 'laundry_line', { x2: 43 * T, y2: 12 * T, sag: 6 });
     [[15, 12], [31, 12], [45, 12]].forEach(([x, y]) => decor(m, x, y, 'plant', { h: 12 }));
+    // Via Statale e piazzette: arredo ancorato alla carreggiata, alle soglie
+    // dei tre edifici (base sprite y=192) e al molo, non alla battigia.
+    [[12, 14, 0], [45, 15, 1], [60, 14, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[8, 13, 0], [33, 13, 1], [56, 16, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    [[10, 12, 0], [37, 12, 1], [60, 12, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'trash_bin', v));
+    [[26, 11, 0], [49, 11, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    [[18, 11, 0], [46, 11, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[15, 13, 0], [52, 16, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    streetDetail(m, 31, 13, 'parking_sign', 0);
+    parked(m, 42, 12, 'scooter', 'left');
+    parked(m, 20, 14, 'car', 'right');
+    [[30, 15, 0], [62, 14, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'street_line', v));
+    streetDetail(m, 22, 17, 'dog', 0);
+    streetDetail(m, 36, 12, 'laundry_bundle', 0);
+    // Le tre facciate (casa, chiosco, bar) poggiano tutte alla riga 12.
+    [[10, 11, 0], [37, 11, 1], [60, 11, 2]]
+      .forEach(([x, y, v]) => shopSign(m, x, y, 'shop_sign', v, { sortY: 193 }));
+    facadeDetail(m, 40, 11, 'satellite', 0, { sortY: 193 });
+    facadeDetail(m, 58, 11, 'ac_unit', 0, { sortY: 193 });
     m.spawn = { x: 4 * T, y: 18 * T };
     return m;
   }
@@ -515,6 +624,11 @@
     portal(m, 63, 44, 1, 2, 'caserta', { __useTargetSpawn: true }, 'Verso Caserta');
     poi(m, 32, 46, 'to_napoli', 'sign', 'Napoli ↓', 'travel', { to: 'napoli' });
     poi(m, 62, 44, 'to_caserta', 'sign', '→ Caserta', 'travel', { to: 'caserta' });
+    // Sentiero e grotta: solo servizi essenziali, non arredo urbano in vetta.
+    streetDetail(m, 31, 12, 'traffic_sign', 3, { label: '↑ Grotta del Vesuvio' });
+    streetDetail(m, 30, 11, 'trash_bin', 0);
+    streetDetail(m, 33, 44, 'bench_wood', 0);
+    streetDetail(m, 36, 30, 'lamp_post', 0);
     m.spawn = { x: 31 * T + T / 2, y: 45 * T + T / 2 };
     return m;
   }
@@ -546,6 +660,16 @@
       }
     }
     ruinAnchors.forEach(([x, y]) => decor(m, x, y, 'ruin_column', { h: 18, oy: 0 }));
+    // Scavi: i gradini seguono il basolato dell'ingresso, i servizi stanno
+    // vicino ai portali e al negozio, non tra le rovine.
+    [[12, 28, 0], [12, 34, 1], [30, 30, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'mosaic_step', v));
+    [[8, 30, 0], [22, 30, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    streetDetail(m, 1, 29, 'trash_bin', 0);
+    streetDetail(m, 54, 20, 'traffic_sign', 2, { label: '→ Avellino' });
+    streetDetail(m, 14, 30, 'planter_box', 0);
+    streetDetail(m, 41, 24, 'bench_wood', 0);
+    shopSign(m, 43, 23, 'shop_sign', 0, { sortY: 385 }); // negozio, base riga 24
+    facadeDetail(m, 45, 23, 'pigeon', 0, { sortY: 385 });
     m.spawn = { x: 5 * T, y: 30 * T };
     return m;
   }
@@ -561,7 +685,13 @@
     rect(g, 14, 16, 3, 2, 'e'); // piazzetta di imbarco, collegata allo spawn
     poi(m, 15, 19, 'barca_capri', 'service', 'Battello per Amalfi', 'boat');
     portal(m, 15, 19, 1, 2, 'costiera', { x: 4 * T, y: 18 * T }, 'Torna ad Amalfi');
-    decor(m, 12, 17, 'sign', { h: 20 }); decor(m, 18, 17, 'plant', { h: 12 });
+    decor(m, 18, 17, 'plant', { h: 12 });
+    streetDetail(m, 15, 16, 'manhole', 0);
+    streetDetail(m, 14, 16, 'mosaic_step', 0);
+    streetDetail(m, 8, 17, 'bench_wood', 0);
+    streetDetail(m, 16, 18, 'trash_bin', 0);
+    streetDetail(m, 20, 17, 'planter_box', 0);
+    streetDetail(m, 12, 17, 'traffic_sign', 1, { label: '← Marina di Capri' });
     m.spawn = { x: 15 * T, y: 17 * T };
     return m;
   }
@@ -629,6 +759,25 @@
     decor(m, 11, 8, 'plant', { h: 12 }); decor(m, 38, 8, 'plant', { h: 12 });
     decor(m, 6, 20, 'fishing_net', { w: 24, h: 20, oy: 0 });
     decor(m, 33, 20, 'fishing_net', { w: 20, h: 18, oy: 0 });
+    // Via Ortensio, Via Spiaggia e il porto: tombini sulla carreggiata,
+    // griglie sui marciapiedi, cassonetti accanto alle due porte.
+    [[10, 11, 0], [30, 12, 1], [24, 20, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[5, 10, 0], [38, 13, 1], [23, 15, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    [[21, 17, 0], [39, 17, 1], [11, 14, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'trash_bin', v));
+    [[12, 13, 0], [33, 10, 1], [24, 16, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    [[18, 13, 0], [44, 13, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[6, 13, 0], [44, 11, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    streetDetail(m, 27, 13, 'parking_sign', 0);
+    parked(m, 30, 18, 'scooter', 'left');
+    parked(m, 12, 11, 'car', 'right');
+    [[20, 12, 0], [24, 22, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'street_line', v));
+    streetDetail(m, 20, 18, 'laundry_bundle', 0);
+    streetDetail(m, 34, 8, 'traffic_sign', 2, { label: '↑ I Cento Passi' });
+    // Case in tufo: base 320 (ovest) e 288 (est); chiosco/bar 288, castello 176.
+    facadeDetail(m, 3, 15, 'flower_box', 0, { sortY: 321 });
+    facadeDetail(m, 28, 13, 'wall_lamp', 0, { sortY: 289 });
+    [[21, 17, 0], [39, 17, 1]].forEach(([x, y, v]) => shopSign(m, x, y, 'shop_sign', v, { sortY: 289 }));
+    facadeDetail(m, 44, 9, 'pigeon', 0, { sortY: 177 });
     portal(m, 4, 0, 2, 1, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
     portal(m, 44, 22, 2, 2, 'napoli', { __useTargetSpawn: true }, 'Battello per Napoli');
     m.spawn = { x: 5 * T, y: 14 * T };
@@ -656,6 +805,23 @@
     poi(m, 28, 31, 'lungomare_salerno', 'landmark', 'Lungomare di Salerno', 'flavor');
     decor(m, 18, 12, 'laundry_line', { x2: 30 * T, y2: 12 * T, sag: 7, colors: ['#f0e6d2', '#b76570', '#6f93ad'] });
     decor(m, 10, 29, 'plant', { h: 12 }); decor(m, 42, 29, 'plant', { h: 12 });
+    // Lungomare: la passeggiata e' continua, quindi banchine e panchine seguono
+    // la riga 29; tombini e griglie stanno sulle due corsie reali della statale.
+    [[20, 18, 0], [45, 19, 1], [6, 18, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[5, 17, 0], [30, 20, 1], [50, 17, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    [[41, 24, 0], [15, 24, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'trash_bin', v));
+    [[24, 29, 0], [34, 29, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    [[8, 29, 0], [36, 29, 1], [47, 29, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[14, 17, 0], [47, 20, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    streetDetail(m, 48, 17, 'parking_sign', 0);
+    parked(m, 25, 18, 'car', 'right');
+    parked(m, 40, 20, 'scooter', 'left');
+    streetDetail(m, 33, 19, 'street_line', 0);
+    streetDetail(m, 18, 12, 'laundry_bundle', 0);
+    // Arechi e palazzo: base 192; bar e bottega: base 400.
+    facadeDetail(m, 12, 11, 'ac_unit', 0, { sortY: 193 });
+    facadeDetail(m, 34, 11, 'pigeon', 0, { sortY: 193 });
+    [[15, 24, 0], [41, 24, 1]].forEach(([x, y, v]) => shopSign(m, x, y, 'shop_sign', v, { sortY: 401 }));
     portal(m, 54, 17, 2, 2, 'costiera', { __useTargetSpawn: true }, 'Torna in Costiera');
     portal(m, 2, 18, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     m.spawn = { x: 4 * T, y: 19 * T };
@@ -680,6 +846,18 @@
     poi(m, 13, 9, 'irpinia', 'landmark', 'Centro storico irpino', 'flavor');
     poi(m, 36, 9, 'vigneti_irpini', 'landmark', 'Vigneti irpini', 'flavor');
     decor(m, 21, 12, 'sign', { h: 20 }); decor(m, 28, 12, 'plant', { h: 12 });
+    // Incrocio principale e attraversamenti: i dettagli seguono le righe 15-18
+    // e l'asse N-S, inclusi i due marciapiedi delle strisce pedonali.
+    [[10, 17, 0], [34, 17, 1], [24, 10, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[6, 17, 0], [40, 18, 1], [26, 19, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    streetDetail(m, 21, 23, 'trash_bin', 0);
+    [[26, 22, 0], [38, 17, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    [[30, 15, 0], [18, 18, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[16, 15, 0], [38, 18, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    streetDetail(m, 25, 19, 'parking_sign', 0);
+    parked(m, 12, 17, 'car', 'right');
+    streetDetail(m, 44, 17, 'street_line', 0);
+    streetDetail(m, 28, 12, 'traffic_sign', 2, { label: '→ Vigneti irpini' });
     portal(m, 0, 16, 2, 2, 'pompei', { __useTargetSpawn: true }, 'Torna a Pompei');
     portal(m, 46, 16, 2, 2, 'salerno', { __useTargetSpawn: true }, 'Verso Salerno');
     portal(m, 24, 30, 2, 2, 'caserta', { __useTargetSpawn: true }, 'Verso Caserta');
@@ -706,6 +884,23 @@
     poi(m, 30, 10, 'reggia', 'landmark', 'Reggia di Caserta', 'flavor', { decorative: true });
     poi(m, 30, 27, 'viale_re', 'landmark', 'Viale del Re', 'flavor');
     [[24, 21], [36, 21], [26, 27], [34, 27]].forEach(([x, y]) => decor(m, x, y, 'plant', { h: 12 }));
+    // Viale del Re: le lastre conservano i gradini e i tombini; la carreggiata
+    // a sud resta libera, con parcheggi solo sul margine.
+    [[12, 32, 0], [44, 33, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[20, 31, 0], [50, 34, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    [[11, 25, 0], [49, 25, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'trash_bin', v));
+    [[28, 21, 0], [32, 27, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    [[28, 35, 0], [34, 35, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[6, 31, 0], [55, 34, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    streetDetail(m, 33, 31, 'parking_sign', 0);
+    parked(m, 40, 32, 'scooter', 'left');
+    parked(m, 16, 33, 'car', 'right');
+    [[30, 20, 0], [30, 26, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'mosaic_step', v));
+    // Reggia: base 288; negozi: base 416.
+    facadeDetail(m, 24, 18, 'wall_lamp', 0, { sortY: 289 });
+    facadeDetail(m, 36, 18, 'flower_box', 0, { sortY: 289 });
+    facadeDetail(m, 40, 7, 'pigeon', 0, { sortY: 289 });
+    [[11, 25, 0], [49, 25, 1]].forEach(([x, y, v]) => shopSign(m, x, y, 'shop_sign', v, { sortY: 417 }));
     portal(m, 2, 32, 2, 2, 'vesuvio', { __useTargetSpawn: true }, 'Torna al Vesuvio');
     portal(m, 56, 32, 2, 2, 'avellino', { __useTargetSpawn: true }, 'Verso Avellino');
     m.spawn = { x: 30 * T, y: 36 * T };
@@ -803,13 +998,38 @@
     poi(m, 12, 18, 'palacongressi', 'landmark', 'Palacongressi della Mostra', 'flavor');
     poi(m, 40, 18, 'viale_kennedy', 'landmark', 'Viale John Fitzgerald Kennedy', 'flavor');
     poi(m, 55, 18, 'piazzale_colombo', 'landmark', 'Piazzale Cristoforo Colombo', 'flavor');
-    decor(m, 64, 32, 'sign', { h: 20 });
 
     // Panchine e lampioni solo sugli assi, secondo la griglia.
     for (let x = 5; x < 70; x += 11) { if (g[36] && g[36][x] === 'p') setTile(g, x, 36, 'E'); }
     for (let x = 9; x < 70; x += 13) { if (g[30] && g[30][x] === 'p') setTile(g, x, 30, 'U'); }
     decor(m, 4, 39, 'sign', { h: 20 }); decor(m, 60, 19, 'sign', { h: 20 });
     decor(m, 24, 34, 'plant', { h: 12 }); decor(m, 48, 34, 'plant', { h: 12 });
+    // Griglia razionalista: tombini e segni sui quattro assi, banchine sulla
+    // banchina alberata di Viale Augusto e davanti ai tornelli della Mostra.
+    [[8, 18, 0], [40, 32, 1], [62, 36, 0], [25, 44, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[5, 17, 0], [50, 43, 1], [30, 20, 0], [23, 37, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    [[12, 27, 0], [57, 25, 1], [57, 28, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'trash_bin', v));
+    [[8, 28, 0], [50, 22, 1], [24, 31, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    [[4, 20, 0], [46, 43, 1], [48, 26, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[9, 17, 0], [60, 37, 1], [33, 31, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    [[57, 31, 0], [55, 20, 1], [21, 31, 0]].forEach(([x, y, v]) => streetDetail(m, x, y, 'bollard', v));
+    streetDetail(m, 64, 32, 'traffic_sign', 1, { label: '→ Stadio Maradona' });
+    streetDetail(m, 22, 19, 'parking_sign', 0);
+    parked(m, 14, 31, 'scooter', 'right');
+    parked(m, 35, 45, 'car', 'left');
+    [[30, 18, 0], [45, 36, 1]].forEach(([x, y, v]) => streetDetail(m, x, y, 'street_line', v));
+    streetDetail(m, 52, 26, 'mosaic_step', 0);
+    // Basi sprite: teatro 280, mostra 192/424, isolati e stadio 496, torri 704.
+    facadeDetail(m, 18, 17, 'ac_unit', 0, { sortY: 281 });
+    [[52, 3, 0], [57, 3, 1]].forEach(([x, y, v]) => facadeDetail(m, x, y, 'satellite', v, { sortY: 193 }));
+    facadeDetail(m, 7, 20, 'intercom', 0, { sortY: 425 });
+    facadeDetail(m, 26, 20, 'tv_antenna', 0, { sortY: 497 });
+    facadeDetail(m, 39, 20, 'wall_lamp', 0, { sortY: 497 });
+    facadeDetail(m, 60, 20, 'pigeon', 0, { sortY: 497 });
+    facadeDetail(m, 26, 36, 'ac_unit', 0, { sortY: 705 });
+    facadeDetail(m, 39, 36, 'satellite', 0, { sortY: 705 });
     m.spawn = { x: 11 * T, y: 26 * T };
     return m;
   }
@@ -838,10 +1058,10 @@
     decor(m, 22, 1, 'metric_facade', { type: 'pianura_chiesa', h: 248, oy: 8 });
     poi(m, 32, 17, 'san_giorgio', 'landmark', 'Chiesa di San Giorgio Martire', 'flavor');
 
-    // Municipio — OSM way 262236201 e' 128 celle a WNW di Piazza San Giorgio:
+    // Municipio — OSM way 262236201 e' ~129 m a WSW di Piazza San Giorgio:
     // non puo' stare dentro la viewport alla scala metrica. Resta quindi un
     // cartello verificato sul bordo ovest, non un edificio inventato in piazza.
-    poi(m, 1, 7, 'municipio_pianura', 'landmark', 'Municipio di Pianura · 128 m a ovest', 'flavor');
+    poi(m, 1, 7, 'municipio_pianura', 'landmark', 'Municipio di Pianura · 129 m a WSW', 'flavor');
     decor(m, 1, 7, 'sign', { h: 20 });
 
     // Piazza San Giorgio (OSM way 580193824): area lastricata 85x93 m,
@@ -859,10 +1079,10 @@
     poi(m, 52, 24, 'via_santamaria', 'landmark', 'Via Luigi Santamaria', 'flavor');
     poi(m, 52, 12, 'via_cannavino', 'landmark', 'Via Cannavino', 'flavor');
     poi(m, 1, 34, 'via_comunale_napoli', 'landmark', 'Via Comunale Napoli', 'flavor');
-    // Bar Etoile non e' mappato in OSM nel bbox: la directory verificata lo
-    // pone in Via Montagna Spaccata 23, Pozzuoli (40.864620,14.133520),
-    // a ~3,6 km da qui. Resta una targa direzionale, non un edificio o un
-    // negozio inventato dentro Piazza San Giorgio.
+    // Bar Etoile: il node OSM verificato e' 11832545501 (40.8556796,14.1583237,
+    // `amenity=fast_food`), a ~1,82 km a WSW; la directory storica citava invece
+    // Via Montagna Spaccata 23, Pozzuoli. Resta SOLO una targa direzionale:
+    // nessun edificio o attivita' georeferenziata dentro Piazza San Giorgio.
     poi(m, 1, 27, 'bar_etoile', 'service', 'Etoile · Via Montagna Spaccata, Pozzuoli', 'flavor');
     decor(m, 1, 27, 'sign', { h: 20 });
     for (const [x, y] of [[52, 24], [52, 12], [1, 34]]) decor(m, x, y, 'sign', { h: 20 });
@@ -880,6 +1100,35 @@
         type: 'pianura_borgo', w: bw * T, h: bh * T, oy: 0
       });
     }
+
+    /* Altri condomini reali gia' presenti in CL_OSM.maps.pianura.buildings:
+     * ogni rettangolo e' la sola parte visibile del bbox OSM indicato, ritagliata
+     * per non coprire portali, POI, NPC, marciapiede di Via De' Grassi (riga 37)
+     * o carreggiate OSM. Nessun volume nuovo viene inventato. La chiesa e le
+     * cinque case qui sopra non vengono duplicate. */
+    const condos = [
+      // [way OSM, x, y, w, h]  (bbox proiettato verificato in osm-geometry.js)
+      [656237875, 13, 1, 5, 6],  // [12.36,-0.14,20.91,8.22]
+      [656237919, 47, 3, 4, 5],  // [46.21,2.83,50.52,12.26]
+      [656237916, 51, 0, 6, 6],  // [45.63,-2.36,62.87,6.18], settore nord-est
+      [656057486, 2, 32, 7, 5],  // [1.93,31.87,9.39,38.66], esclusa riga 37
+      [656057488, 14, 32, 7, 5], // [10.41,31.47,19.95,37.83], varco metro (11,36) libero
+      [656057489, 21, 33, 8, 4], // [17.76,33.62,28.22,41.49], esclusa riga 37
+      [624279820, 34, 32, 7, 5], // [33.2,27.45,41.32,39.71], asse x41 libero
+      [624279818, 54, 23, 4, 3]  // [50.6,22.39,57.13,26.92], parte non sovrapposta
+    ];
+    // Nota: `w` qui sopra e' la larghezza in celle, non la window del modulo.
+    const osmRoot = window.CL_OSM;
+    const osmBuildings = ((osmRoot && osmRoot.maps && osmRoot.maps.pianura
+      && osmRoot.maps.pianura.buildings) || []);
+    for (const [way, x, y, bw, bh] of condos) {
+      if (!osmBuildings.some(b => b.way === way)) continue; // fonte non disponibile: nessun volume
+      rect(g, x, y, bw, bh, '#');
+      decor(m, x, y, 'metric_facade', {
+        type: 'pianura_borgo', w: bw * T, h: bh * T, oy: 0, osmWay: way
+      });
+    }
+
     // Piazza Municipio di Pianura (OSM way 580193815/580193818) e' 64 celle
     // a ovest: ne conservo il lastrico sul bordo, senza spostare la chiesa.
     rect(g, 0, 7, 5, 8, 'd');
@@ -907,6 +1156,62 @@
     poi(m, 1, 16, 'piazza_municipio', 'landmark', 'Piazza Municipio', 'flavor');
     poi(m, 14, 27, 'milite_ignoto', 'landmark', 'Milite Ignoto · targa storica', 'flavor');
     decor(m, 1, 16, 'sign', { h: 20 }); decor(m, 14, 27, 'sign', { h: 20 });
+
+    // ---- Dettagli di borgo su superfici/OSM gia' esistenti ----
+    // Tombini sulle carreggiate proiettate, griglie e lastre sul piperno
+    // della piazza; nessuna nuova massa o strada viene disegnata qui.
+    [[10, 12, 0], [28, 16, 1], [38, 18, 0], [44, 28, 1], [28, 32, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'manhole', v));
+    [[21, 22, 0], [48, 28, 1], [40, 21, 0], [12, 30, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'drain', v));
+    [[31, 17, 0], [31, 27, 1], [36, 29, 0], [21, 24, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'mosaic_step', v));
+    [[18, 12, 0], [45, 35, 1], [48, 21, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'street_line', v));
+    [[12, 28, 0], [54, 27, 1], [10, 35, 0], [5, 16, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'trash_bin', v));
+    [[23, 30, 0], [46, 23, 1], [49, 21, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'planter_box', v));
+    // La riga 37 e' il marciapiede protetto di Via Giorgio De' Grassi.
+    [[8, 37, 0], [20, 37, 1], [42, 37, 0], [56, 37, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'bench_wood', v));
+    [[12, 34, 0], [32, 34, 1], [46, 36, 0]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'lamp_post', v));
+    [[21, 18, 0], [57, 18, 1], [34, 31, 0], [13, 31, 1]]
+      .forEach(([x, y, v]) => streetDetail(m, x, y, 'bollard', v));
+    // Targhe: solo assi documentati da OSM,piu' i tre riferimenti fuori bbox.
+    streetDetail(m, 3, 18, 'traffic_sign', 2, { label: '→ Via Don Vincenzo Simeoli' });
+    streetDetail(m, 3, 29, 'traffic_sign', 3, { label: '→ Corso Duca d’Aosta' });
+    streetDetail(m, 57, 12, 'traffic_sign', 2, { label: '→ Via Cannavino' });
+    streetDetail(m, 57, 22, 'traffic_sign', 2, { label: '→ Via Luigi Santamaria' });
+    streetDetail(m, 3, 20, 'traffic_sign', 4, { label: '↙ Pianura · Circumflegrea · 1,5 km' });
+    streetDetail(m, 3, 30, 'traffic_sign', 4, { label: '↖ La Trencia · Circumflegrea · 1,1 km' });
+    streetDetail(m, 41, 27, 'parking_sign', 0);
+    streetDetail(m, 29, 37, 'parking_sign', 1);
+    parked(m, 45, 22, 'scooter', 'down');
+    parked(m, 18, 11, 'car', 'right');
+    parked(m, 46, 35, 'car', 'down');
+    streetDetail(m, 44, 26, 'dog', 0);
+    streetDetail(m, 22, 29, 'laundry_bundle', 0);
+    // Facciate: base chiesa 272, borgo 448/480/544/336, condomini 112/128/96/
+    // 592/416. Ogni dettaglio e' disegnato subito dopo il prospetto corrispondente.
+    facadeDetail(m, 26, 14, 'wall_lamp', 0, { sortY: 273 });
+    facadeDetail(m, 36, 15, 'flower_box', 0, { sortY: 273 });
+    facadeDetail(m, 39, 10, 'pigeon', 0, { sortY: 273 });
+    facadeDetail(m, 6, 26, 'flower_box', 0, { sortY: 449 });
+    facadeDetail(m, 10, 20, 'ac_unit', 0, { sortY: 449 });
+    facadeDetail(m, 16, 25, 'wall_lamp', 0, { sortY: 481 });
+    facadeDetail(m, 51, 30, 'satellite', 0, { sortY: 545 });
+    facadeDetail(m, 44, 11, 'tv_antenna', 0, { sortY: 337 });
+    facadeDetail(m, 50, 20, 'intercom', 0, { sortY: 337 });
+    facadeDetail(m, 15, 5, 'satellite', 0, { sortY: 113 });
+    facadeDetail(m, 48, 7, 'flower_box', 0, { sortY: 129 });
+    facadeDetail(m, 53, 4, 'tv_antenna', 0, { sortY: 97 });
+    facadeDetail(m, 5, 35, 'wall_lamp', 0, { sortY: 593 });
+    facadeDetail(m, 17, 35, 'ac_unit', 0, { sortY: 593 });
+    facadeDetail(m, 24, 36, 'satellite', 0, { sortY: 593 });
+    facadeDetail(m, 36, 35, 'intercom', 0, { sortY: 593 });
+    facadeDetail(m, 55, 25, 'flower_box', 0, { sortY: 417 });
     m.spawn = { x: 10 * T, y: 30 * T };
     return m;
   }
@@ -981,6 +1286,14 @@
     decor(m, 7, 4, 'candle_glow', { h: 8 }); decor(m, 20, 4, 'candle_glow', { h: 8 });
     decor(m, 4, 9, 'candle_glow', { h: 8 }); decor(m, 23, 9, 'candle_glow', { h: 8 });
     decor(m, 14, 2, 'window_light', { w: 16, h: 10, color: 'rgba(255,210,140,.22)' });
+    // Navata: lampade sulle colonne e fiori sul presbiterio, senza toccare
+    // panche, colonne, altare o corridoio centrale.
+    [[5, 6, 0], [22, 6, 1], [5, 14, 0], [22, 14, 1]]
+      .forEach(([x, y, v]) => interiorDetail(m, x, y, 'wall_lamp', v));
+    [[11, 5, 0], [16, 5, 1], [11, 12, 0], [16, 12, 1]]
+      .forEach(([x, y, v]) => interiorDetail(m, x, y, 'ceiling_lamp', v));
+    interiorDetail(m, 12, 3, 'flower_vase', 0);
+    interiorDetail(m, 15, 3, 'flower_vase', 1);
     // Spawn ESATTO: centro tappeto rosso, parte inferiore vicino ingresso, ma sopra portale uscita.
     // Tappeto centrale: colonne 13-14 (R). Riga 18 = 2 celle sopra portale uscita riga 20, libera.
     m.spawn = { x: 14 * T, y: 18 * T + 8 }; // centro tappeto rosso (tra tile 13-14), riga 18
@@ -1020,6 +1333,12 @@
     decor(m, 15, 6, 'warm_light', { r: 24, color: 'rgba(255,190,120,.14)' });
     decor(m, 10, 10, 'warm_light', { r: 24, color: 'rgba(255,190,120,.12)' });
     decor(m, 6, 3, 'window_light', { w: 12, h: 8, color: 'rgba(255,220,160,.10)' });
+    // Bancone: menu e macchina caffe' dove il POI di servizio e' gia' ancorato.
+    interiorDetail(m, 12, 2, 'menu_board', 0);
+    interiorDetail(m, 6, 3, 'espresso_machine', 0);
+    interiorDetail(m, 15, 5, 'bar_glass', 0);
+    [[5, 6, 0], [15, 6, 1]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'ceiling_lamp', v));
+    interiorDetail(m, 13, 12, 'dog', 0);
     for(let yy=h-5;yy<=h-2;yy++) for(let xx=dx-1;xx<=dx+1;xx++) setTile(g, xx, yy, 'Z');
     m.spawn = { x: dx * T, y: (h - 3) * T };
     m.spawnDir = 'up';
@@ -1059,6 +1378,13 @@
     decor(m, 13, 10, 'pizzeria_table', { w: 60, h: 34, oy: -18 }); decor(m, 17, 10, 'pizzeria_table', { w: 60, h: 34, oy: -18 });
     decor(m, 4, 3, 'warm_light', { r: 32, color:'rgba(255,180,110,.16)' });
     decor(m, 15, 9, 'warm_light', { r: 28, color:'rgba(255,180,110,.12)' });
+    // Cucina e sala: il menu e' appeso alla parete, i sacchi restano in cucina.
+    interiorDetail(m, 12, 2, 'menu_board', 1);
+    interiorDetail(m, 3, 6, 'sack_flour', 0);
+    interiorDetail(m, 12, 5, 'espresso_machine', 0);
+    interiorDetail(m, 15, 5, 'bar_glass', 1);
+    interiorDetail(m, 6, 8, 'flower_vase', 0);
+    [[6, 9, 0], [16, 9, 1]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'ceiling_lamp', v));
     for(let yy=h-5;yy<=h-2;yy++) for(let xx=dx-1;xx<=dx+1;xx++) setTile(g, xx, yy, 'Z');
     m.spawn = { x: dx*T, y:(h-3)*T }; m.spawnDir='up';
     m.exitSpawn = { map:'napoli', x: 38 * T, y: 47 * T };
@@ -1094,6 +1420,12 @@
     decor(m,5,7,'metro_gate',{w:150,h:48,oy:-32});
     decor(m,2,13,'metro_platform',{w:320,h:44,oy:-28});
     decor(m,12,4,'window_light',{w:14,h:10,color:'rgba(180,220,255,.12)'});
+    // Toledo: manifesti sulle pareti, colonne d'appoggio e guida tattile.
+    [[3, 2, 0], [20, 2, 1]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'metro_poster', v));
+    [[2, 6, 0], [22, 6, 1]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'metro_column', v));
+    [[10, 13, 0], [16, 13, 1]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'guide_strip', v));
+    interiorDetail(m, 19, 8, 'stair_rail', 0);
+    [[6, 6, 0], [18, 6, 1]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'ceiling_lamp', v));
     m.spawn={x:dx*T,y:(h-3)*T}; m.spawnDir='up';
     m.exitSpawn = { map:'napoli', x: 56 * T, y: 29 * T };
     return m;
@@ -1124,6 +1456,14 @@
     decor(m,2,4,'metro_hall',{w:180,h:90,oy:-74});
     decor(m,5,7,'metro_gate',{w:150,h:48,oy:-32});
     decor(m,2,13,'metro_platform',{w:320,h:44,oy:-28});
+    // Dante: scarpe diverse da Toledo: manifesti piu' frequenti, marcia
+    // d'appoggio sul banchino e corrimano piu' vicino ai tornelli.
+    [[7, 2, 2], [15, 2, 3]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'metro_poster', v));
+    [[3, 9, 2], [20, 9, 3]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'metro_column', v));
+    [[4, 12, 0], [18, 12, 1]].forEach(([x, y, v]) => railDetail(m, x, y, 'platform_edge', v));
+    interiorDetail(m, 9, 13, 'guide_strip', 2);
+    interiorDetail(m, 3, 6, 'stair_rail', 1);
+    [[10, 5, 0], [17, 5, 1]].forEach(([x, y, v]) => interiorDetail(m, x, y, 'ceiling_lamp', v));
     m.spawn={x:dx*T,y:(h-3)*T}; m.spawnDir='up';
     m.exitSpawn = { map:'napoli', x: 40 * T, y: 30 * T };
     return m;
@@ -1242,6 +1582,11 @@
         poi(m, 4, h - 5, 'table', 'furniture', 'Tavolo — mangia', 'eat_home');
         decor(m, 4, 4, 'warm_light', { r: 26, color: 'rgba(255,200,140,.12)' });
         decor(m, w - 4, 4, 'warm_light', { r: 22, color: 'rgba(255,210,150,.12)' });
+        // Scrivania e armadio: lampada e pratiche sul piano, bucato in ingresso.
+        interiorDetail(m, 7, 4, 'desk_lamp', 0);
+        interiorDetail(m, 8, 5, 'file_stack', 0);
+        interiorDetail(m, 6, 9, 'laundry_bundle', 0);
+        interiorDetail(m, 8, 8, 'ceiling_lamp', 0);
         break;
       case 'shop':
         for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'h');
@@ -1250,6 +1595,11 @@
         setTile(g, 3, 1, '7'); setTile(g, w - 4, 1, '7');
         poi(m, dx, h - 5, 'counter', 'service', 'Bancone — acquista', 'shop', { shop: id === 'souvenir' ? 'pompei' : id });
         decor(m, dx, 5, 'warm_light', { r: 30, color: 'rgba(255,210,150,.12)' });
+        // Negozio: menu e vetro sul banco, fiori in sala, luce a soffitto.
+        interiorDetail(m, 5, 4, 'menu_board', 2);
+        interiorDetail(m, 10, 4, 'bar_glass', 2);
+        interiorDetail(m, 13, 5, 'flower_vase', 0);
+        interiorDetail(m, 8, 8, 'ceiling_lamp', 0);
         break;
       case 'office':
         for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'h');
@@ -1259,6 +1609,10 @@
         setTile(g, w - 3, 3, '4'); setTile(g, w - 3, 7, '4'); setTile(g, 4, 1, '7'); setTile(g, w - 5, 1, '7');
         poi(m, 5, 5, 'desk', 'service', 'Sportello — lavori', 'jobs');
         decor(m, 8, 5, 'warm_light', { r: 34, color: 'rgba(255,220,170,.10)' });
+        // Ufficio: lampada da tavolo e fascicoli accanto allo sportello.
+        interiorDetail(m, 8, 5, 'desk_lamp', 1);
+        interiorDetail(m, 12, 6, 'file_stack', 1);
+        interiorDetail(m, 6, 9, 'ceiling_lamp', 1);
         break;
       case 'bank':
         for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'M');
@@ -1267,6 +1621,10 @@
         setTile(g, 4, 1, '7'); setTile(g, w - 5, 1, '7');
         poi(m, dx, h - 5, 'bank_counter', 'service', 'Sportello bancario', 'bank', { mode: 'menu' });
         decor(m, dx, 5, 'warm_light', { r: 30, color: 'rgba(255,225,180,.10)' });
+        // Banca: il banco e' servito da lato, con lampada e prismi sul ripiano.
+        interiorDetail(m, 8, 8, 'bank_counter', 0);
+        interiorDetail(m, 12, 5, 'desk_lamp', 2);
+        interiorDetail(m, 12, 6, 'file_stack', 2);
         break;
       case 'clinic':
         for (let y = 3; y < h - 2; y++) for (let x = 1; x < w - 1; x++) setTile(g, x, y, 'h');
@@ -1274,11 +1632,18 @@
         setTile(g, 3, 6, '4'); setTile(g, w - 4, 6, '4'); setTile(g, 5, 1, '7'); setTile(g, w - 6, 1, '7');
         poi(m, 4, 5, 'clinic_bed', 'service', 'Visita medica', 'heal');
         decor(m, 8, 5, 'warm_light', { r: 34, color: 'rgba(235,245,255,.10)' });
+        // Ambulatorio: lettino di visita, cartella e luce clinica a soffitto.
+        interiorDetail(m, 12, 5, 'exam_bed', 0);
+        interiorDetail(m, 8, 5, 'file_stack', 3);
+        interiorDetail(m, 6, 8, 'ceiling_lamp', 2);
         break;
       case 'cave':
         g.forEach(row => row.forEach((c, i) => { if (c === 'h' || c === 'j') row[i] = 'k'; }));
         rect(g, 2, 2, 4, 2, '^'); rect(g, w - 6, 3, 4, 3, '^');
         poi(m, 4, 6, 'lava', 'scenery', 'Roccia incandescente', 'flavor');
+        // Grotta: ringhiera di protezione e lanterna a muro, non arredo da bar.
+        railDetail(m, 6, 8, 'rail_fence', 0);
+        interiorDetail(m, 12, 8, 'wall_lamp', 1);
         break;
     }
     // I decori specifici (appartamento, casetta di Amalfi) vanno applicati
@@ -1315,10 +1680,39 @@
         case 'fuorigrotta': m = fuorigrotta(); break;
         case 'pianura': m = pianura(); break;
         case 'casa_nonna': m = interior(id, 'home', 16, 12); break;
-        case 'casa_giocatore': m = interior(id, 'home', 16, 12); break;
-        case 'appartamento': m = interior(id, 'home', 20, 14, mm => { setTile(mm.g, 10, 3, 'V'); setTile(mm.g, 15, 4, 'P'); setTile(mm.g, 4, 4, 'P'); }); break;
-        case 'casa_amalfi': m = interior(id, 'home', 18, 13, mm => { setTile(mm.g, 3, 3, 'P'); setTile(mm.g, 14, 3, 'P'); }); break;
-        case 'bottega': m = interior(id, 'shop', 18, 12); break;
+        // Identita' visiva per ambienti che condividevano lo stesso template:
+        // arredi diversi, non semplici colori, cosi' le case non sono cloni.
+        case 'casa_giocatore': m = interior(id, 'home', 16, 12, mm => {
+          interiorDetail(mm, 11, 4, 'flower_vase', 0);
+          interiorDetail(mm, 12, 7, 'wall_lamp', 0);
+          interiorDetail(mm, 10, 9, 'desk_lamp', 2);
+          // Arredi grossi e riconoscibili: la libreria e il tappeto rendono
+          // visibile l'identita' della casa anche a zoom da 480x270.
+          decor(mm, 12, 4, 'home_books', { w: 42, h: 52, oy: -36 });
+          decor(mm, 10, 10, 'home_rug', { w: 72, h: 28, oy: -10 });
+        }); break;
+        case 'appartamento': m = interior(id, 'home', 20, 14, mm => {
+          setTile(mm.g, 10, 3, 'V'); setTile(mm.g, 15, 4, 'P'); setTile(mm.g, 4, 4, 'P');
+          interiorDetail(mm, 16, 5, 'flower_vase', 1);
+          interiorDetail(mm, 17, 3, 'wall_lamp', 1);
+          interiorDetail(mm, 14, 9, 'ceiling_lamp', 2);
+          decor(mm, 16, 3, 'home_painting', { w: 44, h: 34, oy: -14 });
+          decor(mm, 8, 10, 'home_rug', { w: 80, h: 30, oy: -12 });
+        }); break;
+        case 'casa_amalfi': m = interior(id, 'home', 18, 13, mm => {
+          setTile(mm.g, 3, 3, 'P'); setTile(mm.g, 14, 3, 'P');
+          interiorDetail(mm, 15, 5, 'flower_vase', 2);
+          interiorDetail(mm, 16, 7, 'wall_lamp', 2);
+          interiorDetail(mm, 12, 9, 'planter_box', 1);
+          decor(mm, 14, 4, 'home_plant', { w: 34, h: 42, oy: -26 });
+          decor(mm, 10, 10, 'home_rug', { w: 64, h: 26, oy: -10 });
+        }); break;
+        case 'bottega': m = interior(id, 'shop', 18, 12, mm => {
+          interiorDetail(mm, 6, 2, 'shop_sign', 1);
+          interiorDetail(mm, 15, 4, 'sack_flour', 0);
+          interiorDetail(mm, 12, 8, 'menu_board', 1);
+          decor(mm, 4, 9, 'home_books', { w: 42, h: 52, oy: -36 });
+        }); break;
         case 'souvenir': m = interior(id, 'shop', 16, 11); break;
         case 'bar': m = barInterior(); break;
         case 'pizzeria': m = pizzeriaInterior(); break;

@@ -176,7 +176,7 @@
         248
       ],
       "leftQuietPx": 0,
-      "rightQuietPx": 0,
+      "rightQuietPx": 2,
       "maxQuietPx": 38,
       "pass": true
     },
@@ -188,8 +188,8 @@
         160,
         112
       ],
-      "leftQuietPx": 2,
-      "rightQuietPx": 0,
+      "leftQuietPx": 0,
+      "rightQuietPx": 2,
       "maxQuietPx": 19,
       "pass": true
     },
@@ -241,7 +241,7 @@
         96
       ],
       "leftQuietPx": 0,
-      "rightQuietPx": 0,
+      "rightQuietPx": 2,
       "maxQuietPx": 15,
       "pass": true
     },
@@ -280,7 +280,7 @@
         96
       ],
       "leftQuietPx": 0,
-      "rightQuietPx": 2,
+      "rightQuietPx": 0,
       "maxQuietPx": 19,
       "pass": true
     }

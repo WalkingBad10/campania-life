@@ -42,8 +42,10 @@ await page.waitForFunction(() => Object.keys(window.CL.art.images).length >= 50,
 
 const facades = await page.evaluate((expected) => {
   const out = [];
+  // Auditare lo sprite con la stessa luce che il motore passa a drawFacade.
+  const light = CL.game.lightState ? CL.game.lightState() : undefined;
   for (const [kind, [ew, eh]] of Object.entries(expected)) {
-    const img = CL.art.buildingSprite(kind);
+    const img = CL.art.buildingSprite(kind, light);
     if (!img) { out.push({ kind, error: 'sprite mancante', pass: false }); continue; }
     const w = img.width, h = img.height;
     const d = img.getContext('2d').getImageData(0, 0, w, h).data;

@@ -64,3 +64,20 @@ Il ciclo VL (`opencode/nemotron-3.5-super-vl-free`) è stato ripetuto su screens
 - Save key `campania_life_save_v1`, marker beta, 26 mappe, 20 missioni, economia, veicoli e immobili.
 - Portrait/landscape senza rimount del canvas né perdita di posizione.
 - Pubblicazione sullo stesso URL: `https://walkingbad10.github.io/campania-life/`.
+
+## 7. Fase avanzata — contratto della luce direzionale
+
+La direzione di fase non riapre la scelta del renderer: Canvas 2D resta confermato. Il contratto attuato in `engine.lightState()` è:
+
+| Voce | Contratto attuato |
+|---|---|
+| Sorgente | Un solo vettore sole per scena, derivato da `CL.state.time` (ora frazionaria 0–24) e da `CL.state.weather`; nessun random e nessun drift tra fotogrammi. Cache per 0,01 h e meteo. |
+| Convenzione | `azimuth` in **radianti**: `-π/4` alle 06 (sole da NO), `0` al mezzogiorno (zenit), `+π/4` alle 18 (sole da NE). `elevation` in **gradi**: `78` a mezzogiorno, `0` all'alba/tramonto, negativa di notte. `dirX/dirY` è il vettore ombra unitario in screen-space: SE al mattino, corto verso S a mezzogiorno, SO nel pomeriggio. |
+| Ore di riferimento | h12: azimuth `0` rad, elevazione `78°`, ombra `5 px` (sereno). h18: azimuth `+π/4` rad, elevazione `0°`, ombra `39 px` (sereno). |
+| Layer | La luce direzionale resta nello spazio mondo: proiezione e ombra di contatto prima di facciate/entità; velatura e occlusione laterale sopra l'asset ma dentro i suoi pixel; l'ordine atmosfera → luci → HUD in `engine.js` non cambia. |
+| Cache facciate | `ART._lightBucket()` usa 8 settori direzionali × 3 toni quantizzati da `dark`, `warm` e `shadowLen`, così due ore con tono diverso non riutilizzano lo stesso sprite. |
+| Determinismo | Con `CL.game.stop()`, `animT = 0`, tempo/meteo/camera fissati e HUD disattivato, due esecuzioni indipendenti di `art-review.mjs` a h12 producono **27/27 file identici** (26 PNG + `report.json`, SHA-256). |
+| Asset M1 | I PNG M1 restano l'unica fonte autorevole per Napoli: nessun tetto inventato, nessuna modifica di ancoraggi, hitbox, dimensioni o ritagli. L'ombra direzionale è un layer aggiuntivo, non una sostituzione dell'asset. |
+| Verifica | `client/scripts/art-review.mjs` cattura h12 e h18 in `before-v2/` (baseline da `f13bc66`) e `after/`; `client/scripts/art-review-compare.mjs` produce 52 sheet e `diff.json`. Soglie: palette ≤5%, `edgeDensity` ≤0,01, luminanza ≤2, 0 nuovi errori. Esito: **46/52 coppie oltre soglia**, 6 sotto soglia, 0 errori console/page. |
+
+I riferimenti alle fonti restano quelli già documentati: attribuzione OSM **© OpenStreetMap contributors — ODbL — retrieve 2026-11-25** (`https://opendatacommons.org/licenses/odbl/1-0/`) e licenze CC dei materiali di riferimento, senza copia dei pixel nelle texture di gioco.
