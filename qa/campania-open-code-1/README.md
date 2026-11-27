@@ -282,6 +282,8 @@ Azioni intraprese dopo la VL: bucket di luce che include `dark`/`warm`/`shadowLe
 
 Risultati numerici del confronto autoritativo (`before-v2/` vs `after/`): **52 coppie mappa/orario**, 26 mappe × h12 e h18; **6 sotto soglia** (`napoli`, `bar`, `pizzeria` a h12; `capri`, `bar`, `pizzeria` a h18) e **46 oltre soglia**; **0 errori console/page** su entrambi i lati; 0 mappe mancanti. Il confronto della sola baseline storica `before/` era invece limitato a h12 con 3 mappe sotto soglia. FPS finali su emulazione: **60/60**, 0 frame persi.
 
+**Pubblicazione finale di questa fase** — commit `d5cd92b` su `main`, workflow `46051845663` `success`, bundle remoto `index-CYTKs3ZY.js` con SHA-256 `1e99844bdd57fb4917fef9729903612b3f2dee49dba977ce14b847a517aaf4ac`, byte-identico alla build locale generata con `GH_PAGES_BASE=/campania-life/`. URL invariato `https://walkingbad10.github.io/campania-life/`. Nel bundle pubblico sono presenti marker beta esatto, chiave save `campania_life_save_v1`, `detailSprite` e `home_books`. Determinismo dell'harness: due esecuzioni indipendenti a h12 producono 27/27 file identici per SHA-256.
+
 ## Limiti dichiarati
 - Le schermate e le metriche sono **emulazione Playwright/Chromium**, non test su dispositivi fisici.
 - I prospetti M1 di Piazza del Gesù Nuovo restano sprite bidimensionali autorevoli: l'ombra proiettata è disegnata, ma la VL non la legge sempre come volume architettonico coerente. Nessun tetto nuovo è stato inventato sopra di essi.
